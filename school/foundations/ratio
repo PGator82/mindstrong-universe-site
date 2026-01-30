@@ -1,0 +1,135 @@
+<!-- ===================== -->
+<!-- HACK-MY-MATH: RATIOS -->
+<!-- ===================== -->
+
+<section style="
+  max-width:1000px;
+  margin:40px auto;
+  padding:24px;
+  background:#0e0e11;
+  color:#f5f5f7;
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height:1.6;
+">
+
+  <h1 style="text-align:center;">
+    Ratios — The Balance of Comparison
+  </h1>
+
+  <p style="text-align:center; opacity:0.8;">
+    World 7 • Foundations • Hack-My-Math
+  </p>
+
+  <!-- WARM UP -->
+  <div style="
+    background:#16161d;
+    border-radius:16px;
+    padding:24px;
+    margin-top:32px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.35);
+  ">
+    <h2>🎧 Warm-Up</h2>
+
+    <img
+      src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
+      alt="Ratio visual"
+      style="
+        width:100%;
+        max-width:900px;
+        display:block;
+        margin:20px auto;
+        border-radius:16px;
+      "
+    />
+
+    <p>
+      A <strong>ratio</strong> compares two quantities.
+      It tells how much of one thing exists compared to another.
+    </p>
+  </div>
+
+  <!-- THE HACK -->
+  <div style="
+    background:#16161d;
+    border-radius:16px;
+    padding:24px;
+    margin-top:32px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.35);
+  ">
+    <h2>🧠 The Hack</h2>
+
+    <div style="
+      background:#222233;
+      padding:20px;
+      border-radius:12px;
+      border-left:4px solid #6cf;
+      font-size:18px;
+    ">
+      <strong>Ratios are balance statements.</strong><br><br>
+      If one side doubles, the other side must double too.<br>
+      If the balance breaks, the ratio is no longer equivalent.
+    </div>
+  </div>
+
+  <!-- PLAY -->
+  <div style="
+    background:#16161d;
+    border-radius:16px;
+    padding:24px;
+    margin-top:32px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.35);
+  ">
+    <h2>🎮 Play</h2>
+
+    <p>
+      Use the interactive tool below to explore how ratios scale.
+    </p>
+
+    <iframe
+      src="https://www.desmos.com/calculator"
+      width="100%"
+      height="400"
+      style="border:none;border-radius:12px;"
+    ></iframe>
+  </div>
+
+  <!-- BOSS FIGHT -->
+  <div style="
+    background:#16161d;
+    border-radius:16px;
+    padding:24px;
+    margin-top:32px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.35);
+  ">
+    <h2>⚔️ Boss Fight</h2>
+
+    <p>
+      The ratio of red to blue tiles is <strong>2 : 3</strong>.<br>
+      If there are <strong>8 red tiles</strong>, how many blue tiles are there?
+    </p>
+
+    <button
+      onclick="document.getElementById('ratio-answer').style.display='block'"
+      style="
+        background:#6cf;
+        color:#000;
+        border:none;
+        padding:12px 18px;
+        border-radius:10px;
+        cursor:pointer;
+        font-size:16px;
+        margin-top:12px;
+      "
+    >
+      Reveal Answer
+    </button>
+
+    <div
+      id="ratio-answer"
+      style="display:none;margin-top:12px;opacity:0.9;"
+    >
+      <strong>Answer:</strong> 12 blue tiles
+    </div>
+  </div>
+
+</section>
