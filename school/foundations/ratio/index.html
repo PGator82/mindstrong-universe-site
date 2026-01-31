@@ -1,1 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ratios • Pre-Algebra Mastery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Use site theme -->
+  <link rel="stylesheet" href="../../../theme.css" />
+
+  <style>
+    /* Safe local enhancements */
+    .lesson-wrap{
+      max-width:1000px;
+      margin:0 auto;
+      padding:32px 16px;
+    }
+    .lesson-card{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--r);
+      padding:24px;
+      margin-bottom:24px;
+    }
+    .lesson-card h2{ margin-top:0; }
+    .hack-box{
+      background: rgba(34,211,238,.08);
+      border-left:4px solid rgba(34,211,238,.6);
+      padding:16px;
+      border-radius:12px;
+      font-weight:600;
+    }
+    .lesson-img{
+      width:100%;
+      max-width:900px;
+      display:block;
+      margin:16px auto;
+      border-radius:14px;
+    }
+    .reveal{
+      display:none;
+      margin-top:12px;
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <span class="ms-dot"></span>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./index.html">Ratios</a>
+    </nav>
+  </div>
+</header>
+
+<main class="lesson-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero">
+    <span class="ms-kicker">Pre-Algebra Mastery</span>
+    <h1 class="ms-h1">Ratios</h1>
+    <p class="ms-sub">
+      Ratios explain how quantities compare, scale, and stay balanced.
+      This is the language of proportional thinking.
+    </p>
+  </section>
+
+  <!-- WARM-UP -->
+  <section class="lesson-card">
+    <h2>🎧 Warm-Up</h2>
+
+    <img
+      src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
+      alt="Ratio visual"
+      class="lesson-img"
+    />
+
+    <p>
+      A <strong>ratio</strong> compares two quantities.
+      It answers the question: <em>how much of one thing exists compared to another?</em>
+    </p>
+  </section>
+
+  <!-- THE HACK -->
+  <section class="lesson-card">
+    <h2>🧠 The Hack</h2>
+
+    <div class="hack-box">
+      Ratios are <strong>balance statements</strong>.<br><br>
+      If one side changes, the other must change the <em>same way</em>
+      to stay equivalent.
+    </div>
+
+    <p style="margin-top:12px;">
+      Example:  
+      <br>2 : 3 → 4 : 6 → 6 : 9  
+      <br>The numbers change, the balance stays.
+    </p>
+  </section>
+
+  <!-- PLAY -->
+  <section class="lesson-card">
+    <h2>🎮 Play</h2>
+    <p>Use the interactive space below to explore how ratios scale.</p>
+
+    <iframe
+      src="https://www.desmos.com/calculator"
+      width="100%"
+      height="420"
+      style="border:none;border-radius:12px;"
+      loading="lazy"
+    ></iframe>
+  </section>
+
+  <!-- BOSS FIGHT -->
+  <section class="lesson-card">
+    <h2>⚔️ Boss Fight</h2>
+
+    <p>
+      The ratio of red to blue tiles is <strong>2 : 3</strong>.<br>
+      If there are <strong>8 red tiles</strong>, how many blue tiles are there?
+    </p>
+
+    <button class="ms-btn primary"
+      onclick="document.getElementById('answer1').style.display='block'">
+      Reveal Answer
+    </button>
+
+    <div id="answer1" class="reveal">
+      ✔️ <strong>12 blue tiles</strong><br>
+      (2 → 8 is ×4, so 3 → 12)
+    </div>
+  </section>
+
+  <!-- NEXT -->
+  <section class="lesson-card">
+    <h2>➡️ What’s Next</h2>
+    <p>
+      Next up: using ratios to find <strong>unit rates</strong>
+      and compare real-world situations.
+    </p>
+
+    <a class="ms-btn" href="../index.html">
+      Back to Foundations →
+    </a>
+  </section>
+
+</main>
+
+<footer class="ms-footer">
+  © MindStrong Universe • Pre-Algebra Mastery
+</footer>
+
+</body>
+</html>
