@@ -9,12 +9,8 @@ PATH: /school/foundations/module-1/lesson-1.html
   <title>Foundations • Lesson 1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- THEME (ROOT) -->
   <link rel="stylesheet" href="../../../theme.css" />
-
-  <!-- FAVICON + APP ICON (ROOT) -->
   <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
-  <link rel="apple-touch-icon" href="../../../mindstronguniverse.svg" />
   <meta name="theme-color" content="#0b0f1a" />
 
   <style>
@@ -31,133 +27,176 @@ PATH: /school/foundations/module-1/lesson-1.html
       box-shadow: 0 0 0 3px rgba(34,211,238,.10), 0 0 22px rgba(34,211,238,.18);
     }
     .ms-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .hack-box{
+      background: rgba(34,211,238,.08);
+      border-left:4px solid rgba(34,211,238,.6);
+      padding:16px;
+      border-radius:12px;
+      font-weight:600;
+    }
   </style>
 </head>
 
 <body>
-  <header class="ms-top">
-    <div class="ms-nav">
-      <div class="ms-brand">
-        <img src="../../../mindstronguniverse.svg" alt="MindStrong Universe" class="ms-brandLogo" />
-        <span>MindStrong Universe</span>
-      </div>
-      <nav class="ms-links">
-        <a class="ms-link" href="../../../index.html">Home</a>
-        <a class="ms-link" href="../../index.html">School</a>
-        <a class="ms-link" href="../index.html">Foundations</a>
-        <a class="ms-link is-active" href="./lesson-1.html">Lesson 1</a>
-      </nav>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../../mindstronguniverse.svg" class="ms-brandLogo" />
+      <span>MindStrong Universe</span>
     </div>
-  </header>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./lesson-1.html">Lesson 1</a>
+    </nav>
+  </div>
+</header>
 
-  <main class="ms-wrap">
-    <section class="ms-hero">
-      <span class="ms-kicker">🧱 Foundations • Module 1</span>
-      <h1 class="ms-h1">Lesson 1 — Numbers Are Stories</h1>
-      <p class="ms-sub">Numbers aren’t just symbols. They’re meaning + size.</p>
+<main class="ms-wrap">
+  <section class="ms-hero">
+    <span class="ms-kicker">🧱 Foundations • Module 1</span>
+    <h1 class="ms-h1">Lesson 1 — Numbers Are Stories</h1>
+    <p class="ms-sub">Numbers aren’t just symbols. They’re meaning + size.</p>
 
-      <div class="ms-actions">
-        <button id="completeBtn" class="ms-btn primary" type="button">Mark Complete ✓</button>
-        <a id="nextBtn" class="ms-btn" href="./lesson-2.html">Next Lesson →</a>
-        <a class="ms-btn" href="../index.html">Back to Foundations</a>
-      </div>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a id="nextBtn" class="ms-btn" href="./lesson-2.html">Next Lesson →</a>
+      <a class="ms-btn" href="../index.html">Back to Foundations</a>
+    </div>
 
-      <div style="margin-top:10px;">
-        <span class="ms-chip" id="statusChip">Status: Not completed</span>
-      </div>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
+  </section>
+
+  <div class="ms-lessonGrid">
+
+    <section class="ms-card">
+      <h2>Hook</h2>
+      <p>Numbers tell stories about <b>size</b>, <b>distance</b>, and <b>amount</b>.</p>
+      <p><b>9</b> vs <b>900</b> — same digits, different story.</p>
     </section>
 
-    <div class="ms-lessonGrid">
-      <section class="ms-card">
-        <h2>Hook</h2>
-        <p>Numbers aren’t just marks on paper. They tell stories about <b>size</b>, <b>distance</b>, and <b>amount</b>.</p>
-        <p><b>9</b> vs <b>900</b> — same digits, totally different story.</p>
-      </section>
+    <section class="ms-card">
+      <h2>The Hack</h2>
+      <p><b>Every number answers:</b> “How much compared to something familiar?”</p>
+      <ul>
+        <li>10 ≈ hands</li>
+        <li>100 ≈ steps</li>
+        <li>1,000 ≈ minutes in a week</li>
+      </ul>
+    </section>
 
-      <section class="ms-card">
-        <h2>The Hack</h2>
-        <p><b>Every number answers one question:</b> “How much is this compared to something familiar?”</p>
-        <p>Use anchors:</p>
-        <ul>
-          <li>10 ≈ hands</li>
-          <li>100 ≈ steps</li>
-          <li>1,000 ≈ minutes in a week (almost)</li>
-        </ul>
-      </section>
+    <!-- 🎮 PLAY MODE (GAME ADDED) -->
+    <section class="ms-card">
+      <h2>🎮 Play Mode — Magnitude Game</h2>
 
-      <section class="ms-card">
-        <h2>Practice</h2>
-        <ol>
-          <li>Which feels bigger: 450 or 4,500? Why?</li>
-          <li>Which is closer to 1,000: 875 or 1,200?</li>
-          <li>Write a sentence story for the number 3,000.</li>
-        </ol>
-      </section>
+      <p>Move the slider. Decide if the number is <b>small</b>, <b>medium</b>, or <b>large</b>.</p>
 
-      <section class="ms-card">
-        <h2>Exit Check</h2>
-        <p>Explain the difference between <b>looking at digits</b> and <b>understanding magnitude</b>.</p>
-      </section>
-    </div>
+      <input
+        id="numSlider"
+        type="range"
+        min="1"
+        max="10000"
+        step="1"
+        value="100"
+        style="width:100%;margin:12px 0;"
+      />
 
-    <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
-  </main>
+      <div class="hack-box" id="sliderOutput">
+        Number: <strong>100</strong><br>
+        Magnitude: <strong>Medium</strong>
+      </div>
 
-  <script>
-    // ====== Smart Progress + Next Lesson ======
-    const LESSON_NUM = 1;
-    const TOTAL = 6;
-    const KEY = "ms_m1_done";
+      <p style="margin-top:12px;">
+        Rules:<br>
+        • 1–99 = Small<br>
+        • 100–999 = Medium<br>
+        • 1000+ = Large
+      </p>
+    </section>
 
-    // Track last visited lesson (works with GitHub Pages)
-    localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+    <section class="ms-card">
+      <h2>Practice</h2>
+      <ol>
+        <li>Which feels bigger: 450 or 4,500?</li>
+        <li>Which is closer to 1,000: 875 or 1,200?</li>
+        <li>Write a story for 3,000.</li>
+      </ol>
+    </section>
 
-    function getArr(){
-      try{
-        const arr = JSON.parse(localStorage.getItem(KEY) || "[]");
-        return Array.isArray(arr) ? arr : [];
-      } catch { return []; }
+    <section class="ms-card">
+      <h2>Exit Check</h2>
+      <p>Explain the difference between digits and magnitude.</p>
+    </section>
+
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
+</main>
+
+<script>
+  /* ===== Progress Tracking ===== */
+  const LESSON_NUM = 1;
+  const TOTAL = 6;
+  const KEY = "ms_m1_done";
+
+  localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+
+  function getArr(){
+    try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+    catch{ return []; }
+  }
+
+  function markDone(n){
+    const arr = getArr();
+    if (!arr.includes(n)) {
+      arr.push(n);
+      localStorage.setItem(KEY, JSON.stringify(arr));
     }
-    function setArr(arr){ localStorage.setItem(KEY, JSON.stringify(arr)); }
+  }
 
-    function isDone(n){ return new Set(getArr()).has(n); }
+  const completeBtn = document.getElementById("completeBtn");
+  const statusChip = document.getElementById("statusChip");
 
-    function markDone(n){
-      const arr = getArr();
-      if (!arr.includes(n)) arr.push(n);
-      setArr(arr);
-    }
+  function renderStatus(){
+    const done = getArr().includes(LESSON_NUM);
+    statusChip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    completeBtn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    completeBtn.classList.toggle("ms-glowDone", done);
+  }
 
-    // Smart Next button (if last lesson, go back to Foundations)
-    const nextBtn = document.getElementById("nextBtn");
-    if (nextBtn){
-      if (LESSON_NUM >= TOTAL) nextBtn.href = "../index.html";
-      else nextBtn.href = `./lesson-${LESSON_NUM + 1}.html`;
-    }
-
-    // Complete button glow + status
-    const completeBtn = document.getElementById("completeBtn");
-    const statusChip = document.getElementById("statusChip");
-
-    function renderStatus(){
-      const done = isDone(LESSON_NUM);
-      if (statusChip){
-        statusChip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
-      }
-      if (completeBtn){
-        completeBtn.classList.toggle("ms-glowDone", done);
-        completeBtn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
-      }
-    }
-
-    if (completeBtn){
-      completeBtn.addEventListener("click", () => {
-        markDone(LESSON_NUM);
-        renderStatus();
-      });
-    }
-
+  completeBtn.addEventListener("click", () => {
+    markDone(LESSON_NUM);
     renderStatus();
-  </script>
+  });
+
+  renderStatus();
+
+  /* ===== Magnitude Game Logic ===== */
+  const slider = document.getElementById("numSlider");
+  const out = document.getElementById("sliderOutput");
+
+  function classify(n){
+    if (n < 100) return "Small";
+    if (n < 1000) return "Medium";
+    return "Large";
+  }
+
+  slider.addEventListener("input", () => {
+    const n = Number(slider.value);
+    out.innerHTML = `
+      Number: <strong>${n}</strong><br>
+      Magnitude: <strong>${classify(n)}</strong>
+    `;
+  });
+</script>
+
 </body>
 </html>
+<!-- =========================
+FILE: lesson-1.html
+PATH: /school/foundations/module-1/lesson-1.html
+========================= -->
+
