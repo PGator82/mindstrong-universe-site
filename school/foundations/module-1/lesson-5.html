@@ -1,78 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Foundations • Lesson 5</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="../../../theme.css" />
-<meta name="theme-color" content="#0b0f1a" />
+  <meta charset="UTF-8" />
+  <title>Foundations • Lesson 5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-.ms-lessonGrid{display:grid;gap:14px;margin-top:14px}
-.hack-box{background:rgba(34,211,238,.08);border-left:4px solid rgba(34,211,238,.6);padding:16px;border-radius:12px;font-weight:600}
-.big{font-size:28px;font-weight:800;text-align:center}
-</style>
+  <link rel="stylesheet" href="../../../theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
+  <meta name="theme-color" content="#0b0f1a" />
+
+  <style>
+    .ms-lessonGrid{display:grid;gap:14px;margin-top:14px}
+    .hack-box{
+      background:rgba(34,211,238,.08);
+      border-left:4px solid rgba(34,211,238,.6);
+      padding:16px;border-radius:12px;font-weight:600
+    }
+    .big{font-size:28px;font-weight:800;text-align:center}
+    .ms-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .ms-chip{
+      display:inline-flex;padding:6px 10px;border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);font-size:12px
+    }
+    .ms-glowDone{
+      border-color:rgba(34,211,238,.35)!important;
+      box-shadow:0 0 0 3px rgba(34,211,238,.10),0 0 22px rgba(34,211,238,.18)
+    }
+  </style>
 </head>
 
 <body>
-<header class="ms-top"><div class="ms-nav"><span>MindStrong Universe</span></div></header>
+<header class="ms-top">
+  <div class="ms-nav">
+    <span>MindStrong Universe</span>
+  </div>
+</header>
 
 <main class="ms-wrap">
 <section class="ms-hero">
-<h1 class="ms-h1">Lesson 5 — Rounding That Makes Sense</h1>
-<button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+  <span class="ms-kicker">🧱 Foundations • Module 1</span>
+  <h1 class="ms-h1">Lesson 5 — Rounding That Makes Sense</h1>
+  <p class="ms-sub">Round using landmarks, not chants.</p>
+
+  <div class="ms-actions">
+    <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+    <a class="ms-btn" href="./lesson-6.html">Next Lesson →</a>
+    <a class="ms-btn" href="../index.html">Back to Foundations</a>
+  </div>
+
+  <div style="margin-top:10px;">
+    <span class="ms-chip" id="statusChip">Status: Not completed</span>
+  </div>
 </section>
 
 <div class="ms-lessonGrid">
 
 <section class="ms-card">
-<h2>📌 What This Is & Why It Matters</h2>
-<p><strong>What this is:</strong> Learning how to round numbers using landmarks.</p>
-<p><strong>Why it matters:</strong> Helps estimate quickly and avoid bad answers.</p>
+  <h2>📌 What This Is & Why It Matters</h2>
+  <p><strong>What this is:</strong> Learning how to round numbers using meaningful landmarks.</p>
+  <p><strong>Why it matters:</strong> Helps estimate quickly and avoid wrong answers.</p>
 </section>
 
 <section class="ms-card">
-<h2>Hook</h2>
-<p>Is 478 closer to 400 or 500?</p>
+  <h2>Hook</h2>
+  <p>Is 478 closer to 400 or 500?</p>
 </section>
 
 <section class="ms-card">
-<h2>The Hack</h2>
-<div class="hack-box">Find the nearest landmark (0, 100, 1,000).</div>
+  <h2>The Hack</h2>
+  <div class="hack-box">
+    Find the nearest landmark (0, 100, 1,000).
+  </div>
 </section>
 
 <section class="ms-card">
-<h2>🎮 Play Mode — Rounding Radar</h2>
+  <h2>🎮 Play Mode — Rounding Radar</h2>
 
-<input type="range" id="round" min="0" max="1000" value="378" style="width:100%">
+  <input type="range" id="round" min="0" max="1000" value="378" style="width:100%">
 
-<div class="big" id="roundOut"></div>
+  <div class="big" id="roundOut"></div>
 </section>
 
 <section class="ms-card">
-<h2>Practice</h2>
-<ol>
-<li>Round 842 to the nearest hundred.</li>
-<li>Round 1,499 to the nearest thousand.</li>
-</ol>
+  <h2>Practice</h2>
+  <ol>
+    <li>Round 842 to the nearest hundred.</li>
+    <li>Round 1,499 to the nearest thousand.</li>
+  </ol>
 </section>
 
 <section class="ms-card">
-<h2>Exit Check</h2>
-<p>Explain rounding without saying “five or more”.</p>
+  <h2>Exit Check</h2>
+  <p>Explain rounding without saying “five or more.”</p>
 </section>
 
 </div>
+
+<footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
 <script>
-const LESSON_NUM=5,KEY="ms_m1_done";
-const btn=document.getElementById("completeBtn");
-btn.onclick=()=>{const a=JSON.parse(localStorage.getItem(KEY)||"[]");if(!a.includes(LESSON_NUM)){a.push(LESSON_NUM);localStorage.setItem(KEY,JSON.stringify(a))};btn.textContent="Completed ✓"}
+  const LESSON_NUM = 5;
+  const KEY = "ms_m1_done";
 
-const r=document.getElementById("round"),o=document.getElementById("roundOut");
-function update(){const n=Number(r.value);o.innerHTML=`${n} → <b>${Math.round(n/100)*100}</b>`}
-r.oninput=update;update();
+  localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+
+  function getArr(){
+    try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }
+    catch{ return []; }
+  }
+
+  function markDone(){
+    const a = getArr();
+    if (!a.includes(LESSON_NUM)) {
+      a.push(LESSON_NUM);
+      localStorage.setItem(KEY, JSON.stringify(a));
+    }
+  }
+
+  const btn = document.getElementById("completeBtn");
+  const chip = document.getElementById("statusChip");
+
+  function render(){
+    const done = getArr().includes(LESSON_NUM);
+    chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    btn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    btn.classList.toggle("ms-glowDone", done);
+  }
+
+  btn.addEventListener("click", ()=>{ markDone(); render(); });
+  render();
+
+  const r = document.getElementById("round");
+  const o = document.getElementById("roundOut");
+  function update(){
+    const n = Number(r.value);
+    o.innerHTML = `${n} → <b>${Math.round(n/100)*100}</b>`;
+  }
+  r.oninput = update; update();
 </script>
+
 </body>
 </html>
