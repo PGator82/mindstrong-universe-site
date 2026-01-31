@@ -14,7 +14,6 @@
   <meta name="theme-color" content="#0b0f1a" />
 
   <style>
-    /* Tiny add-ons that won't fight theme.css */
     .ms-item{
       display:flex;
       align-items:center;
@@ -48,9 +47,7 @@
       background: rgba(34,211,238,.10);
       box-shadow: 0 0 0 3px rgba(34,211,238,.08);
     }
-    .ms-titleWrap{
-      min-width:0;
-    }
+    .ms-titleWrap{ min-width:0; }
     .ms-title{
       font-weight:800;
       white-space:nowrap;
@@ -113,7 +110,7 @@
       <p class="ms-sub">Fix number sense first. Everything else stacks cleanly after.</p>
     </section>
 
-    <!-- MODULE CARD -->
+    <!-- MODULE 1 -->
     <section class="ms-card">
       <h2>Module 1: Number Sense</h2>
       <p>Six short lessons. Zero fluff.</p>
@@ -123,20 +120,19 @@
         <a id="continueBtn" class="ms-btn" href="../index.html">Continue Learning</a>
       </div>
 
-      <div class="ms-progress" aria-label="Module 1 progress">
-        <div style="display:flex; justify-content:space-between; gap:10px;">
+      <div class="ms-progress">
+        <div style="display:flex; justify-content:space-between;">
           <div><b id="m1Count">0</b><span style="color:var(--muted)"> / 6 completed</span></div>
-          <button id="resetBtn" class="ms-btn" type="button" title="Reset Module 1 progress">Reset</button>
+          <button id="resetBtn" class="ms-btn" type="button">Reset</button>
         </div>
-        <div class="ms-bar" aria-hidden="true"><div id="m1Bar"></div></div>
+        <div class="ms-bar"><div id="m1Bar"></div></div>
         <div class="ms-subtle" id="m1Label">Complete lessons to unlock momentum.</div>
       </div>
 
       <div class="ms-hr"></div>
 
-      <div class="ms-list" id="lessonList">
-        <!-- JS will decorate these with checkmarks -->
-        <div class="ms-item" data-lesson="1">
+      <div class="ms-list">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b1">1</span>
             <div class="ms-titleWrap">
@@ -147,7 +143,7 @@
           <a class="ms-btn" href="./module-1/lesson-1.html">Open</a>
         </div>
 
-        <div class="ms-item" data-lesson="2">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b2">2</span>
             <div class="ms-titleWrap">
@@ -158,7 +154,7 @@
           <a class="ms-btn" href="./module-1/lesson-2.html">Open</a>
         </div>
 
-        <div class="ms-item" data-lesson="3">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b3">3</span>
             <div class="ms-titleWrap">
@@ -169,7 +165,7 @@
           <a class="ms-btn" href="./module-1/lesson-3.html">Open</a>
         </div>
 
-        <div class="ms-item" data-lesson="4">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b4">4</span>
             <div class="ms-titleWrap">
@@ -180,7 +176,7 @@
           <a class="ms-btn" href="./module-1/lesson-4.html">Open</a>
         </div>
 
-        <div class="ms-item" data-lesson="5">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b5">5</span>
             <div class="ms-titleWrap">
@@ -191,7 +187,7 @@
           <a class="ms-btn" href="./module-1/lesson-5.html">Open</a>
         </div>
 
-        <div class="ms-item" data-lesson="6">
+        <div class="ms-item">
           <div class="ms-row">
             <span class="ms-badge" id="b6">6</span>
             <div class="ms-titleWrap">
@@ -204,74 +200,34 @@
       </div>
     </section>
 
+    <!-- PRE-ALGEBRA MASTERY: RATIOS -->
+    <section class="ms-card">
+      <h2>Pre-Algebra Mastery: Ratios</h2>
+      <p>Comparisons, scaling, and proportional thinking.</p>
+
+      <div class="ms-actions">
+        <a class="ms-btn primary" href="./ratio/">Start Ratios →</a>
+        <a class="ms-btn" href="./ratio/">View Course</a>
+      </div>
+
+      <div class="ms-hr"></div>
+
+      <div class="ms-list">
+        <div class="ms-item">
+          <div class="ms-row">
+            <span class="ms-badge ms-check">✓</span>
+            <div class="ms-titleWrap">
+              <div class="ms-title">Ratios — Balance of Comparison</div>
+              <div class="ms-subtle">Foundation of proportional reasoning</div>
+            </div>
+          </div>
+          <a class="ms-btn" href="./ratio/">Open</a>
+        </div>
+      </div>
+    </section>
+
     <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
   </main>
-
-  <script>
-    // Continue Learning: use last lesson if available
-    const last = localStorage.getItem("ms_last_lesson_url");
-    const continueBtn = document.getElementById("continueBtn");
-    if (last && continueBtn) continueBtn.href = last;
-
-    // Progress + checklist UI
-    const KEY = "ms_m1_done";
-    const total = 6;
-
-    function getDoneSet(){
-      try{
-        const raw = localStorage.getItem(KEY);
-        const arr = raw ? JSON.parse(raw) : [];
-        return new Set(Array.isArray(arr) ? arr : []);
-      } catch {
-        return new Set();
-      }
-    }
-
-    function render(){
-      const done = getDoneSet();
-      const count = Math.max(0, Math.min(total, done.size));
-
-      // bar + label
-      const m1Count = document.getElementById("m1Count");
-      const m1Bar = document.getElementById("m1Bar");
-      const m1Label = document.getElementById("m1Label");
-      if (m1Count) m1Count.textContent = String(count);
-      if (m1Bar) m1Bar.style.width = `${(count/total)*100}%`;
-      if (m1Label) m1Label.textContent = count === total
-        ? "Module complete. That’s real discipline."
-        : "Complete lessons to unlock momentum.";
-
-      // check badges
-      for (let i=1; i<=total; i++){
-        const badge = document.getElementById(`b${i}`);
-        if (!badge) continue;
-        if (done.has(i)){
-          badge.classList.add("ms-check");
-          badge.textContent = "✓";
-        } else {
-          badge.classList.remove("ms-check");
-          badge.textContent = String(i);
-        }
-      }
-
-      // start button becomes "Resume"
-      const startBtn = document.getElementById("startBtn");
-      if (startBtn && count > 0 && last){
-        startBtn.textContent = "Resume →";
-        startBtn.href = last;
-      }
-    }
-
-    render();
-
-    // Reset progress
-    const resetBtn = document.getElementById("resetBtn");
-    if (resetBtn){
-      resetBtn.addEventListener("click", () => {
-        localStorage.removeItem(KEY);
-        render();
-      });
-    }
-  </script>
 </body>
 </html>
+
