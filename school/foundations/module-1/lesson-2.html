@@ -11,17 +11,35 @@ PATH: /school/foundations/module-1/lesson-2.html
 
   <link rel="stylesheet" href="../../../theme.css" />
   <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
-  <link rel="apple-touch-icon" href="../../../mindstronguniverse.svg" />
   <meta name="theme-color" content="#0b0f1a" />
 
   <style>
     .ms-lessonGrid{ display:grid; gap:14px; margin-top:14px; }
-    .ms-chip{ display:inline-flex; padding:6px 10px; border-radius:999px;
-      border:1px solid var(--stroke); background:rgba(255,255,255,.04);
-      font-size:12px; color:var(--muted);}
+    .ms-chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--muted); font-size:12px;
+    }
     .ms-glowDone{
-      border-color: rgba(34,211,238,.35)!important;
-      box-shadow:0 0 0 3px rgba(34,211,238,.10),0 0 22px rgba(34,211,238,.18);}
+      border-color: rgba(34,211,238,.35) !important;
+      box-shadow: 0 0 0 3px rgba(34,211,238,.10), 0 0 22px rgba(34,211,238,.18);
+    }
+    .ms-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .hack-box{
+      background: rgba(34,211,238,.08);
+      border-left:4px solid rgba(34,211,238,.6);
+      padding:16px;
+      border-radius:12px;
+      font-weight:600;
+    }
+    .big-num{
+      font-size:32px;
+      font-weight:800;
+      text-align:center;
+      margin:12px 0;
+    }
   </style>
 </head>
 
@@ -36,74 +54,149 @@ PATH: /school/foundations/module-1/lesson-2.html
       <a class="ms-link" href="../../../index.html">Home</a>
       <a class="ms-link" href="../../index.html">School</a>
       <a class="ms-link" href="../index.html">Foundations</a>
-      <a class="ms-link is-active">Lesson 2</a>
+      <a class="ms-link is-active" href="./lesson-2.html">Lesson 2</a>
     </nav>
   </div>
 </header>
 
 <main class="ms-wrap">
-<section class="ms-hero">
-  <span class="ms-kicker">🧱 Foundations • Module 1</span>
-  <h1 class="ms-h1">Lesson 2 — Place Value Is a Volume Knob</h1>
-  <p class="ms-sub">Every move left makes the number louder. Every move right makes it quieter.</p>
+  <section class="ms-hero">
+    <span class="ms-kicker">🧱 Foundations • Module 1</span>
+    <h1 class="ms-h1">Lesson 2 — Place Value Is a Volume Knob</h1>
+    <p class="ms-sub">Each place to the left makes the number louder. To the right, quieter.</p>
 
-  <div class="ms-actions">
-    <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
-    <a id="nextBtn" class="ms-btn">Next Lesson →</a>
-    <a class="ms-btn" href="../index.html">Back</a>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a id="nextBtn" class="ms-btn" href="./lesson-3.html">Next Lesson →</a>
+      <a class="ms-btn" href="../index.html">Back to Foundations</a>
+    </div>
+
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
+  </section>
+
+  <div class="ms-lessonGrid">
+
+    <section class="ms-card">
+      <h2>Hook</h2>
+      <p>Adding a zero doesn’t change digits — it changes <b>power</b>.</p>
+      <p>5 → 50 → 500 → 5,000</p>
+    </section>
+
+    <section class="ms-card">
+      <h2>The Hack</h2>
+      <div class="hack-box">
+        Moving left = ×10 (louder)<br>
+        Moving right = ÷10 (quieter)
+      </div>
+    </section>
+
+    <!-- 🎮 PLAY MODE -->
+    <section class="ms-card">
+      <h2>🎮 Play Mode — Volume Knob</h2>
+
+      <p>Turn the volume knob and watch the number scale.</p>
+
+      <input
+        id="volume"
+        type="range"
+        min="-3"
+        max="3"
+        step="1"
+        value="0"
+        style="width:100%;margin:12px 0;"
+      />
+
+      <div class="big-num" id="numDisplay">5</div>
+
+      <div class="hack-box" id="explainBox">
+        Base number: 5<br>
+        Multiplier: ×1
+      </div>
+
+      <p style="margin-top:12px;">
+        Each step = one place value shift.
+      </p>
+    </section>
+
+    <section class="ms-card">
+      <h2>Practice</h2>
+      <ol>
+        <li>What happens when you move right twice?</li>
+        <li>Why is 500 ten times louder than 50?</li>
+        <li>Explain why 0.5 is quieter than 5.</li>
+      </ol>
+    </section>
+
+    <section class="ms-card">
+      <h2>Exit Check</h2>
+      <p>Describe place value without saying “zero”.</p>
+    </section>
+
   </div>
-  <span class="ms-chip" id="statusChip">Status: Not completed</span>
-</section>
 
-<div class="ms-lessonGrid">
-<section class="ms-card">
-<h2>Hook</h2>
-<p>Why does 300 feel way bigger than 30, even though it’s the same digits?</p>
-</section>
-
-<section class="ms-card">
-<h2>The Hack</h2>
-<p><b>Place value is a volume knob.</b></p>
-<ul>
-<li>Move left → ×10 louder</li>
-<li>Move right → ÷10 quieter</li>
-</ul>
-</section>
-
-<section class="ms-card">
-<h2>Practice</h2>
-<ol>
-<li>Which is louder: 4 or 40?</li>
-<li>What happens to 7 when it moves two places left?</li>
-<li>Explain 600 vs 60 without saying the digits.</li>
-</ol>
-</section>
-
-<section class="ms-card">
-<h2>Exit Check</h2>
-<p>If 5 becomes 500, what happened to the volume?</p>
-</section>
-</div>
-
-<footer class="ms-footer">© MindStrong Universe</footer>
+  <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
 <script>
-const LESSON_NUM=2,TOTAL=6,KEY="ms_m1_done";
-localStorage.setItem("ms_last_lesson_url",location.pathname);
-const nextBtn=document.getElementById("nextBtn");
-nextBtn.href="./lesson-3.html";
-const btn=document.getElementById("completeBtn"),chip=document.getElementById("statusChip");
-function get(){return new Set(JSON.parse(localStorage.getItem(KEY)||"[]"))}
-function save(s){localStorage.setItem(KEY,JSON.stringify([...s]))}
-function render(){const s=get();chip.textContent=s.has(LESSON_NUM)?"Status: Completed ✓":"Status: Not completed";
-btn.classList.toggle("ms-glowDone",s.has(LESSON_NUM));}
-btn.onclick=()=>{const s=get();s.add(LESSON_NUM);save(s);render()};
-render();
-</script>
-</body>
-</html>
+  /* ===== Progress Tracking ===== */
+  const LESSON_NUM = 2;
+  const TOTAL = 6;
+  const KEY = "ms_m1_done";
 
-  <script src="../../lesson-vibe.js"></script>
+  localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+
+  function getArr(){
+    try{ return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+    catch{ return []; }
+  }
+
+  function markDone(n){
+    const arr = getArr();
+    if (!arr.includes(n)) {
+      arr.push(n);
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    }
+  }
+
+  const completeBtn = document.getElementById("completeBtn");
+  const statusChip = document.getElementById("statusChip");
+
+  function renderStatus(){
+    const done = getArr().includes(LESSON_NUM);
+    statusChip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    completeBtn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    completeBtn.classList.toggle("ms-glowDone", done);
+  }
+
+  completeBtn.addEventListener("click", () => {
+    markDone(LESSON_NUM);
+    renderStatus();
+  });
+
+  renderStatus();
+
+  /* ===== Volume Knob Game ===== */
+  const base = 5;
+  const slider = document.getElementById("volume");
+  const numDisplay = document.getElementById("numDisplay");
+  const explainBox = document.getElementById("explainBox");
+
+  function update(){
+    const shift = Number(slider.value);
+    const value = base * Math.pow(10, shift);
+
+    numDisplay.textContent = value;
+    explainBox.innerHTML = `
+      Base number: 5<br>
+      Multiplier: ×10<sup>${shift}</sup>
+    `;
+  }
+
+  slider.addEventListener("input", update);
+  update();
+</script>
+
 </body>
 </html>
