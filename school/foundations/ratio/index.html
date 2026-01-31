@@ -100,35 +100,45 @@
     </iframe>
   </section>
 
-  <!-- PRACTICE -->
-  <section class="lesson-card">
-    <h2>✏️ Practice</h2>
-    <ol>
-      <li>Write two equivalent ratios for 3 : 5.</li>
-      <li>If 4 : 6 becomes 8 : ?, what is the missing number?</li>
-      <li>Explain why 2 : 4 and 1 : 2 describe the same relationship.</li>
-    </ol>
-  </section>
+ 
+  <!-- PRACTICE (RETENTION MODE) -->
+<section class="lesson-card">
+  <h2>✏️ Practice — Balance the Ratio</h2>
 
-  <!-- BOSS FIGHT -->
-  <section class="lesson-card">
-    <h2>⚔️ Boss Fight</h2>
+  <p>
+    Complete the equivalent ratio.
+    Both sides must change the <strong>same way</strong>.
+  </p>
 
-    <p>
-      The ratio of red to blue tiles is <strong>2 : 3</strong>.<br>
-      If there are <strong>10 red tiles</strong>, how many blue tiles are there?
-    </p>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <span><strong>3 : 5</strong> → <strong>6 :</strong></span>
+    <input id="practiceInput" type="number" class="ms-input" style="width:80px;">
+    <button class="ms-btn" onclick="checkPractice()">Check</button>
+  </div>
 
-    <button class="ms-btn primary"
-      onclick="document.getElementById('bossAnswer').style.display='block'">
-      Reveal Answer
-    </button>
+  <div id="practiceFeedback" class="ms-subtle" style="margin-top:12px;"></div>
+</section>
 
-    <div id="bossAnswer" class="reveal">
-      ✔️ <strong>15 blue tiles</strong><br>
-      (2 → 10 is ×5, so 3 × 5 = 15)
-    </div>
-  </section>
+
+ <!-- BOSS FIGHT (COMPETITIVE MODE) -->
+<section class="lesson-card">
+  <h2>⚔️ Boss Fight — Ratio Duel</h2>
+
+  <p>
+    You have <strong>30 seconds</strong> to defeat the Ratio Boss.
+    Get <strong>3 correct</strong> to win.
+  </p>
+
+  <div id="bossPrompt" style="font-weight:700;margin:12px 0;"></div>
+
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+    <input id="bossInput" type="number" class="ms-input" style="width:90px;">
+    <button class="ms-btn primary" onclick="submitBoss()">Attack</button>
+  </div>
+
+  <div id="bossStatus" style="margin-top:12px;font-weight:600;"></div>
+</section>
+
 
   <!-- EXIT -->
   <section class="lesson-card">
@@ -175,6 +185,77 @@
   btn.addEventListener("click", ()=>{ markDone(); render(); });
   render();
 </script>
+  
+  <script>
+  function checkPractice(){
+    const input = document.getElementById("practiceInput");
+    const feedback = document.getElementById("practiceFeedback");
+    const val = Number(input.value);
+
+    if(val === 10){
+      feedback.innerHTML = "✅ Correct! Both sides doubled (×2).";
+      feedback.style.color = "var(--good)";
+    } else {
+      feedback.innerHTML = "❌ Not balanced. Try again — what happened to 3?";
+      feedback.style.color = "var(--bad)";
+    }
+  }
+</script>
+
+  <script>
+  let bossScore = 0;
+  let bossTime = 30;
+  let currentAnswer = null;
+
+  function newBossQuestion(){
+    const a = Math.floor(Math.random()*4)+2;
+    const b = Math.floor(Math.random()*5)+3;
+    const k = Math.floor(Math.random()*4)+2;
+
+    document.getElementById("bossPrompt").textContent =
+      `${a} : ${b} → ${a*k} : ?`;
+
+    currentAnswer = b * k;
+  }
+
+  function submitBoss(){
+    const input = Number(document.getElementById("bossInput").value);
+    const status = document.getElementById("bossStatus");
+
+    if(input === currentAnswer){
+      bossScore++;
+      status.textContent = `🔥 Hit! Score: ${bossScore}/3`;
+    } else {
+      status.textContent = "❌ Miss! Stay balanced.";
+    }
+
+    document.getElementById("bossInput").value = "";
+
+    if(bossScore >= 3){
+      status.textContent = "🏆 BOSS DEFEATED!";
+      return;
+    }
+
+    newBossQuestion();
+  }
+
+  function startBossTimer(){
+    const status = document.getElementById("bossStatus");
+    const timer = setInterval(()=>{
+      bossTime--;
+      if(bossTime <= 0){
+        clearInterval(timer);
+        status.textContent =
+          bossScore >= 3 ? "🏆 Victory!" : "💀 Time’s up. Try again.";
+      }
+    },1000);
+  }
+
+  newBossQuestion();
+  startBossTimer();
+</script>
+
+
 
 </body>
 </html>
