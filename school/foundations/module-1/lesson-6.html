@@ -1,41 +1,72 @@
-<!-- =========================
-FILE: lesson-6.html
-PATH: /school/foundations/module-1/lesson-6.html
-========================= -->
-<!DOCTYPE html><html><head>
-<meta charset="UTF-8"><title>Lesson 6</title>
-<link rel="stylesheet" href="../../../theme.css">
-<link rel="icon" href="../../../mindstronguniverse.svg">
-</head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Foundations • Lesson 6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="../../../theme.css" />
+<meta name="theme-color" content="#0b0f1a" />
+</head>
+
+<body>
+<header class="ms-top"><div class="ms-nav"><span>MindStrong Universe</span></div></header>
 
 <main class="ms-wrap">
+<section class="ms-hero">
 <h1 class="ms-h1">Lesson 6 — Estimation as a Superpower</h1>
+<button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+</section>
+
+<div class="ms-lessonGrid">
+
+<section class="ms-card">
+<h2>📌 What This Is & Why It Matters</h2>
+<p><strong>What this is:</strong> Learning to check if an answer makes sense.</p>
+<p><strong>Why it matters:</strong> Stops impossible answers before they cause problems.</p>
+</section>
+
+<section class="ms-card">
+<h2>Hook</h2>
+<p>Is 12 × 98 really close to 100?</p>
+</section>
 
 <section class="ms-card">
 <h2>The Hack</h2>
-<p>Estimation is a <b>smell test</b>. Bad answers stink.</p>
+<div class="hack-box">Round first. Multiply second.</div>
+</section>
+
+<section class="ms-card">
+<h2>🎮 Play Mode — Estimation Test</h2>
+
+<button onclick="check(1200)">12 × 98 ≈ 1200</button>
+<button onclick="check(120)">12 × 98 ≈ 120</button>
+
+<div class="hack-box" id="est"></div>
 </section>
 
 <section class="ms-card">
 <h2>Practice</h2>
-<ul>
-<li>Is 498 × 6 closer to 3,000 or 30,000?</li>
-<li>Does 12,400 ÷ 4 ≈ 3,000 make sense?</li>
-</ul>
+<ol>
+<li>Estimate 49 × 21.</li>
+<li>Estimate 602 ÷ 3.</li>
+</ol>
 </section>
 
 <section class="ms-card">
 <h2>Exit Check</h2>
-<p>Why is estimation more powerful than exact math?</p>
+<p>Explain how estimation protects you from bad math.</p>
 </section>
 
-<a href="../index.html" class="ms-btn primary">Back to Foundations →</a>
+</div>
 </main>
 
 <script>
-const K="ms_m1_done",L=6;
-localStorage.setItem("ms_last_lesson_url",location.pathname);
-const s=new Set(JSON.parse(localStorage.getItem(K)||"[]"));s.add(L);
-localStorage.setItem(K,JSON.stringify([...s]));
+const LESSON_NUM=6,KEY="ms_m1_done";
+const btn=document.getElementById("completeBtn");
+btn.onclick=()=>{const a=JSON.parse(localStorage.getItem(KEY)||"[]");if(!a.includes(LESSON_NUM)){a.push(LESSON_NUM);localStorage.setItem(KEY,JSON.stringify(a))};btn.textContent="Completed ✓"}
+
+const est=document.getElementById("est");
+function check(n){est.textContent=n>1000?"Reasonable ✓":"Too small ✗"}
 </script>
-</body></html>
+</body>
+</html>
