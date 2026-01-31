@@ -10,18 +10,9 @@
   <meta name="theme-color" content="#0b0f1a" />
 
   <style>
-    details.ms-card{
-      margin-bottom:24px;
-    }
-
-    summary{
-      list-style:none;
-      cursor:pointer;
-    }
-
-    summary::-webkit-details-marker{
-      display:none;
-    }
+    details.ms-card{ margin-bottom:24px; }
+    summary{ list-style:none; cursor:pointer; }
+    summary::-webkit-details-marker{ display:none; }
 
     .summary-head{
       display:flex;
@@ -29,21 +20,13 @@
       justify-content:space-between;
       gap:12px;
     }
-
     .summary-left{
       display:flex;
       align-items:center;
       gap:10px;
     }
-
-    .chev{
-      transition:transform .25s ease;
-      font-size:14px;
-    }
-
-    details[open] .chev{
-      transform:rotate(90deg);
-    }
+    .chev{ transition:transform .25s ease; }
+    details[open] .chev{ transform:rotate(90deg); }
 
     .ms-item{
       display:flex;
@@ -53,14 +36,11 @@
       padding:12px 0;
       border-bottom:1px solid var(--stroke);
     }
-
     .ms-row{
       display:flex;
       align-items:center;
       gap:10px;
-      min-width:0;
     }
-
     .ms-badge{
       width:26px;height:26px;
       border-radius:8px;
@@ -72,7 +52,6 @@
       font-weight:800;
       font-size:12px;
     }
-
     .ms-check{
       border-color:rgba(34,211,238,.35);
       background:rgba(34,211,238,.12);
@@ -86,7 +65,6 @@
       border-radius:12px;
       background:rgba(255,255,255,.03);
     }
-
     .ms-bar{
       height:10px;
       border-radius:999px;
@@ -94,7 +72,6 @@
       overflow:hidden;
       margin-top:10px;
     }
-
     .ms-bar div{
       height:100%;
       width:0%;
@@ -102,7 +79,6 @@
       border-radius:999px;
       transition:width .4s ease;
     }
-
     .ms-subtle{
       color:var(--muted);
       font-size:12px;
@@ -134,7 +110,7 @@
     <p class="ms-sub">Fix number sense first. Everything else stacks cleanly after.</p>
   </section>
 
-  <!-- MODULE 1 (COLLAPSIBLE) -->
+  <!-- MODULE 1 -->
   <details class="ms-card" id="module1">
     <summary>
       <div class="summary-head">
@@ -155,19 +131,77 @@
     </div>
 
     <div class="ms-list">
-      <!-- Lessons 1–6 -->
-      ${[1,2,3,4,5,6].map(n => `
+
       <div class="ms-item">
         <div class="ms-row">
-          <span class="ms-badge" id="b${n}">${n}</span>
-          <div class="ms-title">Lesson ${n}</div>
+          <span class="ms-badge" id="b1">1</span>
+          <div>
+            <div class="ms-title">Numbers Are Stories</div>
+            <div class="ms-subtle">Magnitude + meaning</div>
+          </div>
         </div>
-        <a class="ms-btn" href="./module-1/lesson-${n}.html">Open</a>
-      </div>`).join('')}
+        <a class="ms-btn" href="./module-1/lesson-1.html">Open</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="b2">2</span>
+          <div>
+            <div class="ms-title">Place Value Is a Volume Knob</div>
+            <div class="ms-subtle">×10 louder, ÷10 quieter</div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./module-1/lesson-2.html">Open</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="b3">3</span>
+          <div>
+            <div class="ms-title">Expanded Form</div>
+            <div class="ms-subtle">Number LEGO</div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./module-1/lesson-3.html">Open</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="b4">4</span>
+          <div>
+            <div class="ms-title">Compare Without Guessing</div>
+            <div class="ms-subtle">Left-to-right logic</div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./module-1/lesson-4.html">Open</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="b5">5</span>
+          <div>
+            <div class="ms-title">Rounding That Makes Sense</div>
+            <div class="ms-subtle">Landmarks</div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./module-1/lesson-5.html">Open</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="b6">6</span>
+          <div>
+            <div class="ms-title">Estimation as a Superpower</div>
+            <div class="ms-subtle">Smell test</div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./module-1/lesson-6.html">Open</a>
+      </div>
+
     </div>
   </details>
 
-  <!-- PRE-ALGEBRA (COLLAPSIBLE) -->
+  <!-- PRE-ALGEBRA -->
   <details class="ms-card" id="prealg">
     <summary>
       <div class="summary-head">
@@ -190,75 +224,19 @@
       <button class="ms-btn" id="ratiosBtn" disabled>Locked</button>
     </div>
   </details>
-  <!-- PRE-ALGEBRA (COLLAPSIBLE) -->
-<details class="ms-card" id="prealg">
-  <summary>
-    <div class="summary-head">
-      <div class="summary-left">
-        <span class="ms-badge" id="ratiosBadge">🔒</span>
-        <div>
-          <h2>Pre-Algebra Mastery</h2>
-          <div class="ms-subtle">Unlocks after Module 1</div>
-        </div>
-      </div>
-      <span class="chev">▶</span>
-    </div>
-  </summary>
-
-  <div class="ms-item">
-    <div class="ms-row">
-      <span class="ms-badge">→</span>
-      <div class="ms-title">Ratios</div>
-    </div>
-    <button class="ms-btn" id="ratiosBtn" disabled>Locked</button>
-  </div>
-</details>
-
 
   <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
 <script>
   try {
-    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
     const total = 6;
+    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
 
     document.getElementById("m1Count").textContent = done.length;
     document.getElementById("m1Bar").style.width =
       (done.length / total * 100) + "%";
 
-    done.forEach(n => {
-      const b = document.getElementById("b" + n);
-      if (b) {
-        b.textContent = "✓";
-        b.classList.add("ms-check");
-      }
-    });
-
-    // Auto-open logic
-    if (done.length < total) {
-      document.getElementById("module1").open = true;
-    } else {
-      document.getElementById("prealg").open = true;
-      document.getElementById("ratiosBadge").textContent = "→";
-      document.getElementById("ratiosBtn").outerHTML =
-        '<a class="ms-btn" href="./ratio/">Start →</a>';
-    }
-  } catch(e){}
-</script>
-
-  <script>
-  try {
-    const total = 6;
-    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
-
-    // Update progress bar
-    const count = done.length;
-    document.getElementById("m1Count").textContent = count;
-    document.getElementById("m1Bar").style.width =
-      (count / total * 100) + "%";
-
-    // Check off lessons
     done.forEach(n => {
       const badge = document.getElementById("b" + n);
       if (badge) {
@@ -267,8 +245,7 @@
       }
     });
 
-    // Auto-open logic
-    if (count < total) {
+    if (done.length < total) {
       document.getElementById("module1").open = true;
     } else {
       document.getElementById("prealg").open = true;
@@ -280,7 +257,6 @@
     console.warn("Progress logic skipped", e);
   }
 </script>
-
 
 </body>
 </html>
