@@ -1,364 +1,120 @@
-<!-- =========================
-FILE: lesson-4.html
-PATH: /school/foundations/module-1/lesson-4.html
-========================= -->
-<!DOCTYPE html><html><head>
-<meta charset="UTF-8"> <title>Foundations • Lesson 4</title>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="stylesheet" href="../../../theme.css">
-<link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg">
-<meta name="theme-color" content="#0b0f1a">
-</head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Foundations • Lesson 4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="../../../theme.css" />
+<meta name="theme-color" content="#0b0f1a" />
+
+<style>
+.ms-lessonGrid{display:grid;gap:14px;margin-top:14px}
+.hack-box{background:rgba(34,211,238,.08);border-left:4px solid rgba(34,211,238,.6);padding:16px;border-radius:12px;font-weight:600}
+.big{font-size:28px;font-weight:800;text-align:center}
+.ms-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ms-chip{display:inline-flex;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
+.ms-glowDone{border-color:rgba(34,211,238,.35)!important;box-shadow:0 0 0 3px rgba(34,211,238,.10),0 0 22px rgba(34,211,238,.18)}
+</style>
+</head>
+
+<body>
+<header class="ms-top">
+  <div class="ms-nav">
+    <span>MindStrong Universe</span>
+  </div>
+</header>
 
 <main class="ms-wrap">
-<h1 class="ms-h1">Lesson 4 — Compare Without Guessing</h1>
+<section class="ms-hero">
+  <span class="ms-kicker">🧱 Foundations • Module 1</span>
+  <h1 class="ms-h1">Lesson 4 — Compare Without Guessing</h1>
+  <p class="ms-sub">Bigger numbers don’t require guessing.</p>
 
-<section class="ms-card">
-<h2>The Hack</h2>
-<p><b>Compare from the left.</b> First different digit wins.</p>
+  <div class="ms-actions">
+    <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+    <a class="ms-btn" href="./lesson-5.html">Next Lesson →</a>
+    <a class="ms-btn" href="../index.html">Back to Foundations</a>
+  </div>
+
+  <div style="margin-top:10px;">
+    <span class="ms-chip" id="statusChip">Status: Not completed</span>
+  </div>
 </section>
 
+<div class="ms-lessonGrid">
+
 <section class="ms-card">
-<h2>Practice</h2>
-<p>Which is larger?</p>
+<h2>📌 What This Is & Why It Matters</h2>
+<p><strong>What this is:</strong><br>Learning how to compare numbers logically instead of guessing.</p>
+<p><strong>Why it matters:</strong></p>
 <ul>
-<li>6,405 or 6,450</li>
-<li>9,102 or 8,999</li>
+  <li>Prevents careless comparison mistakes</li>
+  <li>Builds number sense</li>
+  <li>Essential for inequalities and algebra</li>
 </ul>
 </section>
 
 <section class="ms-card">
+<h2>Hook</h2>
+<p>Is 4,502 bigger than 4,499? Why?</p>
+</section>
+
+<section class="ms-card">
+<h2>The Hack</h2>
+<div class="hack-box">
+Compare digits from left to right.<br>
+The first difference decides.
+</div>
+</section>
+
+<section class="ms-card">
+<h2>🎮 Play Mode — Compare Engine</h2>
+
+<input id="a" type="number" value="456">
+<input id="b" type="number" value="462">
+
+<div class="big" id="cmp"></div>
+</section>
+
+<section class="ms-card">
+<h2>Practice</h2>
+<ol>
+<li>Which is larger: 7,201 or 7,102?</li>
+<li>Explain why 900 &gt; 875.</li>
+</ol>
+</section>
+
+<section class="ms-card">
 <h2>Exit Check</h2>
-<p>Why don’t you start from the right?</p>
+<p>Describe how to compare numbers without using a calculator.</p>
 </section>
 
-<a href="./lesson-5.html" class="ms-btn primary">Next Lesson →</a>
-  <section class="ms-card ms-sim" id="sim">
-  <div class="ms-simTop">
-    <div>
-      <div class="ms-kicker">🧪 Survival Simulation</div>
-      <h2 style="margin:6px 0 0;">Skill Run</h2>
-      <p class="ms-muted" style="margin:6px 0 0;">
-        Stay alive, build streaks, beat the boss. Misses cost health.
-      </p>
-    </div>
-
-    <div class="ms-simHud" aria-label="HUD">
-      <div class="ms-hudItem">
-        <div class="ms-muted">HP</div>
-        <div class="ms-bar"><div id="hpBar" class="ms-barFill"></div></div>
-        <div class="ms-hudNum" id="hpNum">100</div>
-      </div>
-      <div class="ms-hudItem">
-        <div class="ms-muted">Streak</div>
-        <div class="ms-hudNum" id="streakNum">0</div>
-      </div>
-      <div class="ms-hudItem">
-        <div class="ms-muted">XP</div>
-        <div class="ms-hudNum" id="xpNum">0</div>
-      </div>
-      <div class="ms-hudItem">
-        <div class="ms-muted">Threat</div>
-        <div class="ms-hudNum" id="threatNum">1</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ms-actions" style="margin-top:10px;">
-    <button class="ms-btn primary" id="startRun">Start Run</button>
-    <button class="ms-btn" id="toggleTimer">Timer: OFF</button>
-    <button class="ms-btn" id="healBtn" disabled>Use Med Kit (+25 HP)</button>
-  </div>
-
-  <div class="ms-hr"></div>
-
-  <div class="ms-simGrid">
-    <section class="ms-mini">
-      <h3>Round</h3>
-      <p class="ms-muted" id="roundLabel">Press Start Run.</p>
-    </section>
-
-    <section class="ms-mini">
-      <h3>Challenge</h3>
-      <p id="qText" style="margin:0 0 10px;">—</p>
-
-      <div class="ms-answerRow">
-        <input id="qInput" class="ms-input" placeholder="Type answer…" inputmode="decimal" />
-        <button id="submitBtn" class="ms-btn primary" disabled>Submit</button>
-      </div>
-
-      <div class="ms-muted" style="margin-top:10px;" id="feedback">—</div>
-    </section>
-
-    <section class="ms-mini">
-      <h3>Boss Fight</h3>
-      <p class="ms-muted">Exit Check becomes the boss. Win to earn the badge.</p>
-      <button id="bossBtn" class="ms-btn" disabled>Fight Boss</button>
-      <div class="ms-muted" style="margin-top:10px;" id="bossFeed">—</div>
-    </section>
-  </div>
-</section>
+</div>
+<footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
 <script>
-const K="ms_m1_done",L=4;
-localStorage.setItem("ms_last_lesson_url",location.pathname);
-const s=new Set(JSON.parse(localStorage.getItem(K)||"[]"));s.add(L);
-localStorage.setItem(K,JSON.stringify([...s]));
+const LESSON_NUM=4,KEY="ms_m1_done";
+const btn=document.getElementById("completeBtn");
+const chip=document.getElementById("statusChip");
+
+function getArr(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch{return[]}}
+function mark(){const a=getArr();if(!a.includes(LESSON_NUM)){a.push(LESSON_NUM);localStorage.setItem(KEY,JSON.stringify(a))}}
+
+btn.onclick=()=>{mark();render()}
+function render(){
+const done=getArr().includes(LESSON_NUM);
+chip.textContent=done?"Status: Completed ✓":"Status: Not completed";
+btn.textContent=done?"Completed ✓":"Mark Complete ✓";
+btn.classList.toggle("ms-glowDone",done)
+}
+render()
+
+const a=document.getElementById("a"),b=document.getElementById("b"),cmp=document.getElementById("cmp");
+function compare(){
+cmp.textContent = a.value>b.value?"First is larger":a.value<b.value?"Second is larger":"Equal";
+}
+a.oninput=b.oninput=compare;compare();
 </script>
-
-  <script>
-(() => {
-  // ====== REQUIRED: set lesson number per file ======
-  const LESSON_NUM = window.__LESSON_NUM__ || 2; // change per lesson file
-  const TOTAL = 6;
-  const KEY_DONE = "ms_m1_done";
-
-  // Track last visited lesson
-  localStorage.setItem("ms_last_lesson_url", location.pathname);
-
-  // ====== Survival Sim State ======
-  const state = {
-    hp: 100,
-    streak: 0,
-    xp: 0,
-    threat: 1,
-    round: 0,
-    timerOn: false,
-    t0: 0,
-    medkits: 1,
-    running: false,
-    bossUnlocked: false,
-  };
-
-  // ====== DOM ======
-  const hpBar = document.getElementById("hpBar");
-  const hpNum = document.getElementById("hpNum");
-  const streakNum = document.getElementById("streakNum");
-  const xpNum = document.getElementById("xpNum");
-  const threatNum = document.getElementById("threatNum");
-  const roundLabel = document.getElementById("roundLabel");
-  const qText = document.getElementById("qText");
-  const qInput = document.getElementById("qInput");
-  const feedback = document.getElementById("feedback");
-  const startRun = document.getElementById("startRun");
-  const submitBtn = document.getElementById("submitBtn");
-  const toggleTimer = document.getElementById("toggleTimer");
-  const healBtn = document.getElementById("healBtn");
-  const bossBtn = document.getElementById("bossBtn");
-  const bossFeed = document.getElementById("bossFeed");
-
-  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-  function render(){
-    hpNum.textContent = String(state.hp);
-    hpBar.style.width = `${state.hp}%`;
-    streakNum.textContent = String(state.streak);
-    xpNum.textContent = String(state.xp);
-    threatNum.textContent = String(state.threat);
-    healBtn.disabled = !(state.medkits > 0 && state.running && state.hp < 100);
-    bossBtn.disabled = !state.bossUnlocked;
-    submitBtn.disabled = !state.running;
-  }
-
-  // ====== Question bank per lesson ======
-  // You can expand these later. This is the "competitive drill" engine.
-  function makeBank(lesson){
-    // Each item: { q, a } where a is a string compare (trimmed)
-    if (lesson === 2) {
-      return [
-        { q: "Which is louder? 4 or 40. Type: 4 OR 40", a: "40" },
-        { q: "7 moved two places left becomes…", a: "700" },
-        { q: "60 is how many times bigger than 6?", a: "10" },
-        { q: "500 is 5 moved how many places left?", a: "2" }
-      ];
-    }
-    if (lesson === 3) {
-      return [
-        { q: "Write 3,482 in expanded form (use +).", a: "3000+400+80+2" },
-        { q: "Write 90,105 in expanded form (use +).", a: "90000+100+5" },
-        { q: "Expanded form: 700+30+9 equals…", a: "739" },
-        { q: "Expanded form: 6000+200+10+4 equals…", a: "6214" }
-      ];
-    }
-    if (lesson === 4) {
-      return [
-        { q: "Which is greater? 0.6 or 0.58 (type the greater number)", a: "0.6" },
-        { q: "Which is greater? 4,090 or 4,900 (type the greater number)", a: "4900" },
-        { q: "Order from least to greatest: 3.2, 3.02 (type as: 3.02,3.2)", a: "3.02,3.2" },
-        { q: "Is 7,501 > 7,510? Type YES or NO", a: "NO" }
-      ];
-    }
-    if (lesson === 5) {
-      return [
-        { q: "Round 347 to the nearest ten.", a: "350" },
-        { q: "Round 2,651 to the nearest hundred.", a: "2700" },
-        { q: "Round 0.84 to the nearest tenth.", a: "0.8" },
-        { q: "Round 9,949 to the nearest thousand.", a: "10000" }
-      ];
-    }
-    // lesson 6
-    return [
-      { q: "498 × 6 is closer to 3,000 or 30,000? Type 3000 or 30000", a: "3000" },
-      { q: "12,400 ÷ 4 is about… (closest): 3,000 or 30,000? Type 3000 or 30000", a: "3000" },
-      { q: "Estimate 199 + 403 (nearest hundred) → type the estimate", a: "600" },
-      { q: "Estimate 51 × 19 (nearest ten) → type the estimate", a: "1000" }
-    ];
-  }
-
-  const bank = makeBank(LESSON_NUM);
-  let idx = 0;
-
-  function normalize(s){
-    return String(s).trim().replace(/\s+/g,"").toUpperCase();
-  }
-
-  function currentAnswer(){
-    return normalize(bank[idx].a);
-  }
-
-  function ask(){
-    state.round += 1;
-    const q = bank[idx].q;
-    roundLabel.textContent = `Round ${state.round} • Threat ${state.threat}${state.timerOn ? " • ⏱️" : ""}`;
-    qText.textContent = q;
-    qInput.value = "";
-    qInput.focus();
-    feedback.textContent = "—";
-    render();
-  }
-
-  function damage(){
-    // Threat scales damage. Streak gives shield.
-    const base = 12 + (state.threat * 3);
-    const shield = state.streak >= 3 ? 6 : 0;
-    state.hp = clamp(state.hp - (base - shield), 0, 100);
-  }
-
-  function reward(){
-    const speedBonus = state.timerOn ? 5 : 0;
-    const streakBonus = state.streak >= 3 ? 10 : 0;
-    state.xp += 20 + speedBonus + streakBonus;
-    if (state.streak > 0 && state.streak % 3 === 0) {
-      // Every 3 streak: small heal + threat bump
-      state.hp = clamp(state.hp + 6, 0, 100);
-      state.threat = clamp(state.threat + 1, 1, 5);
-    }
-  }
-
-  function lose(){
-    state.running = false;
-    submitBtn.disabled = true;
-    bossBtn.disabled = true;
-    feedback.innerHTML = `<span class="ms-bad">You got wiped.</span> Use Med Kit and restart the run.`;
-    render();
-  }
-
-  function win(){
-    // Unlock boss after a full bank pass
-    state.bossUnlocked = true;
-    feedback.innerHTML = `<span class="ms-good">Run cleared.</span> Boss is unlocked.`;
-    bossBtn.disabled = false;
-    render();
-  }
-
-  function check(){
-    const user = normalize(qInput.value);
-    if (!user) return;
-
-    const correct = user === currentAnswer();
-    if (correct){
-      state.streak += 1;
-      reward();
-      feedback.innerHTML = `<span class="ms-good">Correct.</span> Streak +${state.streak}.`;
-      idx += 1;
-
-      if (idx >= bank.length){
-        win();
-      } else {
-        // Slight ramp if perfect pace
-        if (state.streak % 2 === 0) state.threat = clamp(state.threat + 1, 1, 5);
-        ask();
-      }
-    } else {
-      state.streak = 0;
-      damage();
-      feedback.innerHTML = `<span class="ms-bad">Wrong.</span> HP down. Try again.`;
-      if (state.hp <= 0) lose();
-      render();
-    }
-  }
-
-  // ====== Boss fight = Exit Check ======
-  function boss(){
-    // Boss is simple: one reflection question + a numeric gate
-    const promptA = "Type ONE sentence: why the hack works (keep it short).";
-    const promptB = "Final gate: type 10 (because place value moves are ×10).";
-    bossFeed.textContent = promptA;
-
-    const ans1 = window.prompt(promptA) || "";
-    const ans2 = window.prompt(promptB) || "";
-    if (normalize(ans2) === "10" && ans1.trim().length >= 10){
-      bossFeed.innerHTML = `<span class="ms-good">Boss defeated.</span> Lesson completed + badge earned.`;
-      markLessonComplete();
-    } else {
-      bossFeed.innerHTML = `<span class="ms-bad">Boss survived.</span> Try again.`;
-    }
-  }
-
-  // ====== Completion tracking ======
-  function getDone(){ 
-    try { 
-      const raw = localStorage.getItem(KEY_DONE);
-      const arr = raw ? JSON.parse(raw) : [];
-      return new Set(Array.isArray(arr) ? arr : []);
-    } catch { return new Set(); }
-  }
-  function setDone(set){
-    localStorage.setItem(KEY_DONE, JSON.stringify([...set]));
-  }
-  function markLessonComplete(){
-    const s = getDone();
-    s.add(LESSON_NUM);
-    setDone(s);
-  }
-
-  // ====== Wire up ======
-  startRun.addEventListener("click", () => {
-    state.hp = 100;
-    state.streak = 0;
-    state.xp = 0;
-    state.threat = 1;
-    state.round = 0;
-    state.running = true;
-    state.bossUnlocked = false;
-    idx = 0;
-    ask();
-    submitBtn.disabled = false;
-    render();
-  });
-
-  submitBtn.addEventListener("click", check);
-  qInput.addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
-
-  toggleTimer.addEventListener("click", () => {
-    state.timerOn = !state.timerOn;
-    toggleTimer.textContent = `Timer: ${state.timerOn ? "ON" : "OFF"}`;
-    render();
-  });
-
-  healBtn.addEventListener("click", () => {
-    if (state.medkits <= 0) return;
-    state.medkits -= 1;
-    state.hp = clamp(state.hp + 25, 0, 100);
-    feedback.innerHTML = `<span class="ms-good">Med Kit used.</span> +25 HP.`;
-    render();
-  });
-
-  bossBtn.addEventListener("click", boss);
-
-  // Initial
-  render();
-})();
-</script>
-</body></html>
+</body>
+</html>
