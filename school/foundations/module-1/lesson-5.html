@@ -1,41 +1,78 @@
-<!-- =========================
-FILE: lesson-5.html
-PATH: /school/foundations/module-1/lesson-5.html
-========================= -->
-<!DOCTYPE html><html><head>
-<meta charset="UTF-8"><title>Lesson 5</title>
-<link rel="stylesheet" href="../../../theme.css">
-<link rel="icon" href="../../../mindstronguniverse.svg">
-</head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Foundations • Lesson 5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="../../../theme.css" />
+<meta name="theme-color" content="#0b0f1a" />
+
+<style>
+.ms-lessonGrid{display:grid;gap:14px;margin-top:14px}
+.hack-box{background:rgba(34,211,238,.08);border-left:4px solid rgba(34,211,238,.6);padding:16px;border-radius:12px;font-weight:600}
+.big{font-size:28px;font-weight:800;text-align:center}
+</style>
+</head>
+
+<body>
+<header class="ms-top"><div class="ms-nav"><span>MindStrong Universe</span></div></header>
 
 <main class="ms-wrap">
+<section class="ms-hero">
 <h1 class="ms-h1">Lesson 5 — Rounding That Makes Sense</h1>
+<button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+</section>
+
+<div class="ms-lessonGrid">
+
+<section class="ms-card">
+<h2>📌 What This Is & Why It Matters</h2>
+<p><strong>What this is:</strong> Learning how to round numbers using landmarks.</p>
+<p><strong>Why it matters:</strong> Helps estimate quickly and avoid bad answers.</p>
+</section>
+
+<section class="ms-card">
+<h2>Hook</h2>
+<p>Is 478 closer to 400 or 500?</p>
+</section>
 
 <section class="ms-card">
 <h2>The Hack</h2>
-<p>Rounding is about <b>distance</b>, not rules.</p>
+<div class="hack-box">Find the nearest landmark (0, 100, 1,000).</div>
+</section>
+
+<section class="ms-card">
+<h2>🎮 Play Mode — Rounding Radar</h2>
+
+<input type="range" id="round" min="0" max="1000" value="378" style="width:100%">
+
+<div class="big" id="roundOut"></div>
 </section>
 
 <section class="ms-card">
 <h2>Practice</h2>
-<ul>
-<li>Round 4,612 to the nearest thousand</li>
-<li>Is 3,499 closer to 3,000 or 4,000?</li>
-</ul>
+<ol>
+<li>Round 842 to the nearest hundred.</li>
+<li>Round 1,499 to the nearest thousand.</li>
+</ol>
 </section>
 
 <section class="ms-card">
 <h2>Exit Check</h2>
-<p>Why is 5 the tipping point?</p>
+<p>Explain rounding without saying “five or more”.</p>
 </section>
 
-<a href="./lesson-6.html" class="ms-btn primary">Next Lesson →</a>
+</div>
 </main>
 
 <script>
-const K="ms_m1_done",L=5;
-localStorage.setItem("ms_last_lesson_url",location.pathname);
-const s=new Set(JSON.parse(localStorage.getItem(K)||"[]"));s.add(L);
-localStorage.setItem(K,JSON.stringify([...s]));
+const LESSON_NUM=5,KEY="ms_m1_done";
+const btn=document.getElementById("completeBtn");
+btn.onclick=()=>{const a=JSON.parse(localStorage.getItem(KEY)||"[]");if(!a.includes(LESSON_NUM)){a.push(LESSON_NUM);localStorage.setItem(KEY,JSON.stringify(a))};btn.textContent="Completed ✓"}
+
+const r=document.getElementById("round"),o=document.getElementById("roundOut");
+function update(){const n=Number(r.value);o.innerHTML=`${n} → <b>${Math.round(n/100)*100}</b>`}
+r.oninput=update;update();
 </script>
-</body></html>
+</body>
+</html>
