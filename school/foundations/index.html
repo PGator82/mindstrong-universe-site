@@ -190,6 +190,30 @@
       <button class="ms-btn" id="ratiosBtn" disabled>Locked</button>
     </div>
   </details>
+  <!-- PRE-ALGEBRA (COLLAPSIBLE) -->
+<details class="ms-card" id="prealg">
+  <summary>
+    <div class="summary-head">
+      <div class="summary-left">
+        <span class="ms-badge" id="ratiosBadge">🔒</span>
+        <div>
+          <h2>Pre-Algebra Mastery</h2>
+          <div class="ms-subtle">Unlocks after Module 1</div>
+        </div>
+      </div>
+      <span class="chev">▶</span>
+    </div>
+  </summary>
+
+  <div class="ms-item">
+    <div class="ms-row">
+      <span class="ms-badge">→</span>
+      <div class="ms-title">Ratios</div>
+    </div>
+    <button class="ms-btn" id="ratiosBtn" disabled>Locked</button>
+  </div>
+</details>
+
 
   <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
@@ -222,6 +246,41 @@
     }
   } catch(e){}
 </script>
+
+  <script>
+  try {
+    const total = 6;
+    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+
+    // Update progress bar
+    const count = done.length;
+    document.getElementById("m1Count").textContent = count;
+    document.getElementById("m1Bar").style.width =
+      (count / total * 100) + "%";
+
+    // Check off lessons
+    done.forEach(n => {
+      const badge = document.getElementById("b" + n);
+      if (badge) {
+        badge.textContent = "✓";
+        badge.classList.add("ms-check");
+      }
+    });
+
+    // Auto-open logic
+    if (count < total) {
+      document.getElementById("module1").open = true;
+    } else {
+      document.getElementById("prealg").open = true;
+      document.getElementById("ratiosBadge").textContent = "→";
+      document.getElementById("ratiosBtn").outerHTML =
+        '<a class="ms-btn" href="./ratio/">Start →</a>';
+    }
+  } catch(e) {
+    console.warn("Progress logic skipped", e);
+  }
+</script>
+
 
 </body>
 </html>
