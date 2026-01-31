@@ -93,7 +93,6 @@
   <section class="lesson-card">
     <h2>🎧 Warm-Up</h2>
 
-    <!-- VIDEO: autoplay + muted hook -->
     <video
       class="lesson-video"
       autoplay
@@ -107,10 +106,8 @@
         src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
         type="video/mp4"
       />
-      Your browser does not support the video tag.
     </video>
 
-    <!-- IMAGE (desktop / fallback only) -->
     <img
       src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
       alt="Ratio visual"
@@ -175,6 +172,42 @@
     </div>
   </section>
 
+  <!-- ✅ 10-SECOND RECAP -->
+  <section class="lesson-card">
+    <h2>⏱️ 10-Second Ratio Recap</h2>
+
+    <video
+      class="lesson-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
+    >
+      <source
+        src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
+        type="video/mp4"
+      />
+    </video>
+
+    <div class="hack-box" style="margin-top:16px;">
+      <strong>Ratio Hacks (Never Fail)</strong><br><br>
+
+      1️⃣ Ratios are balances — both sides must change the same way.<br><br>
+      2️⃣ If one number goes ×k, the other must go ×k.<br><br>
+      3️⃣ To solve fast:
+      <br>• Identify the multiplier
+      <br>• Apply it to the other side
+    </div>
+
+    <p style="margin-top:12px;">
+      Example:<br>
+      2 : 3 → 8 : ?<br>
+      2 → 8 is ×4 → 3 × 4 = <strong>12</strong>
+    </p>
+  </section>
+
   <!-- NEXT -->
   <section class="lesson-card">
     <h2>➡️ What’s Next</h2>
@@ -194,28 +227,22 @@
   © MindStrong Universe • Pre-Algebra Mastery
 </footer>
 
-<!-- PROGRESS SAVE -->
 <script>
   try {
-    // Save lesson completion
     const KEY = "ms_pre_alg_done";
     const lessonId = "ratios-1";
 
-    const raw = localStorage.getItem(KEY);
-    const done = raw ? JSON.parse(raw) : [];
+    const done = JSON.parse(localStorage.getItem(KEY) || "[]");
     if (!done.includes(lessonId)) {
       done.push(lessonId);
       localStorage.setItem(KEY, JSON.stringify(done));
     }
 
-    // Save last lesson for Continue Learning
     localStorage.setItem(
       "ms_last_lesson_url",
       window.location.pathname
     );
-  } catch (e) {
-    console.warn("Progress save skipped", e);
-  }
+  } catch(e){}
 </script>
 
 </body>
