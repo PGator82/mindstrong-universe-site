@@ -1,78 +1,203 @@
+<!-- =========================
+FILE: lesson-3.html
+PATH: /school/foundations/module-1/lesson-3.html
+========================= -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Foundations • Lesson 3</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="../../../theme.css">
-<meta name="theme-color" content="#0b0f1a">
+  <meta charset="UTF-8" />
+  <title>Foundations • Lesson 3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-.ms-lessonGrid{display:grid;gap:14px;margin-top:14px}
-.hack-box{background:rgba(34,211,238,.08);border-left:4px solid rgba(34,211,238,.6);padding:16px;border-radius:12px;font-weight:600}
-.big{font-size:28px;font-weight:800;text-align:center}
-</style>
+  <link rel="stylesheet" href="../../../theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
+  <meta name="theme-color" content="#0b0f1a" />
+
+  <style>
+    .ms-lessonGrid{ display:grid; gap:14px; margin-top:14px; }
+    .hack-box{
+      background: rgba(34,211,238,.08);
+      border-left:4px solid rgba(34,211,238,.6);
+      padding:16px;
+      border-radius:12px;
+      font-weight:600;
+    }
+    .big{
+      font-size:30px;
+      font-weight:800;
+      text-align:center;
+      margin:12px 0;
+    }
+    .ms-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .ms-glowDone{
+      border-color: rgba(34,211,238,.35) !important;
+      box-shadow: 0 0 0 3px rgba(34,211,238,.10), 0 0 22px rgba(34,211,238,.18);
+    }
+    .ms-chip{
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      font-size:12px;
+    }
+  </style>
 </head>
 
 <body>
-<header class="ms-top"><div class="ms-nav"><span>MindStrong Universe</span></div></header>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../../mindstronguniverse.svg" class="ms-brandLogo" />
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./lesson-3.html">Lesson 3</a>
+    </nav>
+  </div>
+</header>
 
 <main class="ms-wrap">
-<section class="ms-hero">
-<h1 class="ms-h1">Lesson 3 — Expanded Form</h1>
-<p class="ms-sub">Numbers are built from blocks.</p>
-<button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
-</section>
 
-<div class="ms-lessonGrid">
+  <!-- HERO -->
+  <section class="ms-hero">
+    <span class="ms-kicker">🧱 Foundations • Module 1</span>
+    <h1 class="ms-h1">Lesson 3 — Expanded Form</h1>
+    <p class="ms-sub">Big numbers are built from smaller pieces.</p>
 
-<section class="ms-card">
-<h2>The Hack</h2>
-<div class="hack-box">
-Every digit lives in a place.<br>
-Expanded form shows the blocks.
-</div>
-</section>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a class="ms-btn" href="./lesson-4.html">Next Lesson →</a>
+      <a class="ms-btn" href="../index.html">Back to Foundations</a>
+    </div>
 
-<section class="ms-card">
-<h2>🎮 Play Mode — Number LEGO</h2>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
+  </section>
 
-<input id="numInput" type="number" value="432" style="width:100%;padding:8px">
+  <div class="ms-lessonGrid">
 
-<div class="big" id="expanded"></div>
+    <!-- HOOK -->
+    <section class="ms-card">
+      <h2>Hook</h2>
+      <p>
+        The number <strong>432</strong> looks like one thing —
+        but it’s actually <em>three numbers working together</em>.
+      </p>
+      <p>
+        Expanded form lets us see the hidden structure.
+      </p>
+    </section>
 
-</section>
+    <!-- THE HACK -->
+    <section class="ms-card">
+      <h2>The Hack</h2>
+      <div class="hack-box">
+        Every digit has a job.<br><br>
+        Expanded form = digit × its place value.
+      </div>
+    </section>
 
-<section class="ms-card">
-<h2>Exit Check</h2>
-<p>Explain 507 in expanded form.</p>
-</section>
+    <!-- PLAY MODE -->
+    <section class="ms-card">
+      <h2>🎮 Play Mode — Number LEGO</h2>
 
-</div>
+      <p>Type a number. Watch it break into place-value blocks.</p>
+
+      <input
+        id="numInput"
+        type="number"
+        value="432"
+        style="width:100%;padding:8px;font-size:16px;"
+      />
+
+      <div class="big" id="expandedOutput"></div>
+    </section>
+
+    <!-- PRACTICE -->
+    <section class="ms-card">
+      <h2>Practice</h2>
+      <ol>
+        <li>Write 705 in expanded form.</li>
+        <li>Which digit contributes the most in 3,482?</li>
+        <li>Why does the 0 still matter in 508?</li>
+      </ol>
+    </section>
+
+    <!-- EXIT CHECK -->
+    <section class="ms-card">
+      <h2>Exit Check</h2>
+      <p>
+        Explain expanded form using the phrase
+        <strong>“place-value blocks.”</strong>
+      </p>
+    </section>
+
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
 <script>
-const LESSON_NUM=3,KEY="ms_m1_done";
-const btn=document.getElementById("completeBtn");
+  /* ===== Progress Tracking ===== */
+  const LESSON_NUM = 3;
+  const KEY = "ms_m1_done";
 
-btn.onclick=()=>{
-  const a=JSON.parse(localStorage.getItem(KEY)||"[]");
-  if(!a.includes(LESSON_NUM)){a.push(LESSON_NUM)}
-  localStorage.setItem(KEY,JSON.stringify(a));
-  btn.textContent="Completed ✓";
-};
+  localStorage.setItem("ms_last_lesson_url", window.location.pathname);
 
-const input=document.getElementById("numInput");
-const out=document.getElementById("expanded");
+  function getArr(){
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+    catch { return []; }
+  }
 
-function expand(n){
-  return n.toString().split("").map((d,i,a)=>{
-    const p=Math.pow(10,a.length-i-1);
-    return d*p;
-  }).join(" + ");
-}
-input.oninput=()=>out.textContent=expand(input.value);
-out.textContent=expand(input.value);
+  function markDone(){
+    const arr = getArr();
+    if (!arr.includes(LESSON_NUM)) {
+      arr.push(LESSON_NUM);
+      localStorage.setItem(KEY, JSON.stringify(arr));
+    }
+  }
+
+  const completeBtn = document.getElementById("completeBtn");
+  const statusChip = document.getElementById("statusChip");
+
+  function renderStatus(){
+    const done = getArr().includes(LESSON_NUM);
+    statusChip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    completeBtn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    completeBtn.classList.toggle("ms-glowDone", done);
+  }
+
+  completeBtn.addEventListener("click", () => {
+    markDone();
+    renderStatus();
+  });
+
+  renderStatus();
+
+  /* ===== Expanded Form Game ===== */
+  const input = document.getElementById("numInput");
+  const out = document.getElementById("expandedOutput");
+
+  function expand(n){
+    return n.toString().split("").map((d,i,a)=>{
+      const place = Math.pow(10, a.length - i - 1);
+      return d * place;
+    }).join(" + ");
+  }
+
+  input.addEventListener("input", () => {
+    out.textContent = expand(input.value);
+  });
+
+  out.textContent = expand(input.value);
 </script>
+
 </body>
 </html>
