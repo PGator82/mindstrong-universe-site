@@ -30,12 +30,16 @@
       border-radius:12px;
       font-weight:600;
     }
-    .lesson-img{
+    .lesson-img,
+    .lesson-video{
       width:100%;
       max-width:900px;
       display:block;
       margin:16px auto;
       border-radius:14px;
+    }
+    .lesson-video{
+      box-shadow:0 12px 30px rgba(0,0,0,0.35);
     }
     .reveal{
       display:none;
@@ -78,6 +82,21 @@
   <section class="lesson-card">
     <h2>🎧 Warm-Up</h2>
 
+    <!-- VIDEO (PRIMARY) -->
+    <video
+      class="lesson-video"
+      controls
+      playsinline
+      preload="metadata"
+    >
+      <source
+        src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- IMAGE (SECONDARY / FALLBACK) -->
     <img
       src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
       alt="Ratio visual"
@@ -86,7 +105,8 @@
 
     <p>
       A <strong>ratio</strong> compares two quantities.
-      It answers the question: <em>how much of one thing exists compared to another?</em>
+      It answers the question:
+      <em>how much of one thing exists compared to another?</em>
     </p>
   </section>
 
@@ -101,9 +121,9 @@
     </div>
 
     <p style="margin-top:12px;">
-      Example:  
-      <br>2 : 3 → 4 : 6 → 6 : 9  
-      <br>The numbers change, the balance stays.
+      Example:<br>
+      2 : 3 → 4 : 6 → 6 : 9<br>
+      The numbers change, the balance stays.
     </p>
   </section>
 
@@ -159,6 +179,10 @@
 <footer class="ms-footer">
   © MindStrong Universe • Pre-Algebra Mastery
 </footer>
+
+</body>
+</html>
+
 
 </body>
 </html>
