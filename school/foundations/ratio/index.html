@@ -5,58 +5,18 @@
   <title>Ratios • Pre-Algebra Mastery</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Use site theme -->
   <link rel="stylesheet" href="../../../theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
+  <meta name="theme-color" content="#0b0f1a" />
 
   <style>
-    /* Safe local enhancements */
-    .lesson-wrap{
-      max-width:1000px;
-      margin:0 auto;
-      padding:32px 16px;
-    }
-    .lesson-card{
-      background: var(--card);
-      border:1px solid var(--stroke);
-      border-radius: var(--r);
-      padding:24px;
-      margin-bottom:24px;
-    }
-    .lesson-card h2{ margin-top:0; }
-
-    .hack-box{
-      background: rgba(34,211,238,.08);
-      border-left:4px solid rgba(34,211,238,.6);
-      padding:16px;
-      border-radius:12px;
-      font-weight:600;
-    }
-
-    .lesson-video,
-    .lesson-img{
-      width:100%;
-      max-width:900px;
-      display:block;
-      margin:16px auto;
-      border-radius:14px;
-    }
-
-    .lesson-video{
-      box-shadow:0 12px 30px rgba(0,0,0,0.35);
-    }
-
-    .reveal{
-      display:none;
-      margin-top:12px;
-      font-weight:600;
-    }
-
-    /* Hide image on mobile only */
-    @media (max-width: 640px){
-      .lesson-img{
-        display:none;
-      }
-    }
+    .lesson-wrap{max-width:1000px;margin:0 auto;padding:32px 16px}
+    .lesson-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--r);padding:24px;margin-bottom:24px}
+    .lesson-video{width:100%;max-width:900px;margin:16px auto;border-radius:14px;display:block;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+    .hack-box{background:rgba(34,211,238,.08);border-left:4px solid rgba(34,211,238,.6);padding:16px;border-radius:12px;font-weight:600}
+    .ms-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .ms-chip{display:inline-flex;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
+    .ms-glowDone{border-color:rgba(34,211,238,.35)!important;box-shadow:0 0 0 3px rgba(34,211,238,.10),0 0 22px rgba(34,211,238,.18)}
   </style>
 </head>
 
@@ -65,7 +25,7 @@
 <header class="ms-top">
   <div class="ms-nav">
     <div class="ms-brand">
-      <span class="ms-dot"></span>
+      <img src="../../../mindstronguniverse.svg" class="ms-brandLogo" />
       <span>MindStrong Universe</span>
     </div>
     <nav class="ms-links">
@@ -83,122 +43,42 @@
   <section class="ms-hero">
     <span class="ms-kicker">Pre-Algebra Mastery</span>
     <h1 class="ms-h1">Ratios</h1>
-    <p class="ms-sub">
-      Ratios explain how quantities compare, scale, and stay balanced.
-      This is the language of proportional thinking.
-    </p>
+    <p class="ms-sub">Understanding balance, scale, and proportional thinking.</p>
+
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a class="ms-btn" href="../index.html">Back to Foundations</a>
+    </div>
+
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
   </section>
 
-  <!-- WARM-UP -->
+  <!-- WHAT THIS IS -->
+  <section class="lesson-card">
+    <h2>📌 What This Is & Why It Matters</h2>
+    <p><strong>What this is:</strong> Ratios compare quantities to show how they relate.</p>
+    <p><strong>Why it matters:</strong> Ratios power fractions, rates, percents, and real-world scaling.</p>
+  </section>
+
+  <!-- WARM-UP VIDEO -->
   <section class="lesson-card">
     <h2>🎧 Warm-Up</h2>
 
-    <video
-      class="lesson-video"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="auto"
-      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
-    >
-      <source
-        src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
-        type="video/mp4"
-      />
+    <video class="lesson-video" autoplay muted loop playsinline
+      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png">
+      <source src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4" type="video/mp4" />
     </video>
-
-    <img
-      src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
-      alt="Ratio visual"
-      class="lesson-img"
-    />
-
-    <p>
-      A <strong>ratio</strong> compares two quantities.
-      It answers the question:
-      <em>how much of one thing exists compared to another?</em>
-    </p>
   </section>
 
-  <!-- THE HACK -->
-  <section class="lesson-card">
-    <h2>🧠 The Hack</h2>
-
-    <div class="hack-box">
-      Ratios are <strong>balance statements</strong>.<br><br>
-      If one side changes, the other must change the <em>same way</em>
-      to stay equivalent.
-    </div>
-
-    <p style="margin-top:12px;">
-      Example:<br>
-      2 : 3 → 4 : 6 → 6 : 9<br>
-      The numbers change, the balance stays.
-    </p>
-  </section>
-
-  <!-- PLAY -->
-  <section class="lesson-card">
-    <h2>🎮 Play</h2>
-    <p>Use the interactive space below to explore how ratios scale.</p>
-
-    <iframe
-      src="https://www.desmos.com/calculator"
-      width="100%"
-      height="420"
-      style="border:none;border-radius:12px;"
-      loading="lazy"
-    ></iframe>
-  </section>
-
-  <!-- BOSS FIGHT -->
-  <section class="lesson-card">
-    <h2>⚔️ Boss Fight</h2>
-
-    <p>
-      The ratio of red to blue tiles is <strong>2 : 3</strong>.<br>
-      If there are <strong>8 red tiles</strong>, how many blue tiles are there?
-    </p>
-
-    <button class="ms-btn primary"
-      onclick="document.getElementById('answer1').style.display='block'">
-      Reveal Answer
-    </button>
-
-    <div id="answer1" class="reveal">
-      ✔️ <strong>12 blue tiles</strong><br>
-      (2 → 8 is ×4, so 3 → 12)
-    </div>
-  </section>
-
-  <!-- ✅ 10-SECOND RECAP -->
+  <!-- 10 SECOND RECAP -->
   <section class="lesson-card">
     <h2>⏱️ 10-Second Ratio Recap</h2>
 
-    <video
-      class="lesson-video"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="auto"
-      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
-    >
-      <source
-        src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
-        type="video/mp4"
-      />
-    </video>
-
-    <div class="hack-box" style="margin-top:16px;">
-      <strong>Ratio Hacks (Never Fail)</strong><br><br>
-
-      1️⃣ Ratios are balances — both sides must change the same way.<br><br>
-      2️⃣ If one number goes ×k, the other must go ×k.<br><br>
-      3️⃣ To solve fast:
-      <br>• Identify the multiplier
-      <br>• Apply it to the other side
+    <div class="hack-box">
+      Ratios are balances.<br><br>
+      If one side changes ×k, the other must change ×k.
     </div>
 
     <p style="margin-top:12px;">
@@ -208,41 +88,41 @@
     </p>
   </section>
 
-  <!-- NEXT -->
-  <section class="lesson-card">
-    <h2>➡️ What’s Next</h2>
-    <p>
-      Next up: using ratios to find <strong>unit rates</strong>
-      and compare real-world situations.
-    </p>
-
-    <a class="ms-btn" href="../index.html">
-      Back to Foundations →
-    </a>
-  </section>
-
 </main>
 
-<footer class="ms-footer">
-  © MindStrong Universe • Pre-Algebra Mastery
-</footer>
+<footer class="ms-footer">© MindStrong Universe • Pre-Algebra Mastery</footer>
 
 <script>
-  try {
-    const KEY = "ms_pre_alg_done";
-    const lessonId = "ratios-1";
+  const KEY = "ms_pre_alg_done";
+  const LESSON_ID = "ratios-1";
 
-    const done = JSON.parse(localStorage.getItem(KEY) || "[]");
-    if (!done.includes(lessonId)) {
-      done.push(lessonId);
-      localStorage.setItem(KEY, JSON.stringify(done));
+  localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+
+  function getArr(){
+    try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }
+    catch{ return []; }
+  }
+
+  function markDone(){
+    const a = getArr();
+    if(!a.includes(LESSON_ID)){
+      a.push(LESSON_ID);
+      localStorage.setItem(KEY, JSON.stringify(a));
     }
+  }
 
-    localStorage.setItem(
-      "ms_last_lesson_url",
-      window.location.pathname
-    );
-  } catch(e){}
+  const btn = document.getElementById("completeBtn");
+  const chip = document.getElementById("statusChip");
+
+  function render(){
+    const done = getArr().includes(LESSON_ID);
+    chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    btn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    btn.classList.toggle("ms-glowDone", done);
+  }
+
+  btn.addEventListener("click", ()=>{ markDone(); render(); });
+  render();
 </script>
 
 </body>
