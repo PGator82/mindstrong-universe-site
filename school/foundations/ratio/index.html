@@ -23,6 +23,7 @@
       margin-bottom:24px;
     }
     .lesson-card h2{ margin-top:0; }
+
     .hack-box{
       background: rgba(34,211,238,.08);
       border-left:4px solid rgba(34,211,238,.6);
@@ -30,21 +31,31 @@
       border-radius:12px;
       font-weight:600;
     }
-    .lesson-img,
-    .lesson-video{
+
+    .lesson-video,
+    .lesson-img{
       width:100%;
       max-width:900px;
       display:block;
       margin:16px auto;
       border-radius:14px;
     }
+
     .lesson-video{
       box-shadow:0 12px 30px rgba(0,0,0,0.35);
     }
+
     .reveal{
       display:none;
       margin-top:12px;
       font-weight:600;
+    }
+
+    /* Hide image on mobile only */
+    @media (max-width: 640px){
+      .lesson-img{
+        display:none;
+      }
     }
   </style>
 </head>
@@ -82,12 +93,15 @@
   <section class="lesson-card">
     <h2>🎧 Warm-Up</h2>
 
-    <!-- VIDEO (PRIMARY) -->
+    <!-- VIDEO: autoplay + muted hook -->
     <video
       class="lesson-video"
-      controls
+      autoplay
+      muted
+      loop
       playsinline
-      preload="metadata"
+      preload="auto"
+      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
     >
       <source
         src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4"
@@ -96,7 +110,7 @@
       Your browser does not support the video tag.
     </video>
 
-    <!-- IMAGE (SECONDARY / FALLBACK) -->
+    <!-- IMAGE (desktop / fallback only) -->
     <img
       src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
       alt="Ratio visual"
@@ -180,9 +194,29 @@
   © MindStrong Universe • Pre-Algebra Mastery
 </footer>
 
-</body>
-</html>
+<!-- PROGRESS SAVE -->
+<script>
+  try {
+    // Save lesson completion
+    const KEY = "ms_pre_alg_done";
+    const lessonId = "ratios-1";
 
+    const raw = localStorage.getItem(KEY);
+    const done = raw ? JSON.parse(raw) : [];
+    if (!done.includes(lessonId)) {
+      done.push(lessonId);
+      localStorage.setItem(KEY, JSON.stringify(done));
+    }
+
+    // Save last lesson for Continue Learning
+    localStorage.setItem(
+      "ms_last_lesson_url",
+      window.location.pathname
+    );
+  } catch (e) {
+    console.warn("Progress save skipped", e);
+  }
+</script>
 
 </body>
 </html>
