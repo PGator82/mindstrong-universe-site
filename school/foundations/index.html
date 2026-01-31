@@ -10,6 +10,41 @@
   <meta name="theme-color" content="#0b0f1a" />
 
   <style>
+    details.ms-card{
+      margin-bottom:24px;
+    }
+
+    summary{
+      list-style:none;
+      cursor:pointer;
+    }
+
+    summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .summary-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .summary-left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .chev{
+      transition:transform .25s ease;
+      font-size:14px;
+    }
+
+    details[open] .chev{
+      transform:rotate(90deg);
+    }
+
     .ms-item{
       display:flex;
       align-items:center;
@@ -18,12 +53,14 @@
       padding:12px 0;
       border-bottom:1px solid var(--stroke);
     }
+
     .ms-row{
       display:flex;
       align-items:center;
       gap:10px;
       min-width:0;
     }
+
     .ms-badge{
       width:26px;height:26px;
       border-radius:8px;
@@ -35,11 +72,37 @@
       font-weight:800;
       font-size:12px;
     }
+
     .ms-check{
       border-color:rgba(34,211,238,.35);
       background:rgba(34,211,238,.12);
       box-shadow:0 0 0 3px rgba(34,211,238,.08);
     }
+
+    .ms-progress{
+      margin:16px 0;
+      padding:12px;
+      border:1px solid var(--stroke);
+      border-radius:12px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .ms-bar{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.1);
+      overflow:hidden;
+      margin-top:10px;
+    }
+
+    .ms-bar div{
+      height:100%;
+      width:0%;
+      background:rgba(34,211,238,.55);
+      border-radius:999px;
+      transition:width .4s ease;
+    }
+
     .ms-subtle{
       color:var(--muted);
       font-size:12px;
@@ -71,63 +134,91 @@
     <p class="ms-sub">Fix number sense first. Everything else stacks cleanly after.</p>
   </section>
 
-  <!-- PRE-ALGEBRA MASTERY -->
-  <section class="ms-card">
-    <h2>Pre-Algebra Mastery</h2>
-    <p>Core proportional reasoning skills.</p>
+  <!-- MODULE 1 (COLLAPSIBLE) -->
+  <details class="ms-card" id="module1">
+    <summary>
+      <div class="summary-head">
+        <div class="summary-left">
+          <span class="ms-badge">1</span>
+          <div>
+            <h2>Module 1: Number Sense</h2>
+            <div class="ms-subtle">6 lessons • required</div>
+          </div>
+        </div>
+        <span class="chev">▶</span>
+      </div>
+    </summary>
+
+    <div class="ms-progress">
+      <b id="m1Count">0</b> / 6 completed
+      <div class="ms-bar"><div id="m1Bar"></div></div>
+    </div>
 
     <div class="ms-list">
-
-      <!-- RATIOS -->
-      <div class="ms-item" data-course="ratios">
+      <!-- Lessons 1–6 -->
+      ${[1,2,3,4,5,6].map(n => `
+      <div class="ms-item">
         <div class="ms-row">
-          <span class="ms-badge" id="ratiosBadge">→</span>
-          <div>
-            <div class="ms-title">Ratios</div>
-            <div class="ms-subtle">Balance of comparison</div>
-          </div>
+          <span class="ms-badge" id="b${n}">${n}</span>
+          <div class="ms-title">Lesson ${n}</div>
         </div>
-        <a class="ms-btn" href="./ratio/">Open</a>
-      </div>
-
-      <!-- UNIT RATES (LOCKED BY DEFAULT) -->
-      <div class="ms-item" data-course="unit-rate">
-        <div class="ms-row">
-          <span class="ms-badge" id="unitBadge">🔒</span>
-          <div>
-            <div class="ms-title">Unit Rates</div>
-            <div class="ms-subtle">Per 1 reasoning</div>
-          </div>
-        </div>
-        <button class="ms-btn" id="unitBtn" disabled>Locked</button>
-      </div>
-
+        <a class="ms-btn" href="./module-1/lesson-${n}.html">Open</a>
+      </div>`).join('')}
     </div>
-  </section>
+  </details>
+
+  <!-- PRE-ALGEBRA (COLLAPSIBLE) -->
+  <details class="ms-card" id="prealg">
+    <summary>
+      <div class="summary-head">
+        <div class="summary-left">
+          <span class="ms-badge" id="ratiosBadge">🔒</span>
+          <div>
+            <h2>Pre-Algebra Mastery</h2>
+            <div class="ms-subtle">Unlocks after Module 1</div>
+          </div>
+        </div>
+        <span class="chev">▶</span>
+      </div>
+    </summary>
+
+    <div class="ms-item">
+      <div class="ms-row">
+        <span class="ms-badge">→</span>
+        <div class="ms-title">Ratios</div>
+      </div>
+      <button class="ms-btn" id="ratiosBtn" disabled>Locked</button>
+    </div>
+  </details>
 
   <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
 </main>
 
-<!-- PROGRESSION LOGIC -->
 <script>
   try {
-    const done = JSON.parse(localStorage.getItem("ms_pre_alg_done") || "[]");
+    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+    const total = 6;
 
-    // RATIOS COMPLETE
-    if (done.includes("ratios-1")) {
-      const rBadge = document.getElementById("ratiosBadge");
-      if (rBadge) {
-        rBadge.textContent = "✓";
-        rBadge.classList.add("ms-check");
-      }
+    document.getElementById("m1Count").textContent = done.length;
+    document.getElementById("m1Bar").style.width =
+      (done.length / total * 100) + "%";
 
-      // UNLOCK UNIT RATES
-      const uBadge = document.getElementById("unitBadge");
-      const uBtn = document.getElementById("unitBtn");
-      if (uBadge && uBtn) {
-        uBadge.textContent = "→";
-        uBtn.outerHTML = '<a class="ms-btn" href="./unit-rate/">Start →</a>';
+    done.forEach(n => {
+      const b = document.getElementById("b" + n);
+      if (b) {
+        b.textContent = "✓";
+        b.classList.add("ms-check");
       }
+    });
+
+    // Auto-open logic
+    if (done.length < total) {
+      document.getElementById("module1").open = true;
+    } else {
+      document.getElementById("prealg").open = true;
+      document.getElementById("ratiosBadge").textContent = "→";
+      document.getElementById("ratiosBtn").outerHTML =
+        '<a class="ms-btn" href="./ratio/">Start →</a>';
     }
   } catch(e){}
 </script>
