@@ -17,6 +17,7 @@
     .ms-actions{display:flex;gap:10px;flex-wrap:wrap}
     .ms-chip{display:inline-flex;padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px}
     .ms-glowDone{border-color:rgba(34,211,238,.35)!important;box-shadow:0 0 0 3px rgba(34,211,238,.10),0 0 22px rgba(34,211,238,.18)}
+    .reveal{display:none;margin-top:12px;font-weight:600}
   </style>
 </head>
 
@@ -58,33 +59,83 @@
   <!-- WHAT THIS IS -->
   <section class="lesson-card">
     <h2>📌 What This Is & Why It Matters</h2>
-    <p><strong>What this is:</strong> Ratios compare quantities to show how they relate.</p>
+    <p><strong>What this is:</strong> Ratios compare two quantities to show how they relate.</p>
     <p><strong>Why it matters:</strong> Ratios power fractions, rates, percents, and real-world scaling.</p>
   </section>
 
-  <!-- WARM-UP VIDEO -->
+  <!-- HOOK -->
   <section class="lesson-card">
-    <h2>🎧 Warm-Up</h2>
-
-    <video class="lesson-video" autoplay muted loop playsinline
-      poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png">
-      <source src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4" type="video/mp4" />
-    </video>
+    <h2>🎯 Hook</h2>
+    <p>
+      Two smoothies taste the same.
+      One uses <strong>2 scoops fruit : 3 scoops ice</strong>.
+      The other uses <strong>4 scoops fruit : 6 scoops ice</strong>.
+    </p>
+    <p>
+      Different numbers. Same taste.  
+      That’s a ratio at work.
+    </p>
   </section>
 
-  <!-- 10 SECOND RECAP -->
+  <!-- THE HACK -->
   <section class="lesson-card">
-    <h2>⏱️ 10-Second Ratio Recap</h2>
-
+    <h2>🧠 The Hack</h2>
     <div class="hack-box">
-      Ratios are balances.<br><br>
-      If one side changes ×k, the other must change ×k.
+      Ratios are <strong>balance statements</strong>.<br><br>
+      If one side changes ×k, the other side must change ×k.
     </div>
+  </section>
 
-    <p style="margin-top:12px;">
-      Example:<br>
-      2 : 3 → 8 : ?<br>
-      2 → 8 is ×4 → 3 × 4 = <strong>12</strong>
+  <!-- PLAY -->
+  <section class="lesson-card">
+    <h2>🎮 Play Mode</h2>
+    <p>Explore how ratios stretch and shrink while staying balanced.</p>
+
+    <iframe
+      src="https://www.desmos.com/calculator"
+      width="100%"
+      height="420"
+      style="border:none;border-radius:12px;"
+      loading="lazy">
+    </iframe>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="lesson-card">
+    <h2>✏️ Practice</h2>
+    <ol>
+      <li>Write two equivalent ratios for 3 : 5.</li>
+      <li>If 4 : 6 becomes 8 : ?, what is the missing number?</li>
+      <li>Explain why 2 : 4 and 1 : 2 describe the same relationship.</li>
+    </ol>
+  </section>
+
+  <!-- BOSS FIGHT -->
+  <section class="lesson-card">
+    <h2>⚔️ Boss Fight</h2>
+
+    <p>
+      The ratio of red to blue tiles is <strong>2 : 3</strong>.<br>
+      If there are <strong>10 red tiles</strong>, how many blue tiles are there?
+    </p>
+
+    <button class="ms-btn primary"
+      onclick="document.getElementById('bossAnswer').style.display='block'">
+      Reveal Answer
+    </button>
+
+    <div id="bossAnswer" class="reveal">
+      ✔️ <strong>15 blue tiles</strong><br>
+      (2 → 10 is ×5, so 3 × 5 = 15)
+    </div>
+  </section>
+
+  <!-- EXIT -->
+  <section class="lesson-card">
+    <h2>🚪 Exit Check</h2>
+    <p>
+      In one sentence, explain why equivalent ratios stay balanced
+      even when the numbers change.
     </p>
   </section>
 
