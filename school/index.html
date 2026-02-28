@@ -1,5 +1,4 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,97 +6,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../theme.css" />
 </head>
+
 <body>
-  <header class="ms-top">
-    <div class="ms-nav">
-      <div class="ms-brand">
-        <span class="ms-dot"></span>
-        <span>MindStrong Universe</span>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <span class="ms-dot"></span>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../index.html">Home</a>
+      <a class="ms-link is-active" href="./index.html">School</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero">
+    <span class="ms-kicker">🎓 Online School</span>
+    <h1 class="ms-h1">Your Learning Dashboard</h1>
+    <p class="ms-sub">
+      Track progress. Unlock courses. Build mastery.
+    </p>
+  </section>
+
+  <!-- STUDENT PROFILE -->
+  <section class="ms-card">
+    <h2>Student Profile</h2>
+    <div id="profilePanel"></div>
+  </section>
+
+  <!-- FOUNDATIONS -->
+  <section class="ms-card">
+    <h2>Foundations</h2>
+
+    <div class="ms-item">
+      <div class="ms-row">
+        <span class="ms-badge" id="m1Badge">1</span>
+        <div>
+          <div class="ms-title">Module 1 — Number Sense</div>
+          <div class="ms-subtle">6 Lessons</div>
+        </div>
       </div>
-      <nav class="ms-links">
-        <a class="ms-link" href="../index.html">Home</a>
-        <a class="ms-link is-active" href="./index.html">School</a>
-      </nav>
+
+      <a class="ms-btn" href="./foundations/index.html">
+        Open →
+      </a>
     </div>
-  </header>
+  </section>
 
-  <main class="ms-wrap">
-    <section class="ms-hero">
-      <span class="ms-kicker">🚀 <b>Online School</b> • Foundations → Pre-Algebra</span>
-      <h1 class="ms-h1">Math that feels like a superpower.</h1>
-      <p class="ms-sub">
-        Short lessons. Real hacks. Clean practice.
-        “Continue Learning” remembers your last stop on this device.
-      </p>
-    </section>
+  <!-- PRE-ALGEBRA -->
+  <section class="ms-card">
+    <h2>Pre-Algebra Mastery</h2>
 
-    <div class="ms-grid">
-
-      <!-- CONTINUE -->
-      <section class="ms-card">
-        <h2>Continue Learning</h2>
-        <p>Jump back to your last lesson.</p>
-        <div class="ms-actions">
-          <a id="continueBtn" class="ms-btn primary" href="./foundations/index.html">
-            Continue <span class="chev">→</span>
-          </a>
-          <a class="ms-btn" href="./foundations/index.html">Browse Foundations</a>
+    <div class="ms-item">
+      <div class="ms-row">
+        <span class="ms-badge" id="preBadge">🔒</span>
+        <div>
+          <div class="ms-title">Ratios</div>
+          <div class="ms-subtle">Competitive lesson</div>
         </div>
-        <div class="ms-note">
-          Progress is saved locally for now (Supabase sync later).
-        </div>
-      </section>
+      </div>
 
-      <!-- COURSES -->
-      <section class="ms-card">
-        <h2>Courses</h2>
-
-        <ul class="ms-list">
-
-          <!-- FOUNDATIONS -->
-          <li class="ms-item">
-            <div class="left">
-              <div class="title">Math Foundations</div>
-              <div class="meta">
-                Number sense • Fractions • Decimals • Problem solving
-              </div>
-            </div>
-            <a class="ms-btn" href="./foundations/index.html">Open →</a>
-          </li>
-
-          <!-- PRE-ALGEBRA -->
-          <li class="ms-item">
-            <div class="left">
-              <div class="title">Pre-Algebra Mastery</div>
-              <div class="meta">
-                Integers • Expressions • Equations • Ratios • Percents
-              </div>
-            </div>
-            <a class="ms-btn" href="./foundations/ratio/">Open →</a>
-          </li>
-
-          <!-- RATIOS (SUB-COURSE) -->
-          <li class="ms-item" style="margin-left:16px;">
-            <div class="left">
-              <div class="title">↳ Ratios</div>
-              <div class="meta">
-                Balance, scaling, and proportional reasoning
-              </div>
-            </div>
-            <a class="ms-btn" href="./foundations/ratio/">Start →</a>
-          </li>
-
-        </ul>
-      </section>
+      <button class="ms-btn" id="preBtn" disabled>
+        Locked
+      </button>
     </div>
+  </section>
 
-    <footer class="ms-footer">© MindStrong Universe</footer>
-  </main>
+  <footer class="ms-footer">
+    © MindStrong Universe
+  </footer>
 
-  <script>
-    const last = localStorage.getItem("ms_last_lesson_url");
-    const btn = document.getElementById("continueBtn");
-    if (last && btn) btn.href = last;
-  </script>
+</main>
+
+<script>
+/* ================================
+   LOAD PROGRESS
+================================ */
+
+const m1 = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+const rank = localStorage.getItem("ms_ratio_rank");
+
+/* Student Profile Panel */
+document.getElementById("profilePanel").innerHTML = `
+  <div>Module 1 Completed: ${m1.length}/6</div>
+  <div>Ratio Rank: ${rank || "None"}</div>
+`;
+
+/* Module 1 Complete Badge */
+if(m1.length === 6){
+  document.getElementById("m1Badge").textContent = "✓";
+  document.getElementById("m1Badge").classList.add("ms-check");
+
+  /* Unlock Pre-Algebra */
+  document.getElementById("preBadge").textContent = "→";
+  document.getElementById("preBtn").outerHTML =
+    '<a class="ms-btn primary" href="./foundations/pre-algebra/">Open →</a>';
+}
+
+/* If Ratios beaten */
+if(rank){
+  document.getElementById("preBadge").textContent = "✓";
+  document.getElementById("preBadge").classList.add("ms-check");
+}
+</script>
+
 </body>
 </html>
