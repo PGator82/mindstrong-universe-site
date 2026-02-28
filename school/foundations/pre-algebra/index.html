@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Pre-Algebra Mastery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="../../../theme.css" />
+</head>
+
+<body>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <span class="ms-dot"></span>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./index.html">Pre-Algebra</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero">
+    <span class="ms-kicker">🚀 Next Level</span>
+    <h1 class="ms-h1">Pre-Algebra Mastery</h1>
+    <p class="ms-sub">
+      This course builds proportional thinking and algebra readiness.
+    </p>
+  </section>
+
+  <!-- STUDENT PROFILE -->
+  <section class="ms-card">
+    <h2>Student Profile</h2>
+    <div id="profilePanel"></div>
+  </section>
+
+  <!-- COURSE PROGRESS -->
+  <section class="ms-card">
+
+    <h2>Course Progress</h2>
+
+    <div class="ms-progress">
+      <b id="preCount">0</b> / 1 completed
+      <div class="ms-bar">
+        <div id="preBar"></div>
+      </div>
+    </div>
+
+    <div class="ms-list">
+
+      <!-- RATIOS -->
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="ratioBadge">🔒</span>
+          <div>
+            <div class="ms-title">Ratios</div>
+            <div class="ms-subtle">Balance & scaling</div>
+          </div>
+        </div>
+
+        <button id="ratioBtn" class="ms-btn" disabled>Locked</button>
+      </div>
+
+    </div>
+
+  </section>
+
+  <footer class="ms-footer">
+    © MindStrong Universe • Pre-Algebra
+  </footer>
+
+</main>
+
+<script>
+/* ================================
+   UNLOCK LOGIC
+================================ */
+
+const m1 = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+const rank = localStorage.getItem("ms_ratio_rank");
+
+/* Unlock Ratios if Module 1 complete */
+if(m1.length === 6){
+  document.getElementById("ratioBtn").outerHTML =
+    '<a class="ms-btn primary" href="../ratio/">Open →</a>';
+  document.getElementById("ratioBadge").textContent = "1";
+}
+
+/* Show checkmark if Ratios beaten */
+if(rank){
+  document.getElementById("ratioBadge").textContent = "✓";
+  document.getElementById("ratioBadge").classList.add("ms-check");
+
+  document.getElementById("preCount").textContent = 1;
+  document.getElementById("preBar").style.width = "100%";
+}
+
+/* ================================
+   STUDENT PROFILE PANEL
+================================ */
+
+const m1done = m1.length;
+
+document.getElementById("profilePanel").innerHTML = `
+  <div>Module 1 Completed: ${m1done}/6</div>
+  <div>Ratio Rank: ${rank || "None"}</div>
+`;
+</script>
+
+</body>
+</html>
