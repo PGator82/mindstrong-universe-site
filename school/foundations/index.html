@@ -303,43 +303,92 @@
     <summary>
       <div class="summary-head">
         <div class="summary-left">
-          <span class="ms-badge" id="ratiosBadge">🔒</span>
+          <span class="ms-badge" id="preHeaderBadge">🔒</span>
           <div>
             <h2>Pre-Algebra Mastery <span class="ms-flavorTag" id="preFlavorTag">Locked</span></h2>
-            <div class="ms-subtle" id="preHeaderSub">Unlocks after Module 1</div>
+            <div class="ms-subtle" id="preHeaderSub">Unlocks after Module 1 • 5 lessons</div>
           </div>
         </div>
         <span class="chev">▶</span>
       </div>
     </summary>
 
-    <div class="ms-item" style="flex-direction:column;align-items:stretch;gap:10px;">
+    <div class="ms-progress">
+      <span id="preProgressLabel"><b id="preCount">0</b> / 5 completed</span>
+      <div class="ms-bar"><div id="preBar"></div></div>
+    </div>
 
-      <div class="ratio-preview">
-        <video
-          autoplay muted loop playsinline preload="metadata"
-          poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
-          style="width:100%;max-width:360px;display:block;margin:0 auto;border-radius:12px;cursor:pointer;"
-          id="ratioVideo"
-          onclick="window.location.href='./pre-algebra/'"
-        >
-          <source src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4" type="video/mp4"/>
-        </video>
-        <span style="position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.65);color:#fff;padding:4px 10px;border-radius:999px;font-size:11px;letter-spacing:.3px;">
-          Preview
-        </span>
+    <div class="ms-list">
+
+      <div class="ms-item" id="pa-item-ratios">
+        <div class="ms-row">
+          <span class="ms-badge" id="pa-b-ratios">1</span>
+          <div>
+            <div class="ms-title">Ratios — Balance of Comparison</div>
+            <div class="ms-subtle">Scaling relationships</div>
+            <div class="ms-lessonMode" id="pa-lm-ratios"></div>
+          </div>
+        </div>
+        <span id="pa-action-ratios"><button class="ms-btn" disabled>Locked</button></span>
       </div>
 
-      <div class="ms-row" style="justify-content:space-between;align-items:center;">
-        <div>
-          <div class="ms-title">Ratios — Balance of Comparison</div>
-          <div class="ms-subtle" id="ratiosSubtitle">Complete Module 1 to unlock</div>
-          <div class="ms-lessonMode" id="ratiosMode"></div>
+      <div class="ms-item" id="pa-item-proportions">
+        <div class="ms-row">
+          <span class="ms-badge" id="pa-b-proportions">2</span>
+          <div>
+            <div class="ms-title">Proportions — Equal Ratios</div>
+            <div class="ms-subtle">Cross-multiply to solve</div>
+            <div class="ms-lessonMode" id="pa-lm-proportions"></div>
+          </div>
         </div>
-        <span id="ratiosAction"><button class="ms-btn" disabled>Locked</button></span>
+        <span id="pa-action-proportions"><button class="ms-btn" disabled>Locked</button></span>
+      </div>
+
+      <div class="ms-item" id="pa-item-percents">
+        <div class="ms-row">
+          <span class="ms-badge" id="pa-b-percents">3</span>
+          <div>
+            <div class="ms-title">Percents — Ratios out of 100</div>
+            <div class="ms-subtle">Part, whole, percent triangle</div>
+            <div class="ms-lessonMode" id="pa-lm-percents"></div>
+          </div>
+        </div>
+        <span id="pa-action-percents"><button class="ms-btn" disabled>Locked</button></span>
+      </div>
+
+      <div class="ms-item" id="pa-item-expressions">
+        <div class="ms-row">
+          <span class="ms-badge" id="pa-b-expressions">4</span>
+          <div>
+            <div class="ms-title">Expressions — Variables &amp; Terms</div>
+            <div class="ms-subtle">Coefficients, like terms, evaluation</div>
+            <div class="ms-lessonMode" id="pa-lm-expressions"></div>
+          </div>
+        </div>
+        <span id="pa-action-expressions"><button class="ms-btn" disabled>Locked</button></span>
+      </div>
+
+      <div class="ms-item" id="pa-item-equations">
+        <div class="ms-row">
+          <span class="ms-badge" id="pa-b-equations">5</span>
+          <div>
+            <div class="ms-title">Equations — Solve for x</div>
+            <div class="ms-subtle">Inverse operations · Final boss</div>
+            <div class="ms-lessonMode" id="pa-lm-equations"></div>
+          </div>
+        </div>
+        <span id="pa-action-equations"><button class="ms-btn" disabled>Locked</button></span>
       </div>
 
     </div>
+
+    <!-- View all link -->
+    <div style="text-align:center;padding:14px 0 2px;">
+      <a id="preViewAll" href="./pre-algebra/" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--xp-a);text-decoration:none;opacity:.7;transition:opacity .2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">
+        View full course dashboard →
+      </a>
+    </div>
+
   </details>
 
   <footer class="ms-footer">© MindStrong Universe • Foundations</footer>
@@ -370,22 +419,64 @@ if(m1Complete){
   hb.textContent="✓"; hb.classList.add("ms-check");
 }
 
-/* ── Pre-Algebra unlock — links to pre-algebra hub, NOT directly to ratio ── */
-if(m1Complete){
-  document.getElementById("ratiosBadge").textContent = "→";
-  document.getElementById("ratiosSubtitle").textContent = "Ratios • Boss fight • More coming soon";
-  document.getElementById("preFlavorTag").textContent = "Unlocked";
-  document.getElementById("ratiosAction").innerHTML =
-    '<a class="ms-btn primary" href="./pre-algebra/">Open →</a>';
-  document.getElementById("prealg").open = true;
-} else {
-  document.getElementById("module1").open = true;
+/* ── Pre-Algebra 5-lesson unlock ── */
+const preAlgArr  = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
+const PA_LESSONS = [
+  { id:"ratios",      href:"./ratio/",         doneKey:"ratio_rank",    label:"Ratios" },
+  { id:"proportions", href:"./pre-algebra/proportions/", doneKey:"proportions-1", label:"Proportions" },
+  { id:"percents",    href:"./pre-algebra/percents/",    doneKey:"percents-1",    label:"Percents" },
+  { id:"expressions", href:"./pre-algebra/expressions/", doneKey:"expressions-1", label:"Expressions" },
+  { id:"equations",   href:"./pre-algebra/equations/",   doneKey:"equations-1",   label:"Equations" },
+];
+
+function isPaDone(lesson){
+  if(lesson.id === "ratios") return !!localStorage.getItem("ms_ratio_rank");
+  return preAlgArr.includes(lesson.doneKey);
 }
 
-if(ratioRank){
-  const rb = document.getElementById("ratiosBadge");
-  rb.textContent = "✓"; rb.classList.add("ms-check");
-  document.getElementById("preFlavorTag").textContent = "Complete";
+const paDoneStatuses = PA_LESSONS.map(l => isPaDone(l));
+const paDoneCount    = paDoneStatuses.filter(Boolean).length;
+const paAllDone      = paDoneCount === PA_LESSONS.length;
+
+// Progress bar
+document.getElementById("preCount").textContent = paDoneCount;
+document.getElementById("preBar").style.width   = Math.round((paDoneCount/5)*100) + "%";
+
+if(m1Complete){
+  // Unlock all buttons, mark done badges
+  PA_LESSONS.forEach((l, i) => {
+    const badge  = document.getElementById("pa-b-" + l.id);
+    const action = document.getElementById("pa-action-" + l.id);
+    if(paDoneStatuses[i]){
+      if(badge){ badge.textContent = "✓"; badge.classList.add("ms-check"); }
+      if(action) action.innerHTML = `<a class="ms-btn" href="${l.href}">Review →</a>`;
+    } else {
+      if(action) action.innerHTML = `<a class="ms-btn" href="${l.href}">Open →</a>`;
+    }
+  });
+
+  // Highlight next undone lesson as primary
+  const nextPaIdx = paDoneStatuses.findIndex(d => !d);
+  if(nextPaIdx !== -1){
+    const nextAction = document.getElementById("pa-action-" + PA_LESSONS[nextPaIdx].id);
+    if(nextAction){ const a = nextAction.querySelector("a"); if(a) a.classList.add("primary"); }
+  }
+
+  // Header badge + tag
+  const phb = document.getElementById("preHeaderBadge");
+  if(paAllDone){
+    phb.textContent = "✓"; phb.classList.add("ms-check");
+    document.getElementById("preFlavorTag").textContent = "Complete";
+  } else {
+    phb.textContent = "→";
+    document.getElementById("preFlavorTag").textContent = "Unlocked";
+  }
+
+  document.getElementById("prealg").open = true;
+
+} else {
+  document.getElementById("module1").open = true;
+  document.getElementById("preHeaderSub").textContent = "Complete Module 1 to unlock";
 }
 
 /* Smart Next Lesson */
@@ -464,8 +555,10 @@ function applyMode(mode){
     const el = document.getElementById("lm"+i);
     if(el) el.textContent = cfg.lessonMode;
   }
-  const rm = document.getElementById("ratiosMode");
-  if(rm) rm.textContent = cfg.ratiosMode;
+  PA_LESSONS.forEach(l => {
+    const el = document.getElementById("pa-lm-" + l.id);
+    if(el) el.textContent = cfg.ratiosMode || "";
+  });
   for(let i=1;i<=TOTAL;i++){
     const lb = document.getElementById("lb"+i);
     if(lb && !doneSet.has(i)) lb.textContent = cfg.openBtn;
@@ -488,9 +581,6 @@ try{
   else applyMode("academic");
 }catch{ applyMode("academic"); }
 
-try{
-  if(m1Complete) document.getElementById("ratioVideo")?.classList.add("ms-glowDone");
-}catch(e){}
 
 (function(){
   const els = document.querySelectorAll(".ms-reveal");
