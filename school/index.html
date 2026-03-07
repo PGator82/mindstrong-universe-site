@@ -5,9 +5,338 @@
   <title>MindStrong School</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="../theme.css" />
-</head>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
-<body>
+  <style>
+    /* ── Base overrides that live on top of theme.css ── */
+    body { font-family: 'Syne', sans-serif; }
+
+    /* Animated reveals */
+    .ms-reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .ms-reveal.is-in { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .ms-reveal { opacity:1; transform:none; transition:none; }
+    }
+
+    /* ── Mode-aware accent system ── */
+    :root {
+      --xp-a: #facc15;
+      --xp-b: #f97316;
+      --xp-c: #ef4444;
+      --xp-glow: rgba(250,204,21,.18);
+    }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-c:#ec4899; --xp-glow:rgba(168,85,247,.18); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-c:#10b981; --xp-glow:rgba(34,211,238,.16); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-c:#0ea5e9; --xp-glow:rgba(52,211,153,.16); }
+
+    /* ── Page background glow ── */
+    .ms-pageFX {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(900px 500px at 20% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(600px 400px at 80% 80%, rgba(124,58,237,.08), transparent 60%);
+      transition: background 0.6s ease;
+    }
+
+    .ms-wrap { position: relative; z-index: 1; }
+
+    /* ── Mode Switcher Bar ── */
+    .ms-modebar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      align-items: center;
+    }
+    .ms-modebar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted, #6b7a99);
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .ms-modeBtn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: var(--muted, #6b7a99);
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+    }
+    .ms-modeBtn:hover { color: #e8edf5; border-color: rgba(255,255,255,.2); }
+    .ms-modeBtn.is-active {
+      color: var(--xp-a);
+      border-color: var(--xp-a);
+      background: rgba(255,255,255,.07);
+      box-shadow: 0 0 12px var(--xp-glow);
+    }
+
+    /* ── Hero ── */
+    .ms-hero { margin-bottom: 28px; }
+    .ms-h1 { font-family: 'Orbitron', sans-serif; }
+
+    .ms-modeKicker {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--xp-a);
+      color: var(--xp-a);
+      margin-bottom: 12px;
+      transition: all .4s ease;
+    }
+
+    /* ── Profile Card ── */
+    .ms-profileGrid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .ms-avatar {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 20px var(--xp-glow);
+      transition: background 0.5s ease, box-shadow 0.5s ease;
+      flex-shrink: 0;
+    }
+
+    .ms-profileName {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--xp-a);
+      transition: color .4s ease;
+      margin-bottom: 3px;
+    }
+    .ms-profileMeta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted, #6b7a99);
+      letter-spacing: .06em;
+    }
+
+    .ms-xpBar-wrap { margin-top: 8px; }
+    .ms-xpBarTrack {
+      height: 6px; border-radius: 3px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .ms-xpBarFill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--xp-b), var(--xp-a));
+      transition: width .8s ease, background .5s ease;
+    }
+    .ms-xpBarLabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--muted, #6b7a99);
+    }
+
+    .ms-statPill {
+      text-align: center;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    .ms-statPill b {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--xp-a);
+      transition: color .4s ease;
+      line-height: 1;
+    }
+    .ms-statPill span {
+      font-size: 10px;
+      color: var(--muted, #6b7a99);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Course Items ── */
+    .ms-courseItem {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .ms-courseItem:last-child { border-bottom: none; padding-bottom: 0; }
+    .ms-courseItem:first-child { padding-top: 0; }
+
+    .ms-courseMeta { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+
+    .ms-courseBadge {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: all .3s ease;
+    }
+    .ms-courseBadge.is-done {
+      background: rgba(255,255,255,.1);
+      border-color: var(--xp-a);
+      box-shadow: 0 0 10px var(--xp-glow);
+    }
+    .ms-courseBadge.is-locked { opacity: .4; }
+
+    .ms-courseTitle {
+      font-weight: 700; font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .ms-courseSubtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted, #6b7a99);
+    }
+
+    /* mini progress bar inside course row */
+    .ms-miniProgress {
+      width: 80px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .ms-miniProgressFill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--xp-b), var(--xp-a));
+      transition: width .6s ease, background .5s ease;
+    }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: #e8edf5;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: all .2s ease;
+      display: inline-block;
+    }
+    .ms-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,255,255,.2);
+    }
+    .ms-btn.primary {
+      background: linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      border-color: transparent;
+      color: #07090f;
+      box-shadow: 0 4px 16px var(--xp-glow);
+      transition: transform .18s ease, box-shadow .18s ease, background .5s ease;
+    }
+    .ms-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--xp-glow); }
+    .ms-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── Mode-specific flavor labels ── */
+    .ms-flavorLabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--xp-a);
+      padding: 2px 8px;
+      border: 1px solid var(--xp-a);
+      border-radius: 5px;
+      opacity: .7;
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: middle;
+      transition: all .4s ease;
+    }
+
+    /* ── Experience Selector (inline) ── */
+    .ms-xpSelector {
+      margin-top: 28px;
+    }
+    .ms-xpGrid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .ms-xpCard {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 16px 14px;
+      cursor: pointer;
+      background: rgba(255,255,255,.03);
+      transition: transform .2s ease, border-color .3s ease, box-shadow .3s ease;
+      overflow: hidden;
+      text-align: left;
+    }
+    .ms-xpCard::before {
+      content:''; position:absolute; inset:0; border-radius:inherit;
+      opacity: 0; transition: opacity .35s ease;
+    }
+    .ms-xpCard[data-xp="arcade"]::before   { background: radial-gradient(400px at 0% 100%, rgba(250,204,21,.14), transparent 65%); }
+    .ms-xpCard[data-xp="rpg"]::before      { background: radial-gradient(400px at 0% 100%, rgba(168,85,247,.16), transparent 65%); }
+    .ms-xpCard[data-xp="academic"]::before { background: radial-gradient(400px at 0% 100%, rgba(34,211,238,.14), transparent 65%); }
+    .ms-xpCard[data-xp="lms"]::before      { background: radial-gradient(400px at 0% 100%, rgba(52,211,153,.14), transparent 65%); }
+    .ms-xpCard:hover { transform: translateY(-2px); }
+    .ms-xpCard:hover::before, .ms-xpCard.is-active::before { opacity: 1; }
+    .ms-xpCard.is-active[data-xp="arcade"]   { border-color: rgba(250,204,21,.5); box-shadow: 0 0 0 1px rgba(250,204,21,.12), 0 8px 28px rgba(250,204,21,.1); }
+    .ms-xpCard.is-active[data-xp="rpg"]      { border-color: rgba(168,85,247,.5); box-shadow: 0 0 0 1px rgba(168,85,247,.12), 0 8px 28px rgba(168,85,247,.1); }
+    .ms-xpCard.is-active[data-xp="academic"] { border-color: rgba(34,211,238,.5);  box-shadow: 0 0 0 1px rgba(34,211,238,.12), 0 8px 28px rgba(34,211,238,.1); }
+    .ms-xpCard.is-active[data-xp="lms"]      { border-color: rgba(52,211,153,.5);  box-shadow: 0 0 0 1px rgba(52,211,153,.12), 0 8px 28px rgba(52,211,153,.1); }
+
+    .ms-xpEmoji  { font-size: 24px; display: block; margin-bottom: 8px; }
+    .ms-xpTitle  { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .ms-xpDesc   { font-size: 12px; color: var(--muted, #6b7a99); line-height: 1.5; margin: 0; }
+    .ms-xpCheck  {
+      position: absolute; top: 10px; right: 10px;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: transparent;
+      background: rgba(255,255,255,.03);
+      transition: all .2s ease;
+    }
+    .ms-xpCard.is-active .ms-xpCheck { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.4); color: #fff; }
+
+    @media (max-width: 600px) {
+      .ms-xpGrid { grid-template-columns: 1fr; }
+      .ms-profileGrid { grid-template-columns: auto 1fr; }
+      .ms-statPill { display: none; }
+    }
+  </style>
+</head>
+<body data-mode="arcade">
+<div class="ms-pageFX"></div>
 
 <header class="ms-top">
   <div class="ms-nav">
@@ -25,95 +354,297 @@
 <main class="ms-wrap">
 
   <!-- HERO -->
-  <section class="ms-hero">
-    <span class="ms-kicker">🎓 Online School</span>
-    <h1 class="ms-h1">Your Learning Dashboard</h1>
-    <p class="ms-sub">
-      Track progress. Unlock courses. Build mastery.
-    </p>
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">🕹️ Arcade Competitive Mode</div>
+    <h1 class="ms-h1" id="heroTitle">Your Learning Dashboard</h1>
+    <p class="ms-sub" id="heroSub">Score points. Climb the ranks. Beat your best.</p>
   </section>
 
+  <!-- MODE SWITCHER -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn is-active" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
   <!-- STUDENT PROFILE -->
-  <section class="ms-card">
-    <h2>Student Profile</h2>
-    <div id="profilePanel"></div>
+  <section class="ms-card ms-reveal">
+    <h2 id="profileTitle">Player Profile</h2>
+    <div class="ms-profileGrid">
+      <div class="ms-avatar" id="profileAvatar">🧠</div>
+      <div>
+        <div class="ms-profileName" id="profileName">MathWarrior</div>
+        <div class="ms-profileMeta" id="profileMeta">RANK: Novice · Module 1: 0/6</div>
+        <div class="ms-xpBar-wrap">
+          <div class="ms-xpBarTrack"><div class="ms-xpBarFill" id="xpFill" style="width:0%"></div></div>
+          <div class="ms-xpBarLabel" id="xpLabel">0 / 6 lessons · 0 XP</div>
+        </div>
+      </div>
+      <div class="ms-statPill" id="statPill">
+        <b id="statVal">0</b>
+        <span id="statLbl">Score</span>
+      </div>
+    </div>
   </section>
 
   <!-- FOUNDATIONS -->
-  <section class="ms-card">
-    <h2>Foundations</h2>
+  <section class="ms-card ms-reveal">
+    <h2>Foundations <span class="ms-flavorLabel" id="foundationsLabel">Active</span></h2>
 
-    <div class="ms-item">
-      <div class="ms-row">
-        <span class="ms-badge" id="m1Badge">1</span>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge" id="m1Badge">1</div>
         <div>
-          <div class="ms-title">Module 1 — Number Sense</div>
-          <div class="ms-subtle">6 Lessons</div>
+          <div class="ms-courseTitle">Module 1 — Number Sense</div>
+          <div class="ms-courseSubtitle" id="m1Sub">6 Lessons · <span id="m1Count">0</span> completed</div>
+          <div class="ms-miniProgress">
+            <div class="ms-miniProgressFill" id="m1Bar" style="width:0%"></div>
+          </div>
         </div>
       </div>
-
-      <a class="ms-btn" href="./foundations/index.html">
-        Open →
-      </a>
+      <a class="ms-btn primary" href="./foundations/index.html" id="m1Btn">Open →</a>
     </div>
   </section>
 
   <!-- PRE-ALGEBRA -->
-  <section class="ms-card">
-    <h2>Pre-Algebra Mastery</h2>
+  <section class="ms-card ms-reveal">
+    <h2>Pre-Algebra Mastery <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
 
-    <div class="ms-item">
-      <div class="ms-row">
-        <span class="ms-badge" id="preBadge">🔒</span>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked" id="preBadge">🔒</div>
         <div>
-          <div class="ms-title">Ratios</div>
-          <div class="ms-subtle">Competitive lesson</div>
+          <div class="ms-courseTitle">Ratios</div>
+          <div class="ms-courseSubtitle" id="preSubtitle">Complete Module 1 to unlock</div>
         </div>
       </div>
-
-      <button class="ms-btn" id="preBtn" disabled>
-        Locked
-      </button>
+      <span id="preAction"><button class="ms-btn" disabled>Locked</button></span>
     </div>
   </section>
 
-  <footer class="ms-footer">
-    © MindStrong Universe
-  </footer>
+  <!-- EXPERIENCE SELECTOR -->
+  <section class="ms-card ms-xpSelector ms-reveal">
+    <h2>How should this feel?</h2>
+    <p style="color:var(--muted,#6b7a99);font-size:13px;margin-top:4px;">Choose your learning experience. It changes how MindStrong presents everything.</p>
 
+    <div class="ms-xpGrid">
+
+      <button class="ms-xpCard is-active" data-xp="arcade">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🕹️</span>
+        <div class="ms-xpTitle">Arcade Competitive</div>
+        <p class="ms-xpDesc">Score points, beat the clock, climb leaderboards. Math as a high-speed sport.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="rpg">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🎮</span>
+        <div class="ms-xpTitle">RPG Progression</div>
+        <p class="ms-xpDesc">Level up, unlock spells, earn XP. Every lesson is a quest with real rewards.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="academic">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🧠</span>
+        <div class="ms-xpTitle">Academic Mastery</div>
+        <p class="ms-xpDesc">Mastery gates, spaced repetition, deep proof you own each concept.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="lms">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🏫</span>
+        <div class="ms-xpTitle">Full LMS</div>
+        <p class="ms-xpDesc">Gradebooks, teacher dashboards, parent reports. Your complete school OS.</p>
+      </button>
+
+    </div>
+  </section>
+
+  <footer class="ms-footer">© MindStrong Universe</footer>
 </main>
 
 <script>
-/* ================================
+/* ================================================================
    LOAD PROGRESS
-================================ */
+================================================================ */
+const m1Done  = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+const m1Count = new Set(m1Done).size;
+const rank    = localStorage.getItem("ms_ratio_rank");
+const m1Complete = m1Count >= 6;
 
-const m1 = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
-const rank = localStorage.getItem("ms_ratio_rank");
+/* ── Module 1 progress ── */
+document.getElementById("m1Count").textContent = m1Count;
+document.getElementById("m1Bar").style.width   = `${Math.round((m1Count/6)*100)}%`;
 
-/* Student Profile Panel */
-document.getElementById("profilePanel").innerHTML = `
-  <div>Module 1 Completed: ${m1.length}/6</div>
-  <div>Ratio Rank: ${rank || "None"}</div>
-`;
+if (m1Complete) {
+  const badge = document.getElementById("m1Badge");
+  badge.textContent = "✓";
+  badge.classList.add("is-done");
+}
 
-/* Module 1 Complete Badge */
-if(m1.length === 6){
-  document.getElementById("m1Badge").textContent = "✓";
-  document.getElementById("m1Badge").classList.add("ms-check");
-
-  /* Unlock Pre-Algebra */
+/* ── Unlock Pre-Algebra if M1 done ── */
+if (m1Complete) {
   document.getElementById("preBadge").textContent = "→";
-  document.getElementById("preBtn").outerHTML =
+  document.getElementById("preBadge").classList.remove("is-locked");
+  document.getElementById("preSubtitle").textContent = "Competitive lesson · Ratios";
+  document.getElementById("preLabel").textContent = "Unlocked";
+  document.getElementById("preAction").innerHTML =
     '<a class="ms-btn primary" href="./foundations/pre-algebra/">Open →</a>';
 }
-
-/* If Ratios beaten */
-if(rank){
-  document.getElementById("preBadge").textContent = "✓";
-  document.getElementById("preBadge").classList.add("ms-check");
+if (rank) {
+  const pb = document.getElementById("preBadge");
+  pb.textContent = "✓";
+  pb.classList.add("is-done");
+  document.getElementById("preLabel").textContent = "Complete";
 }
-</script>
 
+/* ================================================================
+   MODE CONFIG
+================================================================ */
+const MODES = {
+  arcade: {
+    emoji: "🕹️",
+    kicker: "🕹️ Arcade Competitive Mode",
+    title: "Your Learning Dashboard",
+    sub: "Score points. Climb the ranks. Beat your best.",
+    avatar: "🕹️",
+    profileTitle: "Player Profile",
+    profileName: "MathWarrior",
+    metaFn: (n) => `RANK: ${n >= 6 ? "Veteran" : n >= 3 ? "Fighter" : "Novice"} · Module 1: ${n}/6`,
+    xpLabelFn: (n) => `${n} / 6 lessons · ${n * 120} pts`,
+    statVal: (n) => n * 120,
+    statLbl: "Score",
+    foundationsLabel: "Active",
+    preLabel: "Locked",
+    btnText: "Open →",
+  },
+  rpg: {
+    emoji: "🎮",
+    kicker: "🎮 RPG Progression Mode",
+    title: "Your Quest Board",
+    sub: "Level up. Earn XP. Unlock Math Spells.",
+    avatar: "🧙",
+    profileTitle: "Character Sheet",
+    profileName: "MathWizard",
+    metaFn: (n) => `CLASS: Fraction Mage · LVL ${Math.max(1, Math.floor(n * 1.5))}`,
+    xpLabelFn: (n) => `${n * 480} / 2,880 XP · Level ${Math.max(1, Math.floor(n * 1.5))}`,
+    statVal: (n) => Math.max(1, Math.floor(n * 1.5)),
+    statLbl: "Level",
+    foundationsLabel: "Main Quest",
+    preLabel: "Locked",
+    btnText: "Begin Quest →",
+  },
+  academic: {
+    emoji: "🧠",
+    kicker: "🧠 Academic Mastery Mode",
+    title: "Mastery Dashboard",
+    sub: "Own every concept before you move on.",
+    avatar: "📚",
+    profileTitle: "Learner Profile",
+    profileName: "Scholar",
+    metaFn: (n) => `Mastery: ${n >= 6 ? "100" : Math.round((n/6)*100)}% · Streak: ${n} days`,
+    xpLabelFn: (n) => `${n} of 6 concepts mastered`,
+    statVal: (n) => `${Math.round((n/6)*100)}%`,
+    statLbl: "Mastery",
+    foundationsLabel: "In Progress",
+    preLabel: "Gate Locked",
+    btnText: "Study →",
+  },
+  lms: {
+    emoji: "🏫",
+    kicker: "🏫 Full LMS Mode",
+    title: "Student Dashboard",
+    sub: "Assignments. Progress. Reports.",
+    avatar: "🎓",
+    profileTitle: "Student Record",
+    profileName: "Student",
+    metaFn: (n) => `Grade: ${n >= 6 ? "A" : n >= 4 ? "B" : n >= 2 ? "C" : "—"} · Completion: ${Math.round((n/6)*100)}%`,
+    xpLabelFn: (n) => `${Math.round((n/6)*100)}% course completion`,
+    statVal: (n) => `${Math.round((n/6)*100)}%`,
+    statLbl: "Grade",
+    foundationsLabel: "Assigned",
+    preLabel: "Not Assigned",
+    btnText: "Open Course →",
+  },
+};
+
+/* ================================================================
+   APPLY MODE
+================================================================ */
+function applyMode(mode) {
+  const cfg = MODES[mode];
+  if (!cfg) return;
+
+  document.body.setAttribute("data-mode", mode);
+
+  /* Hero */
+  document.getElementById("modeKicker").textContent = cfg.kicker;
+  document.getElementById("heroTitle").textContent  = cfg.title;
+  document.getElementById("heroSub").textContent    = cfg.sub;
+
+  /* Profile */
+  document.getElementById("profileTitle").textContent  = cfg.profileTitle;
+  document.getElementById("profileAvatar").textContent = cfg.avatar;
+  document.getElementById("profileName").textContent   = cfg.profileName;
+  document.getElementById("profileMeta").textContent   = cfg.metaFn(m1Count);
+  document.getElementById("xpFill").style.width        = `${Math.round((m1Count/6)*100)}%`;
+  document.getElementById("xpLabel").textContent       = cfg.xpLabelFn(m1Count);
+  document.getElementById("statVal").textContent       = cfg.statVal(m1Count);
+  document.getElementById("statLbl").textContent       = cfg.statLbl;
+
+  /* Foundations */
+  document.getElementById("foundationsLabel").textContent = cfg.foundationsLabel;
+  const m1btn = document.getElementById("m1Btn");
+  if (m1btn) m1btn.textContent = cfg.btnText;
+
+  /* Pre-Algebra label */
+  if (!m1Complete) {
+    document.getElementById("preLabel").textContent = cfg.preLabel;
+  }
+
+  /* Mode buttons */
+  document.querySelectorAll(".ms-modeBtn").forEach(b => {
+    b.classList.toggle("is-active", b.dataset.mode === mode);
+  });
+
+  /* XP cards */
+  document.querySelectorAll(".ms-xpCard").forEach(c => {
+    c.classList.toggle("is-active", c.dataset.xp === mode);
+  });
+
+  /* Save */
+  try { localStorage.setItem("ms_xp_mode", mode); } catch {}
+}
+
+/* ── Mode button clicks ── */
+document.querySelectorAll(".ms-modeBtn").forEach(btn => {
+  btn.addEventListener("click", () => applyMode(btn.dataset.mode));
+});
+
+/* ── XP card clicks ── */
+document.querySelectorAll(".ms-xpCard").forEach(card => {
+  card.addEventListener("click", () => applyMode(card.dataset.xp));
+  card.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyMode(card.dataset.xp); }
+  });
+});
+
+/* ── Restore saved mode ── */
+try {
+  const saved = localStorage.getItem("ms_xp_mode");
+  if (saved && MODES[saved]) applyMode(saved);
+} catch {}
+
+/* ── Scroll reveals ── */
+(function() {
+  const els = document.querySelectorAll(".ms-reveal");
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+})();
+</script>
 </body>
 </html>
