@@ -11,19 +11,11 @@
 
   <style>
     body { font-family: 'Syne', sans-serif; }
-
-    /* ── Mode palette system ── */
-    :root {
-      --xp-a: #22d3ee;
-      --xp-b: #3b82f6;
-      --xp-glow: rgba(34,211,238,.15);
-    }
+    :root { --xp-a: #22d3ee; --xp-b: #3b82f6; --xp-glow: rgba(34,211,238,.15); }
     body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
     body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
     body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
     body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
-
-    /* Page glow */
     .ms-pageFX {
       position:fixed; inset:0; pointer-events:none; z-index:0;
       background:
@@ -32,15 +24,11 @@
       transition: background .6s ease;
     }
     .ms-wrap { position:relative; z-index:1; }
-
-    /* ── Mode bar ── */
     .ms-modebar {
       display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-      margin-bottom:24px;
-      padding:12px 16px;
+      margin-bottom:24px; padding:12px 16px;
       border:1px solid rgba(255,255,255,.08);
-      border-radius:14px;
-      background:rgba(255,255,255,.03);
+      border-radius:14px; background:rgba(255,255,255,.03);
     }
     .ms-modebar-label {
       font-family:'JetBrains Mono',monospace;
@@ -57,42 +45,28 @@
     .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
     .ms-modeBtn.is-active {
       color:var(--xp-a); border-color:var(--xp-a);
-      background:rgba(255,255,255,.07);
-      box-shadow:0 0 10px var(--xp-glow);
+      background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow);
     }
-
-    /* ── Mode kicker ── */
     .ms-modeKicker {
-      display:inline-block;
-      font-family:'JetBrains Mono',monospace;
+      display:inline-block; font-family:'JetBrains Mono',monospace;
       font-size:11px; letter-spacing:.12em;
       padding:4px 12px; border-radius:20px;
       border:1px solid var(--xp-a); color:var(--xp-a);
       margin-bottom:10px; transition:all .4s ease;
     }
-
-    /* ── Details / accordion ── */
     details.ms-card { margin-bottom:24px; }
     summary { list-style:none; cursor:pointer; }
     summary::-webkit-details-marker { display:none; }
-    .summary-head {
-      display:flex; align-items:center;
-      justify-content:space-between; gap:12px;
-    }
+    .summary-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
     .summary-left { display:flex; align-items:center; gap:10px; }
     .chev { transition:transform .25s ease; }
     details[open] .chev { transform:rotate(90deg); }
-
-    /* ── Lesson items ── */
     .ms-item {
-      display:flex; align-items:center;
-      justify-content:space-between; gap:12px;
-      padding:12px 0;
-      border-bottom:1px solid var(--stroke,rgba(255,255,255,.09));
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:12px 0; border-bottom:1px solid var(--stroke,rgba(255,255,255,.09));
     }
     .ms-item:last-child { border-bottom:none; }
     .ms-row { display:flex; align-items:center; gap:10px; }
-
     .ms-badge {
       width:28px; height:28px; border-radius:8px;
       display:inline-flex; align-items:center; justify-content:center;
@@ -104,12 +78,9 @@
     .ms-check {
       border-color:var(--xp-a) !important;
       background:rgba(255,255,255,.1) !important;
-      box-shadow:0 0 0 3px var(--xp-glow);
-      color:var(--xp-a);
+      box-shadow:0 0 0 3px var(--xp-glow); color:var(--xp-a);
     }
     .ms-badge.locked { opacity:.35; }
-
-    /* ── Progress bar ── */
     .ms-progress {
       margin:16px 0; padding:12px;
       border:1px solid var(--stroke,rgba(255,255,255,.09));
@@ -125,11 +96,8 @@
       border-radius:999px; transition:width .6s ease;
     }
     .ms-subtle { color:var(--muted,#6b7a99); font-size:12px; }
-
-    /* ── Buttons ── */
     .ms-btn {
-      font-family:'Syne',sans-serif;
-      font-size:13px; font-weight:700;
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
       padding:9px 18px; border-radius:10px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06); color:#e8edf5;
@@ -145,8 +113,6 @@
       transition:transform .18s ease, box-shadow .18s ease, background .5s ease;
     }
     .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
-
-    /* ── Mode flavor label ── */
     .ms-flavorTag {
       font-family:'JetBrains Mono',monospace;
       font-size:9px; letter-spacing:.13em; text-transform:uppercase;
@@ -155,25 +121,18 @@
       opacity:.65; display:inline-block; margin-left:8px;
       vertical-align:middle; transition:all .4s ease;
     }
-
-    /* ── Lesson mode flavor subtitle ── */
     .ms-lessonMode {
       font-family:'JetBrains Mono',monospace;
       font-size:10px; color:var(--xp-a);
-      margin-top:2px; opacity:.7;
-      transition:color .4s ease;
+      margin-top:2px; opacity:.7; transition:color .4s ease;
     }
-
-    /* ── Next lesson CTA ── */
     .ms-nextLesson {
       display:flex; align-items:center; gap:14px;
       padding:14px 16px;
-      border:1px solid var(--xp-a);
-      border-radius:14px;
+      border:1px solid var(--xp-a); border-radius:14px;
       background:rgba(255,255,255,.04);
       box-shadow:0 0 20px var(--xp-glow);
-      margin-bottom:8px;
-      text-decoration:none;
+      margin-bottom:8px; text-decoration:none;
       transition:transform .18s ease, box-shadow .18s ease;
     }
     .ms-nextLesson:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--xp-glow); }
@@ -184,24 +143,16 @@
       color:var(--xp-a); margin-bottom:3px;
     }
     .ms-nextLesson-title { font-weight:700; font-size:14px; }
-
-    /* ── Ratio video preview ── */
     .ratio-preview { position:relative; display:inline-block; width:100%; }
     .ratio-preview video { transition:transform .2s ease, box-shadow .2s ease; }
-    .ratio-preview:hover video {
-      transform:scale(1.02);
-      box-shadow:0 12px 28px rgba(0,0,0,.38);
-    }
+    .ratio-preview:hover video { transform:scale(1.02); box-shadow:0 12px 28px rgba(0,0,0,.38); }
     .ms-glowDone {
       border-color:var(--xp-a) !important;
       box-shadow:0 0 0 3px var(--xp-glow), 0 0 22px var(--xp-glow) !important;
     }
-
-    /* ── Scroll reveals ── */
     .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease, transform .5s ease; }
     .ms-reveal.is-in { opacity:1; transform:translateY(0); }
     @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
-
     @media(max-width:540px){
       .ms-modebar { gap:6px; }
       .ms-modeBtn { font-size:10px; padding:5px 10px; }
@@ -245,7 +196,7 @@
     <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
   </div>
 
-  <!-- NEXT LESSON SMART CTA (shown when in-progress) -->
+  <!-- NEXT LESSON SMART CTA -->
   <div id="nextLessonWrap" style="display:none;" class="ms-reveal">
     <a class="ms-nextLesson" id="nextLessonLink" href="#">
       <span class="ms-nextLesson-icon" id="nextLessonIcon">▶</span>
@@ -278,7 +229,6 @@
     </div>
 
     <div class="ms-list">
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b1">1</span>
@@ -290,7 +240,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-1.html" id="lb1">Open</a>
       </div>
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b2">2</span>
@@ -302,7 +251,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-2.html" id="lb2">Open</a>
       </div>
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b3">3</span>
@@ -314,7 +262,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-3.html" id="lb3">Open</a>
       </div>
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b4">4</span>
@@ -326,7 +273,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-4.html" id="lb4">Open</a>
       </div>
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b5">5</span>
@@ -338,7 +284,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-5.html" id="lb5">Open</a>
       </div>
-
       <div class="ms-item">
         <div class="ms-row">
           <span class="ms-badge" id="b6">6</span>
@@ -350,7 +295,6 @@
         </div>
         <a class="ms-btn" href="./module-1/lesson-6.html" id="lb6">Open</a>
       </div>
-
     </div>
   </details>
 
@@ -377,7 +321,7 @@
           poster="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio.png"
           style="width:100%;max-width:360px;display:block;margin:0 auto;border-radius:12px;cursor:pointer;"
           id="ratioVideo"
-          onclick="window.location.href='./ratio/'"
+          onclick="window.location.href='./pre-algebra/'"
         >
           <source src="https://pgator82.github.io/mindstrong-assets/hack-my-math/world-7/ratio-visual.mp4" type="video/mp4"/>
         </video>
@@ -402,9 +346,6 @@
 </main>
 
 <script>
-/* ════════════════════════════════════════
-   PROGRESS
-════════════════════════════════════════ */
 const TOTAL   = 6;
 const doneArr = (() => {
   try { return JSON.parse(localStorage.getItem("ms_m1_done") || "[]"); } catch { return []; }
@@ -414,11 +355,9 @@ const doneCount  = doneSet.size;
 const m1Complete = doneCount >= TOTAL;
 const ratioRank  = localStorage.getItem("ms_ratio_rank");
 
-/* Module 1 progress bar */
 document.getElementById("m1Count").textContent = doneCount;
 document.getElementById("m1Bar").style.width   = `${Math.round((doneCount/TOTAL)*100)}%`;
 
-/* Per-lesson badges */
 for(let i=1;i<=TOTAL;i++){
   if(doneSet.has(i)){
     const b = document.getElementById("b"+i);
@@ -426,19 +365,18 @@ for(let i=1;i<=TOTAL;i++){
   }
 }
 
-/* Module 1 header badge */
 if(m1Complete){
   const hb = document.getElementById("m1HeaderBadge");
   hb.textContent="✓"; hb.classList.add("ms-check");
 }
 
-/* Pre-Algebra unlock */
+/* ── Pre-Algebra unlock — links to pre-algebra hub, NOT directly to ratio ── */
 if(m1Complete){
   document.getElementById("ratiosBadge").textContent = "→";
-  document.getElementById("ratiosSubtitle").textContent = "Competitive lesson • Boss fight inside";
+  document.getElementById("ratiosSubtitle").textContent = "Ratios • Boss fight • More coming soon";
   document.getElementById("preFlavorTag").textContent = "Unlocked";
   document.getElementById("ratiosAction").innerHTML =
-    '<a class="ms-btn primary" href="./ratio/">Open →</a>';
+    '<a class="ms-btn primary" href="./pre-algebra/">Open →</a>';
   document.getElementById("prealg").open = true;
 } else {
   document.getElementById("module1").open = true;
@@ -450,15 +388,15 @@ if(ratioRank){
   document.getElementById("preFlavorTag").textContent = "Complete";
 }
 
-/* ── Smart "Next Lesson" button ── */
+/* Smart Next Lesson */
 const nextLesson = (() => {
   const lessons = [
-    {n:1,title:"Numbers Are Stories",       href:"./module-1/lesson-1.html",icon:"📖"},
-    {n:2,title:"Place Value Is a Volume Knob",href:"./module-1/lesson-2.html",icon:"🔊"},
-    {n:3,title:"Expanded Form",              href:"./module-1/lesson-3.html",icon:"🧱"},
-    {n:4,title:"Compare Without Guessing",   href:"./module-1/lesson-4.html",icon:"⚖️"},
-    {n:5,title:"Rounding That Makes Sense",  href:"./module-1/lesson-5.html",icon:"🎯"},
-    {n:6,title:"Estimation as a Superpower", href:"./module-1/lesson-6.html",icon:"⚡"},
+    {n:1,title:"Numbers Are Stories",         href:"./module-1/lesson-1.html",icon:"📖"},
+    {n:2,title:"Place Value Is a Volume Knob", href:"./module-1/lesson-2.html",icon:"🔊"},
+    {n:3,title:"Expanded Form",                href:"./module-1/lesson-3.html",icon:"🧱"},
+    {n:4,title:"Compare Without Guessing",     href:"./module-1/lesson-4.html",icon:"⚖️"},
+    {n:5,title:"Rounding That Makes Sense",    href:"./module-1/lesson-5.html",icon:"🎯"},
+    {n:6,title:"Estimation as a Superpower",   href:"./module-1/lesson-6.html",icon:"⚡"},
   ];
   if(m1Complete) return null;
   return lessons.find(l => !doneSet.has(l.n)) || null;
@@ -466,75 +404,54 @@ const nextLesson = (() => {
 
 if(nextLesson && doneCount > 0){
   document.getElementById("nextLessonWrap").style.display = "block";
-  document.getElementById("nextLessonLink").href  = nextLesson.href;
-  document.getElementById("nextLessonIcon").textContent = nextLesson.icon;
-  document.getElementById("nextLessonTitle").textContent = nextLesson.title;
+  document.getElementById("nextLessonLink").href           = nextLesson.href;
+  document.getElementById("nextLessonIcon").textContent    = nextLesson.icon;
+  document.getElementById("nextLessonTitle").textContent   = nextLesson.title;
 }
 
-/* ════════════════════════════════════════
-   MODE CONFIG
-════════════════════════════════════════ */
 const MODES = {
   arcade: {
-    kicker:       "🕹️ Arcade Competitive Mode",
-    heroTitle:    "Foundations Blitz",
-    heroSub:      "Speed through lessons. Score points. Beat your streak.",
-    m1Tag:        "Sprint",
-    preTag:       m1Complete ? "Boss Fight" : "Locked",
-    m1Sub:        "6 speed rounds • required",
-    progressLabel:(n) => `${n} / 6 rounds cleared`,
-    lessonMode:   "⚡ Speed round — beat the clock",
-    ratiosMode:   "⚔️ Boss fight mode",
-    openBtn:      "Sprint →",
-    continueBtn:  "Resume →",
+    kicker:"🕹️ Arcade Competitive Mode", heroTitle:"Foundations Blitz",
+    heroSub:"Speed through lessons. Score points. Beat your streak.",
+    m1Tag:"Sprint", preTag:m1Complete?"Boss Fight":"Locked",
+    m1Sub:"6 speed rounds • required",
+    progressLabel:(n)=>`${n} / 6 rounds cleared`,
+    lessonMode:"⚡ Speed round — beat the clock", ratiosMode:"⚔️ Boss fight mode",
+    openBtn:"Sprint →", continueBtn:"Resume →",
   },
   rpg: {
-    kicker:       "🎮 RPG Progression Mode",
-    heroTitle:    "Foundations Quest",
-    heroSub:      "Complete quests. Earn XP. Level your Math Wizard.",
-    m1Tag:        "Main Quest",
-    preTag:       m1Complete ? "Side Quest" : "Locked",
-    m1Sub:        "6 quests • required",
-    progressLabel:(n) => `${n} / 6 quests complete`,
-    lessonMode:   "🗺️ Quest — earn XP on complete",
-    ratiosMode:   "⚔️ Boss quest — rare loot inside",
-    openBtn:      "Begin Quest →",
-    continueBtn:  "Continue Quest →",
+    kicker:"🎮 RPG Progression Mode", heroTitle:"Foundations Quest",
+    heroSub:"Complete quests. Earn XP. Level your Math Wizard.",
+    m1Tag:"Main Quest", preTag:m1Complete?"Side Quest":"Locked",
+    m1Sub:"6 quests • required",
+    progressLabel:(n)=>`${n} / 6 quests complete`,
+    lessonMode:"🗺️ Quest — earn XP on complete", ratiosMode:"⚔️ Boss quest — rare loot inside",
+    openBtn:"Begin Quest →", continueBtn:"Continue Quest →",
   },
   academic: {
-    kicker:       "🧠 Academic Mastery Mode",
-    heroTitle:    "Math Foundations",
-    heroSub:      "Fix number sense first. Everything else stacks cleanly after.",
-    m1Tag:        "Required",
-    preTag:       m1Complete ? "Unlocked" : "Gate Locked",
-    m1Sub:        "6 lessons • required",
-    progressLabel:(n) => `${n} / 6 mastered`,
-    lessonMode:   "📖 Mastery lesson — gate unlocks on completion",
-    ratiosMode:   "🔬 Deep mastery lesson",
-    openBtn:      "Study →",
-    continueBtn:  "Continue →",
+    kicker:"🧠 Academic Mastery Mode", heroTitle:"Math Foundations",
+    heroSub:"Fix number sense first. Everything else stacks cleanly after.",
+    m1Tag:"Required", preTag:m1Complete?"Unlocked":"Gate Locked",
+    m1Sub:"6 lessons • required",
+    progressLabel:(n)=>`${n} / 6 mastered`,
+    lessonMode:"📖 Mastery lesson — gate unlocks on completion", ratiosMode:"🔬 Deep mastery lesson",
+    openBtn:"Study →", continueBtn:"Continue →",
   },
   lms: {
-    kicker:       "🏫 Full LMS Mode",
-    heroTitle:    "Foundations Course",
-    heroSub:      "Track completion. Report progress. Assigned by your teacher.",
-    m1Tag:        "Assigned",
-    preTag:       m1Complete ? "Available" : "Not Assigned",
-    m1Sub:        "6 assignments • required",
-    progressLabel:(n) => `${n} / 6 submitted`,
-    lessonMode:   "📋 Assignment — submit for grade",
-    ratiosMode:   "📝 Graded lesson",
-    openBtn:      "Open Assignment →",
-    continueBtn:  "Continue →",
+    kicker:"🏫 Full LMS Mode", heroTitle:"Foundations Course",
+    heroSub:"Track completion. Report progress. Assigned by your teacher.",
+    m1Tag:"Assigned", preTag:m1Complete?"Available":"Not Assigned",
+    m1Sub:"6 assignments • required",
+    progressLabel:(n)=>`${n} / 6 submitted`,
+    lessonMode:"📋 Assignment — submit for grade", ratiosMode:"📝 Graded lesson",
+    openBtn:"Open Assignment →", continueBtn:"Continue →",
   },
 };
 
 function applyMode(mode){
   const cfg = MODES[mode];
   if(!cfg) return;
-
   document.body.setAttribute("data-mode", mode);
-
   document.getElementById("modeKicker").textContent  = cfg.kicker;
   document.getElementById("heroTitle").textContent   = cfg.heroTitle;
   document.getElementById("heroSub").textContent     = cfg.heroSub;
@@ -542,60 +459,39 @@ function applyMode(mode){
   document.getElementById("m1HeaderSub").textContent = cfg.m1Sub;
   document.getElementById("m1ProgressLabel").innerHTML =
     `<b id="m1Count">${doneCount}</b> / 6 — ` + cfg.progressLabel(doneCount).replace(`${doneCount} / 6 `,"");
-
-  /* Pre-alg tag — only update label, not unlock logic */
-  if(!m1Complete){
-    document.getElementById("preFlavorTag").textContent = cfg.preTag;
-  }
-
-  /* Lesson mode flavor lines */
+  if(!m1Complete) document.getElementById("preFlavorTag").textContent = cfg.preTag;
   for(let i=1;i<=TOTAL;i++){
     const el = document.getElementById("lm"+i);
     if(el) el.textContent = cfg.lessonMode;
   }
   const rm = document.getElementById("ratiosMode");
   if(rm) rm.textContent = cfg.ratiosMode;
-
-  /* Open buttons */
   for(let i=1;i<=TOTAL;i++){
     const lb = document.getElementById("lb"+i);
-    if(lb && !doneSet.has(i)){
-      lb.textContent = cfg.openBtn;
-    }
+    if(lb && !doneSet.has(i)) lb.textContent = cfg.openBtn;
   }
-
-  /* Next lesson button label */
   const nll = document.getElementById("nextLessonLabel");
-  if(nll) nll.textContent = mode === "rpg" ? "Next Quest" : mode === "arcade" ? "Next Round" : mode === "lms" ? "Next Assignment" : "Continue";
-
-  /* Mode buttons */
+  if(nll) nll.textContent = mode==="rpg"?"Next Quest":mode==="arcade"?"Next Round":mode==="lms"?"Next Assignment":"Continue";
   document.querySelectorAll(".ms-modeBtn").forEach(b=>{
     b.classList.toggle("is-active", b.dataset.mode === mode);
   });
-
   try{ localStorage.setItem("ms_xp_mode", mode); }catch{}
 }
 
-/* Wire mode buttons */
 document.querySelectorAll(".ms-modeBtn").forEach(btn=>{
   btn.addEventListener("click", ()=> applyMode(btn.dataset.mode));
 });
 
-/* Restore saved mode */
 try{
   const saved = localStorage.getItem("ms_xp_mode");
   if(saved && MODES[saved]) applyMode(saved);
   else applyMode("academic");
 }catch{ applyMode("academic"); }
 
-/* Ratio video glow if done */
 try{
-  if(m1Complete){
-    document.getElementById("ratioVideo")?.classList.add("ms-glowDone");
-  }
+  if(m1Complete) document.getElementById("ratioVideo")?.classList.add("ms-glowDone");
 }catch(e){}
 
-/* Scroll reveals */
 (function(){
   const els = document.querySelectorAll(".ms-reveal");
   const io = new IntersectionObserver(entries=>{
