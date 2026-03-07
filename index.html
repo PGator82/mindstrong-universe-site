@@ -1,745 +1,801 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>MindStrong Universe</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./theme.css" />
-
-  <!-- Favicon / App Icon -->
-  <link rel="icon" type="image/svg+xml" href="./Mindstrong.svg" />
-  <link rel="apple-touch-icon" href="./Mindstrong.svg" />
-  <meta name="theme-color" content="#0b0f1a" />
-
+  <meta charset="UTF-8"/>
+  <title>MindStrong Universe — Math That Hits Different</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    /* Landing-only extras (still using theme tokens) */
-    .ms-heroGrid{
-      display:grid; grid-template-columns: 7fr 5fr; gap:14px; align-items:stretch;
-      margin-top:18px;
-      position: relative;
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+
+    :root {
+      --bg:   #060810;
+      --bg2:  #0b0e1a;
+      --border: rgba(255,255,255,.07);
+      --text: #e4eaf5;
+      --muted:#5a6a88;
+      --xp-a: #22d3ee;
+      --xp-b: #3b82f6;
+      --xp-glow: rgba(34,211,238,.18);
+    }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.18); }
+    body[data-mode="rpg"]      { --xp-a:#c084fc; --xp-b:#7c3aed; --xp-glow:rgba(192,132,252,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.18); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.15); }
+
+    html { scroll-behavior:smooth; }
+    body {
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Syne',sans-serif;
+      overflow-x:hidden;
     }
 
-    /* Brand logo + subtle hover glow */
-    .ms-brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .ms-brandLogo{
-      width:22px;
-      height:22px;
-      display:inline-block;
-      margin-right:0;
-      filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
-      transition: transform .18s ease, filter .18s ease;
-      transform-origin:center;
-    }
-    .ms-brand:hover .ms-brandLogo{
-      transform: translateY(-1px) scale(1.03);
-      filter:
-        drop-shadow(0 10px 22px rgba(0,0,0,.45))
-        drop-shadow(0 0 10px rgba(34,211,238,.22))
-        drop-shadow(0 0 18px rgba(124,58,237,.18));
-    }
-
-    /* Animated section reveals */
-    .ms-reveal{
-      opacity:0;
-      transform: translateY(14px);
-      transition: opacity .55s ease, transform .55s ease;
-    }
-    .ms-reveal.is-in{
-      opacity:1;
-      transform: translateY(0);
-    }
-    @media (prefers-reduced-motion: reduce){
-      .ms-reveal{ opacity:1; transform:none; transition:none; }
-    }
-
-    /* Spell-tech background */
-    .ms-heroFX{
-      position:absolute; inset:-24px -8px auto -8px;
-      height: 280px;
-      pointer-events:none;
-      border-radius: 22px;
-      background:
-        radial-gradient(1200px 380px at 25% 20%, rgba(124,58,237,.26), transparent 60%),
-        radial-gradient(900px 300px at 80% 10%, rgba(34,211,238,.18), transparent 55%),
-        radial-gradient(700px 340px at 60% 60%, rgba(16,185,129,.10), transparent 60%);
-      filter: blur(0px);
-      opacity:.95;
-    }
-
-    /* Right-side holo collage */
-    .ms-holoStage{
-      position: relative;
-      overflow: hidden;
-    }
-
-    .ms-holoBg{
-      position:absolute; inset:0;
-      background:
-        radial-gradient(500px 220px at 10% 20%, rgba(255,255,255,.10), transparent 60%),
-        radial-gradient(380px 200px at 90% 10%, rgba(255,255,255,.06), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
-      opacity: .9;
+    /* ═══ CANVAS ═══ */
+    #fx-canvas {
+      position:fixed; inset:0; z-index:0;
       pointer-events:none;
     }
 
-    .ms-holoSeal{
-      width: 100%;
-      max-width: 220px;
-      display:block;
-      margin: 4px auto 10px;
-      opacity: .9;
-      filter: drop-shadow(0 10px 24px rgba(0,0,0,.35));
+    /* ═══ GLOBAL GLOW BLOBS ═══ */
+    .blob-wrap {
+      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
     }
-
-    .ms-holoCards{
-      position: relative;
-      height: 320px;
-      border: 1px solid var(--stroke);
-      border-radius: calc(var(--r) + 6px);
-      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      box-shadow: var(--shadow);
-      overflow:hidden;
+    .blob {
+      position:absolute; border-radius:50%;
+      filter:blur(120px); opacity:.35;
+      transition:background 1s ease;
     }
+    .blob-1 { width:700px; height:700px; top:-200px; left:-200px;
+               background:radial-gradient(circle, var(--xp-b) 0%, transparent 70%); }
+    .blob-2 { width:600px; height:600px; bottom:-150px; right:-100px;
+               background:radial-gradient(circle, var(--xp-a) 0%, transparent 70%); }
+    .blob-3 { width:400px; height:400px; top:50%; left:50%; transform:translate(-50%,-50%);
+               background:radial-gradient(circle, rgba(124,58,237,.5) 0%, transparent 70%); }
 
-    .ms-holoScan{
-      position:absolute; inset:-40%;
-      background: linear-gradient(90deg, transparent, rgba(34,211,238,.14), transparent);
-      transform: rotate(14deg);
-      animation: scan 5.8s linear infinite;
-      opacity: .8;
-      pointer-events:none;
+    /* ═══ NAV ═══ */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 40px;
+      background:rgba(6,8,16,.7);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+      transition:border-color .4s;
     }
-    @keyframes scan{
-      0%{ transform: translateX(-30%) rotate(14deg); }
-      100%{ transform: translateX(30%) rotate(14deg); }
+    .nav-brand {
+      display:flex; align-items:center; gap:10px;
+      font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700;
+      color:var(--xp-a); text-decoration:none;
+      transition:color .4s;
     }
-
-    .ms-cardImg{
-      position:absolute;
-      width: 68%;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.2);
-      box-shadow: 0 18px 60px rgba(0,0,0,.42);
-      transform: translate3d(0,0,0) rotate(0deg);
-      transition: transform .14s ease, opacity .6s ease;
-      will-change: transform, opacity;
-      user-select:none;
-      pointer-events:none;
-      opacity:.92;
+    .nav-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--xp-a); box-shadow:0 0 8px var(--xp-a);
+      animation:pulse 2.4s ease-in-out infinite;
+      transition:background .4s, box-shadow .4s;
     }
-    .ms-cardImg.is-fading{ opacity:.10; }
+    @keyframes pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:.4; transform:scale(.6)} }
+    .nav-links { display:flex; gap:28px; }
+    .nav-link {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+      color:var(--muted); text-decoration:none;
+      transition:color .2s;
+    }
+    .nav-link:hover { color:var(--text); }
+    .nav-link.active { color:var(--xp-a); }
 
-    .ms-imgA{ top: 18px; left: 14px; width: 72%; }
-    .ms-imgB{ top: 96px; right: 10px; width: 70%; opacity:.90; }
-    .ms-imgC{ bottom: 14px; left: 24px; width: 64%; opacity:.88; }
+    /* ═══ SECTIONS WRAPPER ═══ */
+    main { position:relative; z-index:1; }
 
-    .ms-holoCaption{
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--muted);
+    /* ═══ HERO ═══ */
+    #hero {
+      min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
+      padding:120px 24px 80px;
     }
+    .hero-eyebrow {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--xp-a); margin-bottom:24px;
+      display:flex; align-items:center; gap:8px;
+      transition:color .4s;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content:''; flex:1; max-width:40px; height:1px;
+      background:var(--xp-a); opacity:.5; transition:background .4s;
+    }
+    .hero-h1 {
+      font-family:'Orbitron',sans-serif;
+      font-size:clamp(42px,8vw,96px);
+      font-weight:900; line-height:1.0;
+      letter-spacing:-.02em;
+      background:linear-gradient(135deg, var(--text) 0%, var(--xp-a) 50%, var(--xp-b) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+      margin-bottom:28px;
+      transition:background .8s;
+    }
+    .hero-sub {
+      max-width:560px;
+      font-size:clamp(16px,2.5vw,20px); font-weight:400;
+      color:var(--muted); line-height:1.65;
+      margin-bottom:52px;
+    }
+    .hero-cta-row {
+      display:flex; gap:14px; flex-wrap:wrap; justify-content:center;
+      margin-bottom:80px;
+    }
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+      padding:14px 28px; border-radius:12px;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      color:#06080e; border:none; cursor:pointer; text-decoration:none;
+      box-shadow:0 6px 30px var(--xp-glow);
+      transition:transform .2s, box-shadow .2s, background .6s;
+    }
+    .btn-primary:hover { transform:translateY(-3px); box-shadow:0 12px 40px var(--xp-glow); }
+    .btn-secondary {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+      padding:14px 28px; border-radius:12px;
+      background:rgba(255,255,255,.05); color:var(--text);
+      border:1px solid var(--border); cursor:pointer; text-decoration:none;
+      transition:background .2s, border-color .2s;
+    }
+    .btn-secondary:hover { background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.15); }
 
-    /* Lesson progress ring */
-    .ms-progressRow{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-top:12px;
-      padding:10px 12px;
-      border:1px solid var(--stroke);
-      border-radius: calc(var(--r) + 2px);
-      background: rgba(255,255,255,.03);
+    /* ── Progress ring ── */
+    .hero-progress {
+      display:flex; align-items:center; gap:16px;
+      padding:14px 20px; border-radius:16px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.03);
+      backdrop-filter:blur(10px);
     }
-
-    .ms-ring{
-      width:44px;
-      height:44px;
-      position:relative;
-      flex:0 0 auto;
-    }
-
-    .ms-ringSvg{
-      width:44px;
-      height:44px;
-      transform: rotate(-90deg);
-    }
-
-    .ms-ringTrack{
-      fill:none;
-      stroke: rgba(255,255,255,.12);
-      stroke-width:4;
-    }
-
-    .ms-ringBar{
-      fill:none;
-      stroke: rgba(34,211,238,.55);
-      stroke-width:4;
-      stroke-linecap: round;
-      stroke-dasharray: 113.097;
-      stroke-dashoffset: 113.097;
-      transition: stroke-dashoffset .6s ease;
-      filter: drop-shadow(0 0 10px rgba(34,211,238,.15));
-    }
-
-    .ms-ringText{
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      gap:2px;
-    }
-    .ms-ringText b{ font-size:13px; }
-    .ms-ringText span{ color:var(--muted); }
-
-    .ms-progressTitle{ font-weight:800; font-size:13px; }
-    .ms-progressSub{ color:var(--muted); font-size:12px; margin-top:2px; }
-
-    /* Small enhancements reused */
-    .ms-metric{display:flex; flex-direction:column; gap:2px}
-    .ms-metric b{font-size:22px}
-    .ms-metric span{color:var(--muted); font-size:12px}
-    .ms-stack{display:grid; gap:12px}
-    .ms-miniCard{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: var(--r);
-      padding:14px;
-    }
-    .ms-miniCard h3{margin:0 0 6px; font-size:14px}
-    .ms-miniCard p{margin:0; color:var(--muted); font-size:13px}
-    .ms-sectionTitle{margin:30px 0 10px; font-size:18px}
-    .ms-steps{display:grid; grid-template-columns: repeat(3,1fr); gap:14px; margin-top:12px}
-    .ms-stepNum{
-      width:26px; height:26px; border-radius:8px;
-      display:inline-flex; align-items:center; justify-content:center;
-      border:1px solid var(--stroke); background: rgba(255,255,255,.06);
-      margin-right:8px; font-weight:800;
-    }
-    .ms-cta{
-      margin-top:26px;
-      border:1px solid var(--stroke);
-      background: linear-gradient(135deg, rgba(124,58,237,.20), rgba(34,211,238,.12));
-      border-radius: calc(var(--r) + 6px);
-      padding:18px;
-      box-shadow: var(--shadow);
-    }
-
-    /* ─── Experience Selector ──────────────────────────────────────────── */
-    .ms-xpSection{
-      margin-top: 36px;
-    }
-
-    .ms-xpHeading{
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--muted, #94a3b8);
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      margin: 0 0 6px;
-    }
-
-    .ms-xpQuestion{
-      font-size: 22px;
-      font-weight: 800;
-      margin: 0 0 18px;
-      line-height: 1.3;
-    }
-
-    .ms-xpGrid{
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .ms-xpCard{
-      position: relative;
-      border: 1px solid var(--stroke, rgba(255,255,255,.12));
-      border-radius: 16px;
-      padding: 18px 16px 16px;
-      background: rgba(255,255,255,.03);
-      cursor: pointer;
-      transition:
-        border-color .22s ease,
-        background .22s ease,
-        transform .18s ease,
-        box-shadow .22s ease;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    .ms-xpCard::before{
-      content:'';
+    .ring-wrap { position:relative; width:52px; height:52px; }
+    .ring-wrap svg { position:absolute; inset:0; transform:rotate(-90deg); }
+    .ring-bg { stroke:rgba(255,255,255,.08); fill:none; stroke-width:3; }
+    .ring-fill { fill:none; stroke-width:3; stroke-linecap:round;
+                 stroke:var(--xp-a);
+                 stroke-dasharray:126; stroke-dashoffset:126;
+                 transition:stroke-dashoffset 1.2s ease, stroke .6s; }
+    .ring-txt {
       position:absolute; inset:0;
-      opacity:0;
-      transition: opacity .3s ease;
-      border-radius: inherit;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',monospace; font-size:12px; font-weight:700;
+      color:var(--xp-a); transition:color .4s;
+    }
+    .progress-info { text-align:left; }
+    .progress-info b { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; display:block; }
+    .progress-info span { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+
+    /* ═══ HOLO CARDS ═══ */
+    #cards {
+      padding:80px 24px 100px;
+      display:flex; flex-direction:column; align-items:center;
+    }
+    .section-label {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--muted); margin-bottom:40px;
+    }
+    .holo-stage {
+      position:relative; width:340px; height:400px;
+      perspective:800px; cursor:pointer;
+    }
+    .holo-card {
+      position:absolute; inset:0; border-radius:22px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 60px var(--xp-glow);
+      transition:opacity .8s ease, transform .8s ease, box-shadow .6s;
+      backface-visibility:hidden;
+    }
+    .holo-card img { width:100%; height:100%; object-fit:cover; display:block; }
+    .holo-card .holo-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(135deg,
+        rgba(255,255,255,.04) 0%,
+        transparent 40%,
+        rgba(255,255,255,.07) 100%);
+      mix-blend-mode:screen;
+    }
+    .holo-card.back1 { transform:translateX(-30px) translateY(20px) rotateY(6deg); opacity:.5; }
+    .holo-card.back2 { transform:translateX(30px)  translateY(10px) rotateY(-6deg); opacity:.35; }
+
+    /* ═══ WHAT MAKES IT DIFFERENT ═══ */
+    #different {
+      padding:100px 24px;
+      max-width:1100px; margin:0 auto;
+    }
+    .section-header { text-align:center; margin-bottom:64px; }
+    .section-eyebrow {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+      color:var(--xp-a); margin-bottom:16px; transition:color .4s;
+    }
+    .section-h2 {
+      font-family:'Orbitron',sans-serif;
+      font-size:clamp(28px,4vw,48px); font-weight:900;
+      line-height:1.1;
+    }
+    .diff-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      gap:16px;
+    }
+    .diff-card {
+      padding:28px 24px; border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.02);
+      transition:border-color .3s, background .3s, transform .3s;
+      position:relative; overflow:hidden;
+    }
+    .diff-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a));
+      opacity:0; transition:opacity .3s;
+    }
+    .diff-card:hover { border-color:rgba(255,255,255,.14); background:rgba(255,255,255,.04); transform:translateY(-4px); }
+    .diff-card:hover::before { opacity:1; }
+    .diff-icon { font-size:28px; margin-bottom:14px; }
+    .diff-title { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; margin-bottom:8px; }
+    .diff-body { font-size:13px; color:var(--muted); line-height:1.65; }
+
+    /* ═══ HOW IT WORKS ═══ */
+    #how {
+      padding:100px 24px;
+      max-width:800px; margin:0 auto;
+    }
+    .steps { display:flex; flex-direction:column; gap:0; }
+    .step {
+      display:grid; grid-template-columns:60px 1fr;
+      gap:24px; align-items:start;
+      padding:32px 0;
+      border-bottom:1px solid var(--border);
+    }
+    .step:last-child { border-bottom:none; }
+    .step-num {
+      width:50px; height:50px; border-radius:14px; flex-shrink:0;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900; color:#06080e;
+      box-shadow:0 6px 20px var(--xp-glow);
+      transition:background .6s, box-shadow .6s;
+    }
+    .step-title { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px; }
+    .step-body { font-size:14px; color:var(--muted); line-height:1.65; }
+
+    /* ═══ EXPERIENCE SELECTOR ═══ */
+    #experience {
+      padding:100px 24px;
+      max-width:1000px; margin:0 auto;
+    }
+    .xp-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+      gap:14px; margin-top:48px;
+    }
+    .xp-card {
+      padding:24px 20px; border-radius:16px;
+      border:2px solid var(--border);
+      background:rgba(255,255,255,.02);
+      cursor:pointer; transition:all .25s ease;
+      position:relative; overflow:hidden;
+    }
+    .xp-card .xp-check {
+      position:absolute; top:12px; right:12px;
+      width:22px; height:22px; border-radius:50%;
+      background:transparent; border:2px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; transition:all .3s;
+    }
+    .xp-card.selected { border-color:var(--xp-a); background:rgba(255,255,255,.05); box-shadow:0 0 0 4px var(--xp-glow); }
+    .xp-card.selected .xp-check { background:var(--xp-a); border-color:var(--xp-a); color:#06080e; }
+    .xp-emoji { font-size:28px; margin-bottom:12px; }
+    .xp-name { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; margin-bottom:6px; }
+    .xp-desc { font-size:12px; color:var(--muted); line-height:1.55; }
+
+    /* Mode banner */
+    .xp-banner {
+      display:none; align-items:center; gap:14px;
+      margin-top:24px; padding:16px 20px; border-radius:14px;
+      border:1px solid var(--xp-a); background:rgba(255,255,255,.03);
+      transition:all .5s;
+    }
+    .xp-banner.show { display:flex; }
+    .xp-banner-icon { font-size:24px; }
+    .xp-banner-text b { font-family:'Orbitron',sans-serif; font-size:13px; color:var(--xp-a); transition:color .4s; }
+    .xp-banner-text span { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+
+    /* ═══ FINAL CTA ═══ */
+    #cta {
+      padding:120px 24px;
+      text-align:center;
+      position:relative; overflow:hidden;
+    }
+    #cta::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(800px 600px at 50% 50%, var(--xp-glow), transparent 70%);
+      pointer-events:none; transition:background 1s;
+    }
+    .cta-h2 {
+      font-family:'Orbitron',sans-serif;
+      font-size:clamp(32px,5vw,64px); font-weight:900;
+      line-height:1.05; margin-bottom:24px;
+      background:linear-gradient(135deg,var(--text) 0%,var(--xp-a) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .cta-sub { font-size:17px; color:var(--muted); max-width:480px; margin:0 auto 40px; line-height:1.65; }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      border-top:1px solid var(--border);
+      padding:28px 40px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:16px;
+    }
+    .footer-brand {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; color:var(--muted); letter-spacing:.08em;
+    }
+    .footer-links { display:flex; gap:20px; }
+    .footer-link {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; color:var(--muted); text-decoration:none;
+      transition:color .2s;
+    }
+    .footer-link:hover { color:var(--text); }
+
+    /* ═══ MODE TRANSITION ═══ */
+    body { transition:--xp-a .6s, --xp-b .6s, --xp-glow .6s; }
+
+    /* ═══ SCROLL REVEAL ═══ */
+    .reveal { opacity:0; transform:translateY(20px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal.in { opacity:1; transform:none; }
+    .reveal-left { opacity:0; transform:translateX(-20px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal-left.in { opacity:1; transform:none; }
+
+    @media(max-width:600px){
+      nav { padding:14px 20px; }
+      .nav-links { display:none; }
+      .holo-stage { width:280px; height:320px; }
     }
 
-    /* Per-card accent colours */
-    .ms-xpCard[data-xp="arcade"]::before{
-      background: radial-gradient(600px 300px at 0% 50%, rgba(251,191,36,.12), transparent 60%);
-    }
-    .ms-xpCard[data-xp="rpg"]::before{
-      background: radial-gradient(600px 300px at 0% 50%, rgba(124,58,237,.16), transparent 60%);
-    }
-    .ms-xpCard[data-xp="academic"]::before{
-      background: radial-gradient(600px 300px at 0% 50%, rgba(34,211,238,.13), transparent 60%);
-    }
-    .ms-xpCard[data-xp="lms"]::before{
-      background: radial-gradient(600px 300px at 0% 50%, rgba(16,185,129,.13), transparent 60%);
+    /* ═══ SCANLINE OVERLAY ═══ */
+    .scanlines {
+      position:fixed; inset:0; z-index:0; pointer-events:none;
+      background:repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px
+      );
     }
 
-    .ms-xpCard:hover{
-      transform: translateY(-2px);
+    /* ═══ CURSOR GLOW ═══ */
+    .cursor-glow {
+      position:fixed; width:500px; height:500px;
+      border-radius:50%; pointer-events:none; z-index:0;
+      background:radial-gradient(circle, var(--xp-glow) 0%, transparent 70%);
+      transform:translate(-50%,-50%);
+      transition:left .12s ease, top .12s ease, background 1s;
     }
-    .ms-xpCard:hover::before{ opacity:1; }
-
-    /* Selected state */
-    .ms-xpCard.is-selected{
-      transform: translateY(-3px);
-    }
-    .ms-xpCard.is-selected::before{ opacity:1; }
-
-    .ms-xpCard[data-xp="arcade"].is-selected{
-      border-color: rgba(251,191,36,.55);
-      box-shadow: 0 0 0 1px rgba(251,191,36,.2), 0 8px 32px rgba(251,191,36,.12);
-    }
-    .ms-xpCard[data-xp="rpg"].is-selected{
-      border-color: rgba(124,58,237,.65);
-      box-shadow: 0 0 0 1px rgba(124,58,237,.25), 0 8px 32px rgba(124,58,237,.18);
-    }
-    .ms-xpCard[data-xp="academic"].is-selected{
-      border-color: rgba(34,211,238,.55);
-      box-shadow: 0 0 0 1px rgba(34,211,238,.2), 0 8px 32px rgba(34,211,238,.12);
-    }
-    .ms-xpCard[data-xp="lms"].is-selected{
-      border-color: rgba(16,185,129,.55);
-      box-shadow: 0 0 0 1px rgba(16,185,129,.2), 0 8px 32px rgba(16,185,129,.12);
-    }
-
-    .ms-xpEmoji{
-      font-size: 28px;
-      line-height: 1;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .ms-xpTitle{
-      font-size: 15px;
-      font-weight: 800;
-      margin: 0 0 5px;
-    }
-
-    .ms-xpDesc{
-      font-size: 12px;
-      color: var(--muted, #94a3b8);
-      margin: 0;
-      line-height: 1.5;
-    }
-
-    /* Selected check badge */
-    .ms-xpCheck{
-      position:absolute;
-      top: 12px; right: 12px;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      border: 1.5px solid var(--stroke, rgba(255,255,255,.18));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-      transition: background .2s, border-color .2s;
-      background: rgba(255,255,255,.04);
-    }
-    .ms-xpCard.is-selected .ms-xpCheck{
-      background: rgba(255,255,255,.15);
-      border-color: rgba(255,255,255,.4);
-    }
-
-    /* Result banner */
-    .ms-xpResult{
-      margin-top: 14px;
-      padding: 13px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--stroke, rgba(255,255,255,.12));
-      background: rgba(255,255,255,.04);
-      font-size: 13px;
-      line-height: 1.6;
-      color: var(--muted, #94a3b8);
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity .3s ease, transform .3s ease;
-      pointer-events:none;
-    }
-    .ms-xpResult.is-visible{
-      opacity:1;
-      transform: translateY(0);
-      pointer-events:auto;
-    }
-    .ms-xpResult strong{
-      color: #f1f5f9;
-      font-weight: 700;
-    }
-
-    @media (max-width: 860px){
-      .ms-heroGrid{grid-template-columns:1fr}
-      .ms-steps{grid-template-columns:1fr}
-      .ms-holoCards{height: 280px;}
-      .ms-xpGrid{grid-template-columns:1fr}
-    }
-    /* ─────────────────────────────────────────────────────────────────── */
   </style>
 </head>
 
-<body>
-  <header class="ms-top">
-    <div class="ms-nav">
-      <div class="ms-brand">
-        <img src="./Mindstrong.svg" alt="MindStrong Universe" class="ms-brandLogo" />
-        <span>MindStrong Universe</span>
-      </div>
-      <nav class="ms-links">
-        <a class="ms-link is-active" href="./index.html">Home</a>
-        <a class="ms-link" href="./school/index.html">School</a>
-      </nav>
-    </div>
-  </header>
+<body data-mode="academic">
 
-  <main class="ms-wrap">
-    <section class="ms-hero">
-      <span class="ms-kicker">🧠 <b>Math Hacks Online School</b> • Middle School • Built for confidence</span>
-      <h1 class="ms-h1">Math that feels like a superpower.</h1>
-      <p class="ms-sub">
-        MindStrong Universe turns confusing skills into simple moves: short lessons, clean practice,
-        and "Math Hacks" that actually stick.
-      </p>
+<!-- Visual layers -->
+<canvas id="fx-canvas"></canvas>
+<div class="blob-wrap">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+<div class="scanlines"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
 
-      <div class="ms-heroGrid">
-        <div class="ms-heroFX"></div>
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="nav-dot"></span>
+    MindStrong Universe
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="#">Home</a>
+    <a class="nav-link" href="./school/index.html">School</a>
+    <a class="nav-link" href="./school/foundations/index.html">Foundations</a>
+  </div>
+</nav>
 
-        <section class="ms-card">
-          <h2>Start Learning Now</h2>
-          <p>Math Foundations is live: Module 1 (Lessons 1–6).</p>
+<main>
 
-          <div class="ms-actions">
-            <a class="ms-btn primary" href="./school/foundations/index.html">Open Math Foundations →</a>
-            <a id="continueBtn" class="ms-btn" href="./school/index.html">Continue Learning</a>
-          </div>
+  <!-- ══════════════════════════════
+       HERO
+  ══════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-eyebrow reveal">MindStrong Universe • Middle School Math</div>
 
-          <!-- Progress ring -->
-          <div class="ms-progressRow" aria-label="Module 1 progress">
-            <div class="ms-ring" data-total="6" data-key="ms_m1_done" title="Module 1 progress">
-              <svg viewBox="0 0 44 44" class="ms-ringSvg" aria-hidden="true">
-                <circle class="ms-ringTrack" cx="22" cy="22" r="18"></circle>
-                <circle class="ms-ringBar" cx="22" cy="22" r="18"></circle>
-              </svg>
-              <div class="ms-ringText">
-                <b id="m1Done">0</b><span>/6</span>
-              </div>
-            </div>
+    <h1 class="hero-h1 reveal">Math That Hits<br>Different.</h1>
 
-            <div class="ms-progressMeta">
-              <div class="ms-progressTitle">Module 1 Progress</div>
-              <div class="ms-progressSub" id="m1Label">0 of 6 lessons completed</div>
-            </div>
-          </div>
+    <p class="hero-sub reveal">
+      Confusing math skills broken down into simple moves —
+      short lessons, clean practice, and hacks that actually stick.
+    </p>
 
-          <div class="ms-hr"></div>
-
-          <div class="ms-grid" style="margin-top:0;">
-            <div class="ms-miniCard">
-              <h3>Spellbook logic (but real)</h3>
-              <p>Every lesson = hook → hack → practice → exit check.</p>
-            </div>
-            <div class="ms-miniCard">
-              <h3>Built to upgrade later</h3>
-              <p>Same URLs now; Supabase accounts + progress sync later.</p>
-            </div>
-          </div>
-
-          <p class="ms-note">Continue Learning uses localStorage on this device for now.</p>
-        </section>
-
-        <aside class="ms-card ms-holoStage" id="holoStage">
-          <div class="ms-holoBg"></div>
-          <img class="ms-holoSeal" src="./Mindstrong.svg" alt="MindStrong Crest" />
-
-          <div class="ms-holoCards" id="holoCards">
-            <div class="ms-holoScan"></div>
-            <img class="ms-cardImg ms-imgA" src="./playground-image-S7XSr.png" alt="Holo card A" />
-            <img class="ms-cardImg ms-imgB" src="./playground-image-SPhEr.png" alt="Holo card B" />
-            <img class="ms-cardImg ms-imgC" src="./playground-image-foiEG.png" alt="Holo card C" />
-          </div>
-
-          <div class="ms-holoCaption">Arcane UI. Clean learning. No wallet required.</div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════════════
-         EXPERIENCE SELECTOR — new section
-    ════════════════════════════════════════════════════════════════════ -->
-    <section class="ms-card ms-xpSection ms-reveal" aria-label="Choose your learning experience">
-      <p class="ms-xpHeading">Personalize your journey</p>
-      <h2 class="ms-xpQuestion">Do you want this to feel like…</h2>
-
-      <div class="ms-xpGrid" role="radiogroup" aria-label="Learning experience style">
-
-        <button class="ms-xpCard" data-xp="arcade" role="radio" aria-checked="false">
-          <span class="ms-xpCheck" aria-hidden="true">✓</span>
-          <span class="ms-xpEmoji">🕹️</span>
-          <div class="ms-xpTitle">Arcade Competitive</div>
-          <p class="ms-xpDesc">Score points, climb leaderboards, beat your best time. High-speed, high-stakes math sprints.</p>
-        </button>
-
-        <button class="ms-xpCard" data-xp="rpg" role="radio" aria-checked="false">
-          <span class="ms-xpCheck" aria-hidden="true">✓</span>
-          <span class="ms-xpEmoji">🎮</span>
-          <div class="ms-xpTitle">RPG Progression</div>
-          <p class="ms-xpDesc">Level up your character, unlock spells, earn XP. Every lesson is a quest with real stakes.</p>
-        </button>
-
-        <button class="ms-xpCard" data-xp="academic" role="radio" aria-checked="false">
-          <span class="ms-xpCheck" aria-hidden="true">✓</span>
-          <span class="ms-xpEmoji">🧠</span>
-          <div class="ms-xpTitle">Academic Mastery</div>
-          <p class="ms-xpDesc">Deep understanding over speed. Mastery gates, spaced repetition, and proof you actually learned it.</p>
-        </button>
-
-        <button class="ms-xpCard" data-xp="lms" role="radio" aria-checked="false">
-          <span class="ms-xpCheck" aria-hidden="true">✓</span>
-          <span class="ms-xpEmoji">🏫</span>
-          <div class="ms-xpTitle">Full LMS Replacement</div>
-          <p class="ms-xpDesc">Assignments, gradebooks, parent reports, teacher dashboards. The whole school, reimagined.</p>
-        </button>
-
-      </div>
-
-      <!-- Dynamic result banner -->
-      <div class="ms-xpResult" id="xpResult" role="status" aria-live="polite"></div>
-    </section>
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-
-    <h2 class="ms-sectionTitle ms-reveal">What makes MindStrong different</h2>
-    <div class="ms-grid ms-reveal">
-      <section class="ms-card">
-        <h2>Hacks + Standards (both)</h2>
-        <p>Students get the shortcut. Teachers get the "show your work."</p>
-      </section>
-      <section class="ms-card">
-        <h2>Micro-lessons that finish</h2>
-        <p>Momentum beats motivation. We build completion into the structure.</p>
-      </section>
-      <section class="ms-card">
-        <h2>Interactive by design</h2>
-        <p>Continue Learning now; later: streaks, quizzes, accounts, community.</p>
-      </section>
-      <section class="ms-card">
-        <h2>Tech feel, human goal</h2>
-        <p>Modern aesthetic so students take it seriously—and actually use it.</p>
-      </section>
+    <div class="hero-cta-row reveal">
+      <a class="btn-primary" href="./school/foundations/index.html">
+        Start Foundations →
+      </a>
+      <a class="btn-secondary" id="continueBtn" href="./school/index.html">
+        Continue Learning
+      </a>
     </div>
 
-    <h2 class="ms-sectionTitle ms-reveal">How it works</h2>
-    <div class="ms-steps ms-reveal">
-      <section class="ms-card">
-        <h2><span class="ms-stepNum">1</span>Start Foundations</h2>
-        <p>Fix number sense first. That's the root of most frustration.</p>
-      </section>
-      <section class="ms-card">
-        <h2><span class="ms-stepNum">2</span>Learn the hack</h2>
-        <p>Mental model + standard method. Works in any classroom.</p>
-      </section>
-      <section class="ms-card">
-        <h2><span class="ms-stepNum">3</span>Practice clean</h2>
-        <p>Guided practice → boss problem → exit check.</p>
-      </section>
+    <!-- Progress ring -->
+    <div class="hero-progress reveal" id="m1ProgressBlock">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 44 44">
+          <circle class="ring-bg" cx="22" cy="22" r="20"/>
+          <circle class="ring-fill" id="ringFill" cx="22" cy="22" r="20"/>
+        </svg>
+        <div class="ring-txt" id="ringTxt">0/6</div>
+      </div>
+      <div class="progress-info">
+        <b>Module 1 Progress</b>
+        <span id="progressDetail">0 of 6 lessons completed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       HOLO CARDS
+  ══════════════════════════════ -->
+  <section id="cards">
+    <div class="section-label reveal">Arcane UI • Clean learning • No wallet required</div>
+    <div class="holo-stage reveal" id="holoStage">
+      <div class="holo-card back2">
+        <img src="./playground-image-foiEG.png" alt="Holo C"/>
+        <div class="holo-overlay"></div>
+      </div>
+      <div class="holo-card back1">
+        <img src="./playground-image-SPhEr.png" alt="Holo B"/>
+        <div class="holo-overlay"></div>
+      </div>
+      <div class="holo-card front" id="holoFront">
+        <img src="./playground-image-S7XSr.png" alt="Holo A" id="holoFrontImg"/>
+        <div class="holo-overlay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       WHAT MAKES IT DIFFERENT
+  ══════════════════════════════ -->
+  <section id="different">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Why it works</div>
+      <h2 class="section-h2">Built different.<br>On purpose.</h2>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-card reveal">
+        <div class="diff-icon">⚡</div>
+        <div class="diff-title">Hacks + Standards</div>
+        <div class="diff-body">Students get the shortcut. Teachers get the "show your work." Both win.</div>
+      </div>
+      <div class="diff-card reveal" style="transition-delay:.08s">
+        <div class="diff-icon">🎯</div>
+        <div class="diff-title">Micro-Lessons That Finish</div>
+        <div class="diff-body">Momentum beats motivation. Completion is engineered into the structure.</div>
+      </div>
+      <div class="diff-card reveal" style="transition-delay:.16s">
+        <div class="diff-icon">🕹️</div>
+        <div class="diff-title">Interactive by Design</div>
+        <div class="diff-body">Desmos playgrounds, boss fights, and exit checks — not passive watching.</div>
+      </div>
+      <div class="diff-card reveal" style="transition-delay:.24s">
+        <div class="diff-icon">🧠</div>
+        <div class="diff-title">Mental Models First</div>
+        <div class="diff-body">Every hack builds a visual intuition before touching a formula.</div>
+      </div>
+      <div class="diff-card reveal" style="transition-delay:.32s">
+        <div class="diff-icon">🎨</div>
+        <div class="diff-title">Tech Feel, Human Goal</div>
+        <div class="diff-body">Modern aesthetic so students take it seriously — and actually come back.</div>
+      </div>
+      <div class="diff-card reveal" style="transition-delay:.4s">
+        <div class="diff-icon">📈</div>
+        <div class="diff-title">Upgrade Path Built In</div>
+        <div class="diff-body">Same URLs now. Supabase accounts + streak sync + community later.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       HOW IT WORKS
+  ══════════════════════════════ -->
+  <section id="how">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">The process</div>
+      <h2 class="section-h2">Four moves.<br>Every lesson.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">The Hook</div>
+          <div class="step-body">A real-world scenario or visual that makes the concept feel urgent before we ever name it.</div>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">The Hack</div>
+          <div class="step-body">The mental model — a simple move that unlocks the standard method and makes it click.</div>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Clean Practice</div>
+          <div class="step-body">Guided practice → boss problem → interactive Desmos playground. No filler.</div>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Exit Check</div>
+          <div class="step-body">One question that proves you actually got it. Pass it → lesson complete → momentum maintained.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════
+       EXPERIENCE SELECTOR
+  ══════════════════════════════ -->
+  <section id="experience">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">Personalize your journey</div>
+      <h2 class="section-h2">How do you want<br>this to feel?</h2>
     </div>
 
-    <section class="ms-cta ms-reveal">
-      <h2 style="margin:0 0 6px;">Enter the School</h2>
-      <p class="ms-muted" style="margin:0 0 12px;">
-        Next upgrade: progress checklist UI + "Next Lesson" smart button on every lesson.
-      </p>
-      <div class="ms-actions">
-        <a class="ms-btn primary" href="./school/index.html">School Hub →</a>
-        <a class="ms-btn" href="./school/foundations/module-1/lesson-1.html">Start Lesson 1 →</a>
+    <div class="xp-grid">
+      <div class="xp-card reveal" data-mode="arcade" tabindex="0">
+        <div class="xp-check">✓</div>
+        <div class="xp-emoji">🕹️</div>
+        <div class="xp-name">Arcade</div>
+        <div class="xp-desc">Score points, beat your best time. High-speed, high-stakes math sprints.</div>
       </div>
-    </section>
+      <div class="xp-card reveal" data-mode="rpg" tabindex="0" style="transition-delay:.08s">
+        <div class="xp-check">✓</div>
+        <div class="xp-emoji">🎮</div>
+        <div class="xp-name">RPG</div>
+        <div class="xp-desc">Level up your character, unlock spells, earn XP. Every lesson is a quest.</div>
+      </div>
+      <div class="xp-card reveal" data-mode="academic" tabindex="0" style="transition-delay:.16s">
+        <div class="xp-check">✓</div>
+        <div class="xp-emoji">🧠</div>
+        <div class="xp-name">Academic</div>
+        <div class="xp-desc">Deep mastery over speed. Spaced repetition and proof you actually learned it.</div>
+      </div>
+      <div class="xp-card reveal" data-mode="lms" tabindex="0" style="transition-delay:.24s">
+        <div class="xp-check">✓</div>
+        <div class="xp-emoji">🏫</div>
+        <div class="xp-name">LMS</div>
+        <div class="xp-desc">Assignments, gradebooks, teacher dashboards. The whole school, reimagined.</div>
+      </div>
+    </div>
 
-    <footer class="ms-footer">
-      © MindStrong Universe • Built on GitHub Pages • Upgrade path: Supabase Auth + DB + Storage
-    </footer>
-  </main>
+    <div class="xp-banner" id="xpBanner">
+      <div class="xp-banner-icon" id="xpBannerIcon">🧠</div>
+      <div class="xp-banner-text">
+        <b id="xpBannerTitle">Academic Mastery Mode activated</b>
+        <span id="xpBannerSub">Your experience is saved across all MindStrong pages.</span>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    // Continue Learning button
-    const last = localStorage.getItem("ms_last_lesson_url");
-    const btn = document.getElementById("continueBtn");
-    if (last && btn) btn.href = last;
+  <!-- ══════════════════════════════
+       FINAL CTA
+  ══════════════════════════════ -->
+  <section id="cta">
+    <h2 class="cta-h2 reveal">Ready to level up?</h2>
+    <p class="cta-sub reveal">Math Foundations is live. Module 1 — six lessons — is waiting.</p>
+    <div class="hero-cta-row reveal">
+      <a class="btn-primary" href="./school/index.html">Enter the School →</a>
+      <a class="btn-secondary" href="./school/foundations/module-1/lesson-1.html">Start Lesson 1</a>
+    </div>
+  </section>
 
-    // Holo tilt
-    const stage = document.getElementById("holoCards");
-    const cards = stage ? stage.querySelectorAll(".ms-cardImg") : [];
-    if (stage && cards.length) {
-      stage.addEventListener("mousemove", (e) => {
-        const r = stage.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-        cards.forEach((img, i) => {
-          const depth = (i + 1) * 6;
-          img.style.transform = `translate3d(${x * depth}px, ${y * depth}px, 0) rotate(${x * 2}deg)`;
-        });
-      });
-      stage.addEventListener("mouseleave", () => {
-        cards.forEach((img) => img.style.transform = "translate3d(0,0,0) rotate(0deg)");
-      });
-    }
+</main>
 
-    // Holo crossfade
-    const ROTATE_MS = 9000;
-    const FADE_MS   = 650;
-    const holoPool  = [
-      "./playground-image-S7XSr.png",
-      "./playground-image-SPhEr.png",
-      "./playground-image-foiEG.png",
-      "./playground-image-CwQig.png",
-      "./playground-image-d7AoO.png",
-    ];
-    const imgA = document.querySelector(".ms-imgA");
-    const imgB = document.querySelector(".ms-imgB");
-    const imgC = document.querySelector(".ms-imgC");
-    holoPool.forEach((src) => { const im = new Image(); im.src = src; });
-    function crossfadeSwap(imgEl, nextSrc) {
-      if (!imgEl) return;
-      imgEl.classList.add("is-fading");
-      window.setTimeout(() => {
-        imgEl.src = nextSrc;
-        requestAnimationFrame(() => imgEl.classList.remove("is-fading"));
-      }, FADE_MS);
-    }
-    if (imgA && imgB && imgC) {
-      let i = 0;
-      const start = [imgA.src, imgB.src, imgC.src].filter(Boolean);
-      const pool = [...new Set([...start, ...holoPool])];
-      setInterval(() => {
-        i = (i + 1) % pool.length;
-        const layer = i % 3;
-        const nextSrc = pool[(i + 2) % pool.length];
-        if (layer === 0) crossfadeSwap(imgA, nextSrc);
-        if (layer === 1) crossfadeSwap(imgB, nextSrc);
-        if (layer === 2) crossfadeSwap(imgC, nextSrc);
-      }, ROTATE_MS);
-    }
+<footer>
+  <div class="footer-brand">© MindStrong Universe • Built on GitHub Pages</div>
+  <div class="footer-links">
+    <a class="footer-link" href="./school/index.html">School</a>
+    <a class="footer-link" href="./school/foundations/index.html">Foundations</a>
+    <a class="footer-link" href="./school/foundations/ratio/">Ratios</a>
+  </div>
+</footer>
 
-    // Module 1 progress ring
-    (function initProgressRing(){
-      const ring = document.querySelector('.ms-ring[data-key="ms_m1_done"]');
-      if (!ring) return;
-      const total = Number(ring.dataset.total || 6);
-      const key = ring.dataset.key;
-      let doneArr = [];
-      try {
-        const raw = localStorage.getItem(key);
-        doneArr = raw ? JSON.parse(raw) : [];
-        if (!Array.isArray(doneArr)) doneArr = [];
-      } catch { doneArr = []; }
-      const done = Math.max(0, Math.min(total, new Set(doneArr).size));
-      const m1Done = document.getElementById("m1Done");
-      const m1Label = document.getElementById("m1Label");
-      if (m1Done) m1Done.textContent = String(done);
-      if (m1Label) m1Label.textContent = `${done} of ${total} lessons completed`;
-      const bar = ring.querySelector(".ms-ringBar");
-      if (bar) {
-        const C = 2 * Math.PI * 18;
-        const pct = total ? (done / total) : 0;
-        bar.style.strokeDasharray = `${C}`;
-        bar.style.strokeDashoffset = `${C * (1 - pct)}`;
-      }
-    })();
+<script>
+/* ════════════════════════════
+   CURSOR GLOW
+════════════════════════════ */
+const glow = document.getElementById('cursorGlow');
+window.addEventListener('mousemove', e => {
+  glow.style.left = e.clientX + 'px';
+  glow.style.top  = e.clientY + 'px';
+});
 
-    // Scroll reveals
-    (function initReveals(){
-      const els = document.querySelectorAll(".ms-reveal");
-      if (!els.length) return;
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("is-in");
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.12 });
-      els.forEach(el => io.observe(el));
-    })();
+/* ════════════════════════════
+   CANVAS PARTICLES
+════════════════════════════ */
+(function(){
+  const canvas = document.getElementById('fx-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [];
 
-    // ─── Experience Selector ────────────────────────────────────────────
-    const XP_KEY = "ms_xp_style";
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
 
-    const XP_DATA = {
-      arcade: {
-        emoji: "🕹️",
-        label: "Arcade Competitive",
-        message: "<strong>Arcade mode incoming.</strong> Expect speed rounds, score streaks, and a leaderboard that hits different. You're here to win—and math is the weapon.",
-      },
-      rpg: {
-        emoji: "🎮",
-        label: "RPG Progression",
-        message: "<strong>Quest accepted.</strong> You'll earn XP, unlock Math Spell cards, and level your character as you master each skill. Every lesson drops loot.",
-      },
-      academic: {
-        emoji: "🧠",
-        label: "Academic Mastery",
-        message: "<strong>Deep knowledge, no shortcuts on understanding.</strong> Mastery gates ensure you truly own each skill before advancing. Spaced repetition keeps it locked in.",
-      },
-      lms: {
-        emoji: "🏫",
-        label: "Full LMS Replacement",
-        message: "<strong>Full school mode.</strong> Gradebooks, teacher dashboards, parent reports, and assignment flows are on the roadmap. MindStrong as your complete classroom OS.",
-      },
+  function hexToRgb(hex){
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return `${r},${g},${b}`;
+  }
+
+  function getColor(){
+    const mode = document.body.dataset.mode||'academic';
+    const map = {arcade:'#facc15',rpg:'#c084fc',academic:'#22d3ee',lms:'#34d399'};
+    return map[mode]||'#22d3ee';
+  }
+
+  function spawn(){
+    return {
+      x: Math.random()*W, y: Math.random()*H,
+      vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+      r: Math.random()*1.5+.4,
+      a: Math.random()*.5+.1,
     };
+  }
 
-    const xpCards  = document.querySelectorAll(".ms-xpCard");
-    const xpResult = document.getElementById("xpResult");
+  for(let i=0;i<90;i++) particles.push(spawn());
 
-    function selectXP(key) {
-      xpCards.forEach(c => {
-        const selected = c.dataset.xp === key;
-        c.classList.toggle("is-selected", selected);
-        c.setAttribute("aria-checked", String(selected));
-      });
-
-      const d = XP_DATA[key];
-      if (xpResult && d) {
-        xpResult.innerHTML = `${d.emoji} ${d.message}`;
-        xpResult.classList.add("is-visible");
-      }
-
-      try { localStorage.setItem(XP_KEY, key); } catch {}
-    }
-
-    xpCards.forEach(card => {
-      card.addEventListener("click", () => selectXP(card.dataset.xp));
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          selectXP(card.dataset.xp);
-        }
-      });
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const col = getColor();
+    const rgb = col.startsWith('#') ? hexToRgb(col) : '34,211,238';
+    particles.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0) p.x=W; if(p.x>W) p.x=0;
+      if(p.y<0) p.y=H; if(p.y>H) p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${rgb},${p.a})`;
+      ctx.fill();
     });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
-    // Restore saved preference
-    try {
-      const saved = localStorage.getItem(XP_KEY);
-      if (saved && XP_DATA[saved]) selectXP(saved);
-    } catch {}
-    // ────────────────────────────────────────────────────────────────────
-  </script>
+/* ════════════════════════════
+   HOLO CARD TILT
+════════════════════════════ */
+(function(){
+  const stage = document.getElementById('holoStage');
+  const front  = document.getElementById('holoFront');
+  if(!stage||!front) return;
+
+  stage.addEventListener('mousemove', e=>{
+    const r = stage.getBoundingClientRect();
+    const x = (e.clientX-r.left)/r.width  - .5;
+    const y = (e.clientY-r.top )/r.height - .5;
+    front.style.transform = `rotateX(${-y*14}deg) rotateY(${x*14}deg) scale(1.03)`;
+    front.style.boxShadow = `${-x*30}px ${-y*30}px 80px rgba(0,0,0,.5), 0 0 60px var(--xp-glow)`;
+  });
+  stage.addEventListener('mouseleave', ()=>{
+    front.style.transform='';
+    front.style.boxShadow='';
+  });
+
+  /* Card crossfade */
+  const imgs = [
+    './playground-image-S7XSr.png',
+    './playground-image-SPhEr.png',
+    './playground-image-foiEG.png',
+  ];
+  let ci=0;
+  setInterval(()=>{
+    ci=(ci+1)%imgs.length;
+    front.style.opacity='0';
+    setTimeout(()=>{
+      document.getElementById('holoFrontImg').src = imgs[ci];
+      front.style.opacity='1';
+    }, 400);
+  }, 9000);
+})();
+
+/* ════════════════════════════
+   PROGRESS RING
+════════════════════════════ */
+(function(){
+  const m1 = (() => { try{ return JSON.parse(localStorage.getItem('ms_m1_done')||'[]'); }catch{ return []; } })();
+  const done = Math.min(new Set(m1).size, 6);
+  const pct  = done/6;
+  const circ = 126;
+  document.getElementById('ringFill').style.strokeDashoffset = circ - pct*circ;
+  document.getElementById('ringTxt').textContent = `${done}/6`;
+  document.getElementById('progressDetail').textContent = `${done} of 6 lessons completed`;
+
+  /* Continue btn */
+  const last = localStorage.getItem('ms_last_lesson_url');
+  if(last){
+    const b = document.getElementById('continueBtn');
+    b.href = last;
+    b.textContent = 'Continue →';
+  }
+})();
+
+/* ════════════════════════════
+   EXPERIENCE SELECTOR
+════════════════════════════ */
+const XP_META = {
+  arcade:   { icon:'🕹️', title:'Arcade Competitive Mode activated',   sub:'Score-based, boss fights, leaderboards.' },
+  rpg:      { icon:'🎮', title:'RPG Progression Mode activated',       sub:'Quests, XP, spells, level up.' },
+  academic: { icon:'🧠', title:'Academic Mastery Mode activated',      sub:'Mastery gates, deep understanding.' },
+  lms:      { icon:'🏫', title:'Full LMS Mode activated',              sub:'Assignments, grades, teacher dashboards.' },
+};
+
+function applyMode(mode){
+  document.body.dataset.mode = mode;
+
+  /* xp cards */
+  document.querySelectorAll('.xp-card').forEach(c=>{
+    c.classList.toggle('selected', c.dataset.mode===mode);
+  });
+
+  /* banner */
+  const m = XP_META[mode];
+  const banner = document.getElementById('xpBanner');
+  document.getElementById('xpBannerIcon').textContent  = m.icon;
+  document.getElementById('xpBannerTitle').textContent = m.title;
+  document.getElementById('xpBannerSub').textContent   = m.sub;
+  banner.classList.add('show');
+
+  try{ localStorage.setItem('ms_xp_mode', mode); }catch{}
+}
+
+document.querySelectorAll('.xp-card').forEach(card=>{
+  card.addEventListener('click', ()=> applyMode(card.dataset.mode));
+  card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') applyMode(card.dataset.mode); });
+});
+
+/* Restore saved mode */
+try{
+  const saved = localStorage.getItem('ms_xp_mode');
+  if(saved && XP_META[saved]) applyMode(saved);
+  else applyMode('academic');
+}catch{ applyMode('academic'); }
+
+/* ════════════════════════════
+   SCROLL REVEALS
+════════════════════════════ */
+(function(){
+  const els = document.querySelectorAll('.reveal,.reveal-left');
+  const io  = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
 </body>
 </html>
