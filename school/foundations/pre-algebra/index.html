@@ -1,13 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Pre-Algebra Mastery</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" href="../../../theme.css" />
+  <meta charset="UTF-8" />
+  <title>Pre-Algebra Mastery • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../../theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family:'Syne',sans-serif; }
+
+    /* ── Mode palette ── */
+    :root { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX {
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(700px 500px at 20% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(500px 400px at 85% 85%, rgba(124,58,237,.07), transparent 60%);
+      transition:background .6s ease;
+    }
+    .ms-wrap { position:relative; z-index:1; }
+
+    /* ── Mode bar ── */
+    .ms-modebar {
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:24px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-modebar-label {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:.15em; text-transform:uppercase;
+      color:var(--muted,#6b7a99); margin-right:4px; flex-shrink:0;
+    }
+    .ms-modeBtn {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; padding:6px 13px; border-radius:8px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99);
+      cursor:pointer; transition:all .2s ease; white-space:nowrap;
+    }
+    .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeBtn.is-active {
+      color:var(--xp-a); border-color:var(--xp-a);
+      background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow);
+    }
+
+    /* ── Mode kicker ── */
+    .ms-modeKicker {
+      display:inline-block; font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.12em;
+      padding:4px 12px; border-radius:20px;
+      border:1px solid var(--xp-a); color:var(--xp-a);
+      margin-bottom:10px; transition:all .4s ease;
+    }
+
+    /* ── Profile card ── */
+    .ms-profileGrid {
+      display:grid; grid-template-columns:auto 1fr auto;
+      gap:16px; align-items:center;
+    }
+    .ms-avatar {
+      width:52px; height:52px; border-radius:14px; flex-shrink:0;
+      background:linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      display:flex; align-items:center; justify-content:center;
+      font-size:24px; box-shadow:0 4px 18px var(--xp-glow);
+      transition:background .5s ease, box-shadow .5s ease;
+    }
+    .ms-profileName {
+      font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700;
+      color:var(--xp-a); margin-bottom:3px; transition:color .4s ease;
+    }
+    .ms-profileMeta {
+      font-family:'JetBrains Mono',monospace; font-size:11px;
+      color:var(--muted,#6b7a99); letter-spacing:.05em;
+    }
+    .ms-xpBarTrack {
+      height:5px; border-radius:3px;
+      background:rgba(255,255,255,.08); overflow:hidden; margin-top:8px;
+    }
+    .ms-xpBarFill {
+      height:100%; border-radius:3px;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a));
+      transition:width .8s ease, background .5s ease;
+    }
+    .ms-xpBarLabel {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; color:var(--muted,#6b7a99); margin-top:4px;
+    }
+    .ms-statPill {
+      text-align:center; padding:10px 14px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; background:rgba(255,255,255,.03);
+    }
+    .ms-statPill b {
+      display:block; font-family:'Orbitron',sans-serif;
+      font-size:20px; font-weight:900; color:var(--xp-a);
+      line-height:1; transition:color .4s ease;
+    }
+    .ms-statPill span {
+      font-size:10px; color:var(--muted,#6b7a99);
+      font-family:'JetBrains Mono',monospace;
+      letter-spacing:.08em; text-transform:uppercase;
+    }
+
+    /* ── Progress ── */
+    .ms-progress {
+      margin:0 0 16px; padding:12px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; background:rgba(255,255,255,.03);
+    }
+    .ms-bar {
+      height:8px; border-radius:999px;
+      background:rgba(255,255,255,.1); overflow:hidden; margin-top:10px;
+    }
+    .ms-bar div {
+      height:100%; width:0%;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a));
+      border-radius:999px; transition:width .6s ease, background .5s ease;
+    }
+
+    /* ── Course items ── */
+    .ms-item {
+      display:flex; align-items:center;
+      justify-content:space-between; gap:14px;
+      padding:14px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .ms-item:last-child { border-bottom:none; }
+    .ms-row { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+
+    .ms-badge {
+      width:30px; height:30px; border-radius:9px; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);
+      font-weight:800; font-size:13px;
+      transition:all .3s ease;
+    }
+    .ms-check {
+      border-color:var(--xp-a)!important;
+      background:rgba(255,255,255,.1)!important;
+      box-shadow:0 0 0 3px var(--xp-glow);
+      color:var(--xp-a);
+    }
+    .ms-badge.locked { opacity:.35; }
+
+    .ms-title { font-weight:700; font-size:14px; margin-bottom:2px; }
+    .ms-subtle { font-size:12px; color:var(--muted,#6b7a99); }
+    .ms-lessonMode {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; color:var(--xp-a); margin-top:3px;
+      opacity:.7; transition:color .4s ease;
+    }
+
+    /* ── Flavor tag ── */
+    .ms-flavorTag {
+      font-family:'JetBrains Mono',monospace;
+      font-size:9px; letter-spacing:.13em; text-transform:uppercase;
+      padding:3px 8px; border-radius:5px;
+      border:1px solid var(--xp-a); color:var(--xp-a);
+      opacity:.65; display:inline-block; margin-left:8px;
+      vertical-align:middle; transition:all .4s ease;
+    }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      padding:9px 18px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06); color:#e8edf5;
+      cursor:pointer; white-space:nowrap;
+      text-decoration:none; display:inline-block;
+      transition:all .2s ease;
+    }
+    .ms-btn:hover:not(:disabled) { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.22); }
+    .ms-btn.primary {
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      border-color:transparent; color:#06080e;
+      box-shadow:0 4px 18px var(--xp-glow);
+      transition:transform .18s,box-shadow .18s,background .5s;
+    }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
+    .ms-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* ── Coming soon card ── */
+    .ms-comingSoon {
+      border:1px dashed rgba(255,255,255,.1);
+      border-radius:14px; padding:18px;
+      background:rgba(255,255,255,.02);
+      text-align:center;
+    }
+    .ms-comingSoon .icon { font-size:28px; margin-bottom:8px; }
+    .ms-comingSoon p { font-size:13px; color:var(--muted,#6b7a99); margin-top:4px; }
+
+    /* ── Reveals ── */
+    .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease,transform .5s ease; }
+    .ms-reveal.is-in { opacity:1; transform:translateY(0); }
+    @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
+
+    @media(max-width:540px){
+      .ms-profileGrid { grid-template-columns:auto 1fr; }
+      .ms-statPill { display:none; }
+    }
+  </style>
 </head>
 
-<body>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
 
 <header class="ms-top">
   <div class="ms-nav">
@@ -27,30 +232,49 @@
 <main class="ms-wrap">
 
   <!-- HERO -->
-  <section class="ms-hero">
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">🧠 Academic Mastery Mode</div>
     <span class="ms-kicker">🚀 Next Level</span>
-    <h1 class="ms-h1">Pre-Algebra Mastery</h1>
-    <p class="ms-sub">
-      This course builds proportional thinking and algebra readiness.
-    </p>
+    <h1 class="ms-h1" id="heroTitle">Pre-Algebra Mastery</h1>
+    <p class="ms-sub" id="heroSub">This course builds proportional thinking and algebra readiness.</p>
   </section>
 
+  <!-- MODE BAR -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
   <!-- STUDENT PROFILE -->
-  <section class="ms-card">
-    <h2>Student Profile</h2>
-    <div id="profilePanel"></div>
+  <section class="ms-card ms-reveal">
+    <h2 id="profileTitle">Student Profile</h2>
+    <div class="ms-profileGrid">
+      <div class="ms-avatar" id="profileAvatar">🚀</div>
+      <div>
+        <div class="ms-profileName" id="profileName">Scholar</div>
+        <div class="ms-profileMeta" id="profileMeta">Loading…</div>
+        <div class="ms-xpBarTrack">
+          <div class="ms-xpBarFill" id="profileXpFill" style="width:0%"></div>
+        </div>
+        <div class="ms-xpBarLabel" id="profileXpLabel"></div>
+      </div>
+      <div class="ms-statPill">
+        <b id="statVal">—</b>
+        <span id="statLbl">Rank</span>
+      </div>
+    </div>
   </section>
 
   <!-- COURSE PROGRESS -->
-  <section class="ms-card">
-
-    <h2>Course Progress</h2>
+  <section class="ms-card ms-reveal">
+    <h2 id="courseTitle">Course Progress <span class="ms-flavorTag" id="courseTag">In Progress</span></h2>
 
     <div class="ms-progress">
-      <b id="preCount">0</b> / 1 completed
-      <div class="ms-bar">
-        <div id="preBar"></div>
-      </div>
+      <span id="progressLabel"><b id="preCount">0</b> / 1 completed</span>
+      <div class="ms-bar"><div id="preBar"></div></div>
     </div>
 
     <div class="ms-list">
@@ -60,59 +284,251 @@
         <div class="ms-row">
           <span class="ms-badge" id="ratioBadge">🔒</span>
           <div>
-            <div class="ms-title">Ratios</div>
-            <div class="ms-subtle">Balance & scaling</div>
+            <div class="ms-title">Ratios — Balance of Comparison</div>
+            <div class="ms-subtle" id="ratiosSubtitle">Balance &amp; scaling</div>
+            <div class="ms-lessonMode" id="ratiosMode"></div>
           </div>
         </div>
-
-        <button id="ratioBtn" class="ms-btn" disabled>Locked</button>
+        <span id="ratioAction"><button class="ms-btn" disabled>Locked</button></span>
       </div>
 
     </div>
-
   </section>
 
-  <footer class="ms-footer">
-    © MindStrong Universe • Pre-Algebra
-  </footer>
+  <!-- COMING SOON -->
+  <section class="ms-card ms-reveal">
+    <h2 id="comingTitle">Coming Soon <span class="ms-flavorTag" id="comingTag">Roadmap</span></h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:4px;">
 
+      <div class="ms-comingSoon">
+        <div class="icon">📐</div>
+        <div style="font-weight:700;font-size:13px;" id="cs1Title">Proportions</div>
+        <p id="cs1Sub">Ratios in equation form</p>
+      </div>
+
+      <div class="ms-comingSoon">
+        <div class="icon">%</div>
+        <div style="font-weight:700;font-size:13px;" id="cs2Title">Percents</div>
+        <p id="cs2Sub">Ratios out of 100</p>
+      </div>
+
+      <div class="ms-comingSoon">
+        <div class="icon">🔢</div>
+        <div style="font-weight:700;font-size:13px;" id="cs3Title">Expressions</div>
+        <p id="cs3Sub">Variables + operations</p>
+      </div>
+
+      <div class="ms-comingSoon">
+        <div class="icon">⚖️</div>
+        <div style="font-weight:700;font-size:13px;" id="cs4Title">Equations</div>
+        <p id="cs4Sub">Solve for x</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="ms-footer">© MindStrong Universe • Pre-Algebra</footer>
 </main>
 
 <script>
-/* ================================
-   UNLOCK LOGIC
-================================ */
+/* ════════════════════════════════════════
+   LOAD PROGRESS
+════════════════════════════════════════ */
+const m1Done   = (() => { try{ return JSON.parse(localStorage.getItem("ms_m1_done")||"[]"); }catch{ return []; } })();
+const m1Count  = new Set(m1Done).size;
+const m1Complete = m1Count >= 6;
+const ratioRank  = localStorage.getItem("ms_ratio_rank");
+const ratioDone  = !!ratioRank;
 
-const m1 = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
-const rank = localStorage.getItem("ms_ratio_rank");
+/* Progress bar */
+const preCount = ratioDone ? 1 : 0;
+document.getElementById("preCount").textContent    = preCount;
+document.getElementById("preBar").style.width      = ratioDone ? "100%" : "0%";
 
-/* Unlock Ratios if Module 1 complete */
-if(m1.length === 6){
-  document.getElementById("ratioBtn").outerHTML =
+/* Unlock / badge states */
+if(m1Complete){
+  document.getElementById("ratioBadge").textContent = ratioDone ? "✓" : "1";
+  if(ratioDone) document.getElementById("ratioBadge").classList.add("ms-check");
+  document.getElementById("ratioAction").innerHTML =
     '<a class="ms-btn primary" href="../ratio/">Open →</a>';
-  document.getElementById("ratioBadge").textContent = "1";
+  document.getElementById("ratiosSubtitle").textContent = "Competitive lesson • Boss fight inside";
 }
 
-/* Show checkmark if Ratios beaten */
-if(rank){
-  document.getElementById("ratioBadge").textContent = "✓";
-  document.getElementById("ratioBadge").classList.add("ms-check");
+/* ════════════════════════════════════════
+   MODE CONFIG
+════════════════════════════════════════ */
+const MODES = {
+  arcade: {
+    kicker:       "🕹️ Arcade Competitive Mode",
+    heroTitle:    "Pre-Algebra Blitz",
+    heroSub:      "Speed lessons. Score points. Defeat every boss.",
+    profileTitle: "Player Profile",
+    profileName:  "MathWarrior",
+    avatar:       "🕹️",
+    metaFn:       ()=> `RANK: ${ratioRank || "Unranked"} · M1: ${m1Count}/6`,
+    xpLabelFn:    ()=> `${preCount * 480} pts earned`,
+    xpPctFn:      ()=> ratioDone ? 100 : 0,
+    statVal:      ()=> ratioRank || "—",
+    statLbl:      "Rank",
+    courseTitle:  "Lessons",
+    courseTag:    ratioDone ? "Complete" : "Active",
+    progressLbl:  ()=> `${preCount} / 1 rounds cleared`,
+    ratiosMode:   "⚔️ Boss fight — defeat the Ratio Boss",
+    ratiosBtnTxt: m1Complete ? "Sprint →" : "Locked",
+    comingTitle:  "Next Rounds",
+    comingTag:    "Unlocking Soon",
+    cs1Title:"Proportions Sprint", cs1Sub:"Ratio equations",
+    cs2Title:"Percents Blitz",     cs2Sub:"Out of 100",
+    cs3Title:"Expressions Round",  cs3Sub:"Variables + ops",
+    cs4Title:"Equations Boss",     cs4Sub:"Solve for x",
+  },
+  rpg: {
+    kicker:       "🎮 RPG Progression Mode",
+    heroTitle:    "Pre-Algebra Quest Board",
+    heroSub:      "Complete quests. Earn XP. Level your Math Wizard.",
+    profileTitle: "Character Sheet",
+    profileName:  "MathWizard",
+    avatar:       "🧙",
+    metaFn:       ()=> `CLASS: Fraction Mage · LVL ${Math.max(1, m1Count + (ratioDone?2:0))}`,
+    xpLabelFn:    ()=> `${(m1Count * 480) + (ratioDone ? 960 : 0)} / 4,320 XP`,
+    xpPctFn:      ()=> Math.round(((m1Count * 480) + (ratioDone ? 960 : 0)) / 4320 * 100),
+    statVal:      ()=> `LVL ${Math.max(1, m1Count + (ratioDone?2:0))}`,
+    statLbl:      "Level",
+    courseTitle:  "Quest Log",
+    courseTag:    ratioDone ? "Complete" : "In Progress",
+    progressLbl:  ()=> `${preCount} / 1 quests complete`,
+    ratiosMode:   "⚔️ Boss quest — Ratio Lord awaits",
+    ratiosBtnTxt: m1Complete ? "Begin Quest →" : "Locked",
+    comingTitle:  "Future Quests",
+    comingTag:    "Coming Soon",
+    cs1Title:"Proportions Quest", cs1Sub:"Ratio equations",
+    cs2Title:"Percents Quest",    cs2Sub:"Out of 100",
+    cs3Title:"Expressions Quest", cs3Sub:"Variables + ops",
+    cs4Title:"Equations Boss",    cs4Sub:"Final boss fight",
+  },
+  academic: {
+    kicker:       "🧠 Academic Mastery Mode",
+    heroTitle:    "Pre-Algebra Mastery",
+    heroSub:      "This course builds proportional thinking and algebra readiness.",
+    profileTitle: "Student Profile",
+    profileName:  "Scholar",
+    avatar:       "📚",
+    metaFn:       ()=> `Mastery: ${ratioDone?"100%":m1Complete?"Unlocked":"Locked"} · M1: ${m1Count}/6`,
+    xpLabelFn:    ()=> `${ratioDone ? "1 / 1" : "0 / 1"} lessons mastered`,
+    xpPctFn:      ()=> ratioDone ? 100 : 0,
+    statVal:      ()=> ratioDone ? "100%" : m1Complete ? "0%" : "—",
+    statLbl:      "Mastery",
+    courseTitle:  "Course Progress",
+    courseTag:    ratioDone ? "Complete" : m1Complete ? "In Progress" : "Locked",
+    progressLbl:  ()=> `${preCount} / 1 mastered`,
+    ratiosMode:   "📖 Mastery lesson — boss fight unlocks mastery gate",
+    ratiosBtnTxt: m1Complete ? "Study →" : "Locked",
+    comingTitle:  "Coming Soon",
+    comingTag:    "Roadmap",
+    cs1Title:"Proportions",  cs1Sub:"Ratios in equation form",
+    cs2Title:"Percents",     cs2Sub:"Ratios out of 100",
+    cs3Title:"Expressions",  cs3Sub:"Variables + operations",
+    cs4Title:"Equations",    cs4Sub:"Solve for x",
+  },
+  lms: {
+    kicker:       "🏫 Full LMS Mode",
+    heroTitle:    "Pre-Algebra Course",
+    heroSub:      "Assigned lessons, graded assessments, teacher-tracked progress.",
+    profileTitle: "Student Record",
+    profileName:  "Student",
+    avatar:       "🎓",
+    metaFn:       ()=> `Grade: ${ratioDone?"A":"—"} · Completion: ${ratioDone?"100%":"0%"}`,
+    xpLabelFn:    ()=> `${ratioDone ? "100%" : "0%"} course completion`,
+    xpPctFn:      ()=> ratioDone ? 100 : 0,
+    statVal:      ()=> ratioDone ? "A" : "—",
+    statLbl:      "Grade",
+    courseTitle:  "Assigned Lessons",
+    courseTag:    ratioDone ? "Submitted" : m1Complete ? "Assigned" : "Not Assigned",
+    progressLbl:  ()=> `${preCount} / 1 submitted`,
+    ratiosMode:   "📋 Assignment — graded on completion",
+    ratiosBtnTxt: m1Complete ? "Open Assignment →" : "Not Assigned",
+    comingTitle:  "Upcoming Assignments",
+    comingTag:    "Scheduled",
+    cs1Title:"Proportions",  cs1Sub:"Upcoming unit",
+    cs2Title:"Percents",     cs2Sub:"Upcoming unit",
+    cs3Title:"Expressions",  cs3Sub:"Upcoming unit",
+    cs4Title:"Equations",    cs4Sub:"Upcoming unit",
+  },
+};
 
-  document.getElementById("preCount").textContent = 1;
-  document.getElementById("preBar").style.width = "100%";
+function applyMode(mode){
+  const cfg = MODES[mode];
+  if(!cfg) return;
+  document.body.setAttribute("data-mode", mode);
+
+  /* Hero */
+  document.getElementById("modeKicker").textContent = cfg.kicker;
+  document.getElementById("heroTitle").textContent  = cfg.heroTitle;
+  document.getElementById("heroSub").textContent    = cfg.heroSub;
+
+  /* Profile */
+  document.getElementById("profileTitle").textContent   = cfg.profileTitle;
+  document.getElementById("profileName").textContent    = cfg.profileName;
+  document.getElementById("profileAvatar").textContent  = cfg.avatar;
+  document.getElementById("profileMeta").textContent    = cfg.metaFn();
+  document.getElementById("profileXpFill").style.width  = cfg.xpPctFn() + "%";
+  document.getElementById("profileXpLabel").textContent = cfg.xpLabelFn();
+  document.getElementById("statVal").textContent        = cfg.statVal();
+  document.getElementById("statLbl").textContent        = cfg.statLbl;
+
+  /* Course */
+  document.getElementById("courseTitle").childNodes[0].textContent = cfg.courseTitle + " ";
+  document.getElementById("courseTag").textContent   = cfg.courseTag;
+  document.getElementById("progressLabel").innerHTML =
+    `<b id="preCount">${preCount}</b> / 1 — ` + cfg.progressLbl().replace(`${preCount} / 1 `,"");
+  document.getElementById("ratiosMode").textContent = cfg.ratiosMode;
+
+  /* Ratio button text if still locked */
+  if(!m1Complete){
+    const rb = document.getElementById("ratioAction");
+    if(rb) rb.innerHTML = `<button class="ms-btn" disabled>${cfg.ratiosBtnTxt}</button>`;
+  }
+
+  /* Coming soon */
+  document.getElementById("comingTitle").childNodes[0].textContent = cfg.comingTitle + " ";
+  document.getElementById("comingTag").textContent = cfg.comingTag;
+  document.getElementById("cs1Title").textContent  = cfg.cs1Title;
+  document.getElementById("cs1Sub").textContent    = cfg.cs1Sub;
+  document.getElementById("cs2Title").textContent  = cfg.cs2Title;
+  document.getElementById("cs2Sub").textContent    = cfg.cs2Sub;
+  document.getElementById("cs3Title").textContent  = cfg.cs3Title;
+  document.getElementById("cs3Sub").textContent    = cfg.cs3Sub;
+  document.getElementById("cs4Title").textContent  = cfg.cs4Title;
+  document.getElementById("cs4Sub").textContent    = cfg.cs4Sub;
+
+  /* Mode buttons */
+  document.querySelectorAll(".ms-modeBtn").forEach(b=>{
+    b.classList.toggle("is-active", b.dataset.mode === mode);
+  });
+
+  try{ localStorage.setItem("ms_xp_mode", mode); }catch{}
 }
 
-/* ================================
-   STUDENT PROFILE PANEL
-================================ */
+/* Wire buttons */
+document.querySelectorAll(".ms-modeBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=> applyMode(btn.dataset.mode));
+});
 
-const m1done = m1.length;
+/* Restore saved mode */
+try{
+  const saved = localStorage.getItem("ms_xp_mode");
+  if(saved && MODES[saved]) applyMode(saved);
+  else applyMode("academic");
+}catch{ applyMode("academic"); }
 
-document.getElementById("profilePanel").innerHTML = `
-  <div>Module 1 Completed: ${m1done}/6</div>
-  <div>Ratio Rank: ${rank || "None"}</div>
-`;
+/* Scroll reveals */
+(function(){
+  const els = document.querySelectorAll(".ms-reveal");
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("is-in"); io.unobserve(e.target); } });
+  },{threshold:.1});
+  els.forEach(el=>io.observe(el));
+})();
 </script>
-
 </body>
 </html>
