@@ -4,8 +4,8 @@
   <meta charset="UTF-8"/>
   <title>Angles &amp; Lines • MindStrong Universe</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <link rel="stylesheet" href="../../../../theme.css"/>
-  <script src="../../../ms-tracker.js" defer></script>
+  <link rel="stylesheet" href="../../../theme.css"/>
+  <script src="../../ms-tracker.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     body{font-family:'Syne',sans-serif;}
@@ -98,7 +98,56 @@
     .mc-opt:hover{border-color:var(--xp-a);color:var(--xp-a);}
     .mc-opt.correct{border-color:#4ade80;color:#4ade80;background:rgba(74,222,128,.08);}
     .mc-opt.wrong{border-color:#f87171;color:#f87171;background:rgba(248,113,113,.08);}
-  </style>
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    .ms-alreadyDone { display:flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.2);
+      font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--xp-a);
+      margin-bottom:12px; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
 </head>
 <body data-mode="academic">
 <div class="ms-pageFX"></div>
@@ -106,10 +155,10 @@
   <div class="ms-nav">
     <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
     <nav class="ms-links">
-      <a class="ms-link" href="../../../../index.html">Home</a>
-      <a class="ms-link" href="../../../index.html">School</a>
-      <a class="ms-link" href="../../index.html">Foundations</a>
-      <a class="ms-link" href="../index.html">Geometry</a>
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link" href="./index.html">Geometry</a>
       <a class="ms-link is-active" href="./index.html">Angles &amp; Lines</a>
     </nav>
   </div>
@@ -129,6 +178,22 @@
     <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
     <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
     <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span class="ls-pip" id="lsp-1"></span>
+        <span class="ls-pip" id="lsp-2"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
   </div>
 
   <!-- ① HOOK -->
@@ -227,7 +292,8 @@
     <h2>Explore Angles — Desmos</h2>
     <p>Drag the points. Watch the angle change. Notice how supplementary pairs always sum to 180°.</p>
     <div class="desmos-wrap">
-      <iframe src="https://www.desmos.com/geometry" width="100%" height="380" frameborder="0" allowfullscreen title="Desmos Geometry"></iframe>
+      <iframe src="https://www.desmos.com/geometry?embed" width="100%" height="400" style="border:none;display:block;" title="Desmos Geometry — Angles Explorer"></iframe>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);margin-top:8px;font-family:'JetBrains Mono',monospace;" class="desmos-tip">💡 Use the <strong>Angle</strong> tool to draw and measure angles. Try constructing supplementary pairs!</p>
     </div>
   </div>
 
@@ -307,8 +373,8 @@
       <h2>Angles &amp; Lines Mastered</h2>
       <p id="completeMsg">You know your angle types, supplementary and complementary pairs, and how lines relate. Triangles are next.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-        <a class="ms-btn" href="../index.html">← Back to Geometry</a>
-        <a class="ms-btn primary" href="../triangles/">Next: Triangles →</a>
+        <a class="ms-btn" href="./index.html">← Back to Geometry</a>
+        <a class="ms-btn primary" href="./geometry-triangles.html">Next: Triangles →</a>
       </div>
     </div>
   </div>
@@ -488,3 +554,188 @@ try{localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}
 </script>
 </body>
 </html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildCompleteSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreIfDone() {
+  try {
+    // Check legacy done array
+    const done = JSON.parse(localStorage.getItem("ms_geo_done") || "[]");
+    if (!done.includes("angles-1")) return;
+    // Already complete — show state
+    const markBtn = document.getElementById("markBtn");
+    if (markBtn) { markBtn.textContent = "✓ Complete!"; markBtn.disabled = true; }
+    const card = document.getElementById("completeCard");
+    if (card) {
+      // Inject score summary
+      const summary = buildCompleteSummary(LESSON_KEY);
+      const chipEl = document.getElementById("completeChip");
+      if (chipEl && summary && !document.getElementById("scoreSum")) {
+        const div = document.createElement("div");
+        div.id = "scoreSum";
+        div.innerHTML = summary;
+        chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+      }
+      card.style.display = "block";
+    }
+    // Add "already done" badge near markBtn if not complete card visible
+    const exitBtn = document.getElementById("exitBtn");
+    if (exitBtn) exitBtn.disabled = true;
+  } catch(e) {}
+}
+restoreIfDone();
+
+// Also inject score into completeCard when markComplete fires (after XP toast)
+const _origMC = typeof markComplete === "function" ? markComplete : null;
+// Patch completeCard to show score summary after completion
+function injectScoreSummary() {
+  const summary = buildCompleteSummary(LESSON_KEY);
+  if (!summary) return;
+  const chipEl = document.getElementById("completeChip");
+  if (chipEl && !document.getElementById("scoreSum")) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+  }
+}
+// Hook into scrollIntoView timing
+const _baseCard = document.getElementById("completeCard");
+if (_baseCard) {
+  const _obs = new MutationObserver(() => {
+    if (_baseCard.style.display !== "none") {
+      setTimeout(injectScoreSummary, 300);
+      _obs.disconnect();
+    }
+  });
+  _obs.observe(_baseCard, { attributes: true, attributeFilter: ["style"] });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 3,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>
