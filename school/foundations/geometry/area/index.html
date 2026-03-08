@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <title>Perimeter &amp; Area • MindStrong Universe</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <script src="../../ms-tracker.js" defer></script>
   <link rel="stylesheet" href="../../../../theme.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
@@ -72,7 +73,56 @@
     .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
     .ms-reveal.is-in{opacity:1;transform:none;}
     @media(prefers-reduced-motion:reduce){.ms-reveal{opacity:1;transform:none;transition:none;}}
-  </style>
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    .ms-alreadyDone { display:flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.2);
+      font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--xp-a);
+      margin-bottom:12px; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
 </head>
 <body data-mode="academic">
 <div class="ms-pageFX"></div>
@@ -101,6 +151,22 @@
     <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
     <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
     <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span class="ls-pip" id="lsp-1"></span>
+        <span class="ls-pip" id="lsp-2"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
   </div>
 
   <div class="lesson-card ms-reveal">
@@ -141,7 +207,8 @@
     <h2>Build Shapes — Explore Area</h2>
     <p>Draw rectangles and triangles in Desmos. Use the measurement tool to verify your area calculations.</p>
     <div style="border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);margin:16px 0;">
-      <iframe src="https://www.desmos.com/geometry" width="100%" height="380" frameborder="0" allowfullscreen></iframe>
+      <iframe src="https://www.desmos.com/geometry?embed" width="100%" height="400" style="border:none;display:block;" title="Desmos Geometry — Area Explorer"></iframe>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);margin-top:8px;font-family:'JetBrains Mono',monospace;" class="desmos-tip">💡 Use <strong>Polygon</strong> to draw shapes. Desmos shows perimeter — calculate area yourself!</p>
     </div>
   </div>
 
@@ -195,8 +262,8 @@
       <h2>Area &amp; Perimeter Mastered</h2>
       <p id="completeMsg">You can calculate area and perimeter for rectangles, triangles, and more. Circles — with π — are next.</p>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
-        <a class="ms-btn" href="../polygons/">← Polygons</a>
-        <a class="ms-btn primary" href="../circles/">Next: Circles →</a>
+        <a class="ms-btn" href="./geometry-polygons.html">← Polygons</a>
+        <a class="ms-btn primary" href="./geometry-circles.html">Next: Circles →</a>
       </div>
     </div>
   </div>
@@ -215,6 +282,23 @@ function applyMode(m){const c=MODES[m];if(!c)return;document.body.dataset.mode=m
   try{localStorage.setItem("ms_xp_mode",m);}catch{}}
 document.querySelectorAll(".ms-modeBtn").forEach(b=>b.addEventListener("click",()=>applyMode(b.dataset.mode)));
 try{const s=localStorage.getItem("ms_xp_mode");applyMode(s&&MODES[s]?s:"academic");}catch{applyMode("academic");}
+
+const LESSON_KEY = "geo-area";
+const _practiceAnswered = new Set();
+if(window.MSTracker) MSTracker.init(LESSON_KEY, {
+  module:"Geometry", lessonNum:4, title:document.title.split("•")[0].trim(), practiceTotal:3
+});
+
+function showXPToast(xp){
+  if(!xp) return;
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;bottom:32px;right:24px;z-index:9999;padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,var(--xp-b,#3b82f6),var(--xp-a,#22d3ee));color:#06080e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;box-shadow:0 8px 28px rgba(34,211,238,.35);transform:translateY(20px);opacity:0;transition:all .4s ease;pointer-events:none;";
+  t.textContent="+"+xp+" XP";
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform="translateY(0)";t.style.opacity="1";});
+  setTimeout(()=>{t.style.transform="translateY(-12px)";t.style.opacity="0";setTimeout(()=>t.remove(),500);},2200);
+}
+
 
 function chk(n,ans,iid,fid){
   const v=parseInt(document.getElementById(iid).value),fb=document.getElementById(fid);
@@ -236,16 +320,206 @@ const BOSSQ=[
 let bs={running:false,score:0,timer:0,interval:null,qIdx:0,pool:[]};
 function startBoss(){if(bs.running)return;bs={running:true,score:0,timer:30,interval:null,qIdx:0,pool:[...BOSSQ].sort(()=>Math.random()-.5).slice(0,6)};document.getElementById("bossResult").className="boss-result";document.getElementById("bossInput").disabled=false;document.getElementById("bossInput").value="";document.getElementById("bossBtn").textContent="Submit";document.getElementById("bossBtn").onclick=submitBoss;[0,1,2].forEach(i=>document.getElementById("pip"+i).className="pip");showBQ();bs.interval=setInterval(()=>{bs.timer--;const t=document.getElementById("bossTimer");t.textContent=bs.timer;t.className="boss-timer"+(bs.timer<=10?" danger":"");if(bs.timer<=0){clearInterval(bs.interval);endBoss(false);}},1000);}
 function showBQ(){document.getElementById("bossQ").textContent=bs.pool[bs.qIdx%bs.pool.length].q;document.getElementById("bossInput").value="";document.getElementById("bossInput").focus();}
-function submitBoss(){if(!bs.running)return;const v=parseInt(document.getElementById("bossInput").value),q=bs.pool[bs.qIdx%bs.pool.length];if(v===q.ans){bs.score++;bs.qIdx++;if(bs.score>=3){clearInterval(bs.interval);endBoss(true);return;}showBQ();}else{const h=document.querySelector(".pip:not(.hit)");if(h)h.classList.add("hit");bs.qIdx++;showBQ();}}
+function submitBoss(){if(!bs.running)return;const v=parseInt(document.getElementById("bossInput").value),q=bs.pool[bs.qIdx%bs.pool.length];if(v===q.ans){bs.score++;if(window.MSTracker&&!_practiceAnswered.has(bs.score)){_practiceAnswered.add(bs.score);MSTracker.practice(LESSON_KEY,true);}bs.qIdx++;if(bs.score>=3){clearInterval(bs.interval);endBoss(true);return;}showBQ();}else{if(window.MSTracker)MSTracker.practice(LESSON_KEY,false);const h=document.querySelector(".pip:not(.hit)");if(h)h.classList.add("hit");bs.qIdx++;showBQ();}}
 document.getElementById("bossInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitBoss();});
-function endBoss(won){bs.running=false;clearInterval(bs.interval);document.getElementById("bossInput").disabled=true;document.getElementById("bossBtn").onclick=startBoss;document.getElementById("bossBtn").textContent="Try Again";const res=document.getElementById("bossResult");res.className="boss-result show";if(won){res.innerHTML='<b>🎉 Boss Defeated!</b><br>Area and perimeter locked in.';try{localStorage.setItem("ms_area_boss","won");}catch{}}else{res.innerHTML='<b>⏰ Time\'s Up</b><br>Rectangle: l×w. Triangle: ½bh. Try again!';}}
+function endBoss(won){bs.running=false;clearInterval(bs.interval);document.getElementById("bossInput").disabled=true;document.getElementById("bossBtn").onclick=startBoss;document.getElementById("bossBtn").textContent="Try Again";const res=document.getElementById("bossResult");res.className="boss-result show";if(won){res.innerHTML='<b>🎉 Boss Defeated!</b><br>Area and perimeter locked in.';try{localStorage.setItem("ms_area_boss","won");}catch{}
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, true, typeof bs!=="undefined"?bs.timer:0);}else{res.innerHTML='<b>⏰ Time\'s Up</b><br>Rectangle: l×w. Triangle: ½bh. Try again!';}
+  if(window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0);
+}
 
-function checkExit(){const v=parseInt(document.getElementById("exitInput").value),fb=document.getElementById("exitFeedback");if(v===63){fb.textContent="✓ Correct! ½ × 14 × 9 = 63 cm²";fb.className="feedback correct";document.getElementById("exitBtn").disabled=true;document.getElementById("markBtn").disabled=false;}else{fb.textContent="✗ Hint: Area of triangle = ½ × base × height";fb.className="feedback wrong";}}
+function checkExit(){const v=parseInt(document.getElementById("exitInput").value),fb=document.getElementById("exitFeedback");if(v===63){fb.textContent="✓ Correct! ½ × 14 × 9 = 63 cm²";fb.className="feedback correct";document.getElementById("exitBtn").disabled=true;
+  if(window.MSTracker) MSTracker.exit(LESSON_KEY, true);document.getElementById("markBtn").disabled=false;}else{fb.textContent="✗ Hint: Area of triangle = ½ × base × height";fb.className="feedback wrong";}}
 document.getElementById("exitInput").addEventListener("keydown",e=>{if(e.key==="Enter")checkExit();});
 document.getElementById("markBtn").disabled=true;
-function markComplete(){try{const d=JSON.parse(localStorage.getItem("ms_geo_done")||"[]");if(!d.includes("area-1"))d.push("area-1");localStorage.setItem("ms_geo_done",JSON.stringify(d));localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}document.getElementById("markBtn").textContent="✓ Complete!";document.getElementById("markBtn").disabled=true;document.getElementById("completeCard").style.display="block";document.getElementById("completeCard").scrollIntoView({behavior:"smooth"});}
+function markComplete(){try{const d=JSON.parse(localStorage.getItem("ms_geo_done")||"[]");if(!d.includes("area-1"))d.push("area-1");localStorage.setItem("ms_geo_done",JSON.stringify(d));localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}document.getElementById("markBtn").textContent="✓ Complete!";document.getElementById("markBtn").disabled=true;document.getElementById("completeCard").style.display="block";document.getElementById("completeCard").scrollIntoView({behavior:"smooth"});
+  if(window.MSTracker){const _xp=MSTracker.complete(LESSON_KEY);showXPToast(_xp);}}
 (function(){const els=document.querySelectorAll(".ms-reveal"),io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add("is-in");io.unobserve(x.target);}});},{threshold:.08});els.forEach(el=>io.observe(el));})();
 try{localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}
 </script>
 </body>
 </html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildCompleteSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreIfDone() {
+  try {
+    // Check legacy done array
+    const done = JSON.parse(localStorage.getItem("ms_geo_done") || "[]");
+    if (!done.includes("area-1")) return;
+    // Already complete — show state
+    const markBtn = document.getElementById("markBtn");
+    if (markBtn) { markBtn.textContent = "✓ Complete!"; markBtn.disabled = true; }
+    const card = document.getElementById("completeCard");
+    if (card) {
+      // Inject score summary
+      const summary = buildCompleteSummary(LESSON_KEY);
+      const chipEl = document.getElementById("completeChip");
+      if (chipEl && summary && !document.getElementById("scoreSum")) {
+        const div = document.createElement("div");
+        div.id = "scoreSum";
+        div.innerHTML = summary;
+        chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+      }
+      card.style.display = "block";
+    }
+    // Add "already done" badge near markBtn if not complete card visible
+    const exitBtn = document.getElementById("exitBtn");
+    if (exitBtn) exitBtn.disabled = true;
+  } catch(e) {}
+}
+restoreIfDone();
+
+// Also inject score into completeCard when markComplete fires (after XP toast)
+const _origMC = typeof markComplete === "function" ? markComplete : null;
+// Patch completeCard to show score summary after completion
+function injectScoreSummary() {
+  const summary = buildCompleteSummary(LESSON_KEY);
+  if (!summary) return;
+  const chipEl = document.getElementById("completeChip");
+  if (chipEl && !document.getElementById("scoreSum")) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+  }
+}
+// Hook into scrollIntoView timing
+const _baseCard = document.getElementById("completeCard");
+if (_baseCard) {
+  const _obs = new MutationObserver(() => {
+    if (_baseCard.style.display !== "none") {
+      setTimeout(injectScoreSummary, 300);
+      _obs.disconnect();
+    }
+  });
+  _obs.observe(_baseCard, { attributes: true, attributeFilter: ["style"] });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 3,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>
