@@ -129,6 +129,31 @@
     .ms-moduleWrap.is-locked summary { opacity:.45; pointer-events:none; }
     .ms-moduleWrap.is-locked details { pointer-events:none; }
 
+
+    /* ── Student rank card ── */
+    .ms-rankCard {
+      display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+      padding:18px 20px; border-radius:16px; margin-bottom:16px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.03);
+    }
+    .ms-rankAvatar { font-size:32px; flex-shrink:0; }
+    .ms-rankBody { flex:1; min-width:0; }
+    .ms-rankName { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900;
+      color:var(--xp-a); margin-bottom:2px; }
+    .ms-rankMeta { font-family:'JetBrains Mono',monospace; font-size:10px;
+      color:var(--muted,#6b7a99); letter-spacing:.08em; margin-bottom:8px; }
+    .ms-rankBarWrap { height:6px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
+    .ms-rankBarFill { height:100%; border-radius:999px;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); transition:width .8s ease; }
+    .ms-rankStats { display:flex; gap:10px; flex-wrap:wrap; }
+    .ms-rankStat { text-align:center; padding:8px 12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); min-width:60px; }
+    .ms-rankStat .rsv { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-rankStat .rsl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:3px; text-transform:uppercase; letter-spacing:.1em; }
+
     /* ── Per-lesson score mini-row ── */
     .ms-scoreRow { display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap; }
     .ms-pip { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); display:inline-block; }
@@ -201,6 +226,22 @@
     <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
     <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
     <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+
+  <!-- STUDENT RANK CARD -->
+  <div class="ms-rankCard ms-reveal" id="rankCard">
+    <div class="ms-rankAvatar" id="rankAvatar">🧠</div>
+    <div class="ms-rankBody">
+      <div class="ms-rankName" id="rankTitle">Novice</div>
+      <div class="ms-rankMeta" id="rankMeta">0 / 57 lessons · Start your first lesson</div>
+      <div class="ms-rankBarWrap"><div class="ms-rankBarFill" id="rankBar" style="width:0%"></div></div>
+    </div>
+    <div class="ms-rankStats">
+      <div class="ms-rankStat"><div class="rsv" id="rsXP">0</div><div class="rsl">XP</div></div>
+      <div class="ms-rankStat"><div class="rsv" id="rsBoss">0</div><div class="rsl">Bosses</div></div>
+      <div class="ms-rankStat"><div class="rsv" id="rsStreak">0</div><div class="rsl">Streak</div></div>
+    </div>
   </div>
 
   <!-- OVERALL PROGRESS -->
@@ -856,6 +897,44 @@ function renderModules(){
 ═══════════════════════════════════════════════════════ */
 document.getElementById("totalDone").textContent  = totalDone;
 document.getElementById("totalBar").style.width   = Math.round((totalDone/TOTAL_LESSONS)*100)+"%";
+
+
+/* ═══════════════════════════════════════════════════════
+   RANK + STUDENT CARD
+═══════════════════════════════════════════════════════ */
+const LEVELS = [
+  {name:"Novice",     avatar:"🔢", min:0,    max:200},
+  {name:"Apprentice", avatar:"📐", min:200,  max:500},
+  {name:"Scholar",    avatar:"📚", min:500,  max:1000},
+  {name:"Expert",     avatar:"🎯", min:1000, max:2000},
+  {name:"Master",     avatar:"⚡", min:2000, max:3500},
+  {name:"Grandmaster",avatar:"🏆", min:3500, max:Infinity},
+];
+const RANK_AVATARS = {arcade:"🕹️",rpg:"🧙",academic:"🧠",lms:"🎓"};
+
+function renderRankCard(){
+  const raw = (() => { try{ return JSON.parse(localStorage.getItem("ms_progress")||"{}"); }catch{ return {}; } })();
+  const lessons = raw.lessons || {};
+  const xp = raw.xp || 0;
+  const streak = raw.streak?.current || 0;
+  const bosses = Object.values(lessons).filter(l=>l.bossWon).length;
+  const done = Object.values(lessons).filter(l=>l.completedAt).length;
+
+  const lvl = LEVELS.slice().reverse().find(l => xp >= l.min) || LEVELS[0];
+  const pct = lvl.max === Infinity ? 100 : Math.round(((xp - lvl.min) / (lvl.max - lvl.min)) * 100);
+  const mode = document.body.dataset.mode || "academic";
+
+  document.getElementById("rankAvatar").textContent = RANK_AVATARS[mode] || "🧠";
+  document.getElementById("rankTitle").textContent  = lvl.name;
+  document.getElementById("rankMeta").textContent   =
+    done > 0 ? `${done} / 57 lessons complete · ${lvl.max === Infinity ? "Max Rank" : `${xp} / ${lvl.max} XP to next rank`}`
+             : "0 / 57 lessons · Complete your first lesson to earn XP";
+  document.getElementById("rankBar").style.width    = pct + "%";
+  document.getElementById("rsXP").textContent       = xp.toLocaleString();
+  document.getElementById("rsBoss").textContent     = bosses;
+  document.getElementById("rsStreak").textContent   = streak;
+}
+renderRankCard();
 
 // Show total XP if any earned
 const totalXP = Object.values(SCORES).reduce((s,l) => s + (l.xpEarned||0), 0);
