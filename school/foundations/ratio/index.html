@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Ratios • Pre-Algebra Mastery</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../ms-tracker.js" defer></script>
   <link rel="stylesheet" href="../../../theme.css" />
   <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
   <meta name="theme-color" content="#0b0f1a" />
@@ -190,7 +191,52 @@
     .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease,transform .5s ease; }
     .ms-reveal.is-in { opacity:1; transform:translateY(0); }
     @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
-  </style>
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
 </head>
 
 <body data-mode="academic">
@@ -238,6 +284,20 @@
     </div>
   </section>
 
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
+  </div>
+
   <!-- WHAT THIS IS -->
   <section class="lesson-card ms-reveal">
     <span class="section-label" id="sec1Label">Overview</span>
@@ -277,11 +337,9 @@
     <h2>🎮 <span id="playTitle">Play Mode</span></h2>
     <p id="playBody">Explore how ratios stretch and shrink while staying balanced.</p>
     <iframe
-      src="https://www.desmos.com/calculator"
-      width="100%" height="400"
-      style="border:none;border-radius:12px;margin-top:12px;"
-      loading="lazy">
+      src="https://www.desmos.com/calculator?embed" width="100%" height="400" style="border:none;display:block;" title="Desmos Graphing Calculator — Ratios">
     </iframe>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);margin-top:8px;font-family:'JetBrains Mono',monospace;" class="desmos-tip">💡 Plot two equivalent ratios as points — e.g. (2,6) and (4,12). What do you notice?</p>
   </section>
 
   <!-- PRACTICE -->
@@ -345,7 +403,9 @@ const LESSON_ID = "ratios-1";
 localStorage.setItem("ms_last_lesson_url", window.location.pathname);
 
 function getArr(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return []; } }
-function markDone(){ const a=getArr(); if(!a.includes(LESSON_ID)){ a.push(LESSON_ID); localStorage.setItem(KEY,JSON.stringify(a)); } }
+function markDone(){
+  if(window.MSTracker){MSTracker.exit(LESSON_KEY,true);const _xp=MSTracker.complete(LESSON_KEY);showXPToast(_xp);}
+  const a=getArr(); if(!a.includes(LESSON_ID)){ a.push(LESSON_ID); localStorage.setItem(KEY,JSON.stringify(a)); } }
 
 const btn  = document.getElementById("completeBtn");
 const chip = document.getElementById("statusChip");
@@ -490,15 +550,30 @@ try{
 /* ════════════════════════════════════════
    PRACTICE CHECK
 ════════════════════════════════════════ */
+const LESSON_KEY = "geo-ratios";
+const _pAnswered = new Set();
+if(window.MSTracker) MSTracker.init(LESSON_KEY, {module:"Pre-Algebra", lessonNum:1, title:"Ratios", practiceTotal:3});
+function showXPToast(xp){
+  if(!xp) return;
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;bottom:32px;right:24px;z-index:9999;padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,var(--xp-b,#3b82f6),var(--xp-a,#22d3ee));color:#06080e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;box-shadow:0 8px 28px rgba(34,211,238,.35);transform:translateY(20px);opacity:0;transition:all .4s ease;pointer-events:none;";
+  t.textContent="+"+xp+" XP";
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform="translateY(0)";t.style.opacity="1";});
+  setTimeout(()=>{t.style.transform="translateY(-12px)";t.style.opacity="0";setTimeout(()=>t.remove(),500);},2200);
+}
+
 function checkPractice(){
   const val  = Number(document.getElementById("practiceInput").value);
   const fb   = document.getElementById("practiceFeedback");
   if(val === 10){
     fb.innerHTML = "✅ Correct! Both sides doubled (×2).";
     fb.style.color = "#22d3ee";
+    if(window.MSTracker&&!_pAnswered.has(1)){_pAnswered.add(1);MSTracker.practice(LESSON_KEY,true);}
   } else {
     fb.innerHTML = "❌ Not balanced — what happened to 3?";
     fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
   }
 }
 
@@ -542,6 +617,7 @@ function submitBoss(){
   } else {
     fb.innerHTML  = "❌ Miss — stay balanced.";
     fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
   }
 
   document.getElementById("bossInput").value = "";
@@ -556,11 +632,14 @@ function endBoss(won){
     fb.innerHTML = "🏆 BOSS DEFEATED! Ratio Master unlocked.";
     fb.style.color = "var(--xp-a)";
     try{ localStorage.setItem("ms_ratio_rank","Ratio Master"); }catch{}
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, true, typeof bossTime!=="undefined"?bossTime:0);
     document.getElementById("bossAttackBtn").disabled = true;
     document.getElementById("bossInput").disabled = true;
   } else {
     fb.innerHTML = "💀 Time's up. Try again!";
     fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0);
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
     document.getElementById("bossAttackBtn").textContent = "Try Again";
     document.getElementById("bossAttackBtn").onclick = resetBoss;
   }
@@ -608,3 +687,172 @@ startBossTimer();
 </script>
 </body>
 </html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildScoreSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreRatioDone() {
+  try {
+    const done = JSON.parse(localStorage.getItem("ms_pre_alg_done") || "[]");
+    if (!done.includes("ratios-1")) return;
+    const chip = document.getElementById("statusChip");
+    if (chip) { chip.textContent = "✓ Completed"; chip.classList.add("done"); }
+    const btn = document.getElementById("completeBtn");
+    if (btn) { btn.textContent = "✓ Complete!"; btn.disabled = true; }
+    // Inject score summary near the status chip
+    const summary = buildScoreSummary(LESSON_KEY);
+    if (summary && chip && !document.getElementById("scoreSum")) {
+      const div = document.createElement("div");
+      div.id = "scoreSum";
+      div.innerHTML = summary;
+      chip.parentNode.insertBefore(div, chip.nextSibling);
+    }
+  } catch(e) {}
+}
+restoreRatioDone();
+
+// Inject score on completion too (after MutationObserver fires)
+function injectRatioScore() {
+  const summary = buildScoreSummary(LESSON_KEY);
+  if (!summary || document.getElementById("scoreSum")) return;
+  const chip = document.getElementById("statusChip");
+  if (chip) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chip.parentNode.insertBefore(div, chip.nextSibling);
+  }
+}
+const _btn = document.getElementById("completeBtn");
+if (_btn) {
+  const _obs = new MutationObserver(() => setTimeout(injectRatioScore, 400));
+  _obs.observe(_btn, { attributes: true });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 1,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>
