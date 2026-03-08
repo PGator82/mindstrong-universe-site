@@ -129,6 +129,14 @@
     .ms-moduleWrap.is-locked summary { opacity:.45; pointer-events:none; }
     .ms-moduleWrap.is-locked details { pointer-events:none; }
 
+    /* ── Per-lesson score mini-row ── */
+    .ms-scoreRow { display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap; }
+    .ms-pip { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); display:inline-block; }
+    .ms-pip.filled { background:var(--xp-a); border-color:var(--xp-a); box-shadow:0 0 4px var(--xp-glow); }
+    .ms-bossBadge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:4px; border:1px solid rgba(74,222,128,.4); color:#4ade80; background:rgba(74,222,128,.06); white-space:nowrap; }
+    .ms-xpBadge { font-family:'Orbitron',sans-serif; font-size:9px; font-weight:900; padding:2px 6px; border-radius:4px; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; white-space:nowrap; }
+    .ms-scoreDiv { width:1px; height:10px; background:rgba(255,255,255,.12); display:inline-block; }
+
     /* ── Locked overlay pill ── */
     .ms-lockedPill {
       display:inline-flex; align-items:center; gap:5px;
@@ -199,7 +207,10 @@
   <div class="ms-overallProgress ms-reveal">
     <div class="op-row">
       <span class="op-title">Total Course Progress</span>
-      <span class="op-count"><span id="totalDone">0</span> <span style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;">/ 57 lessons</span></span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="op-count"><span id="totalDone">0</span> <span style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;">/ 57 lessons</span></span>
+        <span id="totalXPWrap" style="display:none;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;"></span>
+      </div>
     </div>
     <div class="ms-bar"><div id="totalBar"></div></div>
   </div>
@@ -260,12 +271,12 @@
         <div class="ms-bar"><div id="bar-1"></div></div>
       </div>
       <div class="ms-list" id="list-1">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-1">1</span><div><div class="ms-title">Numbers Are Stories</div><div class="ms-subtle">Magnitude + meaning</div><div class="ms-lessonMode" id="lm-1-1"></div></div></div><a class="ms-btn" href="./module-1/lesson-1.html" id="lb-1-1">Open</a></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-2">2</span><div><div class="ms-title">Place Value Is a Volume Knob</div><div class="ms-subtle">×10 louder, ÷10 quieter</div><div class="ms-lessonMode" id="lm-1-2"></div></div></div><a class="ms-btn" href="./module-1/lesson-2.html" id="lb-1-2">Open</a></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-3">3</span><div><div class="ms-title">Expanded Form</div><div class="ms-subtle">Number LEGO</div><div class="ms-lessonMode" id="lm-1-3"></div></div></div><a class="ms-btn" href="./module-1/lesson-3.html" id="lb-1-3">Open</a></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-4">4</span><div><div class="ms-title">Compare Without Guessing</div><div class="ms-subtle">Left-to-right logic</div><div class="ms-lessonMode" id="lm-1-4"></div></div></div><a class="ms-btn" href="./module-1/lesson-4.html" id="lb-1-4">Open</a></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-5">5</span><div><div class="ms-title">Rounding That Makes Sense</div><div class="ms-subtle">Landmarks, not rules</div><div class="ms-lessonMode" id="lm-1-5"></div></div></div><a class="ms-btn" href="./module-1/lesson-5.html" id="lb-1-5">Open</a></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-6">6</span><div><div class="ms-title">Estimation as a Superpower</div><div class="ms-subtle">The smell test</div><div class="ms-lessonMode" id="lm-1-6"></div></div></div><a class="ms-btn" href="./module-1/lesson-6.html" id="lb-1-6">Open</a></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-1">1</span><div><div class="ms-title">Numbers Are Stories</div><div class="ms-subtle">Magnitude + meaning</div><div class="ms-lessonMode" id="lm-1-1"></div><div id="sc-1-1"></div></div></div><span id="act-1-1"><a class="ms-btn" href="./module-1/lesson-1.html" id="lb-1-1">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-2">2</span><div><div class="ms-title">Place Value Is a Volume Knob</div><div class="ms-subtle">×10 louder, ÷10 quieter</div><div class="ms-lessonMode" id="lm-1-2"></div><div id="sc-1-2"></div></div></div><span id="act-1-2"><a class="ms-btn" href="./module-1/lesson-2.html" id="lb-1-2">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-3">3</span><div><div class="ms-title">Expanded Form</div><div class="ms-subtle">Number LEGO</div><div class="ms-lessonMode" id="lm-1-3"></div><div id="sc-1-3"></div></div></div><span id="act-1-3"><a class="ms-btn" href="./module-1/lesson-3.html" id="lb-1-3">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-4">4</span><div><div class="ms-title">Compare Without Guessing</div><div class="ms-subtle">Left-to-right logic</div><div class="ms-lessonMode" id="lm-1-4"></div><div id="sc-1-4"></div></div></div><span id="act-1-4"><a class="ms-btn" href="./module-1/lesson-4.html" id="lb-1-4">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-5">5</span><div><div class="ms-title">Rounding That Makes Sense</div><div class="ms-subtle">Landmarks, not rules</div><div class="ms-lessonMode" id="lm-1-5"></div><div id="sc-1-5"></div></div></div><span id="act-1-5"><a class="ms-btn" href="./module-1/lesson-5.html" id="lb-1-5">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-6">6</span><div><div class="ms-title">Estimation as a Superpower</div><div class="ms-subtle">The smell test</div><div class="ms-lessonMode" id="lm-1-6"></div><div id="sc-1-6"></div></div></div><span id="act-1-6"><a class="ms-btn" href="./module-1/lesson-6.html" id="lb-1-6">Open</a></span></div>
       </div>
     </details>
   </div>
@@ -292,11 +303,11 @@
         <div class="ms-bar"><div id="bar-2"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-1">1</span><div><div class="ms-title">Ratios — Balance of Comparison</div><div class="ms-subtle">Scaling relationships</div><div class="ms-lessonMode" id="lm-2-1"></div></div></div><span id="act-2-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-2">2</span><div><div class="ms-title">Proportions — Equal Ratios</div><div class="ms-subtle">Cross-multiply to solve</div><div class="ms-lessonMode" id="lm-2-2"></div></div></div><span id="act-2-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-3">3</span><div><div class="ms-title">Percents — Ratios out of 100</div><div class="ms-subtle">Part, whole, percent triangle</div><div class="ms-lessonMode" id="lm-2-3"></div></div></div><span id="act-2-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-4">4</span><div><div class="ms-title">Expressions — Variables &amp; Terms</div><div class="ms-subtle">Coefficients, like terms, evaluation</div><div class="ms-lessonMode" id="lm-2-4"></div></div></div><span id="act-2-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-5">5</span><div><div class="ms-title">Equations — Solve for x</div><div class="ms-subtle">Inverse operations · Final boss</div><div class="ms-lessonMode" id="lm-2-5"></div></div></div><span id="act-2-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-1">1</span><div><div class="ms-title">Ratios — Balance of Comparison</div><div class="ms-subtle">Scaling relationships</div><div class="ms-lessonMode" id="lm-2-1"></div><div id="sc-2-1"></div></div></div><span id="act-2-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-2">2</span><div><div class="ms-title">Proportions — Equal Ratios</div><div class="ms-subtle">Cross-multiply to solve</div><div class="ms-lessonMode" id="lm-2-2"></div><div id="sc-2-2"></div></div></div><span id="act-2-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-3">3</span><div><div class="ms-title">Percents — Ratios out of 100</div><div class="ms-subtle">Part, whole, percent triangle</div><div class="ms-lessonMode" id="lm-2-3"></div><div id="sc-2-3"></div></div></div><span id="act-2-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-4">4</span><div><div class="ms-title">Expressions — Variables &amp; Terms</div><div class="ms-subtle">Coefficients, like terms, evaluation</div><div class="ms-lessonMode" id="lm-2-4"></div><div id="sc-2-4"></div></div></div><span id="act-2-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-5">5</span><div><div class="ms-title">Equations — Solve for x</div><div class="ms-subtle">Inverse operations · Final boss</div><div class="ms-lessonMode" id="lm-2-5"></div><div id="sc-2-5"></div></div></div><span id="act-2-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
       <div class="ms-viewAll"><a href="./pre-algebra/">View full Pre-Algebra dashboard →</a></div>
     </details>
@@ -324,12 +335,12 @@
         <div class="ms-bar"><div id="bar-3"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-1">1</span><div><div class="ms-title">Angles &amp; Lines</div><div class="ms-subtle">Acute, obtuse, parallel, perpendicular</div><div class="ms-lessonMode" id="lm-3-1"></div></div></div><span id="act-3-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-2">2</span><div><div class="ms-title">Triangles</div><div class="ms-subtle">Types, angles sum to 180°</div><div class="ms-lessonMode" id="lm-3-2"></div></div></div><span id="act-3-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-3">3</span><div><div class="ms-title">Quadrilaterals &amp; Polygons</div><div class="ms-subtle">Properties, diagonals, angle sums</div><div class="ms-lessonMode" id="lm-3-3"></div></div></div><span id="act-3-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-4">4</span><div><div class="ms-title">Perimeter &amp; Area</div><div class="ms-subtle">Rectangles, triangles, composite shapes</div><div class="ms-lessonMode" id="lm-3-4"></div></div></div><span id="act-3-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-5">5</span><div><div class="ms-title">Circles — π Unlocked</div><div class="ms-subtle">Radius, diameter, circumference, area</div><div class="ms-lessonMode" id="lm-3-5"></div></div></div><span id="act-3-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-6">6</span><div><div class="ms-title">The Coordinate Plane</div><div class="ms-subtle">Quadrants, plotting, distance</div><div class="ms-lessonMode" id="lm-3-6"></div></div></div><span id="act-3-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-1">1</span><div><div class="ms-title">Angles &amp; Lines</div><div class="ms-subtle">Acute, obtuse, parallel, perpendicular</div><div class="ms-lessonMode" id="lm-3-1"></div><div id="sc-3-1"></div></div></div><span id="act-3-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-2">2</span><div><div class="ms-title">Triangles</div><div class="ms-subtle">Types, angles sum to 180°</div><div class="ms-lessonMode" id="lm-3-2"></div><div id="sc-3-2"></div></div></div><span id="act-3-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-3">3</span><div><div class="ms-title">Quadrilaterals &amp; Polygons</div><div class="ms-subtle">Properties, diagonals, angle sums</div><div class="ms-lessonMode" id="lm-3-3"></div><div id="sc-3-3"></div></div></div><span id="act-3-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-4">4</span><div><div class="ms-title">Perimeter &amp; Area</div><div class="ms-subtle">Rectangles, triangles, composite shapes</div><div class="ms-lessonMode" id="lm-3-4"></div><div id="sc-3-4"></div></div></div><span id="act-3-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-5">5</span><div><div class="ms-title">Circles — π Unlocked</div><div class="ms-subtle">Radius, diameter, circumference, area</div><div class="ms-lessonMode" id="lm-3-5"></div><div id="sc-3-5"></div></div></div><span id="act-3-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-6">6</span><div><div class="ms-title">The Coordinate Plane</div><div class="ms-subtle">Quadrants, plotting, distance</div><div class="ms-lessonMode" id="lm-3-6"></div><div id="sc-3-6"></div></div></div><span id="act-3-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -356,12 +367,12 @@
         <div class="ms-bar"><div id="bar-4"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-1">1</span><div><div class="ms-title">What Fractions Actually Mean</div><div class="ms-subtle">Parts of wholes, number line placement</div><div class="ms-lessonMode" id="lm-4-1"></div></div></div><span id="act-4-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-2">2</span><div><div class="ms-title">Equivalent Fractions &amp; Simplifying</div><div class="ms-subtle">Same value, different form</div><div class="ms-lessonMode" id="lm-4-2"></div></div></div><span id="act-4-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-3">3</span><div><div class="ms-title">Add &amp; Subtract Fractions</div><div class="ms-subtle">Common denominators, mixed numbers</div><div class="ms-lessonMode" id="lm-4-3"></div></div></div><span id="act-4-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-4">4</span><div><div class="ms-title">Multiply Fractions</div><div class="ms-subtle">Top × top, bottom × bottom</div><div class="ms-lessonMode" id="lm-4-4"></div></div></div><span id="act-4-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-5">5</span><div><div class="ms-title">Divide Fractions</div><div class="ms-subtle">Flip and multiply — but why?</div><div class="ms-lessonMode" id="lm-4-5"></div></div></div><span id="act-4-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-6">6</span><div><div class="ms-title">Fractions, Decimals &amp; Percents</div><div class="ms-subtle">Converting between all three forms</div><div class="ms-lessonMode" id="lm-4-6"></div></div></div><span id="act-4-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-1">1</span><div><div class="ms-title">What Fractions Actually Mean</div><div class="ms-subtle">Parts of wholes, number line placement</div><div class="ms-lessonMode" id="lm-4-1"></div><div id="sc-4-1"></div></div></div><span id="act-4-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-2">2</span><div><div class="ms-title">Equivalent Fractions &amp; Simplifying</div><div class="ms-subtle">Same value, different form</div><div class="ms-lessonMode" id="lm-4-2"></div><div id="sc-4-2"></div></div></div><span id="act-4-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-3">3</span><div><div class="ms-title">Add &amp; Subtract Fractions</div><div class="ms-subtle">Common denominators, mixed numbers</div><div class="ms-lessonMode" id="lm-4-3"></div><div id="sc-4-3"></div></div></div><span id="act-4-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-4">4</span><div><div class="ms-title">Multiply Fractions</div><div class="ms-subtle">Top × top, bottom × bottom</div><div class="ms-lessonMode" id="lm-4-4"></div><div id="sc-4-4"></div></div></div><span id="act-4-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-5">5</span><div><div class="ms-title">Divide Fractions</div><div class="ms-subtle">Flip and multiply — but why?</div><div class="ms-lessonMode" id="lm-4-5"></div><div id="sc-4-5"></div></div></div><span id="act-4-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-6">6</span><div><div class="ms-title">Fractions, Decimals &amp; Percents</div><div class="ms-subtle">Converting between all three forms</div><div class="ms-lessonMode" id="lm-4-6"></div><div id="sc-4-6"></div></div></div><span id="act-4-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -388,12 +399,12 @@
         <div class="ms-bar"><div id="bar-5"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-1">1</span><div><div class="ms-title">Below Zero — Negative Numbers</div><div class="ms-subtle">The number line goes both ways</div><div class="ms-lessonMode" id="lm-5-1"></div></div></div><span id="act-5-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-2">2</span><div><div class="ms-title">Absolute Value</div><div class="ms-subtle">Distance from zero, always positive</div><div class="ms-lessonMode" id="lm-5-2"></div></div></div><span id="act-5-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-3">3</span><div><div class="ms-title">Add &amp; Subtract Integers</div><div class="ms-subtle">Same sign add, different sign subtract</div><div class="ms-lessonMode" id="lm-5-3"></div></div></div><span id="act-5-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-4">4</span><div><div class="ms-title">Multiply &amp; Divide Integers</div><div class="ms-subtle">Sign rules — two negatives make a positive</div><div class="ms-lessonMode" id="lm-5-4"></div></div></div><span id="act-5-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-5">5</span><div><div class="ms-title">Order of Operations</div><div class="ms-subtle">PEMDAS with negatives and brackets</div><div class="ms-lessonMode" id="lm-5-5"></div></div></div><span id="act-5-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-6">6</span><div><div class="ms-title">Rational Numbers on the Number Line</div><div class="ms-subtle">Fractions, decimals, negatives — unified</div><div class="ms-lessonMode" id="lm-5-6"></div></div></div><span id="act-5-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-1">1</span><div><div class="ms-title">Below Zero — Negative Numbers</div><div class="ms-subtle">The number line goes both ways</div><div class="ms-lessonMode" id="lm-5-1"></div><div id="sc-5-1"></div></div></div><span id="act-5-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-2">2</span><div><div class="ms-title">Absolute Value</div><div class="ms-subtle">Distance from zero, always positive</div><div class="ms-lessonMode" id="lm-5-2"></div><div id="sc-5-2"></div></div></div><span id="act-5-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-3">3</span><div><div class="ms-title">Add &amp; Subtract Integers</div><div class="ms-subtle">Same sign add, different sign subtract</div><div class="ms-lessonMode" id="lm-5-3"></div><div id="sc-5-3"></div></div></div><span id="act-5-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-4">4</span><div><div class="ms-title">Multiply &amp; Divide Integers</div><div class="ms-subtle">Sign rules — two negatives make a positive</div><div class="ms-lessonMode" id="lm-5-4"></div><div id="sc-5-4"></div></div></div><span id="act-5-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-5">5</span><div><div class="ms-title">Order of Operations</div><div class="ms-subtle">PEMDAS with negatives and brackets</div><div class="ms-lessonMode" id="lm-5-5"></div><div id="sc-5-5"></div></div></div><span id="act-5-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-6">6</span><div><div class="ms-title">Rational Numbers on the Number Line</div><div class="ms-subtle">Fractions, decimals, negatives — unified</div><div class="ms-lessonMode" id="lm-5-6"></div><div id="sc-5-6"></div></div></div><span id="act-5-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -420,12 +431,12 @@
         <div class="ms-bar"><div id="bar-6"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-1">1</span><div><div class="ms-title">Mean, Median &amp; Mode</div><div class="ms-subtle">Three ways to describe the middle</div><div class="ms-lessonMode" id="lm-6-1"></div></div></div><span id="act-6-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-2">2</span><div><div class="ms-title">Range &amp; Spread</div><div class="ms-subtle">How far apart is the data?</div><div class="ms-lessonMode" id="lm-6-2"></div></div></div><span id="act-6-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-3">3</span><div><div class="ms-title">Bar Graphs &amp; Histograms</div><div class="ms-subtle">Reading and building charts</div><div class="ms-lessonMode" id="lm-6-3"></div></div></div><span id="act-6-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-4">4</span><div><div class="ms-title">Line Graphs &amp; Scatter Plots</div><div class="ms-subtle">Trends over time, relationships</div><div class="ms-lessonMode" id="lm-6-4"></div></div></div><span id="act-6-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-5">5</span><div><div class="ms-title">Probability Basics</div><div class="ms-subtle">Likely, unlikely, certain, impossible</div><div class="ms-lessonMode" id="lm-6-5"></div></div></div><span id="act-6-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-6">6</span><div><div class="ms-title">Experimental vs Theoretical Probability</div><div class="ms-subtle">What should happen vs what did happen</div><div class="ms-lessonMode" id="lm-6-6"></div></div></div><span id="act-6-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-1">1</span><div><div class="ms-title">Mean, Median &amp; Mode</div><div class="ms-subtle">Three ways to describe the middle</div><div class="ms-lessonMode" id="lm-6-1"></div><div id="sc-6-1"></div></div></div><span id="act-6-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-2">2</span><div><div class="ms-title">Range &amp; Spread</div><div class="ms-subtle">How far apart is the data?</div><div class="ms-lessonMode" id="lm-6-2"></div><div id="sc-6-2"></div></div></div><span id="act-6-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-3">3</span><div><div class="ms-title">Bar Graphs &amp; Histograms</div><div class="ms-subtle">Reading and building charts</div><div class="ms-lessonMode" id="lm-6-3"></div><div id="sc-6-3"></div></div></div><span id="act-6-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-4">4</span><div><div class="ms-title">Line Graphs &amp; Scatter Plots</div><div class="ms-subtle">Trends over time, relationships</div><div class="ms-lessonMode" id="lm-6-4"></div><div id="sc-6-4"></div></div></div><span id="act-6-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-5">5</span><div><div class="ms-title">Probability Basics</div><div class="ms-subtle">Likely, unlikely, certain, impossible</div><div class="ms-lessonMode" id="lm-6-5"></div><div id="sc-6-5"></div></div></div><span id="act-6-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-6">6</span><div><div class="ms-title">Experimental vs Theoretical Probability</div><div class="ms-subtle">What should happen vs what did happen</div><div class="ms-lessonMode" id="lm-6-6"></div><div id="sc-6-6"></div></div></div><span id="act-6-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -452,12 +463,12 @@
         <div class="ms-bar"><div id="bar-7"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-1">1</span><div><div class="ms-title">Variables &amp; Algebraic Thinking</div><div class="ms-subtle">Unknown quantities, generalizing patterns</div><div class="ms-lessonMode" id="lm-7-1"></div></div></div><span id="act-7-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-2">2</span><div><div class="ms-title">Multi-Step Equations</div><div class="ms-subtle">Combining like terms, distributive property</div><div class="ms-lessonMode" id="lm-7-2"></div></div></div><span id="act-7-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-3">3</span><div><div class="ms-title">Inequalities</div><div class="ms-subtle">Greater than, less than, graphing on a number line</div><div class="ms-lessonMode" id="lm-7-3"></div></div></div><span id="act-7-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-4">4</span><div><div class="ms-title">Patterns &amp; Sequences</div><div class="ms-subtle">Arithmetic and geometric sequences</div><div class="ms-lessonMode" id="lm-7-4"></div></div></div><span id="act-7-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-5">5</span><div><div class="ms-title">Word Problems → Equations</div><div class="ms-subtle">Translate real situations into algebra</div><div class="ms-lessonMode" id="lm-7-5"></div></div></div><span id="act-7-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-6">6</span><div><div class="ms-title">Systems of Equations — Intro</div><div class="ms-subtle">Two equations, two unknowns</div><div class="ms-lessonMode" id="lm-7-6"></div></div></div><span id="act-7-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-1">1</span><div><div class="ms-title">Variables &amp; Algebraic Thinking</div><div class="ms-subtle">Unknown quantities, generalizing patterns</div><div class="ms-lessonMode" id="lm-7-1"></div><div id="sc-7-1"></div></div></div><span id="act-7-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-2">2</span><div><div class="ms-title">Multi-Step Equations</div><div class="ms-subtle">Combining like terms, distributive property</div><div class="ms-lessonMode" id="lm-7-2"></div><div id="sc-7-2"></div></div></div><span id="act-7-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-3">3</span><div><div class="ms-title">Inequalities</div><div class="ms-subtle">Greater than, less than, graphing on a number line</div><div class="ms-lessonMode" id="lm-7-3"></div><div id="sc-7-3"></div></div></div><span id="act-7-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-4">4</span><div><div class="ms-title">Patterns &amp; Sequences</div><div class="ms-subtle">Arithmetic and geometric sequences</div><div class="ms-lessonMode" id="lm-7-4"></div><div id="sc-7-4"></div></div></div><span id="act-7-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-5">5</span><div><div class="ms-title">Word Problems → Equations</div><div class="ms-subtle">Translate real situations into algebra</div><div class="ms-lessonMode" id="lm-7-5"></div><div id="sc-7-5"></div></div></div><span id="act-7-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-6">6</span><div><div class="ms-title">Systems of Equations — Intro</div><div class="ms-subtle">Two equations, two unknowns</div><div class="ms-lessonMode" id="lm-7-6"></div><div id="sc-7-6"></div></div></div><span id="act-7-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -484,12 +495,12 @@
         <div class="ms-bar"><div id="bar-8"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-1">1</span><div><div class="ms-title">What Is Slope?</div><div class="ms-subtle">Rise over run — steepness as a number</div><div class="ms-lessonMode" id="lm-8-1"></div></div></div><span id="act-8-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-2">2</span><div><div class="ms-title">Slope-Intercept Form</div><div class="ms-subtle">y = mx + b — every piece matters</div><div class="ms-lessonMode" id="lm-8-2"></div></div></div><span id="act-8-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-3">3</span><div><div class="ms-title">Graphing Lines</div><div class="ms-subtle">Plot from equation, find equation from graph</div><div class="ms-lessonMode" id="lm-8-3"></div></div></div><span id="act-8-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-4">4</span><div><div class="ms-title">Parallel &amp; Perpendicular Lines</div><div class="ms-subtle">Same slope, negative reciprocal slope</div><div class="ms-lessonMode" id="lm-8-4"></div></div></div><span id="act-8-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-5">5</span><div><div class="ms-title">Writing Linear Equations</div><div class="ms-subtle">From two points, from slope + point</div><div class="ms-lessonMode" id="lm-8-5"></div></div></div><span id="act-8-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-6">6</span><div><div class="ms-title">Solving Systems by Graphing</div><div class="ms-subtle">Intersection = solution</div><div class="ms-lessonMode" id="lm-8-6"></div></div></div><span id="act-8-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-1">1</span><div><div class="ms-title">What Is Slope?</div><div class="ms-subtle">Rise over run — steepness as a number</div><div class="ms-lessonMode" id="lm-8-1"></div><div id="sc-8-1"></div></div></div><span id="act-8-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-2">2</span><div><div class="ms-title">Slope-Intercept Form</div><div class="ms-subtle">y = mx + b — every piece matters</div><div class="ms-lessonMode" id="lm-8-2"></div><div id="sc-8-2"></div></div></div><span id="act-8-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-3">3</span><div><div class="ms-title">Graphing Lines</div><div class="ms-subtle">Plot from equation, find equation from graph</div><div class="ms-lessonMode" id="lm-8-3"></div><div id="sc-8-3"></div></div></div><span id="act-8-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-4">4</span><div><div class="ms-title">Parallel &amp; Perpendicular Lines</div><div class="ms-subtle">Same slope, negative reciprocal slope</div><div class="ms-lessonMode" id="lm-8-4"></div><div id="sc-8-4"></div></div></div><span id="act-8-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-5">5</span><div><div class="ms-title">Writing Linear Equations</div><div class="ms-subtle">From two points, from slope + point</div><div class="ms-lessonMode" id="lm-8-5"></div><div id="sc-8-5"></div></div></div><span id="act-8-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-6">6</span><div><div class="ms-title">Solving Systems by Graphing</div><div class="ms-subtle">Intersection = solution</div><div class="ms-lessonMode" id="lm-8-6"></div><div id="sc-8-6"></div></div></div><span id="act-8-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -516,12 +527,12 @@
         <div class="ms-bar"><div id="bar-9"></div></div>
       </div>
       <div class="ms-list">
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-1">1</span><div><div class="ms-title">What Is a Function?</div><div class="ms-subtle">Input → output, one answer per input</div><div class="ms-lessonMode" id="lm-9-1"></div></div></div><span id="act-9-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-2">2</span><div><div class="ms-title">Domain &amp; Range</div><div class="ms-subtle">What can go in, what can come out</div><div class="ms-lessonMode" id="lm-9-2"></div></div></div><span id="act-9-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-3">3</span><div><div class="ms-title">Function Notation</div><div class="ms-subtle">f(x) — evaluating and substituting</div><div class="ms-lessonMode" id="lm-9-3"></div></div></div><span id="act-9-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-4">4</span><div><div class="ms-title">Nonlinear Functions</div><div class="ms-subtle">Quadratic curves, exponential growth</div><div class="ms-lessonMode" id="lm-9-4"></div></div></div><span id="act-9-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-5">5</span><div><div class="ms-title">Graph Transformations</div><div class="ms-subtle">Shifts, reflections, stretches</div><div class="ms-lessonMode" id="lm-9-5"></div></div></div><span id="act-9-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
-        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-6">6</span><div><div class="ms-title">Real-World Functions</div><div class="ms-subtle">Modeling situations — the capstone boss</div><div class="ms-lessonMode" id="lm-9-6"></div></div></div><span id="act-9-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-1">1</span><div><div class="ms-title">What Is a Function?</div><div class="ms-subtle">Input → output, one answer per input</div><div class="ms-lessonMode" id="lm-9-1"></div><div id="sc-9-1"></div></div></div><span id="act-9-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-2">2</span><div><div class="ms-title">Domain &amp; Range</div><div class="ms-subtle">What can go in, what can come out</div><div class="ms-lessonMode" id="lm-9-2"></div><div id="sc-9-2"></div></div></div><span id="act-9-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-3">3</span><div><div class="ms-title">Function Notation</div><div class="ms-subtle">f(x) — evaluating and substituting</div><div class="ms-lessonMode" id="lm-9-3"></div><div id="sc-9-3"></div></div></div><span id="act-9-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-4">4</span><div><div class="ms-title">Nonlinear Functions</div><div class="ms-subtle">Quadratic curves, exponential growth</div><div class="ms-lessonMode" id="lm-9-4"></div><div id="sc-9-4"></div></div></div><span id="act-9-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-5">5</span><div><div class="ms-title">Graph Transformations</div><div class="ms-subtle">Shifts, reflections, stretches</div><div class="ms-lessonMode" id="lm-9-5"></div><div id="sc-9-5"></div></div></div><span id="act-9-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-6">6</span><div><div class="ms-title">Real-World Functions</div><div class="ms-subtle">Modeling situations — the capstone boss</div><div class="ms-lessonMode" id="lm-9-6"></div><div id="sc-9-6"></div></div></div><span id="act-9-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
       </div>
     </details>
   </div>
@@ -537,12 +548,12 @@ const MODULES = [
   {
     id:1, key:"m1", label:"Number Sense", total:6,
     lessons:[
-      {n:1,title:"Numbers Are Stories",        href:"./module-1/lesson-1.html",icon:"📖"},
-      {n:2,title:"Place Value Is a Volume Knob",href:"./module-1/lesson-2.html",icon:"🔊"},
-      {n:3,title:"Expanded Form",               href:"./module-1/lesson-3.html",icon:"🧱"},
-      {n:4,title:"Compare Without Guessing",    href:"./module-1/lesson-4.html",icon:"⚖️"},
-      {n:5,title:"Rounding That Makes Sense",   href:"./module-1/lesson-5.html",icon:"🎯"},
-      {n:6,title:"Estimation as a Superpower",  href:"./module-1/lesson-6.html",icon:"⚡"},
+      {n:1,title:"Numbers Are Stories",        href:"./module-1/lesson-1.html",icon:"📖",trackerKey:"m1-l1"},
+      {n:2,title:"Place Value Is a Volume Knob",href:"./module-1/lesson-2.html",icon:"🔊",trackerKey:"m1-l2"},
+      {n:3,title:"Expanded Form",               href:"./module-1/lesson-3.html",icon:"🧱",trackerKey:"m1-l3"},
+      {n:4,title:"Compare Without Guessing",    href:"./module-1/lesson-4.html",icon:"⚖️",trackerKey:"m1-l4"},
+      {n:5,title:"Rounding That Makes Sense",   href:"./module-1/lesson-5.html",icon:"🎯",trackerKey:"m1-l5"},
+      {n:6,title:"Estimation as a Superpower",  href:"./module-1/lesson-6.html",icon:"⚡",trackerKey:"m1-l6"},
     ],
     doneReader: () => {
       try{ return new Set(JSON.parse(localStorage.getItem("ms_m1_done")||"[]")); }catch{ return new Set(); }
@@ -556,11 +567,11 @@ const MODULES = [
   {
     id:2, key:"m2", label:"Pre-Algebra", total:5,
     lessons:[
-      {n:1,title:"Ratios",      sub:"Scaling relationships",        href:"./ratio/",                icon:"⚖️"},
-      {n:2,title:"Proportions", sub:"Cross-multiply to solve",      href:"./pre-algebra/proportions/",icon:"📐"},
-      {n:3,title:"Percents",    sub:"Part, whole, percent triangle", href:"./pre-algebra/percents/", icon:"%"},
-      {n:4,title:"Expressions", sub:"Coefficients & like terms",    href:"./pre-algebra/expressions/",icon:"🔢"},
-      {n:5,title:"Equations",   sub:"Inverse ops · Final boss",     href:"./pre-algebra/equations/", icon:"⚖️"},
+      {n:1,title:"Ratios",      sub:"Scaling relationships",        href:"./ratio/",                icon:"⚖️",trackerKey:"geo-ratios"},
+      {n:2,title:"Proportions", sub:"Cross-multiply to solve",      href:"./pre-algebra/proportions/",icon:"📐",trackerKey:"geo-proportions"},
+      {n:3,title:"Percents",    sub:"Part, whole, percent triangle", href:"./pre-algebra/percents/", icon:"%",trackerKey:"geo-percents"},
+      {n:4,title:"Expressions", sub:"Coefficients & like terms",    href:"./pre-algebra/expressions/",icon:"🔢",trackerKey:"geo-expressions"},
+      {n:5,title:"Equations",   sub:"Inverse ops · Final boss",     href:"./pre-algebra/equations/", icon:"⚖️",trackerKey:"geo-equations"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
@@ -577,12 +588,12 @@ const MODULES = [
   },
   { id:3, key:"m3", label:"Geometry Foundations", total:6,
     lessons:[
-      {n:1,title:"Angles & Lines",                href:"./geometry/angles/",      icon:"📐"},
-      {n:2,title:"Triangles",                     href:"./geometry/triangles/",   icon:"🔺"},
-      {n:3,title:"Quadrilaterals & Polygons",     href:"./geometry/polygons/",    icon:"⬛"},
-      {n:4,title:"Perimeter & Area",              href:"./geometry/area/",        icon:"📏"},
-      {n:5,title:"Circles — π Unlocked",          href:"./geometry/circles/",     icon:"⭕"},
-      {n:6,title:"The Coordinate Plane",          href:"./geometry/coordinate/",  icon:"🗺️"},
+      {n:1,title:"Angles & Lines",                href:"./geometry/angles/",      icon:"📐",trackerKey:"geo-angles"},
+      {n:2,title:"Triangles",                     href:"./geometry/triangles/",   icon:"🔺",trackerKey:"geo-triangles"},
+      {n:3,title:"Quadrilaterals & Polygons",     href:"./geometry/polygons/",    icon:"⬛",trackerKey:"geo-polygons"},
+      {n:4,title:"Perimeter & Area",              href:"./geometry/area/",        icon:"📏",trackerKey:"geo-area"},
+      {n:5,title:"Circles — π Unlocked",          href:"./geometry/circles/",     icon:"⭕",trackerKey:"geo-circles"},
+      {n:6,title:"The Coordinate Plane",          href:"./geometry/coordinate/",  icon:"🗺️",trackerKey:"geo-coordinate"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_geo_done")||"[]"); }catch{ return []; } })();
@@ -595,12 +606,12 @@ const MODULES = [
   },
   { id:4, key:"m4", label:"Fractions & Operations", total:6,
     lessons:[
-      {n:1,title:"What Fractions Actually Mean",       href:"./fractions/meaning/",    icon:"🍕"},
-      {n:2,title:"Equivalent Fractions & Simplifying", href:"./fractions/equivalent/", icon:"⚖️"},
-      {n:3,title:"Add & Subtract Fractions",           href:"./fractions/add-sub/",    icon:"➕"},
-      {n:4,title:"Multiply Fractions",                 href:"./fractions/multiply/",   icon:"✖️"},
-      {n:5,title:"Divide Fractions",                   href:"./fractions/divide/",     icon:"➗"},
-      {n:6,title:"Fractions, Decimals & Percents",     href:"./fractions/convert/",    icon:"🔄"},
+      {n:1,title:"What Fractions Actually Mean",       href:"./fractions/meaning/",    icon:"🍕",trackerKey:"frac-meaning"},
+      {n:2,title:"Equivalent Fractions & Simplifying", href:"./fractions/equivalent/", icon:"⚖️",trackerKey:"frac-equiv"},
+      {n:3,title:"Add & Subtract Fractions",           href:"./fractions/add-sub/",    icon:"➕",trackerKey:"frac-addsub"},
+      {n:4,title:"Multiply Fractions",                 href:"./fractions/multiply/",   icon:"✖️",trackerKey:"frac-mult"},
+      {n:5,title:"Divide Fractions",                   href:"./fractions/divide/",     icon:"➗",trackerKey:"frac-div"},
+      {n:6,title:"Fractions, Decimals & Percents",     href:"./fractions/convert/",    icon:"🔄",trackerKey:"frac-convert"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_frac_done")||"[]"); }catch{ return []; } })();
@@ -613,12 +624,12 @@ const MODULES = [
   },
   { id:5, key:"m5", label:"Integers & Negatives", total:6,
     lessons:[
-      {n:1,title:"Below Zero — Negative Numbers",   href:"./integers/negative/",   icon:"❄️"},
-      {n:2,title:"Absolute Value",                   href:"./integers/absolute/",   icon:"📏"},
-      {n:3,title:"Add & Subtract Integers",          href:"./integers/add-sub/",    icon:"➕"},
-      {n:4,title:"Multiply & Divide Integers",       href:"./integers/mult-div/",   icon:"✖️"},
-      {n:5,title:"Order of Operations",              href:"./integers/order-ops/",  icon:"🎯"},
-      {n:6,title:"Rational Numbers on the Line",     href:"./integers/rational/",   icon:"🔢"},
+      {n:1,title:"Below Zero — Negative Numbers",   href:"./integers/negative/",   icon:"❄️",trackerKey:"int-neg"},
+      {n:2,title:"Absolute Value",                   href:"./integers/absolute/",   icon:"📏",trackerKey:"int-abs"},
+      {n:3,title:"Add & Subtract Integers",          href:"./integers/add-sub/",    icon:"➕",trackerKey:"int-addsub"},
+      {n:4,title:"Multiply & Divide Integers",       href:"./integers/mult-div/",   icon:"✖️",trackerKey:"int-multdiv"},
+      {n:5,title:"Order of Operations",              href:"./integers/order-ops/",  icon:"🎯",trackerKey:"int-orderops"},
+      {n:6,title:"Rational Numbers on the Line",     href:"./integers/rational/",   icon:"🔢",trackerKey:"int-rational"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_int_done")||"[]"); }catch{ return []; } })();
@@ -631,12 +642,12 @@ const MODULES = [
   },
   { id:6, key:"m6", label:"Data & Statistics", total:6,
     lessons:[
-      {n:1,title:"Mean, Median & Mode",                    href:"./data/central/",       icon:"📊"},
-      {n:2,title:"Range & Spread",                         href:"./data/spread/",        icon:"📏"},
-      {n:3,title:"Bar Graphs & Histograms",                href:"./data/bar-graphs/",    icon:"📈"},
-      {n:4,title:"Line Graphs & Scatter Plots",            href:"./data/scatter/",       icon:"📉"},
-      {n:5,title:"Probability Basics",                     href:"./data/probability/",   icon:"🎲"},
-      {n:6,title:"Experimental vs Theoretical Probability",href:"./data/experimental/",  icon:"🧪"},
+      {n:1,title:"Mean, Median & Mode",                    href:"./data/central/",       icon:"📊",trackerKey:"data-central"},
+      {n:2,title:"Range & Spread",                         href:"./data/spread/",        icon:"📏",trackerKey:"data-spread"},
+      {n:3,title:"Bar Graphs & Histograms",                href:"./data/bar-graphs/",    icon:"📈",trackerKey:"data-bargraph"},
+      {n:4,title:"Line Graphs & Scatter Plots",            href:"./data/scatter/",       icon:"📉",trackerKey:"data-scatter"},
+      {n:5,title:"Probability Basics",                     href:"./data/probability/",   icon:"🎲",trackerKey:"data-prob"},
+      {n:6,title:"Experimental vs Theoretical Probability",href:"./data/experimental/",  icon:"🧪",trackerKey:"data-experimental"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_data_done")||"[]"); }catch{ return []; } })();
@@ -649,12 +660,12 @@ const MODULES = [
   },
   { id:7, key:"m7", label:"Intro to Algebra", total:6,
     lessons:[
-      {n:1,title:"Variables & Algebraic Thinking",href:"./algebra/variables/",   icon:"🔤"},
-      {n:2,title:"Multi-Step Equations",          href:"./algebra/multistep/",   icon:"⚙️"},
-      {n:3,title:"Inequalities",                  href:"./algebra/inequalities/",icon:"⚖️"},
-      {n:4,title:"Patterns & Sequences",          href:"./algebra/patterns/",    icon:"🔢"},
-      {n:5,title:"Word Problems → Equations",     href:"./algebra/word-probs/",  icon:"📝"},
-      {n:6,title:"Systems of Equations — Intro",  href:"./algebra/systems/",     icon:"🔀"},
+      {n:1,title:"Variables & Algebraic Thinking",href:"./algebra/variables/",   icon:"🔤",trackerKey:"alg-vars"},
+      {n:2,title:"Multi-Step Equations",          href:"./algebra/multistep/",   icon:"⚙️",trackerKey:"alg-multistep"},
+      {n:3,title:"Inequalities",                  href:"./algebra/inequalities/",icon:"⚖️",trackerKey:"alg-ineq"},
+      {n:4,title:"Patterns & Sequences",          href:"./algebra/patterns/",    icon:"🔢",trackerKey:"alg-patterns"},
+      {n:5,title:"Word Problems → Equations",     href:"./algebra/word-probs/",  icon:"📝",trackerKey:"alg-wordprob"},
+      {n:6,title:"Systems of Equations — Intro",  href:"./algebra/systems/",     icon:"🔀",trackerKey:"alg-systems"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_alg_done")||"[]"); }catch{ return []; } })();
@@ -667,12 +678,12 @@ const MODULES = [
   },
   { id:8, key:"m8", label:"Linear Equations & Slope", total:6,
     lessons:[
-      {n:1,title:"What Is Slope?",             href:"./linear/slope/",        icon:"📐"},
-      {n:2,title:"Slope-Intercept Form",       href:"./linear/slope-int/",    icon:"🔢"},
-      {n:3,title:"Graphing Lines",             href:"./linear/graphing/",     icon:"📈"},
-      {n:4,title:"Parallel & Perpendicular",   href:"./linear/parallel/",     icon:"⟺"},
-      {n:5,title:"Writing Linear Equations",   href:"./linear/writing/",      icon:"✏️"},
-      {n:6,title:"Solving Systems by Graphing",href:"./linear/systems-graph/",icon:"🔀"},
+      {n:1,title:"What Is Slope?",             href:"./linear/slope/",        icon:"📐",trackerKey:"lin-slope"},
+      {n:2,title:"Slope-Intercept Form",       href:"./linear/slope-int/",    icon:"🔢",trackerKey:"lin-slopeint"},
+      {n:3,title:"Graphing Lines",             href:"./linear/graphing/",     icon:"📈",trackerKey:"lin-graphing"},
+      {n:4,title:"Parallel & Perpendicular",   href:"./linear/parallel/",     icon:"⟺",trackerKey:"lin-parallel"},
+      {n:5,title:"Writing Linear Equations",   href:"./linear/writing/",      icon:"✏️",trackerKey:"lin-writing"},
+      {n:6,title:"Solving Systems by Graphing",href:"./linear/systems-graph/",icon:"🔀",trackerKey:"lin-sysgraph"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_lin_done")||"[]"); }catch{ return []; } })();
@@ -685,12 +696,12 @@ const MODULES = [
   },
   { id:9, key:"m9", label:"Functions & Graphs", total:6,
     lessons:[
-      {n:1,title:"What Is a Function?",   href:"./functions/intro/",         icon:"🔁"},
-      {n:2,title:"Domain & Range",        href:"./functions/domain/",        icon:"📦"},
-      {n:3,title:"Function Notation",     href:"./functions/notation/",      icon:"f(x)"},
-      {n:4,title:"Nonlinear Functions",   href:"./functions/nonlinear/",     icon:"〰️"},
-      {n:5,title:"Graph Transformations", href:"./functions/transforms/",    icon:"🔄"},
-      {n:6,title:"Real-World Functions",  href:"./functions/real-world/",    icon:"🌍"},
+      {n:1,title:"What Is a Function?",   href:"./functions/intro/",         icon:"🔁",trackerKey:"func-intro"},
+      {n:2,title:"Domain & Range",        href:"./functions/domain/",        icon:"📦",trackerKey:"func-domain"},
+      {n:3,title:"Function Notation",     href:"./functions/notation/",      icon:"f(x)",trackerKey:"func-notation"},
+      {n:4,title:"Nonlinear Functions",   href:"./functions/nonlinear/",     icon:"〰️",trackerKey:"func-nonlinear"},
+      {n:5,title:"Graph Transformations", href:"./functions/transforms/",    icon:"🔄",trackerKey:"func-transforms"},
+      {n:6,title:"Real-World Functions",  href:"./functions/real-world/",    icon:"🌍",trackerKey:"func-realworld"},
     ],
     doneReader: () => {
       const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_func_done")||"[]"); }catch{ return []; } })();
@@ -710,6 +721,35 @@ const TOTAL_LESSONS = 57;
 ═══════════════════════════════════════════════════════ */
 function getUnlocked(){
   try{ return JSON.parse(localStorage.getItem("ms_unlocked_modules")||"[1]"); }catch{ return [1]; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCORE READER — reads ms_progress tracker data
+═══════════════════════════════════════════════════════ */
+function readScores(){
+  try{
+    const raw = localStorage.getItem("ms_progress");
+    if(!raw) return {};
+    const d = JSON.parse(raw);
+    return d.lessons || {};
+  }catch{ return {}; }
+}
+const SCORES = readScores();
+
+function getLessonScore(trackerKey){
+  if(!trackerKey) return null;
+  return SCORES[trackerKey] || null;
+}
+
+function buildScoreHTML(score){
+  if(!score || (!score.practiceAttempts && !score.bossAttempts && !score.exitAttempts)) return "";
+  const total = score.practiceTotal || 3;
+  const got   = Math.min(score.practiceScore || 0, total);
+  const pips  = Array.from({length:total},(_,i)=>`<span class="ms-pip${i<got?" filled":""}"></span>`).join("");
+  const boss  = score.bossWon ? `<span class="ms-bossBadge">⚔️ Boss</span>` : "";
+  const xp    = score.xpEarned ? `<span class="ms-xpBadge">+${score.xpEarned}</span>` : "";
+  if(!pips && !boss && !xp) return "";
+  return `<div class="ms-scoreRow">${pips}${boss?'<span class="ms-scoreDiv"></span>'+boss:""}${xp?'<span class="ms-scoreDiv"></span>'+xp:""}</div>`;
 }
 function setUnlocked(arr){
   try{ localStorage.setItem("ms_unlocked_modules", JSON.stringify(arr)); }catch{}
@@ -791,6 +831,13 @@ function renderModules(){
       } else {
         action.innerHTML = `<a class="ms-btn" href="${l.href}" id="lb-${mod.id}-${l.n}">Open →</a>`;
       }
+
+      // Score mini-row
+      const scoreEl = document.getElementById("sc-"+mod.id+"-"+l.n);
+      if(scoreEl){
+        const s = getLessonScore(l.trackerKey);
+        scoreEl.innerHTML = buildScoreHTML(s);
+      }
     });
 
     // Highlight next undone
@@ -809,6 +856,14 @@ function renderModules(){
 ═══════════════════════════════════════════════════════ */
 document.getElementById("totalDone").textContent  = totalDone;
 document.getElementById("totalBar").style.width   = Math.round((totalDone/TOTAL_LESSONS)*100)+"%";
+
+// Show total XP if any earned
+const totalXP = Object.values(SCORES).reduce((s,l) => s + (l.xpEarned||0), 0);
+if(totalXP > 0){
+  const xpEl = document.getElementById("totalXPWrap");
+  xpEl.textContent = totalXP.toLocaleString() + " XP";
+  xpEl.style.display = "inline-block";
+}
 
 if(totalDone >= TOTAL_LESSONS){
   document.getElementById("courseDone").style.display = "block";
