@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>My Progress • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: 'Syne', sans-serif; }
+    :root { --xp-a: #22d3ee; --xp-b: #3b82f6; --xp-glow: rgba(34,211,238,.15); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX { position:fixed; inset:0; pointer-events:none; z-index:0;
+      background: radial-gradient(800px 500px at 15% 0%, var(--xp-glow), transparent 60%),
+                  radial-gradient(500px 400px at 85% 90%, rgba(124,58,237,.07), transparent 60%);
+      transition: background .6s; }
+    .ms-wrap { position:relative; z-index:1; }
+
+    /* ── Mode bar ── */
+    .ms-modebar { display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:24px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03); }
+    .ms-modebar-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em;
+      text-transform:uppercase; color:var(--muted,#6b7a99); margin-right:4px; flex-shrink:0; }
+    .ms-modeBtn { font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 13px;
+      border-radius:8px; border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99); cursor:pointer;
+      transition:all .2s; white-space:nowrap; }
+    .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeBtn.is-active { color:var(--xp-a); border-color:var(--xp-a);
+      background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow); }
+
+    /* ── XP Hero ── */
+    .xp-hero { padding:28px 24px; border-radius:20px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.03);
+      margin-bottom:24px; }
+    .xp-hero-top { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:16px; }
+    .xp-main { display:flex; align-items:baseline; gap:8px; }
+    .xp-number { font-family:'Orbitron',sans-serif; font-size:52px; font-weight:900;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      line-height:1; transition:background .5s; }
+    .xp-label { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted,#6b7a99); letter-spacing:.12em; text-transform:uppercase; }
+    .xp-stats { display:flex; gap:16px; flex-wrap:wrap; }
+    .xp-stat { text-align:center; padding:10px 16px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); min-width:80px; }
+    .xp-stat .s-val { font-family:'Orbitron',sans-serif; font-size:20px; font-weight:900; color:var(--xp-a); line-height:1; }
+    .xp-stat .s-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    /* Level bar */
+    .level-row { display:flex; align-items:center; gap:10px; margin-top:4px; }
+    .level-tag { font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 10px;
+      border-radius:999px; border:1px solid var(--xp-a); color:var(--xp-a); flex-shrink:0; }
+    .level-bar-wrap { flex:1; height:8px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; }
+    .level-bar-fill { height:100%; border-radius:999px;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a));
+      transition:width .8s ease, background .5s; }
+    .level-next { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted,#6b7a99); flex-shrink:0; }
+
+    /* ── Section card ── */
+    .dash-section { margin-bottom:24px; padding:22px 24px; border-radius:18px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); }
+    .dash-section h2 { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700;
+      margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .section-chip { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.13em;
+      text-transform:uppercase; padding:3px 8px; border-radius:5px;
+      border:1px solid var(--xp-a); color:var(--xp-a); opacity:.7; }
+
+    /* ── Module summary grid ── */
+    .module-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; }
+    .module-card { padding:16px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04);
+      text-align:center; transition:border-color .3s; }
+    .module-card.has-progress { border-color:rgba(var(--xp-a-rgb,34,211,238),.3); }
+    .module-card .mc-icon { font-size:28px; margin-bottom:8px; }
+    .module-card .mc-name { font-family:'Orbitron',sans-serif; font-size:11px; font-weight:700;
+      color:var(--xp-a); margin-bottom:6px; line-height:1.3; }
+    .module-card .mc-count { font-family:'JetBrains Mono',monospace; font-size:10px;
+      color:var(--muted,#6b7a99); margin-bottom:8px; }
+    .mc-ring-wrap { position:relative; width:56px; height:56px; margin:0 auto 8px; }
+    .mc-ring-wrap svg { transform:rotate(-90deg); }
+    .mc-ring-center { position:absolute; inset:0; display:flex; align-items:center;
+      justify-content:center; font-family:'Orbitron',sans-serif; font-size:13px; font-weight:900;
+      color:var(--xp-a); }
+    .mc-xp { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted,#6b7a99); }
+
+    /* ── Lesson score rows ── */
+    .lesson-table { width:100%; border-collapse:collapse; }
+    .lesson-table th { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--muted,#6b7a99); padding:8px 10px; text-align:left;
+      border-bottom:1px solid rgba(255,255,255,.07); }
+    .lesson-table td { padding:10px 10px; font-size:13px; vertical-align:middle;
+      border-bottom:1px solid rgba(255,255,255,.05); }
+    .lesson-table tr:last-child td { border-bottom:none; }
+    .lesson-table tr:hover td { background:rgba(255,255,255,.02); }
+    .lt-title { font-weight:700; }
+    .lt-title .lt-sub { font-size:11px; font-family:'JetBrains Mono',monospace;
+      color:var(--muted,#6b7a99); font-weight:400; display:block; margin-top:2px; }
+    /* Score pips */
+    .score-pips { display:flex; gap:4px; align-items:center; }
+    .score-pip { width:10px; height:10px; border-radius:50%;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); }
+    .score-pip.filled { background:var(--xp-a); border-color:var(--xp-a);
+      box-shadow:0 0 6px var(--xp-glow); }
+    /* Status badge */
+    .lt-status { display:inline-flex; align-items:center; gap:4px;
+      font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px;
+      border-radius:999px; white-space:nowrap; }
+    .lt-status.done { border:1px solid var(--xp-a); color:var(--xp-a); background:rgba(34,211,238,.06); }
+    .lt-status.in-progress { border:1px solid rgba(250,204,21,.4); color:#facc15; background:rgba(250,204,21,.05); }
+    .lt-status.not-started { border:1px solid rgba(255,255,255,.1); color:var(--muted,#6b7a99); }
+    /* Boss badge */
+    .boss-badge { display:inline-flex; align-items:center; gap:3px;
+      font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 7px;
+      border-radius:5px; }
+    .boss-badge.won { border:1px solid rgba(74,222,128,.4); color:#4ade80; background:rgba(74,222,128,.06); }
+    .boss-badge.pending { border:1px solid rgba(255,255,255,.1); color:var(--muted,#6b7a99); }
+    /* XP pill */
+    .xp-pill { display:inline-block; font-family:'Orbitron',monospace; font-size:11px;
+      font-weight:900; padding:3px 8px; border-radius:6px;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; }
+    .xp-pill.zero { background:rgba(255,255,255,.08); color:var(--muted,#6b7a99); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:400; }
+
+    /* ── Streak card ── */
+    .streak-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+    .streak-card { flex:1; min-width:120px; padding:16px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); text-align:center; }
+    .streak-card .sc-val { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .streak-card .sc-lbl { font-family:'JetBrains Mono',monospace; font-size:10px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    /* Heatmap */
+    .heatmap { display:flex; flex-wrap:wrap; gap:4px; }
+    .hm-cell { width:14px; height:14px; border-radius:3px;
+      background:rgba(255,255,255,.06); cursor:default; transition:background .2s; }
+    .hm-cell.active { background:var(--xp-a); box-shadow:0 0 6px var(--xp-glow); }
+    .hm-cell.partial { background:color-mix(in srgb, var(--xp-a) 40%, transparent); }
+
+    /* ── Empty state ── */
+    .empty-state { text-align:center; padding:40px 20px; color:var(--muted,#6b7a99); }
+    .empty-state .es-icon { font-size:40px; margin-bottom:12px; }
+    .empty-state p { font-size:13px; line-height:1.7; }
+
+    /* ── Actions ── */
+    .dash-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .ms-btn { font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      padding:9px 18px; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06); color:#e8edf5; cursor:pointer;
+      white-space:nowrap; text-decoration:none; display:inline-block; transition:all .2s; }
+    .ms-btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.22); }
+    .ms-btn.primary { background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      border-color:transparent; color:#06080e; box-shadow:0 4px 18px var(--xp-glow); }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
+    .ms-btn.danger { border-color:rgba(248,113,113,.3); color:#f87171; background:rgba(248,113,113,.05); }
+    .ms-btn.danger:hover { background:rgba(248,113,113,.12); }
+
+    /* ── No lessons placeholder row ── */
+    .lt-empty { font-size:12px; color:var(--muted,#6b7a99); font-family:'JetBrains Mono',monospace;
+      padding:14px 10px; font-style:italic; }
+
+    .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s,transform .5s; }
+    .ms-reveal.is-in { opacity:1; transform:none; }
+    @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
+    @media(max-width:600px) {
+      .xp-number { font-size:38px; }
+      .module-grid { grid-template-columns:repeat(2,1fr); }
+      .lesson-table th:nth-child(3), .lesson-table td:nth-child(3) { display:none; }
+    }
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../mindstronguniverse.svg" class="ms-brandLogo"/>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../index.html">Home</a>
+      <a class="ms-link" href="../index.html">School</a>
+      <a class="ms-link" href="./index.html">Foundations</a>
+      <a class="ms-link is-active" href="#">My Progress</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <span class="ms-kicker" id="modeKicker">🧠 Academic Mastery</span>
+    <h1 class="ms-h1">My Progress</h1>
+    <p class="ms-sub">Everything you've done. Every score. Every XP. All in one place.</p>
+  </section>
+
+  <!-- MODE BAR -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- XP HERO CARD -->
+  <div class="xp-hero ms-reveal" id="xpHero">
+    <div class="xp-hero-top">
+      <div>
+        <div class="xp-main">
+          <div class="xp-number" id="xpTotal">0</div>
+          <div class="xp-label">XP</div>
+        </div>
+        <div class="level-row" style="margin-top:8px;">
+          <div class="level-tag" id="levelTag">Novice</div>
+          <div class="level-bar-wrap"><div class="level-bar-fill" id="levelBar" style="width:0%"></div></div>
+          <div class="level-next" id="levelNext">→ 100 XP</div>
+        </div>
+      </div>
+      <div class="xp-stats">
+        <div class="xp-stat"><div class="s-val" id="statLessons">0</div><div class="s-lbl">Lessons</div></div>
+        <div class="xp-stat"><div class="s-val" id="statBosses">0</div><div class="s-lbl">Bosses</div></div>
+        <div class="xp-stat"><div class="s-val" id="statStreak">0</div><div class="s-lbl" id="streakLbl">Day Streak</div></div>
+        <div class="xp-stat"><div class="s-val" id="statAvgScore">—</div><div class="s-lbl">Avg Score</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE OVERVIEW -->
+  <div class="dash-section ms-reveal">
+    <h2>📦 Module Overview <span class="section-chip" id="modulesDoneChip">0 / 9 modules</span></h2>
+    <div class="module-grid" id="moduleGrid"><!-- filled by JS --></div>
+  </div>
+
+  <!-- LESSON SCORES TABLE -->
+  <div class="dash-section ms-reveal">
+    <h2>📋 Lesson Scores <span class="section-chip" id="totalLessonsChip">0 lessons started</span></h2>
+    <div id="lessonTableWrap">
+      <table class="lesson-table" id="lessonTable">
+        <thead>
+          <tr>
+            <th>Lesson</th>
+            <th>Practice</th>
+            <th>Boss</th>
+            <th>Exit</th>
+            <th>Status</th>
+            <th>XP</th>
+          </tr>
+        </thead>
+        <tbody id="lessonTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="es-icon">🎮</div>
+        <p>No lessons started yet.<br>Head to <a href="./index.html" style="color:var(--xp-a)">Foundations</a> to begin your first lesson.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY / STREAK -->
+  <div class="dash-section ms-reveal">
+    <h2>🔥 Activity <span class="section-chip" id="bestStreakChip">Best: 0 days</span></h2>
+    <div class="streak-row">
+      <div class="streak-card">
+        <div class="sc-val" id="currentStreak">0</div>
+        <div class="sc-lbl" id="currentStreakLbl">Day Streak</div>
+      </div>
+      <div class="streak-card">
+        <div class="sc-val" id="bestStreakVal">0</div>
+        <div class="sc-lbl">Best Streak</div>
+      </div>
+      <div class="streak-card">
+        <div class="sc-val" id="daysActive">0</div>
+        <div class="sc-lbl">Days Active</div>
+      </div>
+      <div class="streak-card">
+        <div class="sc-val" id="totalAttempts">0</div>
+        <div class="sc-lbl">Total Attempts</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;margin-bottom:10px;">Last 30 days — each square = one completed lesson</p>
+    <div class="heatmap" id="heatmap"></div>
+  </div>
+
+  <!-- EXPORT / RESET -->
+  <div class="dash-section ms-reveal">
+    <h2>⚙️ Data</h2>
+    <p style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:12px;">Export your progress to share with a teacher, or reset to start fresh.</p>
+    <div class="dash-actions">
+      <a class="ms-btn primary" href="./index.html">← Back to Foundations</a>
+      <button class="ms-btn" id="exportBtn">Export Progress JSON</button>
+      <button class="ms-btn danger" id="resetBtn">Reset All Progress</button>
+    </div>
+    <pre id="exportOutput" style="display:none;margin-top:14px;padding:14px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:11px;font-family:'JetBrains Mono',monospace;color:#c8d3e8;white-space:pre-wrap;max-height:300px;overflow-y:auto;"></pre>
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Progress Dashboard</footer>
+</main>
+
+<script>
+/* ════════════════════════════════════════════════
+   CURRICULUM MANIFEST — all known lessons
+════════════════════════════════════════════════ */
+const CURRICULUM = [
+  // Module 1 — Number Sense
+  {key:"m1-l1", module:"Number Sense",    num:1, icon:"📖", title:"Numbers Are Stories",          href:"../module-1/lesson-1.html"},
+  {key:"m1-l2", module:"Number Sense",    num:2, icon:"🔊", title:"Place Value",                   href:"../module-1/lesson-2.html"},
+  {key:"m1-l3", module:"Number Sense",    num:3, icon:"🧱", title:"Expanded Form",                 href:"../module-1/lesson-3.html"},
+  {key:"m1-l4", module:"Number Sense",    num:4, icon:"⚖️", title:"Compare Without Guessing",     href:"../module-1/lesson-4.html"},
+  {key:"m1-l5", module:"Number Sense",    num:5, icon:"🎯", title:"Rounding That Makes Sense",     href:"../module-1/lesson-5.html"},
+  {key:"m1-l6", module:"Number Sense",    num:6, icon:"⚡", title:"Estimation as a Superpower",   href:"../module-1/lesson-6.html"},
+  // Module 2 — Pre-Algebra
+  {key:"geo-ratios",      module:"Pre-Algebra", num:1, icon:"⚖️", title:"Ratios",      href:"../ratio/"},
+  {key:"geo-proportions", module:"Pre-Algebra", num:2, icon:"📐", title:"Proportions", href:"../pre-algebra/proportions/"},
+  {key:"geo-percents",    module:"Pre-Algebra", num:3, icon:"%",  title:"Percents",    href:"../pre-algebra/percents/"},
+  {key:"geo-expressions", module:"Pre-Algebra", num:4, icon:"🔢", title:"Expressions", href:"../pre-algebra/expressions/"},
+  {key:"geo-equations",   module:"Pre-Algebra", num:5, icon:"⚖️", title:"Equations",  href:"../pre-algebra/equations/"},
+  // Module 3 — Geometry
+  {key:"geo-angles",      module:"Geometry",    num:1, icon:"📐", title:"Angles & Lines",         href:"../geometry/angles/"},
+  {key:"geo-triangles",   module:"Geometry",    num:2, icon:"🔺", title:"Triangles",              href:"../geometry/triangles/"},
+  {key:"geo-polygons",    module:"Geometry",    num:3, icon:"⬛", title:"Polygons",               href:"../geometry/polygons/"},
+  {key:"geo-area",        module:"Geometry",    num:4, icon:"📏", title:"Area & Perimeter",       href:"../geometry/area/"},
+  {key:"geo-circles",     module:"Geometry",    num:5, icon:"⭕", title:"Circles",                href:"../geometry/circles/"},
+  {key:"geo-coordinate",  module:"Geometry",    num:6, icon:"🗺️", title:"Coordinate Plane",       href:"../geometry/coordinate/"},
+];
+
+/* ════════════════════════════════════════════════
+   LEVELS
+════════════════════════════════════════════════ */
+const LEVELS = [
+  {name:"Novice",      min:0,    max:200},
+  {name:"Apprentice",  min:200,  max:500},
+  {name:"Scholar",     min:500,  max:1000},
+  {name:"Expert",      min:1000, max:2000},
+  {name:"Master",      min:2000, max:3500},
+  {name:"Grandmaster", min:3500, max:Infinity},
+];
+function getLevel(xp) {
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (xp >= LEVELS[i].min) return { ...LEVELS[i], idx: i };
+  }
+  return { ...LEVELS[0], idx: 0 };
+}
+
+/* ════════════════════════════════════════════════
+   READ ALL DATA
+════════════════════════════════════════════════ */
+function readProgress() {
+  // Read new tracker format
+  try {
+    const raw = localStorage.getItem('ms_progress');
+    if (raw) return JSON.parse(raw);
+  } catch {}
+
+  // Fallback: synthesize from legacy keys
+  return buildFromLegacy();
+}
+
+function buildFromLegacy() {
+  const data = { version: 2, xp: 0, streak: { current: 0, best: 0, lastDate: null }, lessons: {} };
+
+  // M1 done
+  try {
+    const m1 = JSON.parse(localStorage.getItem('ms_m1_done') || '[]');
+    m1.forEach(n => {
+      const key = `m1-l${n}`;
+      data.lessons[key] = makeLegacyLesson(key, 'Number Sense', n, `Number Sense L${n}`, true);
+    });
+  } catch {}
+
+  // Pre-alg
+  const preAlgMap = { 'proportions-1':'geo-proportions', 'percents-1':'geo-percents', 'expressions-1':'geo-expressions', 'equations-1':'geo-equations' };
+  try {
+    const pa = JSON.parse(localStorage.getItem('ms_pre_alg_done') || '[]');
+    pa.forEach(k => {
+      const key = preAlgMap[k];
+      if (key) data.lessons[key] = makeLegacyLesson(key, 'Pre-Algebra', 0, k, true);
+    });
+  } catch {}
+  if (localStorage.getItem('ms_ratio_rank')) {
+    data.lessons['geo-ratios'] = makeLegacyLesson('geo-ratios', 'Pre-Algebra', 1, 'Ratios', true);
+  }
+
+  // Geometry
+  const geoMap = { 'angles-1':'geo-angles', 'triangles-1':'geo-triangles', 'polygons-1':'geo-polygons', 'area-1':'geo-area', 'circles-1':'geo-circles', 'coordinate-1':'geo-coordinate' };
+  try {
+    const geo = JSON.parse(localStorage.getItem('ms_geo_done') || '[]');
+    geo.forEach(k => {
+      const key = geoMap[k];
+      if (key) data.lessons[key] = makeLegacyLesson(key, 'Geometry', 0, k, true);
+    });
+  } catch {}
+
+  // Boss wins → mark bossWon
+  const bossKeys = { 'ms_prop_boss':'geo-proportions', 'ms_angles_boss':'geo-angles', 'ms_triangles_boss':'geo-triangles', 'ms_polygons_boss':'geo-polygons', 'ms_area_boss':'geo-area', 'ms_circles_boss':'geo-circles', 'ms_coordinate_boss':'geo-coordinate' };
+  Object.entries(bossKeys).forEach(([lsKey, lessonKey]) => {
+    if (localStorage.getItem(lsKey)) {
+      if (data.lessons[lessonKey]) data.lessons[lessonKey].bossWon = true;
+    }
+  });
+
+  // Estimate XP from completed lessons
+  const count = Object.keys(data.lessons).length;
+  data.xp = count * 100;
+
+  return data;
+}
+
+function makeLegacyLesson(key, module, num, title, complete) {
+  return {
+    key, module, lessonNum: num, title,
+    firstSeen: Date.now(),
+    completedAt: complete ? Date.now() : null,
+    practiceScore: complete ? 2 : 0,
+    practiceTotal: 3,
+    practiceAttempts: complete ? 3 : 0,
+    exitAttempts: complete ? 1 : 0,
+    bossAttempts: 0,
+    bossWon: false,
+    bossBestTime: null,
+    xpEarned: complete ? 100 : 0,
+  };
+}
+
+/* ════════════════════════════════════════════════
+   RENDER
+════════════════════════════════════════════════ */
+function render() {
+  const data = readProgress();
+  const lessons = Object.values(data.lessons);
+  const completed = lessons.filter(l => l.completedAt);
+  const bossWins = lessons.filter(l => l.bossWon);
+  const totalXP = data.xp || 0;
+
+  // ── XP + Level ──
+  document.getElementById('xpTotal').textContent = totalXP.toLocaleString();
+  const lvl = getLevel(totalXP);
+  document.getElementById('levelTag').textContent = lvl.name;
+  const pct = lvl.max === Infinity ? 100 : Math.round(((totalXP - lvl.min) / (lvl.max - lvl.min)) * 100);
+  document.getElementById('levelBar').style.width = pct + '%';
+  document.getElementById('levelNext').textContent = lvl.max === Infinity ? '🏆 Max' : `→ ${lvl.max.toLocaleString()} XP`;
+
+  // ── Stats ──
+  document.getElementById('statLessons').textContent = completed.length;
+  document.getElementById('statBosses').textContent = bossWins.length;
+  document.getElementById('statStreak').textContent = data.streak?.current || 0;
+
+  // Avg practice score
+  const withPractice = lessons.filter(l => l.practiceAttempts > 0);
+  if (withPractice.length) {
+    const avg = withPractice.reduce((s, l) => s + (l.practiceScore / l.practiceTotal), 0) / withPractice.length;
+    document.getElementById('statAvgScore').textContent = Math.round(avg * 100) + '%';
+  }
+
+  // ── Module grid ──
+  const moduleNames = [...new Set(CURRICULUM.map(c => c.module))];
+  const totalModulesDone = moduleNames.filter(mod => {
+    const modLessons = CURRICULUM.filter(c => c.module === mod);
+    return modLessons.every(c => data.lessons[c.key]?.completedAt);
+  }).length;
+  document.getElementById('modulesDoneChip').textContent = `${totalModulesDone} / 9 modules`;
+
+  const moduleIcons = { 'Number Sense':'🔢', 'Pre-Algebra':'📐', 'Geometry':'📏', 'Fractions & Operations':'🍕', 'Integers & Negatives':'❄️', 'Data & Statistics':'📊', 'Intro to Algebra':'🔤', 'Linear Equations & Slope':'📈', 'Functions & Graphs':'🔁' };
+  const allModules = ['Number Sense','Pre-Algebra','Geometry','Fractions & Operations','Integers & Negatives','Data & Statistics','Intro to Algebra','Linear Equations & Slope','Functions & Graphs'];
+
+  const grid = document.getElementById('moduleGrid');
+  grid.innerHTML = '';
+  allModules.forEach(mod => {
+    const modLessons = CURRICULUM.filter(c => c.module === mod);
+    const total = modLessons.length || 6;
+    const done = modLessons.filter(c => data.lessons[c.key]?.completedAt).length;
+    const modXP = modLessons.reduce((s, c) => s + (data.lessons[c.key]?.xpEarned || 0), 0);
+    const pct = Math.round((done / total) * 100);
+    const isStarted = done > 0;
+
+    const r = 24, circ = 2 * Math.PI * r;
+    const dash = circ * (pct / 100);
+
+    const card = document.createElement('div');
+    card.className = 'module-card' + (isStarted ? ' has-progress' : '');
+    card.innerHTML = `
+      <div class="mc-ring-wrap">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="${r}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="4"/>
+          <circle cx="28" cy="28" r="${r}" fill="none"
+            stroke="url(#grad-${mod.replace(/\s+/g,'_')})" stroke-width="4"
+            stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
+            stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="grad-${mod.replace(/\s+/g,'_')}" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" style="stop-color:var(--xp-b)"/>
+              <stop offset="100%" style="stop-color:var(--xp-a)"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="mc-ring-center">${pct}%</div>
+      </div>
+      <div class="mc-name">${mod}</div>
+      <div class="mc-count">${done} / ${total} lessons</div>
+      <div class="mc-xp">${modXP > 0 ? modXP + ' XP' : '—'}</div>`;
+    grid.appendChild(card);
+  });
+
+  // ── Lesson table ──
+  const tbody = document.getElementById('lessonTableBody');
+  tbody.innerHTML = '';
+  const started = lessons.filter(l => l.firstSeen);
+  document.getElementById('totalLessonsChip').textContent = `${started.length} lesson${started.length !== 1 ? 's' : ''} started`;
+
+  if (started.length === 0) {
+    document.getElementById('lessonTable').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+  } else {
+    // Sort by module, then lessonNum
+    const sorted = [...started].sort((a, b) => {
+      const ma = moduleNames.indexOf(a.module), mb = moduleNames.indexOf(b.module);
+      if (ma !== mb) return ma - mb;
+      return (a.lessonNum || 0) - (b.lessonNum || 0);
+    });
+
+    sorted.forEach(lesson => {
+      const total = lesson.practiceTotal || 3;
+      const score = Math.min(lesson.practiceScore || 0, total);
+      const isDone = !!lesson.completedAt;
+      const inProg = !isDone && lesson.firstSeen;
+
+      // Practice pips
+      const pips = Array.from({length: total}, (_, i) =>
+        `<div class="score-pip${i < score ? ' filled' : ''}"></div>`
+      ).join('');
+
+      // Boss
+      const bossHtml = lesson.bossWon
+        ? `<span class="boss-badge won">⚔️ ${lesson.bossBestTime !== null ? lesson.bossBestTime + 's' : '✓'}</span>`
+        : (lesson.bossAttempts ? `<span class="boss-badge pending">✗ ${lesson.bossAttempts} tries</span>` : `<span class="boss-badge pending">—</span>`);
+
+      // Exit check
+      const exitHtml = lesson.exitAttempts
+        ? (isDone ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:11px;">✓ ${lesson.exitAttempts === 1 ? '1st try' : lesson.exitAttempts + ' tries'}</span>`
+                  : `<span style="color:#f87171;font-family:'JetBrains Mono',monospace;font-size:11px;">${lesson.exitAttempts} tries</span>`)
+        : `<span style="color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;font-size:11px;">—</span>`;
+
+      // Status
+      const statusHtml = isDone
+        ? `<span class="lt-status done">✓ Done</span>`
+        : (inProg ? `<span class="lt-status in-progress">In Progress</span>` : `<span class="lt-status not-started">Not started</span>`);
+
+      // XP
+      const xpHtml = lesson.xpEarned
+        ? `<span class="xp-pill">${lesson.xpEarned}</span>`
+        : `<span class="xp-pill zero">0 XP</span>`;
+
+      const meta = CURRICULUM.find(c => c.key === lesson.key);
+      const href = meta ? meta.href : '#';
+      const icon = meta ? meta.icon : '📄';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="lt-title">
+            <a href="${href}" style="text-decoration:none;color:inherit;">${icon} ${lesson.title}</a>
+            <span class="lt-sub">${lesson.module}</span>
+          </div>
+        </td>
+        <td><div class="score-pips">${pips}</div></td>
+        <td>${bossHtml}</td>
+        <td>${exitHtml}</td>
+        <td>${statusHtml}</td>
+        <td>${xpHtml}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Streak ──
+  const streak = data.streak || { current: 0, best: 0 };
+  document.getElementById('currentStreak').textContent = streak.current || 0;
+  document.getElementById('bestStreakVal').textContent = streak.best || 0;
+  document.getElementById('bestStreakChip').textContent = `Best: ${streak.best || 0} days`;
+
+  // Days active (unique days with completions)
+  const completionDays = new Set(
+    lessons.filter(l => l.completedAt).map(l => new Date(l.completedAt).toISOString().slice(0, 10))
+  );
+  document.getElementById('daysActive').textContent = completionDays.size;
+
+  // Total attempts
+  const totalAtt = lessons.reduce((s, l) => s + (l.practiceAttempts || 0) + (l.bossAttempts || 0) + (l.exitAttempts || 0), 0);
+  document.getElementById('totalAttempts').textContent = totalAtt;
+
+  // Heatmap — last 30 days
+  const heatmap = document.getElementById('heatmap');
+  heatmap.innerHTML = '';
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+    const active = completionDays.has(d);
+    const cell = document.createElement('div');
+    cell.className = 'hm-cell' + (active ? ' active' : '');
+    cell.title = d + (active ? ' ✓' : '');
+    heatmap.appendChild(cell);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   ACTIONS
+════════════════════════════════════════════════ */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const out = document.getElementById('exportOutput');
+  if (out.style.display === 'none') {
+    out.style.display = 'block';
+    out.textContent = JSON.stringify(readProgress(), null, 2);
+    document.getElementById('exportBtn').textContent = 'Hide Export';
+  } else {
+    out.style.display = 'none';
+    document.getElementById('exportBtn').textContent = 'Export Progress JSON';
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  ['ms_progress','ms_m1_done','ms_pre_alg_done','ms_geo_done','ms_ratio_rank',
+   'ms_prop_boss','ms_angles_boss','ms_triangles_boss','ms_polygons_boss',
+   'ms_area_boss','ms_circles_boss','ms_coordinate_boss','ms_last_lesson_url'
+  ].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+  location.reload();
+});
+
+/* ════════════════════════════════════════════════
+   MODE
+════════════════════════════════════════════════ */
+const KICKERS = {
+  arcade:   '🕹️ Arcade Competitive Mode',
+  rpg:      '🎮 RPG Progression Mode',
+  academic: '🧠 Academic Mastery Mode',
+  lms:      '🏫 LMS Progress Report',
+};
+const STREAK_LABELS = {
+  arcade: 'Win Streak', rpg: 'Quest Streak', academic: 'Day Streak', lms: 'Active Days',
+};
+function applyMode(m) {
+  document.body.setAttribute('data-mode', m);
+  document.getElementById('modeKicker').textContent = KICKERS[m] || KICKERS.academic;
+  const sl = document.getElementById('streakLbl');
+  if (sl) sl.textContent = STREAK_LABELS[m] || 'Day Streak';
+  const csl = document.getElementById('currentStreakLbl');
+  if (csl) csl.textContent = STREAK_LABELS[m] || 'Day Streak';
+  document.querySelectorAll('.ms-modeBtn').forEach(b => b.classList.toggle('is-active', b.dataset.mode === m));
+  try { localStorage.setItem('ms_xp_mode', m); } catch {}
+}
+document.querySelectorAll('.ms-modeBtn').forEach(b => b.addEventListener('click', () => applyMode(b.dataset.mode)));
+try {
+  const s = localStorage.getItem('ms_xp_mode');
+  applyMode(s && KICKERS[s] ? s : 'academic');
+} catch { applyMode('academic'); }
+
+/* ── Scroll reveals ── */
+(function () {
+  const els = document.querySelectorAll('.ms-reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+  }, { threshold: .08 });
+  els.forEach(el => io.observe(el));
+})();
+
+render();
+</script>
+</body>
+</html>
