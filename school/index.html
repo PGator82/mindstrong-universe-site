@@ -410,18 +410,42 @@
 
   <!-- PRE-ALGEBRA -->
   <section class="ms-card ms-reveal">
-    <h2>Pre-Algebra Mastery <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
-
+    <h2>Pre-Algebra <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
         <div class="ms-courseBadge is-locked" id="preBadge">🔒</div>
         <div>
-          <div class="ms-courseTitle">Ratios</div>
-          <div class="ms-courseSubtitle" id="preSubtitle">Complete Module 1 to unlock</div>
+          <div class="ms-courseTitle">Module 2 — Pre-Algebra</div>
+          <div class="ms-courseSubtitle" id="preSubtitle">5 Lessons · <span id="preCount">0</span> completed</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="preBar" style="width:0%"></div></div>
         </div>
       </div>
       <span id="preAction"><button class="ms-btn" disabled>Locked</button></span>
     </div>
+  </section>
+
+  <!-- GEOMETRY -->
+  <section class="ms-card ms-reveal">
+    <h2>Geometry <span class="ms-flavorLabel" id="geoLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked" id="geoBadge">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 3 — Geometry Foundations</div>
+          <div class="ms-courseSubtitle" id="geoSubtitle">6 Lessons · <span id="geoCount">0</span> completed</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="geoBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <span id="geoAction"><button class="ms-btn" disabled>Locked</button></span>
+    </div>
+  </section>
+
+  <!-- PROGRESS DASHBOARD LINK -->
+  <section class="ms-card ms-reveal" style="text-align:center;padding:20px 24px;">
+    <div style="font-size:24px;margin-bottom:8px;">📊</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">Full Progress Report</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:14px;">See scores, XP, boss wins & streaks for every lesson.</div>
+    <a class="ms-btn primary" href="./foundations/progress-dashboard.html">View My Progress →</a>
   </section>
 
   <!-- EXPERIENCE SELECTOR -->
@@ -469,35 +493,77 @@
 /* ================================================================
    LOAD PROGRESS
 ================================================================ */
+// Module 1
 const m1Done  = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
 const m1Count = new Set(m1Done).size;
-const rank    = localStorage.getItem("ms_ratio_rank");
 const m1Complete = m1Count >= 6;
 
-/* ── Module 1 progress ── */
+// Pre-Algebra (module 2) — 5 lessons
+(function(){
+  const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
+  const s = new Set();
+  if(localStorage.getItem("ms_ratio_rank")) s.add(1);
+  if(arr.includes("proportions-1"))  s.add(2);
+  if(arr.includes("percents-1"))     s.add(3);
+  if(arr.includes("expressions-1")) s.add(4);
+  if(arr.includes("equations-1"))   s.add(5);
+  window._preCount = s.size;
+  window._preComplete = s.size >= 5;
+})();
+
+// Geometry (module 3) — 6 lessons
+(function(){
+  const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_geo_done")||"[]"); }catch{ return []; } })();
+  const s = new Set();
+  arr.forEach(v => { const m={"angles-1":1,"triangles-1":2,"polygons-1":3,"area-1":4,"circles-1":5,"coordinate-1":6}; if(m[v]) s.add(m[v]); });
+  window._geoCount = s.size;
+  window._geoComplete = s.size >= 6;
+})();
+
+// Total XP from ms_progress tracker
+(function(){
+  try{
+    const d = JSON.parse(localStorage.getItem("ms_progress")||"{}");
+    const lessons = d.lessons || {};
+    window._totalXP = Object.values(lessons).reduce((s,l) => s + (l.xpEarned||0), 0);
+    window._totalLessons = Object.values(lessons).filter(l => l.completedAt).length;
+    window._bossWins = Object.values(lessons).filter(l => l.bossWon).length;
+  }catch{ window._totalXP=0; window._totalLessons=0; window._bossWins=0; }
+})();
+
+const totalDone = m1Count + window._preCount + window._geoCount;
+
+/* ── Module 1 ── */
 document.getElementById("m1Count").textContent = m1Count;
 document.getElementById("m1Bar").style.width   = `${Math.round((m1Count/6)*100)}%`;
-
 if (m1Complete) {
   const badge = document.getElementById("m1Badge");
-  badge.textContent = "✓";
-  badge.classList.add("is-done");
+  badge.textContent = "✓"; badge.classList.add("is-done");
 }
 
-/* ── Unlock Pre-Algebra if M1 done ── */
-if (m1Complete) {
-  document.getElementById("preBadge").textContent = "→";
+/* ── Pre-Algebra ── */
+const unlocked = JSON.parse(localStorage.getItem("ms_unlocked_modules")||"[1]");
+const preUnlocked = m1Complete || unlocked.includes(2);
+document.getElementById("preCount").textContent = window._preCount;
+document.getElementById("preBar").style.width   = `${Math.round((window._preCount/5)*100)}%`;
+if(preUnlocked){
+  document.getElementById("preBadge").textContent = window._preComplete ? "✓" : "2";
   document.getElementById("preBadge").classList.remove("is-locked");
-  document.getElementById("preSubtitle").textContent = "Competitive lesson · Ratios";
-  document.getElementById("preLabel").textContent = "Unlocked";
-  document.getElementById("preAction").innerHTML =
-    '<a class="ms-btn primary" href="./foundations/pre-algebra/">Open →</a>';
+  if(window._preComplete) document.getElementById("preBadge").classList.add("is-done");
+  document.getElementById("preLabel").textContent = window._preComplete ? "Complete" : window._preCount > 0 ? "In Progress" : "Unlocked";
+  document.getElementById("preAction").innerHTML = `<a class="ms-btn${window._preComplete?"":" primary"}" href="./foundations/pre-algebra/">${window._preComplete?"Review →":"Open →"}</a>`;
 }
-if (rank) {
-  const pb = document.getElementById("preBadge");
-  pb.textContent = "✓";
-  pb.classList.add("is-done");
-  document.getElementById("preLabel").textContent = "Complete";
+
+/* ── Geometry ── */
+const geoUnlocked = window._preComplete || unlocked.includes(3);
+document.getElementById("geoCount").textContent = window._geoCount;
+document.getElementById("geoBar").style.width   = `${Math.round((window._geoCount/6)*100)}%`;
+if(geoUnlocked){
+  document.getElementById("geoBadge").textContent = window._geoComplete ? "✓" : "3";
+  document.getElementById("geoBadge").classList.remove("is-locked");
+  if(window._geoComplete) document.getElementById("geoBadge").classList.add("is-done");
+  document.getElementById("geoLabel").textContent = window._geoComplete ? "Complete" : window._geoCount > 0 ? "In Progress" : "Unlocked";
+  document.getElementById("geoAction").innerHTML = `<a class="ms-btn${window._geoComplete?"":" primary"}" href="./foundations/geometry/">${window._geoComplete?"Review →":"Open →"}</a>`;
 }
 
 /* ================================================================
@@ -512,9 +578,9 @@ const MODES = {
     avatar: "🕹️",
     profileTitle: "Player Profile",
     profileName: "MathWarrior",
-    metaFn: (n) => `RANK: ${n >= 6 ? "Veteran" : n >= 3 ? "Fighter" : "Novice"} · Module 1: ${n}/6`,
-    xpLabelFn: (n) => `${n} / 6 lessons · ${n * 120} pts`,
-    statVal: (n) => n * 120,
+    metaFn: (n) => `RANK: ${n >= 40 ? "Legend" : n >= 20 ? "Veteran" : n >= 10 ? "Fighter" : "Novice"} · ${n}/57 lessons${window._totalXP ? ' · '+window._totalXP+' XP' : ''}`,
+    xpLabelFn: (n) => `${n} / 57 lessons · ${window._totalXP || n * 120} XP`,
+    statVal: (n) => window._totalXP || n * 120,
     statLbl: "Score",
     foundationsLabel: "Active",
     preLabel: "Locked",
@@ -528,9 +594,9 @@ const MODES = {
     avatar: "🧙",
     profileTitle: "Character Sheet",
     profileName: "MathWizard",
-    metaFn: (n) => `CLASS: Fraction Mage · LVL ${Math.max(1, Math.floor(n * 1.5))}`,
-    xpLabelFn: (n) => `${n * 480} / 2,880 XP · Level ${Math.max(1, Math.floor(n * 1.5))}`,
-    statVal: (n) => Math.max(1, Math.floor(n * 1.5)),
+    metaFn: (n) => `CLASS: Math Wizard · LVL ${Math.max(1, Math.floor(n / 3) + 1)} · ${window._bossWins} bosses slain`,
+    xpLabelFn: (n) => `${window._totalXP || n * 480} / 5,700 XP`,
+    statVal: (n) => Math.max(1, Math.floor(n / 3) + 1),
     statLbl: "Level",
     foundationsLabel: "Main Quest",
     preLabel: "Locked",
@@ -544,9 +610,9 @@ const MODES = {
     avatar: "📚",
     profileTitle: "Learner Profile",
     profileName: "Scholar",
-    metaFn: (n) => `Mastery: ${n >= 6 ? "100" : Math.round((n/6)*100)}% · Streak: ${n} days`,
-    xpLabelFn: (n) => `${n} of 6 concepts mastered`,
-    statVal: (n) => `${Math.round((n/6)*100)}%`,
+    metaFn: (n) => `Mastery: ${Math.round((n/57)*100)}% · ${window._bossWins} concepts locked in`,
+    xpLabelFn: (n) => `${n} of 57 concepts · ${window._totalXP} XP earned`,
+    statVal: (n) => `${Math.round((n/57)*100)}%`,
     statLbl: "Mastery",
     foundationsLabel: "In Progress",
     preLabel: "Gate Locked",
@@ -560,9 +626,9 @@ const MODES = {
     avatar: "🎓",
     profileTitle: "Student Record",
     profileName: "Student",
-    metaFn: (n) => `Grade: ${n >= 6 ? "A" : n >= 4 ? "B" : n >= 2 ? "C" : "—"} · Completion: ${Math.round((n/6)*100)}%`,
-    xpLabelFn: (n) => `${Math.round((n/6)*100)}% course completion`,
-    statVal: (n) => `${Math.round((n/6)*100)}%`,
+    metaFn: (n) => `Grade: ${n >= 50 ? "A" : n >= 35 ? "B" : n >= 20 ? "C" : "—"} · Completion: ${Math.round((n/57)*100)}%`,
+    xpLabelFn: (n) => `${Math.round((n/57)*100)}% complete · ${n}/57 lessons`,
+    statVal: (n) => `${Math.round((n/57)*100)}%`,
     statLbl: "Grade",
     foundationsLabel: "Assigned",
     preLabel: "Not Assigned",
@@ -588,10 +654,10 @@ function applyMode(mode) {
   document.getElementById("profileTitle").textContent  = cfg.profileTitle;
   document.getElementById("profileAvatar").textContent = cfg.avatar;
   document.getElementById("profileName").textContent   = cfg.profileName;
-  document.getElementById("profileMeta").textContent   = cfg.metaFn(m1Count);
-  document.getElementById("xpFill").style.width        = `${Math.round((m1Count/6)*100)}%`;
-  document.getElementById("xpLabel").textContent       = cfg.xpLabelFn(m1Count);
-  document.getElementById("statVal").textContent       = cfg.statVal(m1Count);
+  document.getElementById("profileMeta").textContent   = cfg.metaFn(totalDone);
+  document.getElementById("xpFill").style.width        = `${Math.min(100,Math.round((totalDone/57)*100))}%`;
+  document.getElementById("xpLabel").textContent       = cfg.xpLabelFn(totalDone);
+  document.getElementById("statVal").textContent       = cfg.statVal(totalDone);
   document.getElementById("statLbl").textContent       = cfg.statLbl;
 
   /* Foundations */
