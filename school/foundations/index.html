@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindStrong Universe • Foundations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../mindstronguniverse.svg" />
+  <meta name="theme-color" content="#0b0f1a" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family:'Syne',sans-serif; }
+    :root { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX {
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(800px 500px at 15% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(500px 400px at 85% 90%, rgba(124,58,237,.07), transparent 60%);
+      transition:background .6s ease;
+    }
+    .ms-wrap { position:relative; z-index:1; }
+
+    /* ── Modebar ── */
+    .ms-modebar {
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:24px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-modebar-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted,#6b7a99); margin-right:4px; flex-shrink:0; }
+    .ms-modeBtn { font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 13px; border-radius:8px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--muted,#6b7a99); cursor:pointer; transition:all .2s ease; white-space:nowrap; }
+    .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeBtn.is-active { color:var(--xp-a); border-color:var(--xp-a); background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow); }
+    .ms-modeKicker { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; padding:4px 12px; border-radius:20px; border:1px solid var(--xp-a); color:var(--xp-a); margin-bottom:10px; transition:all .4s ease; }
+
+    /* ── Overall progress bar ── */
+    .ms-overallProgress {
+      padding:16px 18px; margin-bottom:8px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-overallProgress .op-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .ms-overallProgress .op-title { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted,#6b7a99); }
+    .ms-overallProgress .op-count { font-family:'Orbitron',monospace; font-size:18px; font-weight:900; color:var(--xp-a); }
+    .ms-bar { height:8px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; }
+    .ms-bar div { height:100%; width:0%; background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); border-radius:999px; transition:width .8s ease, background .5s ease; }
+
+    /* ── Next lesson CTA ── */
+    .ms-nextLesson {
+      display:flex; align-items:center; gap:14px; padding:14px 16px;
+      border:1px solid var(--xp-a); border-radius:14px;
+      background:rgba(255,255,255,.04); box-shadow:0 0 20px var(--xp-glow);
+      margin-bottom:8px; text-decoration:none;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .ms-nextLesson:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--xp-glow); }
+    .ms-nextLesson-icon { font-size:22px; flex-shrink:0; }
+    .ms-nextLesson-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--xp-a); margin-bottom:3px; }
+    .ms-nextLesson-title { font-weight:700; font-size:14px; }
+    .ms-nextLesson-sub { font-size:12px; color:var(--muted,#6b7a99); margin-top:2px; }
+
+    /* ── Module accordions ── */
+    details.ms-card { margin-bottom:18px; }
+    summary { list-style:none; cursor:pointer; }
+    summary::-webkit-details-marker { display:none; }
+    .summary-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .summary-left { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+    .chev { transition:transform .25s ease; flex-shrink:0; }
+    details[open] .chev { transform:rotate(90deg); }
+
+    /* ── Module number badge (big) ── */
+    .ms-modNum {
+      width:36px; height:36px; border-radius:10px; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',sans-serif; font-weight:900; font-size:14px;
+      border:2px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05);
+      transition:all .3s ease;
+    }
+    .ms-modNum.unlocked { border-color:var(--xp-a); color:var(--xp-a); box-shadow:0 0 12px var(--xp-glow); }
+    .ms-modNum.complete { border-color:var(--xp-a); background:rgba(255,255,255,.1); color:var(--xp-a); }
+    .ms-modNum.locked-mod { opacity:.3; }
+
+    /* ── Item badges (small) ── */
+    .ms-badge {
+      width:28px; height:28px; border-radius:8px; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.05);
+      font-weight:800; font-size:12px; transition:all .3s ease;
+    }
+    .ms-check { border-color:var(--xp-a)!important; background:rgba(255,255,255,.1)!important; box-shadow:0 0 0 3px var(--xp-glow); color:var(--xp-a); }
+
+    .ms-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .ms-item:last-child { border-bottom:none; }
+    .ms-row { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+    .ms-title { font-weight:700; font-size:14px; margin-bottom:2px; }
+    .ms-subtle { color:var(--muted,#6b7a99); font-size:12px; }
+    .ms-lessonMode { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--xp-a); margin-top:2px; opacity:.7; transition:color .4s; }
+
+    .ms-progress { margin:16px 0 8px; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(255,255,255,.03); }
+
+    .ms-flavorTag { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase; padding:3px 8px; border-radius:5px; border:1px solid var(--xp-a); color:var(--xp-a); opacity:.65; display:inline-block; margin-left:8px; vertical-align:middle; transition:all .4s; }
+
+    /* ── Buttons ── */
+    .ms-btn { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; padding:9px 18px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#e8edf5; cursor:pointer; white-space:nowrap; text-decoration:none; display:inline-block; transition:all .2s; }
+    .ms-btn:hover:not([disabled]):not(.locked-btn) { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.22); }
+    .ms-btn.primary { background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); border-color:transparent; color:#06080e; box-shadow:0 4px 18px var(--xp-glow); transition:transform .18s,box-shadow .18s,background .5s; }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
+    .ms-btn[disabled], .ms-btn.locked-btn { opacity:.3; cursor:not-allowed; pointer-events:none; }
+
+    /* ── Teacher unlock panel ── */
+    .ms-teacherBar {
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      padding:12px 16px; margin-bottom:20px;
+      border:1px solid rgba(52,211,153,.3); border-radius:12px;
+      background:rgba(52,211,153,.04);
+    }
+    .ms-teacherBar-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:#34d399; flex-shrink:0; }
+    .ms-unlockBtn { font-family:'JetBrains Mono',monospace; font-size:10px; padding:5px 11px; border-radius:7px; border:1px solid rgba(52,211,153,.4); background:rgba(52,211,153,.06); color:#34d399; cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .ms-unlockBtn:hover { background:rgba(52,211,153,.15); border-color:#34d399; }
+    .ms-unlockBtn.is-unlocked { opacity:.4; cursor:default; pointer-events:none; }
+    .ms-lockBtn { font-family:'JetBrains Mono',monospace; font-size:10px; padding:5px 11px; border-radius:7px; border:1px solid rgba(255,100,100,.3); background:rgba(255,100,100,.05); color:#f87171; cursor:pointer; transition:all .2s; margin-left:auto; }
+    .ms-lockBtn:hover { background:rgba(255,100,100,.12); }
+
+    /* Locked module dim */
+    .ms-moduleWrap.is-locked summary { opacity:.45; pointer-events:none; }
+    .ms-moduleWrap.is-locked details { pointer-events:none; }
+
+
+    /* ── Student rank card ── */
+    .ms-rankCard {
+      display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+      padding:18px 20px; border-radius:16px; margin-bottom:16px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.03);
+    }
+    .ms-rankAvatar { font-size:32px; flex-shrink:0; }
+    .ms-rankBody { flex:1; min-width:0; }
+    .ms-rankName { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900;
+      color:var(--xp-a); margin-bottom:2px; }
+    .ms-rankMeta { font-family:'JetBrains Mono',monospace; font-size:10px;
+      color:var(--muted,#6b7a99); letter-spacing:.08em; margin-bottom:8px; }
+    .ms-rankBarWrap { height:6px; border-radius:999px; background:rgba(255,255,255,.09); overflow:hidden; }
+    .ms-rankBarFill { height:100%; border-radius:999px;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); transition:width .8s ease; }
+    .ms-rankStats { display:flex; gap:10px; flex-wrap:wrap; }
+    .ms-rankStat { text-align:center; padding:8px 12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); min-width:60px; }
+    .ms-rankStat .rsv { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-rankStat .rsl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:3px; text-transform:uppercase; letter-spacing:.1em; }
+
+    /* ── Per-lesson score mini-row ── */
+    .ms-scoreRow { display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap; }
+    .ms-pip { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18); display:inline-block; }
+    .ms-pip.filled { background:var(--xp-a); border-color:var(--xp-a); box-shadow:0 0 4px var(--xp-glow); }
+    .ms-bossBadge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 6px; border-radius:4px; border:1px solid rgba(74,222,128,.4); color:#4ade80; background:rgba(74,222,128,.06); white-space:nowrap; }
+    .ms-xpBadge { font-family:'Orbitron',sans-serif; font-size:9px; font-weight:900; padding:2px 6px; border-radius:4px; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; white-space:nowrap; }
+    .ms-scoreDiv { width:1px; height:10px; background:rgba(255,255,255,.12); display:inline-block; }
+
+    /* ── Locked overlay pill ── */
+    .ms-lockedPill {
+      display:inline-flex; align-items:center; gap:5px;
+      font-family:'JetBrains Mono',monospace; font-size:10px;
+      padding:3px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.12); color:var(--muted,#6b7a99);
+      margin-left:8px;
+    }
+
+    /* ── Course complete ── */
+    .ms-courseDone {
+      text-align:center; padding:32px 24px; border-radius:20px; margin-bottom:24px;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); display:none;
+    }
+    .ms-courseDone .cd-icon { font-size:52px; margin-bottom:12px; }
+    .ms-courseDone h2 { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900; color:#06080e; margin-bottom:8px; }
+    .ms-courseDone p { font-size:14px; color:rgba(0,0,0,.7); }
+
+    /* ── view all link ── */
+    .ms-viewAll { text-align:center; padding:12px 0 4px; }
+    .ms-viewAll a { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; color:var(--xp-a); text-decoration:none; opacity:.7; transition:opacity .2s; }
+    .ms-viewAll a:hover { opacity:1; }
+
+    .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease,transform .5s ease; }
+    .ms-reveal.is-in { opacity:1; transform:translateY(0); }
+    @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
+    @media(max-width:540px){ .ms-modebar{gap:6px;} .ms-modeBtn{font-size:10px;padding:5px 10px;} }
+  </style>
+</head>
+
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../mindstronguniverse.svg" class="ms-brandLogo" />
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../index.html">Home</a>
+      <a class="ms-link" href="../index.html">School</a>
+      <a class="ms-link is-active" href="./index.html">Foundations</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero">
+    <div class="ms-modeKicker" id="modeKicker">🧠 Academic Mastery Mode</div>
+    <span class="ms-kicker">🧱 Foundations • Middle School</span>
+    <h1 class="ms-h1" id="heroTitle">Math Foundations</h1>
+    <p class="ms-sub" id="heroSub">Complete middle school math. 9 modules. Built for mastery.</p>
+  </section>
+
+  <!-- MODE SWITCHER -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+
+  <!-- STUDENT RANK CARD -->
+  <div class="ms-rankCard ms-reveal" id="rankCard">
+    <div class="ms-rankAvatar" id="rankAvatar">🧠</div>
+    <div class="ms-rankBody">
+      <div class="ms-rankName" id="rankTitle">Novice</div>
+      <div class="ms-rankMeta" id="rankMeta">0 / 57 lessons · Start your first lesson</div>
+      <div class="ms-rankBarWrap"><div class="ms-rankBarFill" id="rankBar" style="width:0%"></div></div>
+    </div>
+    <div class="ms-rankStats">
+      <div class="ms-rankStat"><div class="rsv" id="rsXP">0</div><div class="rsl">XP</div></div>
+      <div class="ms-rankStat"><div class="rsv" id="rsBoss">0</div><div class="rsl">Bosses</div></div>
+      <div class="ms-rankStat"><div class="rsv" id="rsStreak">0</div><div class="rsl">Streak</div></div>
+    </div>
+  </div>
+
+  <!-- OVERALL PROGRESS -->
+  <div class="ms-overallProgress ms-reveal">
+    <div class="op-row">
+      <span class="op-title">Total Course Progress</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="op-count"><span id="totalDone">0</span> <span style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;">/ 57 lessons</span></span>
+        <span id="totalXPWrap" style="display:none;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;"></span>
+      </div>
+    </div>
+    <div class="ms-bar"><div id="totalBar"></div></div>
+  </div>
+
+  <!-- NEXT LESSON SMART CTA -->
+  <div id="nextLessonWrap" style="display:none;" class="ms-reveal">
+    <a class="ms-nextLesson" id="nextLessonLink" href="#">
+      <span class="ms-nextLesson-icon" id="nextLessonIcon">▶</span>
+      <div style="flex:1;min-width:0;">
+        <div class="ms-nextLesson-label" id="nextLessonLabel">Continue</div>
+        <div class="ms-nextLesson-title" id="nextLessonTitle">Next Lesson</div>
+        <div class="ms-nextLesson-sub" id="nextLessonSub"></div>
+      </div>
+      <span style="margin-left:auto;font-size:18px;opacity:.5;flex-shrink:0;">→</span>
+    </a>
+  </div>
+
+  <!-- TEACHER UNLOCK PANEL (LMS mode only) -->
+  <div class="ms-teacherBar ms-reveal" id="teacherPanel" style="display:none;">
+    <span class="ms-teacherBar-label">🏫 Teacher Controls</span>
+    <button class="ms-unlockBtn" data-unlock="2" id="unlock-2">Unlock Pre-Algebra</button>
+    <button class="ms-unlockBtn" data-unlock="3" id="unlock-3">Unlock Geometry</button>
+    <button class="ms-unlockBtn" data-unlock="4" id="unlock-4">Unlock Fractions</button>
+    <button class="ms-unlockBtn" data-unlock="5" id="unlock-5">Unlock Integers</button>
+    <button class="ms-unlockBtn" data-unlock="6" id="unlock-6">Unlock Data &amp; Stats</button>
+    <button class="ms-unlockBtn" data-unlock="7" id="unlock-7">Unlock Algebra Intro</button>
+    <button class="ms-unlockBtn" data-unlock="8" id="unlock-8">Unlock Linear Equations</button>
+    <button class="ms-unlockBtn" data-unlock="9" id="unlock-9">Unlock Functions &amp; Graphs</button>
+    <button class="ms-lockBtn" id="resetLocks">Reset All Locks</button>
+  </div>
+
+  <!-- COURSE COMPLETE BANNER -->
+  <div class="ms-courseDone ms-reveal" id="courseDone">
+    <div class="cd-icon">🏆</div>
+    <h2 id="cdTitle">Math Foundations Complete!</h2>
+    <p id="cdMsg">All 9 modules. 57 lessons. You built a complete middle school math foundation.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 1 — Number Sense
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-1">
+    <details class="ms-card" id="module-1">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum" id="modnum-1">1</span>
+            <div>
+              <h2>Number Sense <span class="ms-flavorTag" id="tag-1">Required</span></h2>
+              <div class="ms-subtle" id="sub-1">6 lessons • the foundation of everything</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-1">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-1"></div></div>
+      </div>
+      <div class="ms-list" id="list-1">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-1">1</span><div><div class="ms-title">Numbers Are Stories</div><div class="ms-subtle">Magnitude + meaning</div><div class="ms-lessonMode" id="lm-1-1"></div><div id="sc-1-1"></div></div></div><span id="act-1-1"><a class="ms-btn" href="./module-1/lesson-1.html" id="lb-1-1">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-2">2</span><div><div class="ms-title">Place Value Is a Volume Knob</div><div class="ms-subtle">×10 louder, ÷10 quieter</div><div class="ms-lessonMode" id="lm-1-2"></div><div id="sc-1-2"></div></div></div><span id="act-1-2"><a class="ms-btn" href="./module-1/lesson-2.html" id="lb-1-2">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-3">3</span><div><div class="ms-title">Expanded Form</div><div class="ms-subtle">Number LEGO</div><div class="ms-lessonMode" id="lm-1-3"></div><div id="sc-1-3"></div></div></div><span id="act-1-3"><a class="ms-btn" href="./module-1/lesson-3.html" id="lb-1-3">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-4">4</span><div><div class="ms-title">Compare Without Guessing</div><div class="ms-subtle">Left-to-right logic</div><div class="ms-lessonMode" id="lm-1-4"></div><div id="sc-1-4"></div></div></div><span id="act-1-4"><a class="ms-btn" href="./module-1/lesson-4.html" id="lb-1-4">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-5">5</span><div><div class="ms-title">Rounding That Makes Sense</div><div class="ms-subtle">Landmarks, not rules</div><div class="ms-lessonMode" id="lm-1-5"></div><div id="sc-1-5"></div></div></div><span id="act-1-5"><a class="ms-btn" href="./module-1/lesson-5.html" id="lb-1-5">Open</a></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1-6">6</span><div><div class="ms-title">Estimation as a Superpower</div><div class="ms-subtle">The smell test</div><div class="ms-lessonMode" id="lm-1-6"></div><div id="sc-1-6"></div></div></div><span id="act-1-6"><a class="ms-btn" href="./module-1/lesson-6.html" id="lb-1-6">Open</a></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 2 — Pre-Algebra
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-2">
+    <details class="ms-card" id="module-2">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-2">2</span>
+            <div>
+              <h2>Pre-Algebra <span class="ms-flavorTag" id="tag-2">Locked</span></h2>
+              <div class="ms-subtle" id="sub-2">5 lessons • ratios through equations</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-2">0</b> / 5 completed</span>
+        <div class="ms-bar"><div id="bar-2"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-1">1</span><div><div class="ms-title">Ratios — Balance of Comparison</div><div class="ms-subtle">Scaling relationships</div><div class="ms-lessonMode" id="lm-2-1"></div><div id="sc-2-1"></div></div></div><span id="act-2-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-2">2</span><div><div class="ms-title">Proportions — Equal Ratios</div><div class="ms-subtle">Cross-multiply to solve</div><div class="ms-lessonMode" id="lm-2-2"></div><div id="sc-2-2"></div></div></div><span id="act-2-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-3">3</span><div><div class="ms-title">Percents — Ratios out of 100</div><div class="ms-subtle">Part, whole, percent triangle</div><div class="ms-lessonMode" id="lm-2-3"></div><div id="sc-2-3"></div></div></div><span id="act-2-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-4">4</span><div><div class="ms-title">Expressions — Variables &amp; Terms</div><div class="ms-subtle">Coefficients, like terms, evaluation</div><div class="ms-lessonMode" id="lm-2-4"></div><div id="sc-2-4"></div></div></div><span id="act-2-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2-5">5</span><div><div class="ms-title">Equations — Solve for x</div><div class="ms-subtle">Inverse operations · Final boss</div><div class="ms-lessonMode" id="lm-2-5"></div><div id="sc-2-5"></div></div></div><span id="act-2-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+      <div class="ms-viewAll"><a href="./pre-algebra/">View full Pre-Algebra dashboard →</a></div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 3 — Geometry Foundations
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-3">
+    <details class="ms-card" id="module-3">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-3">3</span>
+            <div>
+              <h2>Geometry Foundations <span class="ms-flavorTag" id="tag-3">Locked</span></h2>
+              <div class="ms-subtle" id="sub-3">6 lessons • shapes, area, coordinate plane</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-3">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-3"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-1">1</span><div><div class="ms-title">Angles &amp; Lines</div><div class="ms-subtle">Acute, obtuse, parallel, perpendicular</div><div class="ms-lessonMode" id="lm-3-1"></div><div id="sc-3-1"></div></div></div><span id="act-3-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-2">2</span><div><div class="ms-title">Triangles</div><div class="ms-subtle">Types, angles sum to 180°</div><div class="ms-lessonMode" id="lm-3-2"></div><div id="sc-3-2"></div></div></div><span id="act-3-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-3">3</span><div><div class="ms-title">Quadrilaterals &amp; Polygons</div><div class="ms-subtle">Properties, diagonals, angle sums</div><div class="ms-lessonMode" id="lm-3-3"></div><div id="sc-3-3"></div></div></div><span id="act-3-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-4">4</span><div><div class="ms-title">Perimeter &amp; Area</div><div class="ms-subtle">Rectangles, triangles, composite shapes</div><div class="ms-lessonMode" id="lm-3-4"></div><div id="sc-3-4"></div></div></div><span id="act-3-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-5">5</span><div><div class="ms-title">Circles — π Unlocked</div><div class="ms-subtle">Radius, diameter, circumference, area</div><div class="ms-lessonMode" id="lm-3-5"></div><div id="sc-3-5"></div></div></div><span id="act-3-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3-6">6</span><div><div class="ms-title">The Coordinate Plane</div><div class="ms-subtle">Quadrants, plotting, distance</div><div class="ms-lessonMode" id="lm-3-6"></div><div id="sc-3-6"></div></div></div><span id="act-3-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 4 — Fractions & Operations
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-4">
+    <details class="ms-card" id="module-4">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-4">4</span>
+            <div>
+              <h2>Fractions &amp; Operations <span class="ms-flavorTag" id="tag-4">Locked</span></h2>
+              <div class="ms-subtle" id="sub-4">6 lessons • the arithmetic deep dive</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-4">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-4"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-1">1</span><div><div class="ms-title">What Fractions Actually Mean</div><div class="ms-subtle">Parts of wholes, number line placement</div><div class="ms-lessonMode" id="lm-4-1"></div><div id="sc-4-1"></div></div></div><span id="act-4-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-2">2</span><div><div class="ms-title">Equivalent Fractions &amp; Simplifying</div><div class="ms-subtle">Same value, different form</div><div class="ms-lessonMode" id="lm-4-2"></div><div id="sc-4-2"></div></div></div><span id="act-4-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-3">3</span><div><div class="ms-title">Add &amp; Subtract Fractions</div><div class="ms-subtle">Common denominators, mixed numbers</div><div class="ms-lessonMode" id="lm-4-3"></div><div id="sc-4-3"></div></div></div><span id="act-4-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-4">4</span><div><div class="ms-title">Multiply Fractions</div><div class="ms-subtle">Top × top, bottom × bottom</div><div class="ms-lessonMode" id="lm-4-4"></div><div id="sc-4-4"></div></div></div><span id="act-4-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-5">5</span><div><div class="ms-title">Divide Fractions</div><div class="ms-subtle">Flip and multiply — but why?</div><div class="ms-lessonMode" id="lm-4-5"></div><div id="sc-4-5"></div></div></div><span id="act-4-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4-6">6</span><div><div class="ms-title">Fractions, Decimals &amp; Percents</div><div class="ms-subtle">Converting between all three forms</div><div class="ms-lessonMode" id="lm-4-6"></div><div id="sc-4-6"></div></div></div><span id="act-4-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 5 — Integers & Negatives
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-5">
+    <details class="ms-card" id="module-5">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-5">5</span>
+            <div>
+              <h2>Integers &amp; Negatives <span class="ms-flavorTag" id="tag-5">Locked</span></h2>
+              <div class="ms-subtle" id="sub-5">6 lessons • below zero, absolute value, operations</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-5">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-5"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-1">1</span><div><div class="ms-title">Below Zero — Negative Numbers</div><div class="ms-subtle">The number line goes both ways</div><div class="ms-lessonMode" id="lm-5-1"></div><div id="sc-5-1"></div></div></div><span id="act-5-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-2">2</span><div><div class="ms-title">Absolute Value</div><div class="ms-subtle">Distance from zero, always positive</div><div class="ms-lessonMode" id="lm-5-2"></div><div id="sc-5-2"></div></div></div><span id="act-5-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-3">3</span><div><div class="ms-title">Add &amp; Subtract Integers</div><div class="ms-subtle">Same sign add, different sign subtract</div><div class="ms-lessonMode" id="lm-5-3"></div><div id="sc-5-3"></div></div></div><span id="act-5-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-4">4</span><div><div class="ms-title">Multiply &amp; Divide Integers</div><div class="ms-subtle">Sign rules — two negatives make a positive</div><div class="ms-lessonMode" id="lm-5-4"></div><div id="sc-5-4"></div></div></div><span id="act-5-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-5">5</span><div><div class="ms-title">Order of Operations</div><div class="ms-subtle">PEMDAS with negatives and brackets</div><div class="ms-lessonMode" id="lm-5-5"></div><div id="sc-5-5"></div></div></div><span id="act-5-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5-6">6</span><div><div class="ms-title">Rational Numbers on the Number Line</div><div class="ms-subtle">Fractions, decimals, negatives — unified</div><div class="ms-lessonMode" id="lm-5-6"></div><div id="sc-5-6"></div></div></div><span id="act-5-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 6 — Data & Statistics
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-6">
+    <details class="ms-card" id="module-6">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-6">6</span>
+            <div>
+              <h2>Data &amp; Statistics <span class="ms-flavorTag" id="tag-6">Locked</span></h2>
+              <div class="ms-subtle" id="sub-6">6 lessons • graphs, averages, probability</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-6">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-6"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-1">1</span><div><div class="ms-title">Mean, Median &amp; Mode</div><div class="ms-subtle">Three ways to describe the middle</div><div class="ms-lessonMode" id="lm-6-1"></div><div id="sc-6-1"></div></div></div><span id="act-6-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-2">2</span><div><div class="ms-title">Range &amp; Spread</div><div class="ms-subtle">How far apart is the data?</div><div class="ms-lessonMode" id="lm-6-2"></div><div id="sc-6-2"></div></div></div><span id="act-6-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-3">3</span><div><div class="ms-title">Bar Graphs &amp; Histograms</div><div class="ms-subtle">Reading and building charts</div><div class="ms-lessonMode" id="lm-6-3"></div><div id="sc-6-3"></div></div></div><span id="act-6-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-4">4</span><div><div class="ms-title">Line Graphs &amp; Scatter Plots</div><div class="ms-subtle">Trends over time, relationships</div><div class="ms-lessonMode" id="lm-6-4"></div><div id="sc-6-4"></div></div></div><span id="act-6-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-5">5</span><div><div class="ms-title">Probability Basics</div><div class="ms-subtle">Likely, unlikely, certain, impossible</div><div class="ms-lessonMode" id="lm-6-5"></div><div id="sc-6-5"></div></div></div><span id="act-6-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6-6">6</span><div><div class="ms-title">Experimental vs Theoretical Probability</div><div class="ms-subtle">What should happen vs what did happen</div><div class="ms-lessonMode" id="lm-6-6"></div><div id="sc-6-6"></div></div></div><span id="act-6-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 7 — Intro to Algebra
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-7">
+    <details class="ms-card" id="module-7">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-7">7</span>
+            <div>
+              <h2>Intro to Algebra <span class="ms-flavorTag" id="tag-7">Locked</span></h2>
+              <div class="ms-subtle" id="sub-7">6 lessons • variables, inequalities, systems</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-7">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-7"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-1">1</span><div><div class="ms-title">Variables &amp; Algebraic Thinking</div><div class="ms-subtle">Unknown quantities, generalizing patterns</div><div class="ms-lessonMode" id="lm-7-1"></div><div id="sc-7-1"></div></div></div><span id="act-7-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-2">2</span><div><div class="ms-title">Multi-Step Equations</div><div class="ms-subtle">Combining like terms, distributive property</div><div class="ms-lessonMode" id="lm-7-2"></div><div id="sc-7-2"></div></div></div><span id="act-7-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-3">3</span><div><div class="ms-title">Inequalities</div><div class="ms-subtle">Greater than, less than, graphing on a number line</div><div class="ms-lessonMode" id="lm-7-3"></div><div id="sc-7-3"></div></div></div><span id="act-7-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-4">4</span><div><div class="ms-title">Patterns &amp; Sequences</div><div class="ms-subtle">Arithmetic and geometric sequences</div><div class="ms-lessonMode" id="lm-7-4"></div><div id="sc-7-4"></div></div></div><span id="act-7-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-5">5</span><div><div class="ms-title">Word Problems → Equations</div><div class="ms-subtle">Translate real situations into algebra</div><div class="ms-lessonMode" id="lm-7-5"></div><div id="sc-7-5"></div></div></div><span id="act-7-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-7-6">6</span><div><div class="ms-title">Systems of Equations — Intro</div><div class="ms-subtle">Two equations, two unknowns</div><div class="ms-lessonMode" id="lm-7-6"></div><div id="sc-7-6"></div></div></div><span id="act-7-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 8 — Linear Equations & Slope
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-8">
+    <details class="ms-card" id="module-8">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-8">8</span>
+            <div>
+              <h2>Linear Equations &amp; Slope <span class="ms-flavorTag" id="tag-8">Locked</span></h2>
+              <div class="ms-subtle" id="sub-8">6 lessons • slope, y-intercept, graphing lines</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-8">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-8"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-1">1</span><div><div class="ms-title">What Is Slope?</div><div class="ms-subtle">Rise over run — steepness as a number</div><div class="ms-lessonMode" id="lm-8-1"></div><div id="sc-8-1"></div></div></div><span id="act-8-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-2">2</span><div><div class="ms-title">Slope-Intercept Form</div><div class="ms-subtle">y = mx + b — every piece matters</div><div class="ms-lessonMode" id="lm-8-2"></div><div id="sc-8-2"></div></div></div><span id="act-8-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-3">3</span><div><div class="ms-title">Graphing Lines</div><div class="ms-subtle">Plot from equation, find equation from graph</div><div class="ms-lessonMode" id="lm-8-3"></div><div id="sc-8-3"></div></div></div><span id="act-8-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-4">4</span><div><div class="ms-title">Parallel &amp; Perpendicular Lines</div><div class="ms-subtle">Same slope, negative reciprocal slope</div><div class="ms-lessonMode" id="lm-8-4"></div><div id="sc-8-4"></div></div></div><span id="act-8-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-5">5</span><div><div class="ms-title">Writing Linear Equations</div><div class="ms-subtle">From two points, from slope + point</div><div class="ms-lessonMode" id="lm-8-5"></div><div id="sc-8-5"></div></div></div><span id="act-8-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-8-6">6</span><div><div class="ms-title">Solving Systems by Graphing</div><div class="ms-subtle">Intersection = solution</div><div class="ms-lessonMode" id="lm-8-6"></div><div id="sc-8-6"></div></div></div><span id="act-8-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       MODULE 9 — Functions & Graphs
+  ═══════════════════════════════════ -->
+  <div class="ms-moduleWrap ms-reveal" id="wrap-9">
+    <details class="ms-card" id="module-9">
+      <summary>
+        <div class="summary-head">
+          <div class="summary-left">
+            <span class="ms-modNum locked-mod" id="modnum-9">9</span>
+            <div>
+              <h2>Functions &amp; Graphs <span class="ms-flavorTag" id="tag-9">Locked</span></h2>
+              <div class="ms-subtle" id="sub-9">6 lessons • functions, domain, transformations</div>
+            </div>
+          </div>
+          <span class="chev">▶</span>
+        </div>
+      </summary>
+      <div class="ms-progress">
+        <span><b id="cnt-9">0</b> / 6 completed</span>
+        <div class="ms-bar"><div id="bar-9"></div></div>
+      </div>
+      <div class="ms-list">
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-1">1</span><div><div class="ms-title">What Is a Function?</div><div class="ms-subtle">Input → output, one answer per input</div><div class="ms-lessonMode" id="lm-9-1"></div><div id="sc-9-1"></div></div></div><span id="act-9-1"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-2">2</span><div><div class="ms-title">Domain &amp; Range</div><div class="ms-subtle">What can go in, what can come out</div><div class="ms-lessonMode" id="lm-9-2"></div><div id="sc-9-2"></div></div></div><span id="act-9-2"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-3">3</span><div><div class="ms-title">Function Notation</div><div class="ms-subtle">f(x) — evaluating and substituting</div><div class="ms-lessonMode" id="lm-9-3"></div><div id="sc-9-3"></div></div></div><span id="act-9-3"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-4">4</span><div><div class="ms-title">Nonlinear Functions</div><div class="ms-subtle">Quadratic curves, exponential growth</div><div class="ms-lessonMode" id="lm-9-4"></div><div id="sc-9-4"></div></div></div><span id="act-9-4"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-5">5</span><div><div class="ms-title">Graph Transformations</div><div class="ms-subtle">Shifts, reflections, stretches</div><div class="ms-lessonMode" id="lm-9-5"></div><div id="sc-9-5"></div></div></div><span id="act-9-5"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+        <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-9-6">6</span><div><div class="ms-title">Real-World Functions</div><div class="ms-subtle">Modeling situations — the capstone boss</div><div class="ms-lessonMode" id="lm-9-6"></div><div id="sc-9-6"></div></div></div><span id="act-9-6"><button class="ms-btn locked-btn" disabled>Locked</button></span></div>
+      </div>
+    </details>
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Foundations — 9 Modules • 57 Lessons</footer>
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   CURRICULUM DATA
+═══════════════════════════════════════════════════════ */
+const MODULES = [
+  {
+    id:1, key:"m1", label:"Number Sense", total:6,
+    lessons:[
+      {n:1,title:"Numbers Are Stories",        href:"./module-1/lesson-1.html",icon:"📖",trackerKey:"m1-l1"},
+      {n:2,title:"Place Value Is a Volume Knob",href:"./module-1/lesson-2.html",icon:"🔊",trackerKey:"m1-l2"},
+      {n:3,title:"Expanded Form",               href:"./module-1/lesson-3.html",icon:"🧱",trackerKey:"m1-l3"},
+      {n:4,title:"Compare Without Guessing",    href:"./module-1/lesson-4.html",icon:"⚖️",trackerKey:"m1-l4"},
+      {n:5,title:"Rounding That Makes Sense",   href:"./module-1/lesson-5.html",icon:"🎯",trackerKey:"m1-l5"},
+      {n:6,title:"Estimation as a Superpower",  href:"./module-1/lesson-6.html",icon:"⚡",trackerKey:"m1-l6"},
+    ],
+    doneReader: () => {
+      try{ return new Set(JSON.parse(localStorage.getItem("ms_m1_done")||"[]")); }catch{ return new Set(); }
+    },
+    isLessonDone: (n) => {
+      try{ return JSON.parse(localStorage.getItem("ms_m1_done")||"[]").includes(n); }catch{ return false; }
+    },
+    hub: null,
+    alwaysOpen: true,
+  },
+  {
+    id:2, key:"m2", label:"Pre-Algebra", total:5,
+    lessons:[
+      {n:1,title:"Ratios",      sub:"Scaling relationships",        href:"./ratio/",                icon:"⚖️",trackerKey:"geo-ratios"},
+      {n:2,title:"Proportions", sub:"Cross-multiply to solve",      href:"./pre-algebra/proportions/",icon:"📐",trackerKey:"geo-proportions"},
+      {n:3,title:"Percents",    sub:"Part, whole, percent triangle", href:"./pre-algebra/percents/", icon:"%",trackerKey:"geo-percents"},
+      {n:4,title:"Expressions", sub:"Coefficients & like terms",    href:"./pre-algebra/expressions/",icon:"🔢",trackerKey:"geo-expressions"},
+      {n:5,title:"Equations",   sub:"Inverse ops · Final boss",     href:"./pre-algebra/equations/", icon:"⚖️",trackerKey:"geo-equations"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      if(localStorage.getItem("ms_ratio_rank")) s.add(1);
+      if(arr.includes("proportions-1"))  s.add(2);
+      if(arr.includes("percents-1"))     s.add(3);
+      if(arr.includes("expressions-1")) s.add(4);
+      if(arr.includes("equations-1"))   s.add(5);
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./pre-algebra/",
+  },
+  { id:3, key:"m3", label:"Geometry Foundations", total:6,
+    lessons:[
+      {n:1,title:"Angles & Lines",                href:"./geometry/angles/",      icon:"📐",trackerKey:"geo-angles"},
+      {n:2,title:"Triangles",                     href:"./geometry/triangles/",   icon:"🔺",trackerKey:"geo-triangles"},
+      {n:3,title:"Quadrilaterals & Polygons",     href:"./geometry/polygons/",    icon:"⬛",trackerKey:"geo-polygons"},
+      {n:4,title:"Perimeter & Area",              href:"./geometry/area/",        icon:"📏",trackerKey:"geo-area"},
+      {n:5,title:"Circles — π Unlocked",          href:"./geometry/circles/",     icon:"⭕",trackerKey:"geo-circles"},
+      {n:6,title:"The Coordinate Plane",          href:"./geometry/coordinate/",  icon:"🗺️",trackerKey:"geo-coordinate"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_geo_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      arr.forEach(v => { const m = {"angles-1":1,"triangles-1":2,"polygons-1":3,"area-1":4,"circles-1":5,"coordinate-1":6}; if(m[v]) s.add(m[v]); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./geometry/",
+  },
+  { id:4, key:"m4", label:"Fractions & Operations", total:6,
+    lessons:[
+      {n:1,title:"What Fractions Actually Mean",       href:"./fractions/meaning/",    icon:"🍕",trackerKey:"frac-meaning"},
+      {n:2,title:"Equivalent Fractions & Simplifying", href:"./fractions/equivalent/", icon:"⚖️",trackerKey:"frac-equiv"},
+      {n:3,title:"Add & Subtract Fractions",           href:"./fractions/add-sub/",    icon:"➕",trackerKey:"frac-addsub"},
+      {n:4,title:"Multiply Fractions",                 href:"./fractions/multiply/",   icon:"✖️",trackerKey:"frac-mult"},
+      {n:5,title:"Divide Fractions",                   href:"./fractions/divide/",     icon:"➗",trackerKey:"frac-div"},
+      {n:6,title:"Fractions, Decimals & Percents",     href:"./fractions/convert/",    icon:"🔄",trackerKey:"frac-convert"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_frac_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      arr.forEach((v,i) => s.add(["meaning-1","equiv-1","addsub-1","mult-1","div-1","convert-1"].indexOf(v)+1));
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./fractions/",
+  },
+  { id:5, key:"m5", label:"Integers & Negatives", total:6,
+    lessons:[
+      {n:1,title:"Below Zero — Negative Numbers",   href:"./integers/negative/",   icon:"❄️",trackerKey:"int-neg"},
+      {n:2,title:"Absolute Value",                   href:"./integers/absolute/",   icon:"📏",trackerKey:"int-abs"},
+      {n:3,title:"Add & Subtract Integers",          href:"./integers/add-sub/",    icon:"➕",trackerKey:"int-addsub"},
+      {n:4,title:"Multiply & Divide Integers",       href:"./integers/mult-div/",   icon:"✖️",trackerKey:"int-multdiv"},
+      {n:5,title:"Order of Operations",              href:"./integers/order-ops/",  icon:"🎯",trackerKey:"int-orderops"},
+      {n:6,title:"Rational Numbers on the Line",     href:"./integers/rational/",   icon:"🔢",trackerKey:"int-rational"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_int_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      ["neg-1","abs-1","intaddsub-1","intmult-1","orderops-1","rational-1"].forEach((k,i) => { if(arr.includes(k)) s.add(i+1); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./integers/",
+  },
+  { id:6, key:"m6", label:"Data & Statistics", total:6,
+    lessons:[
+      {n:1,title:"Mean, Median & Mode",                    href:"./data/central/",       icon:"📊",trackerKey:"data-central"},
+      {n:2,title:"Range & Spread",                         href:"./data/spread/",        icon:"📏",trackerKey:"data-spread"},
+      {n:3,title:"Bar Graphs & Histograms",                href:"./data/bar-graphs/",    icon:"📈",trackerKey:"data-bargraph"},
+      {n:4,title:"Line Graphs & Scatter Plots",            href:"./data/scatter/",       icon:"📉",trackerKey:"data-scatter"},
+      {n:5,title:"Probability Basics",                     href:"./data/probability/",   icon:"🎲",trackerKey:"data-prob"},
+      {n:6,title:"Experimental vs Theoretical Probability",href:"./data/experimental/",  icon:"🧪",trackerKey:"data-experimental"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_data_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      ["central-1","spread-1","bargraph-1","scatter-1","prob-1","experimental-1"].forEach((k,i) => { if(arr.includes(k)) s.add(i+1); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./data/",
+  },
+  { id:7, key:"m7", label:"Intro to Algebra", total:6,
+    lessons:[
+      {n:1,title:"Variables & Algebraic Thinking",href:"./algebra/variables/",   icon:"🔤",trackerKey:"alg-vars"},
+      {n:2,title:"Multi-Step Equations",          href:"./algebra/multistep/",   icon:"⚙️",trackerKey:"alg-multistep"},
+      {n:3,title:"Inequalities",                  href:"./algebra/inequalities/",icon:"⚖️",trackerKey:"alg-ineq"},
+      {n:4,title:"Patterns & Sequences",          href:"./algebra/patterns/",    icon:"🔢",trackerKey:"alg-patterns"},
+      {n:5,title:"Word Problems → Equations",     href:"./algebra/word-probs/",  icon:"📝",trackerKey:"alg-wordprob"},
+      {n:6,title:"Systems of Equations — Intro",  href:"./algebra/systems/",     icon:"🔀",trackerKey:"alg-systems"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_alg_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      ["vars-1","multistep-1","ineq-1","patterns-1","wordprob-1","systems-1"].forEach((k,i) => { if(arr.includes(k)) s.add(i+1); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./algebra/",
+  },
+  { id:8, key:"m8", label:"Linear Equations & Slope", total:6,
+    lessons:[
+      {n:1,title:"What Is Slope?",             href:"./linear/slope/",        icon:"📐",trackerKey:"lin-slope"},
+      {n:2,title:"Slope-Intercept Form",       href:"./linear/slope-int/",    icon:"🔢",trackerKey:"lin-slopeint"},
+      {n:3,title:"Graphing Lines",             href:"./linear/graphing/",     icon:"📈",trackerKey:"lin-graphing"},
+      {n:4,title:"Parallel & Perpendicular",   href:"./linear/parallel/",     icon:"⟺",trackerKey:"lin-parallel"},
+      {n:5,title:"Writing Linear Equations",   href:"./linear/writing/",      icon:"✏️",trackerKey:"lin-writing"},
+      {n:6,title:"Solving Systems by Graphing",href:"./linear/systems-graph/",icon:"🔀",trackerKey:"lin-sysgraph"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_lin_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      ["slope-1","slopeint-1","graphing-1","parallel-1","writing-1","sysgraph-1"].forEach((k,i) => { if(arr.includes(k)) s.add(i+1); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./linear/",
+  },
+  { id:9, key:"m9", label:"Functions & Graphs", total:6,
+    lessons:[
+      {n:1,title:"What Is a Function?",   href:"./functions/intro/",         icon:"🔁",trackerKey:"func-intro"},
+      {n:2,title:"Domain & Range",        href:"./functions/domain/",        icon:"📦",trackerKey:"func-domain"},
+      {n:3,title:"Function Notation",     href:"./functions/notation/",      icon:"f(x)",trackerKey:"func-notation"},
+      {n:4,title:"Nonlinear Functions",   href:"./functions/nonlinear/",     icon:"〰️",trackerKey:"func-nonlinear"},
+      {n:5,title:"Graph Transformations", href:"./functions/transforms/",    icon:"🔄",trackerKey:"func-transforms"},
+      {n:6,title:"Real-World Functions",  href:"./functions/real-world/",    icon:"🌍",trackerKey:"func-realworld"},
+    ],
+    doneReader: () => {
+      const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_func_done")||"[]"); }catch{ return []; } })();
+      const s = new Set();
+      ["funcintro-1","domain-1","notation-1","nonlinear-1","transforms-1","realworld-1"].forEach((k,i) => { if(arr.includes(k)) s.add(i+1); });
+      return s;
+    },
+    isLessonDone: function(n){ return this.doneReader().has(n); },
+    hub: "./functions/",
+  },
+];
+
+const TOTAL_LESSONS = 57;
+
+/* ═══════════════════════════════════════════════════════
+   READ UNLOCK STATE (teacher-controlled)
+═══════════════════════════════════════════════════════ */
+function getUnlocked(){
+  try{ return JSON.parse(localStorage.getItem("ms_unlocked_modules")||"[1]"); }catch{ return [1]; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCORE READER — reads ms_progress tracker data
+═══════════════════════════════════════════════════════ */
+function readScores(){
+  try{
+    const raw = localStorage.getItem("ms_progress");
+    if(!raw) return {};
+    const d = JSON.parse(raw);
+    return d.lessons || {};
+  }catch{ return {}; }
+}
+const SCORES = readScores();
+
+function getLessonScore(trackerKey){
+  if(!trackerKey) return null;
+  return SCORES[trackerKey] || null;
+}
+
+function buildScoreHTML(score){
+  if(!score || (!score.practiceAttempts && !score.bossAttempts && !score.exitAttempts)) return "";
+  const total = score.practiceTotal || 3;
+  const got   = Math.min(score.practiceScore || 0, total);
+  const pips  = Array.from({length:total},(_,i)=>`<span class="ms-pip${i<got?" filled":""}"></span>`).join("");
+  const boss  = score.bossWon ? `<span class="ms-bossBadge">⚔️ Boss</span>` : "";
+  const xp    = score.xpEarned ? `<span class="ms-xpBadge">+${score.xpEarned}</span>` : "";
+  if(!pips && !boss && !xp) return "";
+  return `<div class="ms-scoreRow">${pips}${boss?'<span class="ms-scoreDiv"></span>'+boss:""}${xp?'<span class="ms-scoreDiv"></span>'+xp:""}</div>`;
+}
+function setUnlocked(arr){
+  try{ localStorage.setItem("ms_unlocked_modules", JSON.stringify(arr)); }catch{}
+}
+
+let unlockedModules = new Set(getUnlocked());
+// Module 1 always unlocked
+unlockedModules.add(1);
+
+/* ═══════════════════════════════════════════════════════
+   COMPUTE PROGRESS
+═══════════════════════════════════════════════════════ */
+let totalDone = 0;
+const modDoneSets = {};
+
+MODULES.forEach(mod => {
+  const doneSet = mod.doneReader();
+  modDoneSets[mod.id] = doneSet;
+  totalDone += doneSet.size;
+});
+
+/* ═══════════════════════════════════════════════════════
+   RENDER MODULES
+═══════════════════════════════════════════════════════ */
+function renderModules(){
+  MODULES.forEach(mod => {
+    const isUnlocked = unlockedModules.has(mod.id);
+    const doneSet    = modDoneSets[mod.id];
+    const doneCount  = doneSet.size;
+    const allDone    = doneCount >= mod.total;
+    const wrap       = document.getElementById("wrap-"+mod.id);
+    const details    = document.getElementById("module-"+mod.id);
+    const modnum     = document.getElementById("modnum-"+mod.id);
+    const tag        = document.getElementById("tag-"+mod.id);
+
+    // Progress bar
+    const cnt = document.getElementById("cnt-"+mod.id);
+    const bar = document.getElementById("bar-"+mod.id);
+    if(cnt) cnt.textContent = doneCount;
+    if(bar) bar.style.width = Math.round((doneCount/mod.total)*100)+"%";
+
+    // Module num badge
+    modnum.classList.remove("locked-mod","unlocked","complete");
+    if(!isUnlocked){
+      modnum.classList.add("locked-mod");
+      wrap.classList.add("is-locked");
+      if(tag) tag.textContent = "Locked";
+    } else if(allDone){
+      modnum.classList.add("complete");
+      modnum.textContent = "✓";
+      if(tag) tag.textContent = "Complete";
+      wrap.classList.remove("is-locked");
+    } else {
+      modnum.classList.add("unlocked");
+      if(tag) tag.textContent = doneCount > 0 ? "In Progress" : "Unlocked";
+      wrap.classList.remove("is-locked");
+    }
+
+    // Auto-open first unlocked incomplete module
+    if(isUnlocked && !allDone && mod.alwaysOpen){
+      details.open = true;
+    }
+
+    // Lesson rows
+    mod.lessons.forEach(l => {
+      const badge  = document.getElementById("b-"+mod.id+"-"+l.n);
+      const action = document.getElementById("act-"+mod.id+"-"+l.n);
+      if(!badge || !action) return;
+
+      if(!isUnlocked){
+        // stay locked
+        return;
+      }
+
+      const done = doneSet.has(l.n);
+      if(done){
+        badge.textContent = "✓"; badge.classList.add("ms-check");
+        action.innerHTML = `<a class="ms-btn" href="${l.href}">Review →</a>`;
+      } else {
+        action.innerHTML = `<a class="ms-btn" href="${l.href}" id="lb-${mod.id}-${l.n}">Open →</a>`;
+      }
+
+      // Score mini-row
+      const scoreEl = document.getElementById("sc-"+mod.id+"-"+l.n);
+      if(scoreEl){
+        const s = getLessonScore(l.trackerKey);
+        scoreEl.innerHTML = buildScoreHTML(s);
+      }
+    });
+
+    // Highlight next undone
+    if(isUnlocked && !allDone){
+      const nextLesson = mod.lessons.find(l => !doneSet.has(l.n));
+      if(nextLesson){
+        const act = document.getElementById("act-"+mod.id+"-"+nextLesson.n);
+        if(act){ const a = act.querySelector("a"); if(a) a.classList.add("primary"); }
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════
+   OVERALL PROGRESS
+═══════════════════════════════════════════════════════ */
+document.getElementById("totalDone").textContent  = totalDone;
+document.getElementById("totalBar").style.width   = Math.round((totalDone/TOTAL_LESSONS)*100)+"%";
+
+
+/* ═══════════════════════════════════════════════════════
+   RANK + STUDENT CARD
+═══════════════════════════════════════════════════════ */
+const LEVELS = [
+  {name:"Novice",     avatar:"🔢", min:0,    max:200},
+  {name:"Apprentice", avatar:"📐", min:200,  max:500},
+  {name:"Scholar",    avatar:"📚", min:500,  max:1000},
+  {name:"Expert",     avatar:"🎯", min:1000, max:2000},
+  {name:"Master",     avatar:"⚡", min:2000, max:3500},
+  {name:"Grandmaster",avatar:"🏆", min:3500, max:Infinity},
+];
+const RANK_AVATARS = {arcade:"🕹️",rpg:"🧙",academic:"🧠",lms:"🎓"};
+
+function renderRankCard(){
+  const raw = (() => { try{ return JSON.parse(localStorage.getItem("ms_progress")||"{}"); }catch{ return {}; } })();
+  const lessons = raw.lessons || {};
+  const xp = raw.xp || 0;
+  const streak = raw.streak?.current || 0;
+  const bosses = Object.values(lessons).filter(l=>l.bossWon).length;
+  const done = Object.values(lessons).filter(l=>l.completedAt).length;
+
+  const lvl = LEVELS.slice().reverse().find(l => xp >= l.min) || LEVELS[0];
+  const pct = lvl.max === Infinity ? 100 : Math.round(((xp - lvl.min) / (lvl.max - lvl.min)) * 100);
+  const mode = document.body.dataset.mode || "academic";
+
+  document.getElementById("rankAvatar").textContent = RANK_AVATARS[mode] || "🧠";
+  document.getElementById("rankTitle").textContent  = lvl.name;
+  document.getElementById("rankMeta").textContent   =
+    done > 0 ? `${done} / 57 lessons complete · ${lvl.max === Infinity ? "Max Rank" : `${xp} / ${lvl.max} XP to next rank`}`
+             : "0 / 57 lessons · Complete your first lesson to earn XP";
+  document.getElementById("rankBar").style.width    = pct + "%";
+  document.getElementById("rsXP").textContent       = xp.toLocaleString();
+  document.getElementById("rsBoss").textContent     = bosses;
+  document.getElementById("rsStreak").textContent   = streak;
+}
+renderRankCard();
+
+// Show total XP if any earned
+const totalXP = Object.values(SCORES).reduce((s,l) => s + (l.xpEarned||0), 0);
+if(totalXP > 0){
+  const xpEl = document.getElementById("totalXPWrap");
+  xpEl.textContent = totalXP.toLocaleString() + " XP";
+  xpEl.style.display = "inline-block";
+}
+
+if(totalDone >= TOTAL_LESSONS){
+  document.getElementById("courseDone").style.display = "block";
+}
+
+/* ═══════════════════════════════════════════════════════
+   SMART NEXT LESSON CTA
+═══════════════════════════════════════════════════════ */
+function buildNextLesson(){
+  for(const mod of MODULES){
+    if(!unlockedModules.has(mod.id)) continue;
+    const doneSet = modDoneSets[mod.id];
+    const next = mod.lessons.find(l => !doneSet.has(l.n));
+    if(next){
+      document.getElementById("nextLessonWrap").style.display = "block";
+      document.getElementById("nextLessonLink").href          = next.href;
+      document.getElementById("nextLessonIcon").textContent   = next.icon || "▶";
+      document.getElementById("nextLessonTitle").textContent  = next.title;
+      document.getElementById("nextLessonSub").textContent    = mod.label + " · Lesson " + next.n;
+      return;
+    }
+  }
+}
+buildNextLesson();
+
+/* ═══════════════════════════════════════════════════════
+   TEACHER UNLOCK PANEL
+═══════════════════════════════════════════════════════ */
+function refreshUnlockBtns(){
+  for(let i=2;i<=9;i++){
+    const btn = document.getElementById("unlock-"+i);
+    if(btn) btn.classList.toggle("is-unlocked", unlockedModules.has(i));
+  }
+}
+
+document.querySelectorAll(".ms-unlockBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const modId = parseInt(btn.dataset.unlock);
+    unlockedModules.add(modId);
+    setUnlocked([...unlockedModules]);
+    modDoneSets[modId] = MODULES.find(m=>m.id===modId).doneReader();
+    renderModules();
+    refreshUnlockBtns();
+    // Auto-open the newly unlocked module
+    const d = document.getElementById("module-"+modId);
+    if(d) d.open = true;
+  });
+});
+
+document.getElementById("resetLocks").addEventListener("click", () => {
+  unlockedModules = new Set([1]);
+  setUnlocked([1]);
+  renderModules();
+  refreshUnlockBtns();
+});
+
+/* ═══════════════════════════════════════════════════════
+   MODE CONFIG
+═══════════════════════════════════════════════════════ */
+const MODES = {
+  arcade:{
+    kicker:"🕹️ Arcade Competitive Mode",
+    heroTitle:"Foundations Blitz",
+    heroSub:"9 modules. 57 speed lessons. Beat every boss.",
+    lessonMode:"⚡ Speed round",
+    lockedTag:"Locked", doneTag:"Cleared", activeTag:"Active",
+    nextLabel:"Next Round",
+    openBtn:"Sprint →", reviewBtn:"Replay →",
+  },
+  rpg:{
+    kicker:"🎮 RPG Progression Mode",
+    heroTitle:"Foundations Quest",
+    heroSub:"9 quest chains. 57 missions. Build the Math Wizard.",
+    lessonMode:"🗺️ Quest",
+    lockedTag:"Locked", doneTag:"Complete", activeTag:"In Progress",
+    nextLabel:"Next Quest",
+    openBtn:"Begin →", reviewBtn:"Revisit →",
+  },
+  academic:{
+    kicker:"🧠 Academic Mastery Mode",
+    heroTitle:"Math Foundations",
+    heroSub:"Complete middle school math. 9 modules. Built for mastery.",
+    lessonMode:"📖 Mastery lesson",
+    lockedTag:"Locked", doneTag:"Complete", activeTag:"In Progress",
+    nextLabel:"Continue",
+    openBtn:"Open →", reviewBtn:"Review →",
+  },
+  lms:{
+    kicker:"🏫 Full LMS Mode",
+    heroTitle:"Foundations Course",
+    heroSub:"Teacher-assigned modules. Tracked progress. 57 lessons.",
+    lessonMode:"📋 Assignment",
+    lockedTag:"Not Assigned", doneTag:"Submitted", activeTag:"In Progress",
+    nextLabel:"Next Assignment",
+    openBtn:"Open →", reviewBtn:"Review →",
+  },
+};
+
+let currentMode = "academic";
+
+function applyMode(mode){
+  const cfg = MODES[mode];
+  if(!cfg) return;
+  currentMode = mode;
+  document.body.setAttribute("data-mode", mode);
+  document.getElementById("modeKicker").textContent = cfg.kicker;
+  document.getElementById("heroTitle").textContent  = cfg.heroTitle;
+  document.getElementById("heroSub").textContent    = cfg.heroSub;
+
+  // Teacher panel only in LMS mode
+  document.getElementById("teacherPanel").style.display = mode === "lms" ? "flex" : "none";
+
+  // Re-render module tags with mode labels
+  MODULES.forEach(mod => {
+    const tag  = document.getElementById("tag-"+mod.id);
+    const isUnlocked = unlockedModules.has(mod.id);
+    const doneSet = modDoneSets[mod.id];
+    const allDone = doneSet.size >= mod.total;
+    if(tag){
+      if(!isUnlocked) tag.textContent = cfg.lockedTag;
+      else if(allDone) tag.textContent = cfg.doneTag;
+      else if(doneSet.size > 0) tag.textContent = cfg.activeTag;
+      else tag.textContent = cfg.lockedTag === "Not Assigned" ? "Assigned" : "Unlocked";
+    }
+
+    // Lesson mode labels
+    mod.lessons.forEach(l => {
+      const lm = document.getElementById("lm-"+mod.id+"-"+l.n);
+      if(lm) lm.textContent = isUnlocked ? cfg.lessonMode : "";
+    });
+  });
+
+  // Next lesson label
+  const nll = document.getElementById("nextLessonLabel");
+  if(nll) nll.textContent = cfg.nextLabel;
+
+  document.querySelectorAll(".ms-modeBtn").forEach(b => b.classList.toggle("is-active", b.dataset.mode === mode));
+  try{ localStorage.setItem("ms_xp_mode", mode); }catch{}
+}
+
+document.querySelectorAll(".ms-modeBtn").forEach(btn => {
+  btn.addEventListener("click", () => applyMode(btn.dataset.mode));
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+renderModules();
+refreshUnlockBtns();
+
+try{
+  const saved = localStorage.getItem("ms_xp_mode");
+  applyMode(saved && MODES[saved] ? saved : "academic");
+}catch{ applyMode("academic"); }
+
+// Scroll reveals
+(function(){
+  const els = document.querySelectorAll(".ms-reveal");
+  const io  = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add("is-in"); io.unobserve(e.target); } });
+  },{threshold:.08});
+  els.forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

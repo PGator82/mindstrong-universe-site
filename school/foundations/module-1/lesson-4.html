@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Compare Without Guessing • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../../theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="../../ms-tracker.js" defer></script>
+  <style>
+    .ms-opts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+    .ms-opt{font-family:'Syne',sans-serif;font-size:14px;font-weight:600;padding:10px 18px;
+      border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);
+      color:#e8edf5;cursor:pointer;transition:all .2s;}
+    .ms-opt:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);}
+    .ms-opt.correct{border-color:var(--xp-a);background:rgba(34,211,238,.1);color:var(--xp-a);}
+    .ms-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.08);color:#ef4444;}
+    .ms-opt:disabled{opacity:.5;cursor:default;pointer-events:none;}
+    .ms-feedback{margin-top:10px;font-size:13px;font-family:'JetBrains Mono',monospace;min-height:20px;}
+    .ms-conceptCard{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;
+      border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:12px;}
+    .ms-conceptIcon{font-size:26px;flex-shrink:0;}
+    .ms-conceptTitle{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;
+      color:var(--xp-a);margin-bottom:4px;}
+    .ms-conceptDesc{font-size:13px;color:#c8d3e8;line-height:1.6;}
+    .ms-qBlock{padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);margin-bottom:16px;}
+    .ms-qNum{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--muted,#6b7a99);margin-bottom:8px;}
+    .ms-qText{font-size:15px;font-weight:700;color:#e8edf5;line-height:1.5;}
+    /* Exit check */
+    .ms-exitBox{padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);margin-bottom:16px;}
+    .ms-exitInput{font-family:'JetBrains Mono',monospace;font-size:15px;padding:10px 14px;
+      border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);
+      color:#e8edf5;width:180px;margin-top:10px;}
+    /* Boss */
+    .ms-bossArena{padding:24px;border-radius:16px;border:2px solid rgba(255,100,50,.3);
+      background:rgba(255,100,50,.04);}
+    .ms-bossTimer{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+      color:var(--xp-a);}
+    .ms-bossTimer.danger{color:#ef4444;animation:pulse .5s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .ms-pip{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.1);
+      border:2px solid rgba(255,255,255,.2);display:inline-block;margin:0 3px;transition:all .3s;}
+    .ms-pip.hit{background:var(--xp-a);border-color:var(--xp-a);box-shadow:0 0 8px var(--xp-a);}
+    .ms-bossInput{font-family:'JetBrains Mono',monospace;font-size:16px;padding:10px 16px;
+      border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.07);
+      color:#e8edf5;width:160px;margin-right:10px;}
+    /* Complete card */
+    .ms-completeCard{display:none;padding:32px;border-radius:20px;text-align:center;
+      border:2px solid var(--xp-a);background:rgba(34,211,238,.05);margin-top:24px;}
+    .ms-completeCard.is-visible{display:block;}
+    /* Livecore */
+    .ms-liveScore{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;
+      flex-wrap:wrap;padding:8px 16px;background:rgba(6,8,16,.92);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,.07);font-family:'JetBrains Mono',monospace;font-size:11px;}
+    .ls-label{color:var(--muted,#6b7a99);text-transform:uppercase;letter-spacing:.1em;}
+    .ls-pip{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);display:inline-block;margin:0 2px;transition:background .3s;}
+    .ls-pip.on{background:var(--xp-a);border-color:var(--xp-a);}
+    .ls-badge{padding:2px 8px;border-radius:5px;border:1px solid rgba(255,255,255,.1);
+      color:var(--muted,#6b7a99);transition:all .3s;}
+    .ls-badge.win{border-color:rgba(74,222,128,.4);color:#4ade80;}
+    .ls-badge.pass{border-color:var(--xp-a);color:var(--xp-a);}
+    .ls-xp{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--xp-a);
+      margin-left:auto;opacity:0;transition:opacity .5s;}
+    .ls-xp.show{opacity:1;}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../../../mindstronguniverse.svg" class="ms-brandLogo"/>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../../index.html">Home</a>
+      <a class="ms-link" href="../../../index.html">School</a>
+      <a class="ms-link" href="../../index.html">Foundations</a>
+      <a class="ms-link is-active" href="#">Number Sense</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Live Scorecard -->
+<div class="ms-liveScore" id="liveScore">
+  <span class="ls-label">Score</span>
+  <span id="ls-pips">
+    <span class="ls-pip" id="lsp0"></span>
+    <span class="ls-pip" id="lsp1"></span>
+    <span class="ls-pip" id="lsp2"></span>
+  </span>
+  <span class="ls-badge" id="ls-boss">⚔️ Boss</span>
+  <span class="ls-badge" id="ls-exit">🚪 Exit</span>
+  <span class="ls-xp" id="ls-xp"></span>
+</div>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <span class="ms-kicker" id="modeKicker">🧠 Number Sense · Lesson 4 of 6</span>
+    <h1 class="ms-h1">Compare Without Guessing</h1>
+    <p class="ms-sub">Left-to-right logic</p>
+  </section>
+
+  <!-- MODE BAR -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- HOOK -->
+  <div class="ms-card ms-reveal" style="padding:24px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:20px;">
+    <p style="font-size:15px;line-height:1.8;color:#c8d3e8;">You don't need to subtract or guess to compare numbers. Start at the <em>leftmost</em> digit and find the first place where they differ. That's your answer.</p>
+  </div>
+
+  <!-- CONCEPTS -->
+  <section class="ms-reveal">
+    <h2 class="ms-h2">📚 Core Concepts</h2>
+    
+    <div class="ms-conceptCard ms-reveal">
+      <div class="ms-conceptIcon">⬅️</div>
+      <div>
+        <div class="ms-conceptTitle">Left-to-Right</div>
+        <div class="ms-conceptDesc">Compare from the highest place value. 4,521 vs 4,512: hundreds match (5=5), but tens: 2 > 1. So 4,521 wins.</div>
+      </div>
+    </div>
+    <div class="ms-conceptCard ms-reveal">
+      <div class="ms-conceptIcon">🔢</div>
+      <div>
+        <div class="ms-conceptTitle">Length Matters</div>
+        <div class="ms-conceptDesc">If the numbers have different digit counts, the longer one is usually bigger.</div>
+      </div>
+    </div>
+    <div class="ms-conceptCard ms-reveal">
+      <div class="ms-conceptIcon">📐</div>
+      <div>
+        <div class="ms-conceptTitle">Decimal Line-Up</div>
+        <div class="ms-conceptDesc">0.3 vs 0.03: align decimal points. Tenths place: 3 > 0. So 0.3 wins.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section>
+    <h2 class="ms-h2 ms-reveal">✏️ Practice</h2>
+    
+      <div class="ms-qBlock ms-reveal" id="q1">
+        <div class="ms-qNum">Practice 1 of 3</div>
+        <div class="ms-qText">Which is greater: 4,521 or 4,512?</div>
+        <div class="ms-opts"><button class="ms-opt" onclick="checkP(1,0)" id="opt-1-0">4,521</button><button class="ms-opt" onclick="checkP(1,1)" id="opt-1-1">4,512</button><button class="ms-opt" onclick="checkP(1,2)" id="opt-1-2">Equal</button><button class="ms-opt" onclick="checkP(1,3)" id="opt-1-3">Need more info</button></div>
+        <div class="ms-feedback" id="fb1"></div>
+      </div>
+      <div class="ms-qBlock ms-reveal" id="q2">
+        <div class="ms-qNum">Practice 2 of 3</div>
+        <div class="ms-qText">Which is greater: 0.3 or 0.03?</div>
+        <div class="ms-opts"><button class="ms-opt" onclick="checkP(2,0)" id="opt-2-0">0.3</button><button class="ms-opt" onclick="checkP(2,1)" id="opt-2-1">0.03</button><button class="ms-opt" onclick="checkP(2,2)" id="opt-2-2">They are equal</button><button class="ms-opt" onclick="checkP(2,3)" id="opt-2-3">Can't compare</button></div>
+        <div class="ms-feedback" id="fb2"></div>
+      </div>
+      <div class="ms-qBlock ms-reveal" id="q3">
+        <div class="ms-qNum">Practice 3 of 3</div>
+        <div class="ms-qText">Least to greatest — which comes first: 0.33, 0.3, 0.03?</div>
+        <div class="ms-opts"><button class="ms-opt" onclick="checkP(3,0)" id="opt-3-0">0.03</button><button class="ms-opt" onclick="checkP(3,1)" id="opt-3-1">0.3</button><button class="ms-opt" onclick="checkP(3,2)" id="opt-3-2">0.33</button><button class="ms-opt" onclick="checkP(3,3)" id="opt-3-3">All equal</button></div>
+        <div class="ms-feedback" id="fb3"></div>
+      </div>
+  </section>
+
+  <!-- EXIT CHECK -->
+  <section class="ms-reveal">
+    <h2 class="ms-h2">🚪 Exit Check</h2>
+    <div class="ms-exitBox" id="exitSection">
+      <div class="ms-qNum">Exit question — must pass to complete</div>
+      <div class="ms-qText" id="exitQ">Which is greater: 7,100 or 7,099?</div>
+      <div>
+        <input class="ms-exitInput" type="number" id="exitInput" placeholder="Your answer"/>
+        <button class="ms-btn" onclick="checkExit()" id="exitBtn">Check</button>
+      </div>
+      <div class="ms-feedback" id="exitFb"></div>
+    </div>
+  </section>
+
+  <!-- BOSS FIGHT -->
+  <section class="ms-reveal" id="bossSection">
+    <h2 class="ms-h2">⚔️ Boss Fight</h2>
+    <p style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Answer 3 questions before time runs out. Numbers only — no units.</p>
+    <div class="ms-bossArena">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div>
+          <span class="ms-pip" id="bpip0"></span>
+          <span class="ms-pip" id="bpip1"></span>
+          <span class="ms-pip" id="bpip2"></span>
+        </div>
+        <div class="ms-bossTimer" id="bossTimer">30</div>
+      </div>
+      <div class="ms-qText" id="bossQ" style="margin-bottom:14px;">Press Start Boss to begin!</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <input class="ms-bossInput" type="number" id="bossInput" placeholder="Answer" disabled/>
+        <button class="ms-btn primary" id="bossSubmit" onclick="submitBoss()" disabled>Submit</button>
+        <button class="ms-btn" id="bossStart" onclick="startBoss()">Start Boss ⚔️</button>
+      </div>
+      <div class="ms-feedback" id="bossFb" style="margin-top:10px;"></div>
+    </div>
+  </section>
+
+  <!-- COMPLETE -->
+  <div class="ms-completeCard" id="completeCard">
+    <div style="font-size:48px;margin-bottom:12px;">🏆</div>
+    <h2 style="font-family:'Orbitron',sans-serif;font-size:20px;color:var(--xp-a);margin-bottom:8px;">Lesson Complete!</h2>
+    <p style="font-size:14px;color:#c8d3e8;margin-bottom:16px;">Compare Without Guessing — mastered.</p>
+    <div id="completeSummary" style="margin:16px 0;"></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a class="ms-btn" href="lesson-3.html">← Prev</a>
+      <a class="ms-btn primary" href="lesson-5.html">Next →</a>
+    </div>
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Number Sense • Lesson 4 of 6</footer>
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════
+   LESSON CONFIG
+═══════════════════════════════════════════════ */
+const LESSON_KEY = "m1-l4";
+const CORRECT = [0, 0, 0]; // correct option index per practice question
+const EXIT_ANS = 7100;
+const BOSS_POOL = [
+    {q:"Greater: 5,001 or 4,999? Type the larger.", ans:5001},
+    {q:"Greater: 3,456 or 3,465? Type the larger.", ans:3465},
+    {q:"3,000 + 999 = ?", ans:3999},
+    {q:"Greater of 2,020 and 2,002?", ans:2020},
+    {q:"How many more is 5,000 than 4,997?", ans:3},
+    {q:"Greater: 10,000 or 9,999?", ans:10000},
+    {q:"8,080 vs 8,008 — type the larger.", ans:8080},
+    {q:"Greater: 1,010 or 1,001?", ans:1010}
+];
+
+/* ═══════════════════════════════════════════════
+   TRACKER INIT
+═══════════════════════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  if (window.MSTracker) {
+    MSTracker.init(LESSON_KEY, {module:"Number Sense", lessonNum:4, title:"Compare Without Guessing", practiceTotal:3});
+  }
+  restoreIfDone();
+});
+
+/* ═══════════════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════════════ */
+let _practiceCorrect = 0;
+let _exitPassed = false;
+let _bossWon = false;
+
+function updateScorecard() {
+  // Pips
+  const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
+  const score = prog.practiceScore || _practiceCorrect;
+  for (let i = 0; i < 3; i++) {
+    const el = document.getElementById("lsp" + i);
+    if (el) el.classList.toggle("on", i < score);
+  }
+  // Boss
+  const bossEl = document.getElementById("ls-boss");
+  if (bossEl) {
+    if (prog.bossWon || _bossWon) { bossEl.textContent = "⚔️ Boss Defeated"; bossEl.classList.add("win"); }
+  }
+  // Exit
+  const exitEl = document.getElementById("ls-exit");
+  if (exitEl && (prog.completedAt || _exitPassed)) {
+    exitEl.textContent = "🚪 Exit ✓"; exitEl.classList.add("pass");
+  }
+}
+
+function showXPToast(xp) {
+  const el = document.getElementById("ls-xp");
+  if (el) { el.textContent = "+" + xp + " XP"; el.classList.add("show"); }
+}
+
+/* ═══════════════════════════════════════════════
+   PRACTICE
+═══════════════════════════════════════════════ */
+const _practiceAnswered = new Set();
+
+function checkP(qNum, chosen) {
+  if (_practiceAnswered.has(qNum)) return;
+  _practiceAnswered.add(qNum);
+  const correct = CORRECT[qNum - 1];
+  const isRight = chosen === correct;
+  const fb = document.getElementById("fb" + qNum);
+
+  // Disable all options for this question
+  for (let i = 0; i < 4; i++) {
+    const btn = document.getElementById("opt-" + qNum + "-" + i);
+    if (btn) {
+      btn.disabled = true;
+      if (i === correct) btn.classList.add("correct");
+      else if (i === chosen && !isRight) btn.classList.add("wrong");
+    }
+  }
+
+  if (isRight) {
+    _practiceCorrect++;
+    fb.innerHTML = "✅ Correct!";
+    fb.style.color = "var(--xp-a)";
+    if (window.MSTracker) MSTracker.practice(LESSON_KEY, true);
+  } else {
+    fb.innerHTML = "❌ Not quite — correct answer highlighted.";
+    fb.style.color = "#ef4444";
+    if (window.MSTracker) MSTracker.practice(LESSON_KEY, false);
+  }
+  updateScorecard();
+}
+
+/* ═══════════════════════════════════════════════
+   EXIT CHECK
+═══════════════════════════════════════════════ */
+function checkExit() {
+  const val = parseInt(document.getElementById("exitInput").value);
+  const fb = document.getElementById("exitFb");
+  const btn = document.getElementById("exitBtn");
+  if (isNaN(val)) {
+    fb.innerHTML = "Enter a number."; fb.style.color = "#ef4444"; return;
+  }
+  if (val === EXIT_ANS) {
+    fb.innerHTML = "✅ Correct! Exit check passed.";
+    fb.style.color = "var(--xp-a)";
+    btn.disabled = true;
+    _exitPassed = true;
+    if (window.MSTracker) MSTracker.exit(LESSON_KEY, true);
+    updateScorecard();
+    markComplete();
+  } else {
+    fb.innerHTML = "❌ Not quite. Try again.";
+    fb.style.color = "#ef4444";
+    if (window.MSTracker) MSTracker.exit(LESSON_KEY, false);
+  }
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const inp = document.getElementById("exitInput");
+  if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") checkExit(); });
+});
+
+/* ═══════════════════════════════════════════════
+   BOSS FIGHT
+═══════════════════════════════════════════════ */
+const bs = {running: false, score: 0, timer: 30, interval: null, qIdx: 0, pool: []};
+const _bossAnswered = new Set();
+
+function shufflePool() {
+  bs.pool = [...BOSS_POOL].sort(() => Math.random() - .5);
+}
+
+function showBQ() {
+  const q = bs.pool[bs.qIdx % bs.pool.length];
+  document.getElementById("bossQ").textContent = q.q;
+  document.getElementById("bossInput").value = "";
+  document.getElementById("bossInput").focus();
+}
+
+function startBoss() {
+  bs.running = true; bs.score = 0; bs.timer = 30; bs.qIdx = 0;
+  _bossAnswered.clear();
+  shufflePool();
+  [0,1,2].forEach(i => document.getElementById("bpip" + i).className = "ms-pip");
+  document.getElementById("bossInput").disabled = false;
+  document.getElementById("bossSubmit").disabled = false;
+  document.getElementById("bossStart").style.display = "none";
+  document.getElementById("bossFb").textContent = "";
+  showBQ();
+  bs.interval = setInterval(() => {
+    bs.timer--;
+    const t = document.getElementById("bossTimer");
+    t.textContent = bs.timer;
+    t.className = "ms-bossTimer" + (bs.timer <= 10 ? " danger" : "");
+    if (bs.timer <= 0) { clearInterval(bs.interval); endBoss(false); }
+  }, 1000);
+  if (window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0); // record attempt start
+}
+
+function submitBoss() {
+  if (!bs.running) return;
+  const v = parseInt(document.getElementById("bossInput").value);
+  const q = bs.pool[bs.qIdx % bs.pool.length];
+  if (v === q.ans) {
+    bs.score++;
+    if (!_bossAnswered.has(bs.score) && window.MSTracker) {
+      _bossAnswered.add(bs.score);
+      MSTracker.practice(LESSON_KEY, true);
+    }
+    document.getElementById("bpip" + (bs.score - 1)).classList.add("hit");
+    document.getElementById("bossFb").innerHTML = "🔥 Hit!";
+    document.getElementById("bossFb").style.color = "var(--xp-a)";
+    bs.qIdx++;
+    if (bs.score >= 3) { clearInterval(bs.interval); endBoss(true); return; }
+    showBQ();
+  } else {
+    document.getElementById("bossFb").innerHTML = "❌ Miss — keep going!";
+    document.getElementById("bossFb").style.color = "#ef4444";
+    if (window.MSTracker) MSTracker.practice(LESSON_KEY, false);
+    bs.qIdx++;
+    showBQ();
+  }
+}
+
+function endBoss(won) {
+  bs.running = false;
+  clearInterval(bs.interval);
+  document.getElementById("bossInput").disabled = true;
+  document.getElementById("bossSubmit").disabled = true;
+  const fb = document.getElementById("bossFb");
+  if (won) {
+    fb.innerHTML = "🏆 BOSS DEFEATED!";
+    fb.style.color = "var(--xp-a)";
+    _bossWon = true;
+    if (window.MSTracker) MSTracker.boss(LESSON_KEY, true, bs.timer);
+    updateScorecard();
+    document.getElementById("bossStart").textContent = "Play Again";
+    document.getElementById("bossStart").style.display = "inline-block";
+  } else {
+    fb.innerHTML = "💀 Time's up! Try again.";
+    fb.style.color = "#ef4444";
+    if (window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0);
+    document.getElementById("bossStart").textContent = "Try Again";
+    document.getElementById("bossStart").style.display = "inline-block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const inp = document.getElementById("bossInput");
+  if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") submitBoss(); });
+});
+
+/* ═══════════════════════════════════════════════
+   COMPLETE
+═══════════════════════════════════════════════ */
+function markComplete() {
+  let xp = 0;
+  if (window.MSTracker) xp = MSTracker.complete(LESSON_KEY);
+  showXPToast(xp);
+  updateScorecard();
+
+  // Score summary
+  const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
+  const pScore = prog.practiceScore || _practiceCorrect;
+  const pips = Array.from({length:3}, (_,i) =>
+    `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 3px;
+     background:${i < pScore ? 'var(--xp-a)' : 'rgba(255,255,255,.1)'};border:1px solid rgba(255,255,255,.2);"></span>`
+  ).join('');
+  const bossTag = (prog.bossWon || _bossWon)
+    ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:12px;">⚔️ Boss Defeated</span>`
+    : '';
+  const xpTag = xp > 0 ? `<span style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
+    padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;">${xp} XP</span>` : '';
+
+  const summary = document.getElementById("completeSummary");
+  if (summary) summary.innerHTML = `<div style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
+    <span>Practice: ${pips}</span>${bossTag}${xpTag}</div>`;
+
+  document.getElementById("completeCard").classList.add("is-visible");
+  document.getElementById("completeCard").scrollIntoView({behavior:"smooth", block:"center"});
+
+  // Legacy localStorage
+  try {
+    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+    if (!done.includes(4)) { done.push(4); localStorage.setItem("ms_m1_done", JSON.stringify(done)); }
+  } catch {}
+}
+
+/* ═══════════════════════════════════════════════
+   RESTORE ON REVISIT
+═══════════════════════════════════════════════ */
+function restoreIfDone() {
+  let isDone = false;
+  try {
+    const prog = window.MSTracker ? MSTracker.getProgress(LESSON_KEY) : null;
+    if (prog && prog.completedAt) isDone = true;
+    if (!isDone) {
+      const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+      if (done.includes(4)) isDone = true;
+    }
+  } catch {}
+
+  if (isDone) {
+    updateScorecard();
+    document.getElementById("completeCard").classList.add("is-visible");
+    // Inject summary
+    const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
+    const pScore = prog.practiceScore || 3;
+    const pips = Array.from({length:3}, (_,i) =>
+      `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 3px;
+       background:${i < pScore ? 'var(--xp-a)' : 'rgba(255,255,255,.1)'};border:1px solid rgba(255,255,255,.2);"></span>`
+    ).join('');
+    const xpEarned = prog.xpEarned || 0;
+    const xpTag = xpEarned > 0 ? `<span style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
+      padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;">${xpEarned} XP</span>` : '';
+    const bossTag = prog.bossWon
+      ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:12px;">⚔️ Boss Defeated</span>` : '';
+    const summary = document.getElementById("completeSummary");
+    if (summary) summary.innerHTML = `<div style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
+      <span>Practice: ${pips}</span>${bossTag}${xpTag}</div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   MODE
+═══════════════════════════════════════════════ */
+const KICKERS = {
+  arcade:"🕹️ Arcade Mode · Lesson 4",rpg:"🎮 Quest · Number Sense 4",
+  academic:"🧠 Number Sense · Lesson 4 of 6",lms:"🏫 Number Sense · Lesson 4",
+};
+function applyMode(m) {
+  document.body.setAttribute("data-mode", m);
+  const k = document.getElementById("modeKicker");
+  if (k) k.textContent = KICKERS[m] || KICKERS.academic;
+  document.querySelectorAll(".ms-modeBtn").forEach(b => b.classList.toggle("is-active", b.dataset.mode === m));
+  try { localStorage.setItem("ms_xp_mode", m); } catch {}
+}
+document.querySelectorAll(".ms-modeBtn").forEach(b => b.addEventListener("click", () => applyMode(b.dataset.mode)));
+try { const s = localStorage.getItem("ms_xp_mode"); applyMode(s && KICKERS[s] ? s : "academic"); } catch { applyMode("academic"); }
+
+/* scroll reveals */
+(function() {
+  const els = document.querySelectorAll(".ms-reveal");
+  const io = new IntersectionObserver(e => {
+    e.forEach(x => { if (x.isIntersecting) { x.target.classList.add("is-in"); io.unobserve(x.target); } });
+  }, {threshold:.08});
+  els.forEach(el => io.observe(el));
+})();
+try { localStorage.setItem("ms_last_lesson_url", window.location.href); } catch {}
+</script>
+</body>
+</html>

@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Angles &amp; Lines • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../../theme.css"/>
+  <script src="../../ms-tracker.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="arcade"]  {--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.15);}
+    body[data-mode="rpg"]     {--xp-a:#a855f7;--xp-b:#7c3aed;--xp-glow:rgba(168,85,247,.16);}
+    body[data-mode="academic"]{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="lms"]     {--xp-a:#34d399;--xp-b:#059669;--xp-glow:rgba(52,211,153,.14);}
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),
+                 radial-gradient(500px 400px at 85% 85%,rgba(124,58,237,.07),transparent 60%);
+      transition:background .6s;}
+    .ms-wrap{position:relative;z-index:1;}
+    .ms-modebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px;padding:12px 16px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.03);}
+    .ms-modebar-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted,#6b7a99);margin-right:4px;flex-shrink:0;}
+    .ms-modeBtn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .ms-modeBtn:hover{color:#e8edf5;border-color:rgba(255,255,255,.22);}
+    .ms-modeBtn.is-active{color:var(--xp-a);border-color:var(--xp-a);background:rgba(255,255,255,.07);box-shadow:0 0 10px var(--xp-glow);}
+    .lesson-chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:12px;transition:all .4s;}
+    .lesson-card{margin-bottom:20px;padding:24px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);}
+    .lesson-card h2{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;}
+    .lesson-card p{font-size:14px;line-height:1.7;color:#c8d3e8;margin-bottom:10px;}
+    .lesson-card p:last-child{margin-bottom:0;}
+    .hack-box{padding:18px 20px;border-radius:14px;border:2px solid var(--xp-a);background:rgba(255,255,255,.04);box-shadow:0 0 20px var(--xp-glow);margin:16px 0;}
+    .hack-box .hack-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--xp-a);margin-bottom:8px;}
+    .hack-box .hack-text{font-size:15px;font-weight:700;line-height:1.6;}
+
+    /* Angle visual */
+    .angle-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0;}
+    .angle-card{padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);text-align:center;}
+    .angle-card svg{display:block;margin:0 auto 8px;}
+    .angle-card .a-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--xp-a);margin-bottom:4px;}
+    .angle-card .a-def{font-size:11px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;}
+
+    .lines-row{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;}
+    .line-card{flex:1;min-width:140px;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);text-align:center;}
+    .line-card svg{display:block;margin:0 auto 8px;}
+    .line-card .l-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--xp-a);}
+    .line-card .l-def{font-size:11px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;margin-top:3px;}
+
+    /* Pair visual */
+    .pair-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;}
+    .pair-card{padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);}
+    .pair-card .pair-label{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--xp-a);margin-bottom:6px;}
+    .pair-card p{font-size:12px;color:#c8d3e8;margin:0;line-height:1.5;}
+
+    .practice-item{padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:12px;}
+    .practice-item .q{font-size:15px;font-weight:700;margin-bottom:10px;}
+    .practice-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .ms-input{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;width:72px;padding:8px 12px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8edf5;outline:none;transition:border-color .2s;}
+    .ms-input:focus{border-color:var(--xp-a);}
+    .ms-check-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;cursor:pointer;transition:transform .18s,box-shadow .18s;}
+    .ms-check-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--xp-glow);}
+    .feedback{font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:8px;min-height:20px;transition:all .3s;}
+    .feedback.correct{color:#4ade80;}
+    .feedback.wrong{color:#f87171;}
+    .boss-arena{padding:24px;border-radius:18px;border:2px solid var(--xp-a);background:rgba(255,255,255,.03);box-shadow:0 0 30px var(--xp-glow);}
+    .boss-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+    .boss-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--xp-a);}
+    .boss-timer{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--xp-a);min-width:44px;text-align:right;transition:color .3s;}
+    .boss-timer.danger{color:#f87171;animation:timerPulse .6s ease-in-out infinite;}
+    @keyframes timerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
+    .boss-pips{display:flex;gap:8px;margin-bottom:16px;}
+    .pip{width:16px;height:16px;border-radius:50%;background:var(--xp-a);box-shadow:0 0 8px var(--xp-a);transition:all .3s;}
+    .pip.hit{background:rgba(255,255,255,.1);box-shadow:none;}
+    .boss-q{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;text-align:center;margin:20px 0;color:var(--text,#e4eaf5);}
+    .boss-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .boss-result{text-align:center;padding:20px;font-size:14px;line-height:1.65;display:none;}
+    .boss-result.show{display:block;}
+    .boss-result b{font-family:'Orbitron',sans-serif;font-size:18px;color:var(--xp-a);}
+    .complete-card{text-align:center;padding:28px 20px;border-radius:18px;border:2px solid var(--xp-a);background:rgba(255,255,255,.04);box-shadow:0 0 30px var(--xp-glow);}
+    .complete-icon{font-size:48px;margin-bottom:12px;}
+    .complete-chip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 14px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:14px;}
+    .complete-card h2{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px;}
+    .complete-card p{font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;}
+    .ms-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#e8edf5;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;transition:all .2s;}
+    .ms-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);}
+    .ms-btn.primary{background:linear-gradient(135deg,var(--xp-b),var(--xp-a));border-color:transparent;color:#06080e;box-shadow:0 4px 18px var(--xp-glow);}
+    .ms-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px var(--xp-glow);}
+    .ms-mark-btn{width:100%;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;border:none;cursor:pointer;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;box-shadow:0 4px 18px var(--xp-glow);transition:transform .18s,box-shadow .18s,opacity .3s;margin-top:8px;}
+    .ms-mark-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px var(--xp-glow);}
+    .ms-mark-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .desmos-wrap{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);margin:16px 0;}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+    @media(prefers-reduced-motion:reduce){.ms-reveal{opacity:1;transform:none;transition:none;}}
+    /* mc options */
+    .mc-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+    .mc-opt{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#e8edf5;cursor:pointer;transition:all .2s;}
+    .mc-opt:hover{border-color:var(--xp-a);color:var(--xp-a);}
+    .mc-opt.correct{border-color:#4ade80;color:#4ade80;background:rgba(74,222,128,.08);}
+    .mc-opt.wrong{border-color:#f87171;color:#f87171;background:rgba(248,113,113,.08);}
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    .ms-alreadyDone { display:flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.2);
+      font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--xp-a);
+      margin-bottom:12px; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../../index.html">Home</a>
+      <a class="ms-link" href="../../../index.html">School</a>
+      <a class="ms-link" href="../../index.html">Foundations</a>
+      <a class="ms-link" href="../index.html">Geometry</a>
+      <a class="ms-link is-active" href="./index.html">Angles &amp; Lines</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+  <section class="ms-hero ms-reveal">
+    <div class="lesson-chip" id="modeChip">🧠 Academic Mastery</div>
+    <span class="ms-kicker">📐 Geometry Foundations</span>
+    <h1 class="ms-h1" id="heroTitle">Angles &amp; Lines</h1>
+    <p class="ms-sub" id="heroSub">Every shape is built from lines and angles. Master these and the rest unlocks.</p>
+  </section>
+
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span class="ls-pip" id="lsp-1"></span>
+        <span class="ls-pip" id="lsp-2"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
+  </div>
+
+  <!-- ① HOOK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">① Hook</div>
+    <h2 id="hookTitle">The Clock Problem</h2>
+    <p>At <b>3:00</b>, the clock hands form a perfect <b>right angle — exactly 90°</b>. At 6:00, they form a straight line — 180°. At 12:00, they overlap — 0°.</p>
+    <p>Every time you look at a clock, you're reading angles. Every building, bridge, and screen you see is a network of lines. Let's learn the language.</p>
+    <div class="angle-grid">
+      <div class="angle-card">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <line x1="35" y1="60" x2="35" y2="10" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="35" y1="60" x2="65" y2="60" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="35" y="47" width="13" height="13" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".6"/>
+          <text x="50" y="42" fill="#22d3ee" font-size="10" font-family="JetBrains Mono">90°</text>
+        </svg>
+        <div class="a-name">Right</div>
+        <div class="a-def">Exactly 90°</div>
+      </div>
+      <div class="angle-card">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <line x1="10" y1="60" x2="60" y2="60" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="10" y1="60" x2="40" y2="20" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 24 60 A 14 14 0 0 1 18.5 47" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".6"/>
+          <text x="30" y="50" fill="#22d3ee" font-size="10" font-family="JetBrains Mono">45°</text>
+        </svg>
+        <div class="a-name">Acute</div>
+        <div class="a-def">Less than 90°</div>
+      </div>
+      <div class="angle-card">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <line x1="5" y1="55" x2="65" y2="55" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="5" y1="55" x2="55" y2="20" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 22 55 A 17 17 0 0 1 14.5 40" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity=".6"/>
+          <text x="26" y="46" fill="#22d3ee" font-size="10" font-family="JetBrains Mono">130°</text>
+        </svg>
+        <div class="a-name">Obtuse</div>
+        <div class="a-def">90° to 180°</div>
+      </div>
+      <div class="angle-card">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <line x1="5" y1="40" x2="65" y2="40" stroke="#22d3ee" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="18" y="33" fill="#22d3ee" font-size="10" font-family="JetBrains Mono">180°</text>
+        </svg>
+        <div class="a-name">Straight</div>
+        <div class="a-def">Exactly 180°</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② HACK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">② The Hack</div>
+    <h2 id="hackTitle">Angle Pairs — The Two Rules That Run Everything</h2>
+    <p>Two rules cover almost every angle problem you'll ever see:</p>
+    <div class="hack-box">
+      <div class="hack-label">⚡ Rule 1 — Supplementary</div>
+      <div class="hack-text">Angles on a straight line add to <b>180°</b><br>If one angle is 110°, the other is <b>70°</b></div>
+    </div>
+    <div class="hack-box">
+      <div class="hack-label">⚡ Rule 2 — Complementary</div>
+      <div class="hack-text">Angles in a right angle add to <b>90°</b><br>If one angle is 35°, the other is <b>55°</b></div>
+    </div>
+    <div class="pair-row">
+      <div class="pair-card">
+        <div class="pair-label">Vertical Angles</div>
+        <p>Opposite angles when two lines cross are always equal. X = X.</p>
+      </div>
+      <div class="pair-card">
+        <div class="pair-label">Parallel Lines</div>
+        <p>Cut by a transversal — alternate interior angles are equal, co-interior add to 180°.</p>
+      </div>
+    </div>
+    <div class="lines-row">
+      <div class="line-card">
+        <svg width="80" height="50"><line x1="5" y1="25" x2="75" y2="25" stroke="#22d3ee" stroke-width="2.5"/><line x1="5" y1="15" x2="75" y2="15" stroke="#a855f7" stroke-width="2.5"/></svg>
+        <div class="l-name">Parallel</div>
+        <div class="l-def">Never meet</div>
+      </div>
+      <div class="line-card">
+        <svg width="80" height="50"><line x1="5" y1="45" x2="75" y2="5" stroke="#22d3ee" stroke-width="2.5"/><line x1="5" y1="5" x2="75" y2="45" stroke="#a855f7" stroke-width="2.5"/></svg>
+        <div class="l-name">Intersecting</div>
+        <div class="l-def">Meet at a point</div>
+      </div>
+      <div class="line-card">
+        <svg width="80" height="50"><line x1="5" y1="45" x2="75" y2="5" stroke="#22d3ee" stroke-width="2.5"/><line x1="5" y1="5" x2="75" y2="45" stroke="#a855f7" stroke-width="2.5"/><rect x="34" y="19" width="12" height="12" fill="none" stroke="#facc15" stroke-width="1.5"/></svg>
+        <div class="l-name">Perpendicular</div>
+        <div class="l-def">Meet at 90°</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ PLAY MODE -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">③ Play Mode</div>
+    <h2>Explore Angles — Desmos</h2>
+    <p>Drag the points. Watch the angle change. Notice how supplementary pairs always sum to 180°.</p>
+    <div class="desmos-wrap">
+      <iframe src="https://www.desmos.com/geometry?embed" width="100%" height="400" style="border:none;display:block;" title="Desmos Geometry — Angles Explorer"></iframe>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);margin-top:8px;font-family:'JetBrains Mono',monospace;" class="desmos-tip">💡 Use the <strong>Angle</strong> tool to draw and measure angles. Try constructing supplementary pairs!</p>
+    </div>
+  </div>
+
+  <!-- ④ PRACTICE -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip" id="practiceChip">④ Practice</div>
+    <h2>Solve These Angles</h2>
+
+    <div class="practice-item">
+      <div class="q">Two angles are supplementary. One is 130°. What is the other?</div>
+      <div class="practice-row">
+        <input class="ms-input" id="p1" type="number" placeholder="°"/>
+        <button class="ms-check-btn" onclick="checkP(1,50,'p1','f1')">Check</button>
+      </div>
+      <div class="feedback" id="f1"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">Two angles are complementary. One is 27°. What is the other?</div>
+      <div class="practice-row">
+        <input class="ms-input" id="p2" type="number" placeholder="°"/>
+        <button class="ms-check-btn" onclick="checkP(2,63,'p2','f2')">Check</button>
+      </div>
+      <div class="feedback" id="f2"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">Two lines cross. One angle is 45°. What is the vertical angle opposite to it?</div>
+      <div class="practice-row">
+        <input class="ms-input" id="p3" type="number" placeholder="°"/>
+        <button class="ms-check-btn" onclick="checkP(3,45,'p3','f3')">Check</button>
+      </div>
+      <div class="feedback" id="f3"></div>
+    </div>
+  </div>
+
+  <!-- ⑤ BOSS FIGHT -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip" id="bossChip">⑤ Boss Fight</div>
+    <div class="boss-arena">
+      <div class="boss-header">
+        <div>
+          <div class="boss-title" id="bossTitleText">⚔️ The Angle Boss</div>
+          <div style="font-size:12px;color:var(--muted,#6b7a99);margin-top:4px;" id="bossSubText">Answer 3 angle questions before time runs out</div>
+        </div>
+        <div class="boss-timer" id="bossTimer">30</div>
+      </div>
+      <div class="boss-pips"><div class="pip" id="pip0"></div><div class="pip" id="pip1"></div><div class="pip" id="pip2"></div></div>
+      <div class="boss-q" id="bossQ">Press Start to begin</div>
+      <div class="boss-row">
+        <input class="ms-input" id="bossInput" type="number" placeholder="°" disabled style="width:80px;"/>
+        <button class="ms-check-btn" id="bossBtn" onclick="startBoss()">Start</button>
+      </div>
+      <div class="boss-result" id="bossResult"></div>
+    </div>
+  </div>
+
+  <!-- ⑥ EXIT CHECK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">⑥ Exit Check</div>
+    <h2 id="exitTitle">One Question. Prove You Got It.</h2>
+    <p>An angle measures 148°. What type of angle is it, and what is its supplement?</p>
+    <p style="font-size:13px;color:var(--muted,#6b7a99);">Enter the supplement (the missing angle to make 180°):</p>
+    <div class="practice-row" style="margin-top:12px;">
+      <input class="ms-input" id="exitInput" type="number" placeholder="°"/>
+      <button class="ms-check-btn" id="exitBtn" onclick="checkExit()">Submit</button>
+    </div>
+    <div class="feedback" id="exitFeedback"></div>
+    <button class="ms-mark-btn" id="markBtn" onclick="markComplete()">Mark Complete →</button>
+  </div>
+
+  <!-- COMPLETE CARD -->
+  <div class="lesson-card" id="completeCard" style="display:none;">
+    <div class="complete-card">
+      <div class="complete-icon">📐</div>
+      <div class="complete-chip" id="completeChip">Lesson Complete</div>
+      <h2>Angles &amp; Lines Mastered</h2>
+      <p id="completeMsg">You know your angle types, supplementary and complementary pairs, and how lines relate. Triangles are next.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">
+        <a class="ms-btn" href="./index.html">← Back to Geometry</a>
+        <a class="ms-btn primary" href="./geometry-triangles.html">Next: Triangles →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ms-footer">© MindStrong Universe • Geometry Foundations</footer>
+</main>
+
+<script>
+const MODES={
+  arcade:{chip:"🕹️ Arcade Mode",heroTitle:"Angles &amp; Lines",heroSub:"Learn the basics fast. Then fight the boss.",hookTitle:"Angle Types — Speed Run",hackTitle:"Two Rules. Memorize Them.",practiceChip:"④ Quick Rounds",bossChip:"⑤ Boss Fight",bossTitleText:"⚔️ Angle Boss",bossSubText:"3 correct before time runs out",exitTitle:"Exit Gate",completeChip:"Cleared!",completeMsg:"Angle Boss defeated. Move to Triangles."},
+  rpg:{chip:"🎮 RPG Quest",heroTitle:"Angles &amp; Lines",heroSub:"Learn the geometry spells. Boss awaits.",hookTitle:"The Geometry Spell Book",hackTitle:"Two Core Spells",practiceChip:"④ Spell Practice",bossChip:"⑤ Boss Battle",bossTitleText:"⚔️ The Angle Golem",bossSubText:"Defeat the Golem with 3 correct angle spells",exitTitle:"Mage's Trial",completeChip:"Quest Complete",completeMsg:"You have mastered the Angle Spells. The Triangle Quest awaits."},
+  academic:{chip:"🧠 Academic Mastery",heroTitle:"Angles &amp; Lines",heroSub:"Every shape is built from lines and angles. Master these and the rest unlocks.",hookTitle:"The Clock Problem",hackTitle:"Angle Pairs — The Two Rules That Run Everything",practiceChip:"④ Practice",bossChip:"⑤ Boss Fight",bossTitleText:"⚔️ The Angle Boss",bossSubText:"Answer 3 angle questions before time runs out",exitTitle:"One Question. Prove You Got It.",completeChip:"Lesson Complete",completeMsg:"You know your angle types, supplementary and complementary pairs, and how lines relate. Triangles are next."},
+  lms:{chip:"🏫 Assignment",heroTitle:"Angles &amp; Lines — Lesson 1",heroSub:"Complete all sections for full credit.",hookTitle:"Real-World Angles",hackTitle:"Supplementary &amp; Complementary",practiceChip:"④ Graded Practice",bossChip:"⑤ Assessment",bossTitleText:"📋 Angle Assessment",bossSubText:"Complete 3 problems for full credit",exitTitle:"Exit Ticket",completeChip:"✓ Submitted",completeMsg:"Lesson submitted. Your teacher can see your completion."},
+};
+function applyMode(m){
+  const c=MODES[m];if(!c)return;
+  document.body.dataset.mode=m;
+  document.getElementById("modeChip").textContent=c.chip;
+  document.getElementById("heroTitle").innerHTML=c.heroTitle;
+  document.getElementById("heroSub").textContent=c.heroSub;
+  document.getElementById("hookTitle").textContent=c.hookTitle;
+  document.getElementById("hackTitle").textContent=c.hackTitle;
+  document.getElementById("practiceChip").textContent=c.practiceChip;
+  document.getElementById("bossChip").textContent=c.bossChip;
+  document.getElementById("bossTitleText").textContent=c.bossTitleText;
+  document.getElementById("bossSubText").textContent=c.bossSubText;
+  document.getElementById("exitTitle").textContent=c.exitTitle;
+  document.getElementById("completeChip").textContent=c.completeChip;
+  document.getElementById("completeMsg").textContent=c.completeMsg;
+  document.querySelectorAll(".ms-modeBtn").forEach(b=>b.classList.toggle("is-active",b.dataset.mode===m));
+  try{localStorage.setItem("ms_xp_mode",m);}catch{}
+}
+document.querySelectorAll(".ms-modeBtn").forEach(b=>b.addEventListener("click",()=>applyMode(b.dataset.mode)));
+try{const s=localStorage.getItem("ms_xp_mode");applyMode(s&&MODES[s]?s:"academic");}catch{applyMode("academic");}
+
+const LESSON_KEY = "geo-angles";
+const practiceAnswered = new Set();
+function checkP(n,ans,inputId,feedbackId){
+  const val=parseInt(document.getElementById(inputId).value);
+  const fb=document.getElementById(feedbackId);
+  if(val===ans){
+    fb.textContent="✓ Correct!";fb.className="feedback correct";
+    if(!practiceAnswered.has(n)){
+      practiceAnswered.add(n);
+      if(window.MSTracker) MSTracker.practice(LESSON_KEY, true);
+    }
+  } else {
+    fb.textContent="✗ Not quite — remember: supplementary = 180°, complementary = 90°.";fb.className="feedback wrong";
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY, false);
+  }
+}
+document.getElementById("p1").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(1,50,"p1","f1");});
+document.getElementById("p2").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(2,63,"p2","f2");});
+document.getElementById("p3").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(3,45,"p3","f3");});
+
+// Boss: angle pair problems [knownAngle, type(supp|comp|vert), answer]
+const BOSS_Q=[
+  {q:"Supplementary to 65°?",ans:115},
+  {q:"Supplementary to 112°?",ans:68},
+  {q:"Complementary to 42°?",ans:48},
+  {q:"Complementary to 17°?",ans:73},
+  {q:"Vertical angle to 88°?",ans:88},
+  {q:"Supplementary to 35°?",ans:145},
+  {q:"Complementary to 71°?",ans:19},
+  {q:"Supplementary to 155°?",ans:25},
+];
+let bs={running:false,score:0,timer:0,interval:null,qIdx:0,pool:[]};
+function shuffleQ(){return [...BOSS_Q].sort(()=>Math.random()-.5).slice(0,6);}
+function startBoss(){
+  if(bs.running)return;
+  bs={running:true,score:0,timer:30,interval:null,qIdx:0,pool:shuffleQ()};
+  document.getElementById("bossResult").className="boss-result";
+  document.getElementById("bossInput").disabled=false;
+  document.getElementById("bossInput").value="";
+  document.getElementById("bossBtn").textContent="Submit";
+  document.getElementById("bossBtn").onclick=submitBoss;
+  [0,1,2].forEach(i=>document.getElementById("pip"+i).className="pip");
+  showBQ();
+  bs.interval=setInterval(()=>{
+    bs.timer--;
+    const t=document.getElementById("bossTimer");
+    t.textContent=bs.timer;
+    t.className="boss-timer"+(bs.timer<=10?" danger":"");
+    if(bs.timer<=0){clearInterval(bs.interval);endBoss(false);}
+  },1000);
+}
+function showBQ(){
+  document.getElementById("bossQ").textContent=bs.pool[bs.qIdx%bs.pool.length].q;
+  document.getElementById("bossInput").value="";
+  document.getElementById("bossInput").focus();
+}
+function submitBoss(){
+  if(!bs.running)return;
+  const val=parseInt(document.getElementById("bossInput").value);
+  const q=bs.pool[bs.qIdx%bs.pool.length];
+  if(val===q.ans){
+    bs.score++;bs.qIdx++;
+    if(bs.score>=3){clearInterval(bs.interval);endBoss(true);return;}
+    showBQ();
+  } else {
+    const hit=document.querySelector(".pip:not(.hit)");if(hit)hit.classList.add("hit");
+    bs.qIdx++;showBQ();
+  }
+}
+document.getElementById("bossInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitBoss();});
+function endBoss(won){
+  bs.running=false;clearInterval(bs.interval);
+  document.getElementById("bossInput").disabled=true;
+  document.getElementById("bossBtn").onclick=startBoss;
+  document.getElementById("bossBtn").textContent="Try Again";
+  const res=document.getElementById("bossResult");
+  res.className="boss-result show";
+  if(won){
+    res.innerHTML='<b>🎉 Boss Defeated!</b><br>Angle pairs mastered. You\'re thinking in geometry.';
+    try{localStorage.setItem("ms_angles_boss","won");}catch{}
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, true, bs.timer);
+  } else {
+    res.innerHTML='<b>⏰ Time\'s Up</b><br>Remember: supp=180°, comp=90°, vertical=equal. Try again!';
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0);
+  }
+}
+
+let exitPassed=false;
+function checkExit(){
+  const val=parseInt(document.getElementById("exitInput").value);
+  const fb=document.getElementById("exitFeedback");
+  if(window.MSTracker) MSTracker.exit(LESSON_KEY, val===32);
+  if(val===32){
+    fb.textContent="✓ Correct! 148° is obtuse, and 180° − 148° = 32° is its supplement.";
+    fb.className="feedback correct";
+    exitPassed=true;
+    document.getElementById("exitBtn").disabled=true;
+    document.getElementById("markBtn").disabled=false;
+  } else {
+    fb.textContent="✗ Try again. Supplement means: 180° − 148° = ?";
+    fb.className="feedback wrong";
+  }
+}
+document.getElementById("exitInput").addEventListener("keydown",e=>{if(e.key==="Enter")checkExit();});
+document.getElementById("markBtn").disabled=true;
+
+function markComplete(){
+  try{
+    const done=JSON.parse(localStorage.getItem("ms_geo_done")||"[]");
+    if(!done.includes("angles-1"))done.push("angles-1");
+    localStorage.setItem("ms_geo_done",JSON.stringify(done));
+    localStorage.setItem("ms_last_lesson_url",window.location.href);
+  }catch{}
+  if(window.MSTracker){ const xp=MSTracker.complete(LESSON_KEY); showXPToast(xp); }
+  document.getElementById("markBtn").textContent="✓ Complete!";
+  document.getElementById("markBtn").disabled=true;
+  document.getElementById("completeCard").style.display="block";
+  document.getElementById("completeCard").scrollIntoView({behavior:"smooth"});
+}
+
+function showXPToast(xp){
+  if(!xp) return;
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;bottom:32px;right:24px;z-index:999;padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;box-shadow:0 8px 28px var(--xp-glow);transform:translateY(20px);opacity:0;transition:all .4s ease;pointer-events:none;";
+  t.textContent=`+${xp} XP`;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform="translateY(0)";t.style.opacity="1";});
+  setTimeout(()=>{t.style.transform="translateY(-12px)";t.style.opacity="0";setTimeout(()=>t.remove(),500);},2200);
+}
+
+// Init tracker
+if(window.MSTracker) MSTracker.init(LESSON_KEY, {
+  module:"Geometry", lessonNum:1, title:"Angles & Lines", practiceTotal:3
+});
+
+(function(){
+  const els=document.querySelectorAll(".ms-reveal");
+  const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("is-in");io.unobserve(e.target);}});},{threshold:.08});
+  els.forEach(el=>io.observe(el));
+})();
+try{localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}
+</script>
+</body>
+</html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildCompleteSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreIfDone() {
+  try {
+    // Check legacy done array
+    const done = JSON.parse(localStorage.getItem("ms_geo_done") || "[]");
+    if (!done.includes("angles-1")) return;
+    // Already complete — show state
+    const markBtn = document.getElementById("markBtn");
+    if (markBtn) { markBtn.textContent = "✓ Complete!"; markBtn.disabled = true; }
+    const card = document.getElementById("completeCard");
+    if (card) {
+      // Inject score summary
+      const summary = buildCompleteSummary(LESSON_KEY);
+      const chipEl = document.getElementById("completeChip");
+      if (chipEl && summary && !document.getElementById("scoreSum")) {
+        const div = document.createElement("div");
+        div.id = "scoreSum";
+        div.innerHTML = summary;
+        chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+      }
+      card.style.display = "block";
+    }
+    // Add "already done" badge near markBtn if not complete card visible
+    const exitBtn = document.getElementById("exitBtn");
+    if (exitBtn) exitBtn.disabled = true;
+  } catch(e) {}
+}
+restoreIfDone();
+
+// Also inject score into completeCard when markComplete fires (after XP toast)
+const _origMC = typeof markComplete === "function" ? markComplete : null;
+// Patch completeCard to show score summary after completion
+function injectScoreSummary() {
+  const summary = buildCompleteSummary(LESSON_KEY);
+  if (!summary) return;
+  const chipEl = document.getElementById("completeChip");
+  if (chipEl && !document.getElementById("scoreSum")) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+  }
+}
+// Hook into scrollIntoView timing
+const _baseCard = document.getElementById("completeCard");
+if (_baseCard) {
+  const _obs = new MutationObserver(() => {
+    if (_baseCard.style.display !== "none") {
+      setTimeout(injectScoreSummary, 300);
+      _obs.disconnect();
+    }
+  });
+  _obs.observe(_baseCard, { attributes: true, attributeFilter: ["style"] });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 3,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>

@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ratios • Pre-Algebra Mastery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../ms-tracker.js" defer></script>
+  <link rel="stylesheet" href="../../../theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../../mindstronguniverse.svg" />
+  <meta name="theme-color" content="#0b0f1a" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family:'Syne',sans-serif; }
+
+    /* ── Mode palette ── */
+    :root { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX {
+      position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(700px 400px at 80% 5%, var(--xp-glow), transparent 60%),
+        radial-gradient(500px 350px at 10% 90%, rgba(124,58,237,.07), transparent 60%);
+      transition:background .6s ease;
+    }
+
+    /* ── Layout ── */
+    .lesson-wrap { max-width:900px; margin:0 auto; padding:32px 16px; position:relative; z-index:1; }
+
+    .lesson-card {
+      background:var(--card,rgba(255,255,255,.04));
+      border:1px solid var(--stroke,rgba(255,255,255,.09));
+      border-radius:var(--r,14px);
+      padding:24px; margin-bottom:20px;
+      transition:border-color .4s ease;
+    }
+    .lesson-card h2 { margin-bottom:12px; font-size:16px; }
+
+    /* ── Mode kicker strip ── */
+    .ms-modeStrip {
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+      margin-bottom:20px;
+      padding:10px 14px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px; background:rgba(255,255,255,.03);
+    }
+    .ms-modeStrip-label {
+      font-family:'JetBrains Mono',monospace;
+      font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+      color:var(--muted,#6b7a99); flex-shrink:0;
+    }
+    .ms-modeChip {
+      font-family:'JetBrains Mono',monospace;
+      font-size:11px; padding:5px 12px; border-radius:7px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99);
+      cursor:pointer; transition:all .2s ease;
+    }
+    .ms-modeChip:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeChip.is-active {
+      color:var(--xp-a); border-color:var(--xp-a);
+      background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow);
+    }
+
+    /* ── Hero ── */
+    .ms-modeKicker {
+      display:inline-block; font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.12em;
+      padding:4px 12px; border-radius:20px;
+      border:1px solid var(--xp-a); color:var(--xp-a);
+      margin-bottom:10px; transition:all .4s ease;
+    }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      padding:9px 18px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06); color:#e8edf5;
+      cursor:pointer; white-space:nowrap;
+      text-decoration:none; display:inline-block;
+      transition:all .2s ease;
+    }
+    .ms-btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.22); }
+    .ms-btn.primary {
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      border-color:transparent; color:#06080e;
+      box-shadow:0 4px 18px var(--xp-glow);
+      transition:transform .18s,box-shadow .18s,background .5s;
+    }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
+    .ms-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+
+    .ms-glowDone {
+      border-color:var(--xp-a)!important;
+      box-shadow:0 0 0 3px var(--xp-glow),0 0 22px var(--xp-glow)!important;
+    }
+    .ms-chip {
+      display:inline-flex; padding:6px 12px;
+      border-radius:999px; border:1px solid var(--stroke,rgba(255,255,255,.09));
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99); font-size:12px;
+      transition:all .3s ease;
+    }
+    .ms-chip.done { border-color:var(--xp-a); color:var(--xp-a); background:rgba(255,255,255,.07); }
+
+    /* ── Hack box ── */
+    .hack-box {
+      background:rgba(34,211,238,.07);
+      border-left:4px solid var(--xp-a);
+      padding:16px; border-radius:12px; font-weight:600;
+      transition:border-color .4s ease, background .4s ease;
+    }
+    body[data-mode="arcade"]   .hack-box { background:rgba(250,204,21,.07); }
+    body[data-mode="rpg"]      .hack-box { background:rgba(168,85,247,.07); }
+    body[data-mode="lms"]      .hack-box { background:rgba(52,211,153,.07); }
+
+    /* ── Boss fight ── */
+    .boss-card {
+      border:1px solid var(--xp-a);
+      border-radius:14px; padding:20px;
+      background:rgba(255,255,255,.03);
+      box-shadow:0 0 20px var(--xp-glow);
+      transition:border-color .4s,box-shadow .4s;
+    }
+    .boss-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:14px; flex-wrap:wrap; gap:10px;
+    }
+    .boss-title {
+      font-family:'Orbitron',sans-serif;
+      font-size:15px; font-weight:900; color:var(--xp-a);
+      transition:color .4s ease;
+    }
+    .boss-timer {
+      font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900;
+      color:var(--xp-a); min-width:48px; text-align:right;
+      text-shadow:0 0 16px var(--xp-glow);
+      transition:color .4s ease;
+    }
+    .boss-timer.danger { color:#ef4444; text-shadow:0 0 16px rgba(239,68,68,.4); animation:pulse .6s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+
+    .boss-prompt {
+      font-family:'Orbitron',sans-serif;
+      font-size:18px; font-weight:700;
+      color:#e8edf5; margin:14px 0; min-height:28px;
+    }
+    .boss-score-row {
+      display:flex; gap:8px; margin-bottom:14px;
+    }
+    .boss-pip {
+      width:32px; height:8px; border-radius:4px;
+      background:rgba(255,255,255,.1);
+      transition:background .3s ease;
+    }
+    .boss-pip.hit { background:var(--xp-a); box-shadow:0 0 8px var(--xp-glow); }
+
+    .boss-input-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .ms-input {
+      font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700;
+      padding:10px 14px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06); color:#e8edf5;
+      outline:none; width:100px;
+      transition:border-color .2s;
+    }
+    .ms-input:focus { border-color:var(--xp-a); }
+
+    .boss-feedback {
+      margin-top:10px; font-weight:700; font-size:14px; min-height:22px;
+      font-family:'JetBrains Mono',monospace;
+    }
+
+    /* ── Practice ── */
+    .ms-practice-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:14px; }
+    .practice-feedback { margin-top:12px; font-size:13px; font-weight:600; }
+
+    /* ── Mode-specific section labels ── */
+    .section-label {
+      font-family:'JetBrains Mono',monospace; font-size:10px;
+      letter-spacing:.13em; text-transform:uppercase;
+      color:var(--xp-a); opacity:.7; margin-bottom:6px;
+      display:block; transition:color .4s ease;
+    }
+
+    /* Reveal */
+    .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease,transform .5s ease; }
+    .ms-reveal.is-in { opacity:1; transform:translateY(0); }
+    @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
+</head>
+
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <img src="../../../mindstronguniverse.svg" class="ms-brandLogo" />
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./index.html">Ratios</a>
+    </nav>
+  </div>
+</header>
+
+<main class="lesson-wrap">
+
+  <!-- Mode strip -->
+  <div class="ms-modeStrip ms-reveal">
+    <span class="ms-modeStrip-label">Mode:</span>
+    <button class="ms-modeChip" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeChip" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeChip is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeChip" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="lessonKicker">🧠 Academic Mastery Mode</div>
+    <span class="ms-kicker">Pre-Algebra Mastery</span>
+    <h1 class="ms-h1" id="lessonTitle">Ratios</h1>
+    <p class="ms-sub" id="lessonSub">Understanding balance, scale, and proportional thinking.</p>
+
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a class="ms-btn" href="../index.html">← Back to Foundations</a>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
+  </section>
+
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
+  </div>
+
+  <!-- WHAT THIS IS -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label" id="sec1Label">Overview</span>
+    <h2 id="sec1Title">📌 What This Is & Why It Matters</h2>
+    <p><strong>What this is:</strong> Ratios compare two quantities to show how they relate.</p>
+    <p style="margin-top:8px;"><strong>Why it matters:</strong> Ratios power fractions, rates, percents, and real-world scaling.</p>
+  </section>
+
+  <!-- HOOK -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label">Hook</span>
+    <h2>🎯 <span id="hookTitle">The Setup</span></h2>
+    <p id="hookBody">
+      Two smoothies taste the same.
+      One uses <strong>2 scoops fruit : 3 scoops ice</strong>.
+      The other uses <strong>4 scoops fruit : 6 scoops ice</strong>.
+    </p>
+    <p style="margin-top:10px;">
+      Different numbers. Same taste.
+      <strong>That's a ratio at work.</strong>
+    </p>
+  </section>
+
+  <!-- THE HACK -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label" id="hackLabel">The Hack</span>
+    <h2>🧠 <span id="hackTitle">The Hack</span></h2>
+    <div class="hack-box" id="hackBox">
+      Ratios are <strong>balance statements</strong>.<br><br>
+      If one side changes ×k, the other side must change ×k.
+    </div>
+  </section>
+
+  <!-- PLAY / EXPLORE -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label" id="playLabel">Explore</span>
+    <h2>🎮 <span id="playTitle">Play Mode</span></h2>
+    <p id="playBody">Explore how ratios stretch and shrink while staying balanced.</p>
+    <iframe
+      src="https://www.desmos.com/calculator?embed" width="100%" height="400" style="border:none;display:block;" title="Desmos Graphing Calculator — Ratios">
+    </iframe>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);margin-top:8px;font-family:'JetBrains Mono',monospace;" class="desmos-tip">💡 Plot two equivalent ratios as points — e.g. (2,6) and (4,12). What do you notice?</p>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label" id="practiceLabel">Practice</span>
+    <h2>✏️ <span id="practiceTitle">Balance the Ratio</span></h2>
+    <p id="practiceIntro">Complete the equivalent ratio. Both sides must change the <strong>same way</strong>.</p>
+
+    <div class="ms-practice-row">
+      <span><strong>3 : 5</strong> → <strong>6 :</strong></span>
+      <input id="practiceInput" type="number" class="ms-input" style="width:80px;" placeholder="?"/>
+      <button class="ms-btn" onclick="checkPractice()">Check</button>
+    </div>
+    <div id="practiceFeedback" class="practice-feedback"></div>
+  </section>
+
+  <!-- BOSS FIGHT -->
+  <section class="ms-reveal">
+    <div class="boss-card" id="bossCard">
+      <div class="boss-header">
+        <div class="boss-title" id="bossTitle">⚔️ BOSS FIGHT — RATIO DUEL</div>
+        <div class="boss-timer" id="bossTimer">0:30</div>
+      </div>
+      <p id="bossSub" style="color:var(--muted,#6b7a99);font-size:13px;margin-bottom:12px;">
+        Get <strong style="color:#e8edf5">3 correct</strong> in 30 seconds to defeat the Ratio Boss.
+      </p>
+
+      <div class="boss-score-row">
+        <div class="boss-pip" id="pip1"></div>
+        <div class="boss-pip" id="pip2"></div>
+        <div class="boss-pip" id="pip3"></div>
+      </div>
+
+      <div class="boss-prompt" id="bossPrompt">Loading…</div>
+
+      <div class="boss-input-row">
+        <input id="bossInput" type="number" class="ms-input" placeholder="?"/>
+        <button class="ms-btn primary" onclick="submitBoss()" id="bossAttackBtn">Attack ⚔️</button>
+      </div>
+      <div class="boss-feedback" id="bossFeedback"></div>
+    </div>
+  </section>
+
+  <!-- EXIT CHECK -->
+  <section class="lesson-card ms-reveal">
+    <span class="section-label">Exit Check</span>
+    <h2>🚪 <span id="exitTitle">Exit Check</span></h2>
+    <p id="exitBody">In one sentence, explain why equivalent ratios stay balanced even when the numbers change.</p>
+  </section>
+
+</main>
+
+<footer class="ms-footer">© MindStrong Universe • Pre-Algebra Mastery</footer>
+
+<script>
+/* ════════════════════════════════════════
+   COMPLETION
+════════════════════════════════════════ */
+const KEY       = "ms_pre_alg_done";
+const LESSON_ID = "ratios-1";
+localStorage.setItem("ms_last_lesson_url", window.location.pathname);
+
+function getArr(){ try{ return JSON.parse(localStorage.getItem(KEY)||"[]"); }catch{ return []; } }
+function markDone(){
+  if(window.MSTracker){MSTracker.exit(LESSON_KEY,true);const _xp=MSTracker.complete(LESSON_KEY);showXPToast(_xp);}
+  const a=getArr(); if(!a.includes(LESSON_ID)){ a.push(LESSON_ID); localStorage.setItem(KEY,JSON.stringify(a)); } }
+
+const btn  = document.getElementById("completeBtn");
+const chip = document.getElementById("statusChip");
+
+function renderComplete(){
+  const done = getArr().includes(LESSON_ID);
+  chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+  chip.classList.toggle("done", done);
+  btn.textContent  = done ? "Completed ✓" : "Mark Complete ✓";
+  btn.classList.toggle("ms-glowDone", done);
+}
+btn.addEventListener("click", ()=>{ markDone(); renderComplete(); });
+renderComplete();
+
+/* ════════════════════════════════════════
+   MODE CONFIG
+════════════════════════════════════════ */
+const LESSON_MODES = {
+  arcade: {
+    kicker:        "🕹️ Arcade Competitive Mode",
+    lessonTitle:   "Ratios — Speed Round",
+    lessonSub:     "Beat the clock. Score hits. Defeat the Ratio Boss.",
+    sec1Label:     "Briefing",
+    sec1Title:     "📌 Mission Brief",
+    hackLabel:     "Weapon",
+    hackTitle:     "Your Weapon",
+    playLabel:     "Training",
+    playTitle:     "Training Mode",
+    playBody:      "Warm up your ratio skills before the boss fight.",
+    practiceLabel: "Warm-up",
+    practiceTitle: "Quick Fire",
+    practiceIntro: "Fast reps. Lock in the pattern before you face the boss.",
+    bossTitle:     "⚔️ BOSS FIGHT — RATIO DUEL",
+    bossSub:       "Get <strong style='color:#e8edf5'>3 correct</strong> in 30 seconds. Go.",
+    attackBtn:     "Attack ⚔️",
+    exitTitle:     "Debrief",
+    exitBody:      "In one sentence: why do equivalent ratios stay balanced?",
+  },
+  rpg: {
+    kicker:        "🎮 RPG Progression Mode",
+    lessonTitle:   "Ratios Quest",
+    lessonSub:     "Master the Balance Spell. Defeat the Ratio Boss. Earn XP.",
+    sec1Label:     "Quest Brief",
+    sec1Title:     "📌 Quest Overview",
+    hackLabel:     "Magic Spell",
+    hackTitle:     "The Balance Spell",
+    playLabel:     "Spell Lab",
+    playTitle:     "Spell Lab",
+    playBody:      "Practice casting the Balance Spell. Adjust ratios and feel how they scale.",
+    practiceLabel: "Spell Practice",
+    practiceTitle: "Cast the Spell",
+    practiceIntro: "Complete the equivalent ratio to prove you've learned the spell.",
+    bossTitle:     "⚔️ BOSS BATTLE — RATIO LORD",
+    bossSub:       "Defeat the Ratio Lord with <strong style='color:#e8edf5'>3 correct hits</strong> before time runs out.",
+    attackBtn:     "Cast Spell 🔮",
+    exitTitle:     "Quest Complete",
+    exitBody:      "Write your spell note: why do equivalent ratios stay balanced?",
+  },
+  academic: {
+    kicker:        "🧠 Academic Mastery Mode",
+    lessonTitle:   "Ratios",
+    lessonSub:     "Understanding balance, scale, and proportional thinking.",
+    sec1Label:     "Overview",
+    sec1Title:     "📌 What This Is & Why It Matters",
+    hackLabel:     "The Hack",
+    hackTitle:     "The Hack",
+    playLabel:     "Explore",
+    playTitle:     "Play Mode",
+    playBody:      "Explore how ratios stretch and shrink while staying balanced.",
+    practiceLabel: "Practice",
+    practiceTitle: "Balance the Ratio",
+    practiceIntro: "Complete the equivalent ratio. Both sides must change the <strong>same way</strong>.",
+    bossTitle:     "⚔️ BOSS FIGHT — RATIO DUEL",
+    bossSub:       "Get <strong style='color:#e8edf5'>3 correct</strong> in 30 seconds to demonstrate mastery.",
+    attackBtn:     "Submit ✓",
+    exitTitle:     "Exit Check",
+    exitBody:      "In one sentence, explain why equivalent ratios stay balanced even when the numbers change.",
+  },
+  lms: {
+    kicker:        "🏫 LMS Mode",
+    lessonTitle:   "Ratios — Lesson Assignment",
+    lessonSub:     "Complete all sections and submit for a grade.",
+    sec1Label:     "Learning Objective",
+    sec1Title:     "📌 Objective & Standards",
+    hackLabel:     "Key Concept",
+    hackTitle:     "Key Concept",
+    playLabel:     "Interactive Activity",
+    playTitle:     "Desmos Activity",
+    playBody:      "Complete the interactive exploration. Your teacher may review your work.",
+    practiceLabel: "Guided Practice",
+    practiceTitle: "Practice Problem",
+    practiceIntro: "Show your work. Complete the equivalent ratio below.",
+    bossTitle:     "📝 ASSESSMENT — RATIO CHECK",
+    bossSub:       "Answer <strong style='color:#e8edf5'>3 questions correctly</strong>. This counts toward your grade.",
+    attackBtn:     "Submit Answer",
+    exitTitle:     "Exit Ticket",
+    exitBody:      "Write one sentence explaining equivalent ratios. Submit before leaving class.",
+  },
+};
+
+function applyMode(mode){
+  const cfg = LESSON_MODES[mode];
+  if(!cfg) return;
+  document.body.setAttribute("data-mode", mode);
+
+  document.getElementById("lessonKicker").textContent = cfg.kicker;
+  document.getElementById("lessonTitle").textContent  = cfg.lessonTitle;
+  document.getElementById("lessonSub").textContent    = cfg.lessonSub;
+  document.getElementById("sec1Label").textContent    = cfg.sec1Label;
+  document.getElementById("sec1Title").textContent    = cfg.sec1Title;
+  document.getElementById("hackLabel").textContent    = cfg.hackLabel;
+  document.getElementById("hackTitle").textContent    = cfg.hackTitle;
+  document.getElementById("playLabel").textContent    = cfg.playLabel;
+  document.getElementById("playTitle").textContent    = cfg.playTitle;
+  document.getElementById("playBody").textContent     = cfg.playBody;
+  document.getElementById("practiceLabel").textContent= cfg.practiceLabel;
+  document.getElementById("practiceTitle").textContent= cfg.practiceTitle;
+  document.getElementById("practiceIntro").innerHTML  = cfg.practiceIntro;
+  document.getElementById("bossTitle").textContent    = cfg.bossTitle;
+  document.getElementById("bossSub").innerHTML        = cfg.bossSub;
+  document.getElementById("bossAttackBtn").textContent= cfg.attackBtn;
+  document.getElementById("exitTitle").textContent    = cfg.exitTitle;
+  document.getElementById("exitBody").textContent     = cfg.exitBody;
+
+  document.querySelectorAll(".ms-modeChip").forEach(c=>{
+    c.classList.toggle("is-active", c.dataset.mode === mode);
+  });
+
+  try{ localStorage.setItem("ms_xp_mode", mode); }catch{}
+}
+
+document.querySelectorAll(".ms-modeChip").forEach(c=>{
+  c.addEventListener("click", ()=> applyMode(c.dataset.mode));
+});
+
+try{
+  const saved = localStorage.getItem("ms_xp_mode");
+  if(saved && LESSON_MODES[saved]) applyMode(saved);
+  else applyMode("academic");
+}catch{ applyMode("academic"); }
+
+/* ════════════════════════════════════════
+   PRACTICE CHECK
+════════════════════════════════════════ */
+const LESSON_KEY = "geo-ratios";
+const _pAnswered = new Set();
+if(window.MSTracker) MSTracker.init(LESSON_KEY, {module:"Pre-Algebra", lessonNum:1, title:"Ratios", practiceTotal:3});
+function showXPToast(xp){
+  if(!xp) return;
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;bottom:32px;right:24px;z-index:9999;padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,var(--xp-b,#3b82f6),var(--xp-a,#22d3ee));color:#06080e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;box-shadow:0 8px 28px rgba(34,211,238,.35);transform:translateY(20px);opacity:0;transition:all .4s ease;pointer-events:none;";
+  t.textContent="+"+xp+" XP";
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform="translateY(0)";t.style.opacity="1";});
+  setTimeout(()=>{t.style.transform="translateY(-12px)";t.style.opacity="0";setTimeout(()=>t.remove(),500);},2200);
+}
+
+function checkPractice(){
+  const val  = Number(document.getElementById("practiceInput").value);
+  const fb   = document.getElementById("practiceFeedback");
+  if(val === 10){
+    fb.innerHTML = "✅ Correct! Both sides doubled (×2).";
+    fb.style.color = "#22d3ee";
+    if(window.MSTracker&&!_pAnswered.has(1)){_pAnswered.add(1);MSTracker.practice(LESSON_KEY,true);}
+  } else {
+    fb.innerHTML = "❌ Not balanced — what happened to 3?";
+    fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
+  }
+}
+
+/* ════════════════════════════════════════
+   BOSS FIGHT
+════════════════════════════════════════ */
+let bossScore    = 0;
+let bossTime     = 30;
+let currentAns   = null;
+let bossInterval = null;
+let bossActive   = true;
+
+function newBossQ(){
+  const a = Math.floor(Math.random()*4)+2;
+  const b = Math.floor(Math.random()*5)+3;
+  const k = Math.floor(Math.random()*4)+2;
+  document.getElementById("bossPrompt").textContent = `${a} : ${b}  →  ${a*k} : ?`;
+  currentAns = b * k;
+}
+
+function updatePips(){
+  for(let i=1;i<=3;i++){
+    document.getElementById("pip"+i).classList.toggle("hit", i <= bossScore);
+  }
+}
+
+function submitBoss(){
+  if(!bossActive) return;
+  const val = Number(document.getElementById("bossInput").value);
+  const fb  = document.getElementById("bossFeedback");
+
+  if(val === currentAns){
+    bossScore++;
+    updatePips();
+    fb.innerHTML  = "🔥 Hit!";
+    fb.style.color = "var(--xp-a)";
+    if(bossScore >= 3){
+      endBoss(true);
+      return;
+    }
+  } else {
+    fb.innerHTML  = "❌ Miss — stay balanced.";
+    fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
+  }
+
+  document.getElementById("bossInput").value = "";
+  newBossQ();
+}
+
+function endBoss(won){
+  bossActive = false;
+  clearInterval(bossInterval);
+  const fb = document.getElementById("bossFeedback");
+  if(won){
+    fb.innerHTML = "🏆 BOSS DEFEATED! Ratio Master unlocked.";
+    fb.style.color = "var(--xp-a)";
+    try{ localStorage.setItem("ms_ratio_rank","Ratio Master"); }catch{}
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, true, typeof bossTime!=="undefined"?bossTime:0);
+    document.getElementById("bossAttackBtn").disabled = true;
+    document.getElementById("bossInput").disabled = true;
+  } else {
+    fb.innerHTML = "💀 Time's up. Try again!";
+    fb.style.color = "#ef4444";
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, false, 0);
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
+    document.getElementById("bossAttackBtn").textContent = "Try Again";
+    document.getElementById("bossAttackBtn").onclick = resetBoss;
+  }
+}
+
+function resetBoss(){
+  bossScore = 0; bossTime = 30; bossActive = true;
+  updatePips();
+  document.getElementById("bossFeedback").textContent = "";
+  document.getElementById("bossInput").disabled = false;
+  const btn = document.getElementById("bossAttackBtn");
+  btn.disabled = false;
+  btn.onclick  = submitBoss;
+  startBossTimer();
+  newBossQ();
+}
+
+function startBossTimer(){
+  clearInterval(bossInterval);
+  const el = document.getElementById("bossTimer");
+  bossInterval = setInterval(()=>{
+    bossTime--;
+    el.textContent = `0:${String(bossTime).padStart(2,'0')}`;
+    el.classList.toggle("danger", bossTime <= 10);
+    if(bossTime <= 0) endBoss(false);
+  }, 1000);
+}
+
+/* keyboard shortcut — Enter to submit */
+document.getElementById("bossInput").addEventListener("keydown", e=>{
+  if(e.key==="Enter") submitBoss();
+});
+
+newBossQ();
+startBossTimer();
+
+/* Scroll reveals */
+(function(){
+  const els = document.querySelectorAll(".ms-reveal");
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("is-in"); io.unobserve(e.target); } });
+  },{threshold:.08});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildScoreSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreRatioDone() {
+  try {
+    const done = JSON.parse(localStorage.getItem("ms_pre_alg_done") || "[]");
+    if (!done.includes("ratios-1")) return;
+    const chip = document.getElementById("statusChip");
+    if (chip) { chip.textContent = "✓ Completed"; chip.classList.add("done"); }
+    const btn = document.getElementById("completeBtn");
+    if (btn) { btn.textContent = "✓ Complete!"; btn.disabled = true; }
+    // Inject score summary near the status chip
+    const summary = buildScoreSummary(LESSON_KEY);
+    if (summary && chip && !document.getElementById("scoreSum")) {
+      const div = document.createElement("div");
+      div.id = "scoreSum";
+      div.innerHTML = summary;
+      chip.parentNode.insertBefore(div, chip.nextSibling);
+    }
+  } catch(e) {}
+}
+restoreRatioDone();
+
+// Inject score on completion too (after MutationObserver fires)
+function injectRatioScore() {
+  const summary = buildScoreSummary(LESSON_KEY);
+  if (!summary || document.getElementById("scoreSum")) return;
+  const chip = document.getElementById("statusChip");
+  if (chip) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chip.parentNode.insertBefore(div, chip.nextSibling);
+  }
+}
+const _btn = document.getElementById("completeBtn");
+if (_btn) {
+  const _obs = new MutationObserver(() => setTimeout(injectRatioScore, 400));
+  _obs.observe(_btn, { attributes: true });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 1,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>

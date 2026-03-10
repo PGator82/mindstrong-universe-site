@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pre-Algebra Mastery • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../../theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family:'Syne',sans-serif; }
+    :root { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX {
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(700px 500px at 20% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(500px 400px at 85% 85%, rgba(124,58,237,.07), transparent 60%);
+      transition:background .6s ease;
+    }
+    .ms-wrap { position:relative; z-index:1; }
+
+    .ms-modebar {
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:24px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-modebar-label {
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em;
+      text-transform:uppercase; color:var(--muted,#6b7a99); margin-right:4px; flex-shrink:0;
+    }
+    .ms-modeBtn {
+      font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 13px;
+      border-radius:8px; border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99);
+      cursor:pointer; transition:all .2s ease; white-space:nowrap;
+    }
+    .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeBtn.is-active {
+      color:var(--xp-a); border-color:var(--xp-a);
+      background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow);
+    }
+    .ms-modeKicker {
+      display:inline-block; font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.12em; padding:4px 12px; border-radius:20px;
+      border:1px solid var(--xp-a); color:var(--xp-a); margin-bottom:10px; transition:all .4s ease;
+    }
+
+    /* Profile */
+    .ms-profileGrid { display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center; }
+    .ms-avatar {
+      width:52px; height:52px; border-radius:14px; flex-shrink:0;
+      background:linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      display:flex; align-items:center; justify-content:center;
+      font-size:24px; box-shadow:0 4px 18px var(--xp-glow);
+      transition:background .5s ease, box-shadow .5s ease;
+    }
+    .ms-profileName { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); margin-bottom:3px; transition:color .4s; }
+    .ms-profileMeta { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted,#6b7a99); letter-spacing:.05em; }
+    .ms-xpBarTrack { height:5px; border-radius:3px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:8px; }
+    .ms-xpBarFill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); transition:width .8s ease, background .5s; }
+    .ms-xpBarLabel { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted,#6b7a99); margin-top:4px; }
+    .ms-statPill { text-align:center; padding:10px 14px; border:1px solid rgba(255,255,255,.08); border-radius:12px; background:rgba(255,255,255,.03); }
+    .ms-statPill b { display:block; font-family:'Orbitron',sans-serif; font-size:20px; font-weight:900; color:var(--xp-a); line-height:1; transition:color .4s; }
+    .ms-statPill span { font-size:10px; color:var(--muted,#6b7a99); font-family:'JetBrains Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+
+    /* Next lesson CTA */
+    .ms-nextLesson {
+      display:flex; align-items:center; gap:14px; padding:16px 18px; margin-bottom:8px;
+      border:1px solid var(--xp-a); border-radius:16px;
+      background:rgba(255,255,255,.04); box-shadow:0 0 24px var(--xp-glow);
+      text-decoration:none; transition:transform .18s, box-shadow .18s;
+    }
+    .ms-nextLesson:hover { transform:translateY(-2px); box-shadow:0 8px 32px var(--xp-glow); }
+    .ms-nextLesson-icon { font-size:24px; flex-shrink:0; }
+    .ms-nextLesson-label {
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--xp-a); margin-bottom:3px; transition:color .4s;
+    }
+    .ms-nextLesson-title { font-weight:700; font-size:15px; }
+    .ms-nextLesson-sub { font-size:12px; color:var(--muted,#6b7a99); margin-top:2px; }
+
+    /* Progress */
+    .ms-progress {
+      margin:0 0 18px; padding:14px;
+      border:1px solid rgba(255,255,255,.08); border-radius:12px; background:rgba(255,255,255,.03);
+    }
+    .ms-bar { height:8px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; margin-top:10px; }
+    .ms-bar div {
+      height:100%; width:0%;
+      background:linear-gradient(90deg,var(--xp-b),var(--xp-a));
+      border-radius:999px; transition:width .8s ease, background .5s;
+    }
+
+    /* Course items */
+    .ms-item {
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding:16px 0; border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .ms-item:last-child { border-bottom:none; }
+    .ms-row { display:flex; align-items:center; gap:12px; flex:1; min-width:0; }
+    .ms-badge {
+      width:32px; height:32px; border-radius:10px; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05);
+      font-weight:800; font-size:14px; transition:all .3s;
+    }
+    .ms-check { border-color:var(--xp-a)!important; background:rgba(255,255,255,.1)!important; box-shadow:0 0 0 3px var(--xp-glow); color:var(--xp-a); }
+    .ms-title { font-weight:700; font-size:14px; margin-bottom:2px; }
+    .ms-subtle { font-size:12px; color:var(--muted,#6b7a99); }
+    .ms-lessonMode { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--xp-a); margin-top:3px; opacity:.75; transition:color .4s; }
+    .ms-flavorTag {
+      font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.13em; text-transform:uppercase;
+      padding:3px 8px; border-radius:5px; border:1px solid var(--xp-a); color:var(--xp-a);
+      opacity:.65; display:inline-block; margin-left:8px; vertical-align:middle; transition:all .4s;
+    }
+
+    /* Buttons */
+    .ms-btn {
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      padding:9px 18px; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06); color:#e8edf5; cursor:pointer; white-space:nowrap;
+      text-decoration:none; display:inline-block; transition:all .2s;
+    }
+    .ms-btn:hover { background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.22); }
+    .ms-btn.primary {
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      border-color:transparent; color:#06080e; box-shadow:0 4px 18px var(--xp-glow);
+      transition:transform .18s,box-shadow .18s,background .5s;
+    }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 26px var(--xp-glow); }
+
+    /* Course complete banner */
+    .ms-courseComplete {
+      text-align:center; padding:32px 24px; border-radius:20px; margin-bottom:24px;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+    }
+    .ms-courseComplete .cc-icon { font-size:52px; margin-bottom:12px; }
+    .ms-courseComplete h2 { font-family:'Orbitron',sans-serif; font-size:22px; font-weight:900; color:#06080e; margin-bottom:8px; }
+    .ms-courseComplete p { font-size:14px; color:rgba(0,0,0,.7); margin-bottom:20px; }
+
+    .ms-reveal { opacity:0; transform:translateY(12px); transition:opacity .5s ease,transform .5s ease; }
+    .ms-reveal.is-in { opacity:1; transform:translateY(0); }
+    @media(prefers-reduced-motion:reduce){ .ms-reveal{opacity:1;transform:none;transition:none;} }
+    @media(max-width:540px){ .ms-profileGrid{grid-template-columns:auto 1fr;} .ms-statPill{display:none;} }
+  </style>
+</head>
+
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./index.html">Pre-Algebra</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">🧠 Academic Mastery Mode</div>
+    <span class="ms-kicker">🚀 Next Level</span>
+    <h1 class="ms-h1" id="heroTitle">Pre-Algebra Mastery</h1>
+    <p class="ms-sub" id="heroSub">This course builds proportional thinking and algebra readiness.</p>
+  </section>
+
+  <!-- MODE BAR -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- COURSE COMPLETE BANNER -->
+  <div class="ms-courseComplete ms-reveal" id="courseCompleteBanner" style="display:none;">
+    <div class="cc-icon">🎓</div>
+    <h2 id="ccTitle">Pre-Algebra Complete!</h2>
+    <p id="ccMsg">Ratios → Proportions → Percents → Expressions → Equations. You built the whole foundation. Algebra is next.</p>
+    <a class="ms-btn" href="../index.html" style="background:rgba(0,0,0,.18);color:#06080e;border-color:rgba(0,0,0,.2);">Back to Foundations →</a>
+  </div>
+
+  <!-- NEXT LESSON SMART CTA -->
+  <div id="nextLessonWrap" style="display:none;" class="ms-reveal">
+    <a class="ms-nextLesson" id="nextLessonLink" href="#">
+      <span class="ms-nextLesson-icon" id="nextLessonIcon">▶</span>
+      <div style="flex:1;min-width:0;">
+        <div class="ms-nextLesson-label" id="nextLessonLabel">Continue</div>
+        <div class="ms-nextLesson-title" id="nextLessonTitle">Next Lesson</div>
+        <div class="ms-nextLesson-sub" id="nextLessonSub"></div>
+      </div>
+      <span style="font-size:20px;opacity:.5;flex-shrink:0;">→</span>
+    </a>
+  </div>
+
+  <!-- STUDENT PROFILE -->
+  <section class="ms-card ms-reveal">
+    <h2 id="profileTitle">Student Profile</h2>
+    <div class="ms-profileGrid">
+      <div class="ms-avatar" id="profileAvatar">📚</div>
+      <div>
+        <div class="ms-profileName" id="profileName">Scholar</div>
+        <div class="ms-profileMeta" id="profileMeta">Loading…</div>
+        <div class="ms-xpBarTrack"><div class="ms-xpBarFill" id="profileXpFill" style="width:0%"></div></div>
+        <div class="ms-xpBarLabel" id="profileXpLabel"></div>
+      </div>
+      <div class="ms-statPill">
+        <b id="statVal">—</b>
+        <span id="statLbl">Done</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COURSE PROGRESS -->
+  <section class="ms-card ms-reveal">
+    <h2 id="courseTitle">Course Progress <span class="ms-flavorTag" id="courseTag">In Progress</span></h2>
+
+    <div class="ms-progress">
+      <span><b id="doneCount">0</b> / 5 lessons complete</span>
+      <div class="ms-bar"><div id="courseBar"></div></div>
+    </div>
+
+    <div class="ms-list">
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="badge-ratios">1</span>
+          <div>
+            <div class="ms-title">Ratios — Balance of Comparison</div>
+            <div class="ms-subtle">Scaling relationships</div>
+            <div class="ms-lessonMode" id="mode-ratios"></div>
+          </div>
+        </div>
+        <a class="ms-btn primary" href="../ratio/" id="btn-ratios">Open →</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="badge-proportions">2</span>
+          <div>
+            <div class="ms-title">Proportions — Equal Ratios</div>
+            <div class="ms-subtle">Cross-multiply to solve</div>
+            <div class="ms-lessonMode" id="mode-proportions"></div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./proportions/" id="btn-proportions">Open →</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="badge-percents">3</span>
+          <div>
+            <div class="ms-title">Percents — Ratios out of 100</div>
+            <div class="ms-subtle">Part, whole, percent triangle</div>
+            <div class="ms-lessonMode" id="mode-percents"></div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./percents/" id="btn-percents">Open →</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="badge-expressions">4</span>
+          <div>
+            <div class="ms-title">Expressions — Variables &amp; Terms</div>
+            <div class="ms-subtle">Coefficients, like terms, evaluation</div>
+            <div class="ms-lessonMode" id="mode-expressions"></div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./expressions/" id="btn-expressions">Open →</a>
+      </div>
+
+      <div class="ms-item">
+        <div class="ms-row">
+          <span class="ms-badge" id="badge-equations">5</span>
+          <div>
+            <div class="ms-title">Equations — Solve for x</div>
+            <div class="ms-subtle">Inverse operations · Final boss</div>
+            <div class="ms-lessonMode" id="mode-equations"></div>
+          </div>
+        </div>
+        <a class="ms-btn" href="./equations/" id="btn-equations">Open →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="ms-footer">© MindStrong Universe • Pre-Algebra</footer>
+</main>
+
+<script>
+/* ── Lesson definitions ── */
+const LESSONS = [
+  { id:"ratios",      title:"Ratios",      sub:"Scaling relationships",         icon:"⚖️", href:"../ratio/",       done: () => !!localStorage.getItem("ms_ratio_rank") },
+  { id:"proportions", title:"Proportions", sub:"Cross-multiply to solve",        icon:"📐", href:"./proportions/", done: () => _preArr().includes("proportions-1") },
+  { id:"percents",    title:"Percents",    sub:"Part, whole, percent triangle",  icon:"%",  href:"./percents/",    done: () => _preArr().includes("percents-1") },
+  { id:"expressions", title:"Expressions", sub:"Coefficients & like terms",      icon:"🔢", href:"./expressions/", done: () => _preArr().includes("expressions-1") },
+  { id:"equations",   title:"Equations",   sub:"Inverse ops · Final boss",       icon:"⚖️", href:"./equations/",   done: () => _preArr().includes("equations-1") },
+];
+
+function _preArr(){ try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } }
+
+const doneStatuses = LESSONS.map(l => l.done());
+const doneCount    = doneStatuses.filter(Boolean).length;
+const allDone      = doneCount === LESSONS.length;
+
+/* ── Progress bar & badges ── */
+document.getElementById("doneCount").textContent  = doneCount;
+document.getElementById("courseBar").style.width  = Math.round((doneCount/5)*100) + "%";
+
+LESSONS.forEach((l, i) => {
+  const badge = document.getElementById("badge-" + l.id);
+  if(doneStatuses[i] && badge){ badge.textContent = "✓"; badge.classList.add("ms-check"); }
+  /* Highlight current lesson button if done */
+  if(doneStatuses[i]){
+    const btn = document.getElementById("btn-" + l.id);
+    if(btn){ btn.textContent = "Review →"; btn.classList.remove("primary"); }
+  }
+});
+
+/* Ratios is always primary CTA */
+if(!doneStatuses[0]) document.getElementById("btn-ratios").classList.add("primary");
+
+/* ── Smart Next Lesson CTA ── */
+const nextIdx = doneStatuses.findIndex(d => !d);
+if(nextIdx !== -1 && !allDone){
+  const next = LESSONS[nextIdx];
+  document.getElementById("nextLessonWrap").style.display = "block";
+  document.getElementById("nextLessonLink").href          = next.href;
+  document.getElementById("nextLessonIcon").textContent   = next.icon;
+  document.getElementById("nextLessonTitle").textContent  = next.title;
+  document.getElementById("nextLessonSub").textContent    = next.sub;
+  /* Make that lesson's button primary */
+  const nb = document.getElementById("btn-" + next.id);
+  if(nb){ nb.classList.add("primary"); }
+}
+
+/* ── Course complete ── */
+if(allDone){
+  document.getElementById("courseCompleteBanner").style.display = "block";
+}
+
+/* ── Mode config ── */
+const ratioRank = localStorage.getItem("ms_ratio_rank");
+const MODES = {
+  arcade:{
+    kicker:"🕹️ Arcade Competitive Mode", heroTitle:"Pre-Algebra Blitz",
+    heroSub:"Speed lessons. Score points. Defeat every boss.",
+    profileTitle:"Player Profile", profileName:"MathWarrior", avatar:"🕹️",
+    metaFn:()=>`RANK: ${ratioRank||"Unranked"} · ${doneCount}/5 cleared`,
+    xpLabelFn:()=>`${doneCount*480} pts earned`, xpPct:()=>Math.round((doneCount/5)*100),
+    statVal:()=>doneCount+"/5", statLbl:"Cleared",
+    courseTitle:"Rounds", courseTag:allDone?"Complete":"Active", nextLabel:"Next Round",
+    ccTitle:"Blitz Complete!", ccMsg:"All 5 bosses defeated. Pre-Algebra Blitz: cleared.",
+    modes:{ratios:"⚔️ Boss fight",proportions:"⚡ Speed round",percents:"⚡ Speed round",expressions:"⚡ Speed round",equations:"⚔️ Final boss"},
+  },
+  rpg:{
+    kicker:"🎮 RPG Progression Mode", heroTitle:"Pre-Algebra Quest Board",
+    heroSub:"Complete quests. Earn XP. Level your Math Wizard.",
+    profileTitle:"Character Sheet", profileName:"MathWizard", avatar:"🧙",
+    metaFn:()=>`CLASS: Fraction Mage · LVL ${Math.max(1,doneCount*2)}`,
+    xpLabelFn:()=>`${doneCount*480} / 2,400 XP`, xpPct:()=>Math.round((doneCount/5)*100),
+    statVal:()=>`LVL ${Math.max(1,doneCount*2)}`, statLbl:"Level",
+    courseTitle:"Quest Log", courseTag:allDone?"Complete":"In Progress", nextLabel:"Next Quest",
+    ccTitle:"Pre-Algebra Quest Complete!", ccMsg:"All quests cleared. The Math Wizard grows in power.",
+    modes:{ratios:"⚔️ Boss quest",proportions:"🗺️ Main quest",percents:"🗺️ Main quest",expressions:"🗺️ Main quest",equations:"⚔️ Final boss"},
+  },
+  academic:{
+    kicker:"🧠 Academic Mastery Mode", heroTitle:"Pre-Algebra Mastery",
+    heroSub:"This course builds proportional thinking and algebra readiness.",
+    profileTitle:"Student Profile", profileName:"Scholar", avatar:"📚",
+    metaFn:()=>`Mastery: ${Math.round((doneCount/5)*100)}% · ${doneCount}/5 lessons`,
+    xpLabelFn:()=>`${doneCount} / 5 lessons mastered`, xpPct:()=>Math.round((doneCount/5)*100),
+    statVal:()=>Math.round((doneCount/5)*100)+"%", statLbl:"Mastery",
+    courseTitle:"Course Progress", courseTag:allDone?"Complete":doneCount>0?"In Progress":"Not Started",
+    nextLabel:"Continue",
+    ccTitle:"Pre-Algebra Complete!", ccMsg:"Ratios → Proportions → Percents → Expressions → Equations. The full foundation is yours.",
+    modes:{ratios:"📖 Mastery lesson",proportions:"📖 Mastery lesson",percents:"📖 Mastery lesson",expressions:"📖 Mastery lesson",equations:"📖 Final mastery lesson"},
+  },
+  lms:{
+    kicker:"🏫 Full LMS Mode", heroTitle:"Pre-Algebra Course",
+    heroSub:"Assigned lessons, graded assessments, teacher-tracked progress.",
+    profileTitle:"Student Record", profileName:"Student", avatar:"🎓",
+    metaFn:()=>`Completion: ${Math.round((doneCount/5)*100)}% · Grade: ${doneCount===5?"A":doneCount>=3?"B":"—"}`,
+    xpLabelFn:()=>`${doneCount} / 5 submitted`, xpPct:()=>Math.round((doneCount/5)*100),
+    statVal:()=>doneCount===5?"A":doneCount>=3?"B":"—", statLbl:"Grade",
+    courseTitle:"Assigned Lessons", courseTag:allDone?"Submitted":doneCount>0?"In Progress":"Assigned",
+    nextLabel:"Next Assignment",
+    ccTitle:"Course Submitted!", ccMsg:"All 5 lessons submitted. Your teacher has been notified.",
+    modes:{ratios:"📋 Assignment",proportions:"📋 Assignment",percents:"📋 Assignment",expressions:"📋 Assignment",equations:"📋 Final assessment"},
+  },
+};
+
+function applyMode(mode){
+  const cfg=MODES[mode]; if(!cfg)return;
+  document.body.setAttribute("data-mode",mode);
+  document.getElementById("modeKicker").textContent    = cfg.kicker;
+  document.getElementById("heroTitle").textContent     = cfg.heroTitle;
+  document.getElementById("heroSub").textContent       = cfg.heroSub;
+  document.getElementById("profileTitle").textContent  = cfg.profileTitle;
+  document.getElementById("profileName").textContent   = cfg.profileName;
+  document.getElementById("profileAvatar").textContent = cfg.avatar;
+  document.getElementById("profileMeta").textContent   = cfg.metaFn();
+  document.getElementById("profileXpFill").style.width = cfg.xpPct()+"%";
+  document.getElementById("profileXpLabel").textContent= cfg.xpLabelFn();
+  document.getElementById("statVal").textContent       = cfg.statVal();
+  document.getElementById("statLbl").textContent       = cfg.statLbl;
+  document.getElementById("courseTitle").childNodes[0].textContent = cfg.courseTitle+" ";
+  document.getElementById("courseTag").textContent     = cfg.courseTag;
+  const nll=document.getElementById("nextLessonLabel");
+  if(nll) nll.textContent = cfg.nextLabel;
+  document.getElementById("ccTitle").textContent = cfg.ccTitle;
+  document.getElementById("ccMsg").textContent   = cfg.ccMsg;
+  LESSONS.forEach(l=>{
+    const el=document.getElementById("mode-"+l.id);
+    if(el) el.textContent = cfg.modes[l.id]||"";
+  });
+  document.querySelectorAll(".ms-modeBtn").forEach(b=>b.classList.toggle("is-active",b.dataset.mode===mode));
+  try{localStorage.setItem("ms_xp_mode",mode);}catch{}
+}
+
+document.querySelectorAll(".ms-modeBtn").forEach(btn=>btn.addEventListener("click",()=>applyMode(btn.dataset.mode)));
+try{const s=localStorage.getItem("ms_xp_mode");applyMode(s&&MODES[s]?s:"academic");}catch{applyMode("academic");}
+
+(function(){
+  const els=document.querySelectorAll(".ms-reveal");
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("is-in");io.unobserve(e.target);}});
+  },{threshold:.1});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindStrong School</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ── Base overrides that live on top of theme.css ── */
+    body { font-family: 'Syne', sans-serif; }
+
+    /* Animated reveals */
+    .ms-reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .ms-reveal.is-in { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .ms-reveal { opacity:1; transform:none; transition:none; }
+    }
+
+    /* ── Mode-aware accent system ── */
+    :root {
+      --xp-a: #facc15;
+      --xp-b: #f97316;
+      --xp-c: #ef4444;
+      --xp-glow: rgba(250,204,21,.18);
+    }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-c:#ec4899; --xp-glow:rgba(168,85,247,.18); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-c:#10b981; --xp-glow:rgba(34,211,238,.16); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-c:#0ea5e9; --xp-glow:rgba(52,211,153,.16); }
+
+    /* ── Page background glow ── */
+    .ms-pageFX {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(900px 500px at 20% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(600px 400px at 80% 80%, rgba(124,58,237,.08), transparent 60%);
+      transition: background 0.6s ease;
+    }
+
+    .ms-wrap { position: relative; z-index: 1; }
+
+    /* ── Mode Switcher Bar ── */
+    .ms-modebar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      align-items: center;
+    }
+    .ms-modebar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted, #6b7a99);
+      margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .ms-modeBtn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      color: var(--muted, #6b7a99);
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+    }
+    .ms-modeBtn:hover { color: #e8edf5; border-color: rgba(255,255,255,.2); }
+    .ms-modeBtn.is-active {
+      color: var(--xp-a);
+      border-color: var(--xp-a);
+      background: rgba(255,255,255,.07);
+      box-shadow: 0 0 12px var(--xp-glow);
+    }
+
+    /* ── Hero ── */
+    .ms-hero { margin-bottom: 28px; }
+    .ms-h1 { font-family: 'Orbitron', sans-serif; }
+
+    .ms-modeKicker {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--xp-a);
+      color: var(--xp-a);
+      margin-bottom: 12px;
+      transition: all .4s ease;
+    }
+
+    /* ── Profile Card ── */
+    .ms-profileGrid {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .ms-avatar {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 20px var(--xp-glow);
+      transition: background 0.5s ease, box-shadow 0.5s ease;
+      flex-shrink: 0;
+    }
+
+    .ms-profileName {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--xp-a);
+      transition: color .4s ease;
+      margin-bottom: 3px;
+    }
+    .ms-profileMeta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted, #6b7a99);
+      letter-spacing: .06em;
+    }
+
+    .ms-xpBar-wrap { margin-top: 8px; }
+    .ms-xpBarTrack {
+      height: 6px; border-radius: 3px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden; margin-bottom: 4px;
+    }
+    .ms-xpBarFill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--xp-b), var(--xp-a));
+      transition: width .8s ease, background .5s ease;
+    }
+    .ms-xpBarLabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px; color: var(--muted, #6b7a99);
+    }
+
+    .ms-statPill {
+      text-align: center;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    .ms-statPill b {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--xp-a);
+      transition: color .4s ease;
+      line-height: 1;
+    }
+    .ms-statPill span {
+      font-size: 10px;
+      color: var(--muted, #6b7a99);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Course Items ── */
+    .ms-courseItem {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .ms-courseItem:last-child { border-bottom: none; padding-bottom: 0; }
+    .ms-courseItem:first-child { padding-top: 0; }
+
+    .ms-courseMeta { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+
+    .ms-courseBadge {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: all .3s ease;
+    }
+    .ms-courseBadge.is-done {
+      background: rgba(255,255,255,.1);
+      border-color: var(--xp-a);
+      box-shadow: 0 0 10px var(--xp-glow);
+    }
+    .ms-courseBadge.is-locked { opacity: .4; }
+
+    .ms-courseTitle {
+      font-weight: 700; font-size: 14px;
+      margin-bottom: 2px;
+    }
+    .ms-courseSubtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted, #6b7a99);
+    }
+
+    /* mini progress bar inside course row */
+    .ms-miniProgress {
+      width: 80px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      margin-top: 5px;
+    }
+    .ms-miniProgressFill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--xp-b), var(--xp-a));
+      transition: width .6s ease, background .5s ease;
+    }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px; font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: #e8edf5;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: all .2s ease;
+      display: inline-block;
+    }
+    .ms-btn:hover:not(:disabled) {
+      background: rgba(255,255,255,.1);
+      border-color: rgba(255,255,255,.2);
+    }
+    .ms-btn.primary {
+      background: linear-gradient(135deg, var(--xp-b), var(--xp-a));
+      border-color: transparent;
+      color: #07090f;
+      box-shadow: 0 4px 16px var(--xp-glow);
+      transition: transform .18s ease, box-shadow .18s ease, background .5s ease;
+    }
+    .ms-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--xp-glow); }
+    .ms-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── Mode-specific flavor labels ── */
+    .ms-flavorLabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--xp-a);
+      padding: 2px 8px;
+      border: 1px solid var(--xp-a);
+      border-radius: 5px;
+      opacity: .7;
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: middle;
+      transition: all .4s ease;
+    }
+
+    /* ── Experience Selector (inline) ── */
+    .ms-xpSelector {
+      margin-top: 28px;
+    }
+    .ms-xpGrid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .ms-xpCard {
+      position: relative;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 16px 14px;
+      cursor: pointer;
+      background: rgba(255,255,255,.03);
+      transition: transform .2s ease, border-color .3s ease, box-shadow .3s ease;
+      overflow: hidden;
+      text-align: left;
+    }
+    .ms-xpCard::before {
+      content:''; position:absolute; inset:0; border-radius:inherit;
+      opacity: 0; transition: opacity .35s ease;
+    }
+    .ms-xpCard[data-xp="arcade"]::before   { background: radial-gradient(400px at 0% 100%, rgba(250,204,21,.14), transparent 65%); }
+    .ms-xpCard[data-xp="rpg"]::before      { background: radial-gradient(400px at 0% 100%, rgba(168,85,247,.16), transparent 65%); }
+    .ms-xpCard[data-xp="academic"]::before { background: radial-gradient(400px at 0% 100%, rgba(34,211,238,.14), transparent 65%); }
+    .ms-xpCard[data-xp="lms"]::before      { background: radial-gradient(400px at 0% 100%, rgba(52,211,153,.14), transparent 65%); }
+    .ms-xpCard:hover { transform: translateY(-2px); }
+    .ms-xpCard:hover::before, .ms-xpCard.is-active::before { opacity: 1; }
+    .ms-xpCard.is-active[data-xp="arcade"]   { border-color: rgba(250,204,21,.5); box-shadow: 0 0 0 1px rgba(250,204,21,.12), 0 8px 28px rgba(250,204,21,.1); }
+    .ms-xpCard.is-active[data-xp="rpg"]      { border-color: rgba(168,85,247,.5); box-shadow: 0 0 0 1px rgba(168,85,247,.12), 0 8px 28px rgba(168,85,247,.1); }
+    .ms-xpCard.is-active[data-xp="academic"] { border-color: rgba(34,211,238,.5);  box-shadow: 0 0 0 1px rgba(34,211,238,.12), 0 8px 28px rgba(34,211,238,.1); }
+    .ms-xpCard.is-active[data-xp="lms"]      { border-color: rgba(52,211,153,.5);  box-shadow: 0 0 0 1px rgba(52,211,153,.12), 0 8px 28px rgba(52,211,153,.1); }
+
+    .ms-xpEmoji  { font-size: 24px; display: block; margin-bottom: 8px; }
+    .ms-xpTitle  { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .ms-xpDesc   { font-size: 12px; color: var(--muted, #6b7a99); line-height: 1.5; margin: 0; }
+    .ms-xpCheck  {
+      position: absolute; top: 10px; right: 10px;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: transparent;
+      background: rgba(255,255,255,.03);
+      transition: all .2s ease;
+    }
+    .ms-xpCard.is-active .ms-xpCheck { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.4); color: #fff; }
+
+    @media (max-width: 600px) {
+      .ms-xpGrid { grid-template-columns: 1fr; }
+      .ms-profileGrid { grid-template-columns: auto 1fr; }
+      .ms-statPill { display: none; }
+    }
+  </style>
+</head>
+<body data-mode="arcade">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <span class="ms-dot"></span>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../index.html">Home</a>
+      <a class="ms-link is-active" href="./index.html">School</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">🕹️ Arcade Competitive Mode</div>
+    <h1 class="ms-h1" id="heroTitle">Your Learning Dashboard</h1>
+    <p class="ms-sub" id="heroSub">Score points. Climb the ranks. Beat your best.</p>
+  </section>
+
+  <!-- MODE SWITCHER -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn is-active" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- STUDENT PROFILE -->
+  <section class="ms-card ms-reveal">
+    <h2 id="profileTitle">Player Profile</h2>
+    <div class="ms-profileGrid">
+      <div class="ms-avatar" id="profileAvatar">🧠</div>
+      <div>
+        <div class="ms-profileName" id="profileName">MathWarrior</div>
+        <div class="ms-profileMeta" id="profileMeta">RANK: Novice · Module 1: 0/6</div>
+        <div class="ms-xpBar-wrap">
+          <div class="ms-xpBarTrack"><div class="ms-xpBarFill" id="xpFill" style="width:0%"></div></div>
+          <div class="ms-xpBarLabel" id="xpLabel">0 / 6 lessons · 0 XP</div>
+        </div>
+      </div>
+      <div class="ms-statPill" id="statPill">
+        <b id="statVal">0</b>
+        <span id="statLbl">Score</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDATIONS -->
+  <section class="ms-card ms-reveal">
+    <h2>Foundations <span class="ms-flavorLabel" id="foundationsLabel">Active</span></h2>
+
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge" id="m1Badge">1</div>
+        <div>
+          <div class="ms-courseTitle">Module 1 — Number Sense</div>
+          <div class="ms-courseSubtitle" id="m1Sub">6 Lessons · <span id="m1Count">0</span> completed</div>
+          <div class="ms-miniProgress">
+            <div class="ms-miniProgressFill" id="m1Bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+      <a class="ms-btn primary" href="./foundations/index.html" id="m1Btn">Open →</a>
+    </div>
+  </section>
+
+  <!-- PRE-ALGEBRA -->
+  <section class="ms-card ms-reveal">
+    <h2>Pre-Algebra <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked" id="preBadge">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 2 — Pre-Algebra</div>
+          <div class="ms-courseSubtitle" id="preSubtitle">5 Lessons · <span id="preCount">0</span> completed</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="preBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <span id="preAction"><button class="ms-btn" disabled>Locked</button></span>
+    </div>
+  </section>
+
+  <!-- GEOMETRY -->
+  <section class="ms-card ms-reveal">
+    <h2>Geometry <span class="ms-flavorLabel" id="geoLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked" id="geoBadge">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 3 — Geometry Foundations</div>
+          <div class="ms-courseSubtitle" id="geoSubtitle">6 Lessons · <span id="geoCount">0</span> completed</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="geoBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <span id="geoAction"><button class="ms-btn" disabled>Locked</button></span>
+    </div>
+  </section>
+
+  <!-- PROGRESS DASHBOARD LINK -->
+  <section class="ms-card ms-reveal" style="text-align:center;padding:20px 24px;">
+    <div style="font-size:24px;margin-bottom:8px;">📊</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">Full Progress Report</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:14px;">See scores, XP, boss wins & streaks for every lesson.</div>
+    <a class="ms-btn primary" href="./foundations/progress-dashboard.html">View My Progress →</a>
+  </section>
+
+  <!-- EXPERIENCE SELECTOR -->
+  <section class="ms-card ms-xpSelector ms-reveal">
+    <h2>How should this feel?</h2>
+    <p style="color:var(--muted,#6b7a99);font-size:13px;margin-top:4px;">Choose your learning experience. It changes how MindStrong presents everything.</p>
+
+    <div class="ms-xpGrid">
+
+      <button class="ms-xpCard is-active" data-xp="arcade">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🕹️</span>
+        <div class="ms-xpTitle">Arcade Competitive</div>
+        <p class="ms-xpDesc">Score points, beat the clock, climb leaderboards. Math as a high-speed sport.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="rpg">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🎮</span>
+        <div class="ms-xpTitle">RPG Progression</div>
+        <p class="ms-xpDesc">Level up, unlock spells, earn XP. Every lesson is a quest with real rewards.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="academic">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🧠</span>
+        <div class="ms-xpTitle">Academic Mastery</div>
+        <p class="ms-xpDesc">Mastery gates, spaced repetition, deep proof you own each concept.</p>
+      </button>
+
+      <button class="ms-xpCard" data-xp="lms">
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🏫</span>
+        <div class="ms-xpTitle">Full LMS</div>
+        <p class="ms-xpDesc">Gradebooks, teacher dashboards, parent reports. Your complete school OS.</p>
+      </button>
+
+    </div>
+  </section>
+
+  <footer class="ms-footer">© MindStrong Universe</footer>
+</main>
+
+<script>
+/* ================================================================
+   LOAD PROGRESS
+================================================================ */
+// Module 1
+const m1Done  = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
+const m1Count = new Set(m1Done).size;
+const m1Complete = m1Count >= 6;
+
+// Pre-Algebra (module 2) — 5 lessons
+(function(){
+  const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
+  const s = new Set();
+  if(localStorage.getItem("ms_ratio_rank")) s.add(1);
+  if(arr.includes("proportions-1"))  s.add(2);
+  if(arr.includes("percents-1"))     s.add(3);
+  if(arr.includes("expressions-1")) s.add(4);
+  if(arr.includes("equations-1"))   s.add(5);
+  window._preCount = s.size;
+  window._preComplete = s.size >= 5;
+})();
+
+// Geometry (module 3) — 6 lessons
+(function(){
+  const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_geo_done")||"[]"); }catch{ return []; } })();
+  const s = new Set();
+  arr.forEach(v => { const m={"angles-1":1,"triangles-1":2,"polygons-1":3,"area-1":4,"circles-1":5,"coordinate-1":6}; if(m[v]) s.add(m[v]); });
+  window._geoCount = s.size;
+  window._geoComplete = s.size >= 6;
+})();
+
+// Total XP from ms_progress tracker
+(function(){
+  try{
+    const d = JSON.parse(localStorage.getItem("ms_progress")||"{}");
+    const lessons = d.lessons || {};
+    window._totalXP = Object.values(lessons).reduce((s,l) => s + (l.xpEarned||0), 0);
+    window._totalLessons = Object.values(lessons).filter(l => l.completedAt).length;
+    window._bossWins = Object.values(lessons).filter(l => l.bossWon).length;
+  }catch{ window._totalXP=0; window._totalLessons=0; window._bossWins=0; }
+})();
+
+const totalDone = m1Count + window._preCount + window._geoCount;
+
+/* ── Module 1 ── */
+document.getElementById("m1Count").textContent = m1Count;
+document.getElementById("m1Bar").style.width   = `${Math.round((m1Count/6)*100)}%`;
+if (m1Complete) {
+  const badge = document.getElementById("m1Badge");
+  badge.textContent = "✓"; badge.classList.add("is-done");
+}
+
+/* ── Pre-Algebra ── */
+const unlocked = JSON.parse(localStorage.getItem("ms_unlocked_modules")||"[1]");
+const preUnlocked = m1Complete || unlocked.includes(2);
+document.getElementById("preCount").textContent = window._preCount;
+document.getElementById("preBar").style.width   = `${Math.round((window._preCount/5)*100)}%`;
+if(preUnlocked){
+  document.getElementById("preBadge").textContent = window._preComplete ? "✓" : "2";
+  document.getElementById("preBadge").classList.remove("is-locked");
+  if(window._preComplete) document.getElementById("preBadge").classList.add("is-done");
+  document.getElementById("preLabel").textContent = window._preComplete ? "Complete" : window._preCount > 0 ? "In Progress" : "Unlocked";
+  document.getElementById("preAction").innerHTML = `<a class="ms-btn${window._preComplete?"":" primary"}" href="./foundations/pre-algebra/">${window._preComplete?"Review →":"Open →"}</a>`;
+}
+
+/* ── Geometry ── */
+const geoUnlocked = window._preComplete || unlocked.includes(3);
+document.getElementById("geoCount").textContent = window._geoCount;
+document.getElementById("geoBar").style.width   = `${Math.round((window._geoCount/6)*100)}%`;
+if(geoUnlocked){
+  document.getElementById("geoBadge").textContent = window._geoComplete ? "✓" : "3";
+  document.getElementById("geoBadge").classList.remove("is-locked");
+  if(window._geoComplete) document.getElementById("geoBadge").classList.add("is-done");
+  document.getElementById("geoLabel").textContent = window._geoComplete ? "Complete" : window._geoCount > 0 ? "In Progress" : "Unlocked";
+  document.getElementById("geoAction").innerHTML = `<a class="ms-btn${window._geoComplete?"":" primary"}" href="./foundations/geometry/">${window._geoComplete?"Review →":"Open →"}</a>`;
+}
+
+/* ================================================================
+   MODE CONFIG
+================================================================ */
+const MODES = {
+  arcade: {
+    emoji: "🕹️",
+    kicker: "🕹️ Arcade Competitive Mode",
+    title: "Your Learning Dashboard",
+    sub: "Score points. Climb the ranks. Beat your best.",
+    avatar: "🕹️",
+    profileTitle: "Player Profile",
+    profileName: "MathWarrior",
+    metaFn: (n) => `RANK: ${n >= 40 ? "Legend" : n >= 20 ? "Veteran" : n >= 10 ? "Fighter" : "Novice"} · ${n}/57 lessons${window._totalXP ? ' · '+window._totalXP+' XP' : ''}`,
+    xpLabelFn: (n) => `${n} / 57 lessons · ${window._totalXP || n * 120} XP`,
+    statVal: (n) => window._totalXP || n * 120,
+    statLbl: "Score",
+    foundationsLabel: "Active",
+    preLabel: "Locked",
+    btnText: "Open →",
+  },
+  rpg: {
+    emoji: "🎮",
+    kicker: "🎮 RPG Progression Mode",
+    title: "Your Quest Board",
+    sub: "Level up. Earn XP. Unlock Math Spells.",
+    avatar: "🧙",
+    profileTitle: "Character Sheet",
+    profileName: "MathWizard",
+    metaFn: (n) => `CLASS: Math Wizard · LVL ${Math.max(1, Math.floor(n / 3) + 1)} · ${window._bossWins} bosses slain`,
+    xpLabelFn: (n) => `${window._totalXP || n * 480} / 5,700 XP`,
+    statVal: (n) => Math.max(1, Math.floor(n / 3) + 1),
+    statLbl: "Level",
+    foundationsLabel: "Main Quest",
+    preLabel: "Locked",
+    btnText: "Begin Quest →",
+  },
+  academic: {
+    emoji: "🧠",
+    kicker: "🧠 Academic Mastery Mode",
+    title: "Mastery Dashboard",
+    sub: "Own every concept before you move on.",
+    avatar: "📚",
+    profileTitle: "Learner Profile",
+    profileName: "Scholar",
+    metaFn: (n) => `Mastery: ${Math.round((n/57)*100)}% · ${window._bossWins} concepts locked in`,
+    xpLabelFn: (n) => `${n} of 57 concepts · ${window._totalXP} XP earned`,
+    statVal: (n) => `${Math.round((n/57)*100)}%`,
+    statLbl: "Mastery",
+    foundationsLabel: "In Progress",
+    preLabel: "Gate Locked",
+    btnText: "Study →",
+  },
+  lms: {
+    emoji: "🏫",
+    kicker: "🏫 Full LMS Mode",
+    title: "Student Dashboard",
+    sub: "Assignments. Progress. Reports.",
+    avatar: "🎓",
+    profileTitle: "Student Record",
+    profileName: "Student",
+    metaFn: (n) => `Grade: ${n >= 50 ? "A" : n >= 35 ? "B" : n >= 20 ? "C" : "—"} · Completion: ${Math.round((n/57)*100)}%`,
+    xpLabelFn: (n) => `${Math.round((n/57)*100)}% complete · ${n}/57 lessons`,
+    statVal: (n) => `${Math.round((n/57)*100)}%`,
+    statLbl: "Grade",
+    foundationsLabel: "Assigned",
+    preLabel: "Not Assigned",
+    btnText: "Open Course →",
+  },
+};
+
+/* ================================================================
+   APPLY MODE
+================================================================ */
+function applyMode(mode) {
+  const cfg = MODES[mode];
+  if (!cfg) return;
+
+  document.body.setAttribute("data-mode", mode);
+
+  /* Hero */
+  document.getElementById("modeKicker").textContent = cfg.kicker;
+  document.getElementById("heroTitle").textContent  = cfg.title;
+  document.getElementById("heroSub").textContent    = cfg.sub;
+
+  /* Profile */
+  document.getElementById("profileTitle").textContent  = cfg.profileTitle;
+  document.getElementById("profileAvatar").textContent = cfg.avatar;
+  document.getElementById("profileName").textContent   = cfg.profileName;
+  document.getElementById("profileMeta").textContent   = cfg.metaFn(totalDone);
+  document.getElementById("xpFill").style.width        = `${Math.min(100,Math.round((totalDone/57)*100))}%`;
+  document.getElementById("xpLabel").textContent       = cfg.xpLabelFn(totalDone);
+  document.getElementById("statVal").textContent       = cfg.statVal(totalDone);
+  document.getElementById("statLbl").textContent       = cfg.statLbl;
+
+  /* Foundations */
+  document.getElementById("foundationsLabel").textContent = cfg.foundationsLabel;
+  const m1btn = document.getElementById("m1Btn");
+  if (m1btn) m1btn.textContent = cfg.btnText;
+
+  /* Pre-Algebra label */
+  if (!m1Complete) {
+    document.getElementById("preLabel").textContent = cfg.preLabel;
+  }
+
+  /* Mode buttons */
+  document.querySelectorAll(".ms-modeBtn").forEach(b => {
+    b.classList.toggle("is-active", b.dataset.mode === mode);
+  });
+
+  /* XP cards */
+  document.querySelectorAll(".ms-xpCard").forEach(c => {
+    c.classList.toggle("is-active", c.dataset.xp === mode);
+  });
+
+  /* Save */
+  try { localStorage.setItem("ms_xp_mode", mode); } catch {}
+}
+
+/* ── Mode button clicks ── */
+document.querySelectorAll(".ms-modeBtn").forEach(btn => {
+  btn.addEventListener("click", () => applyMode(btn.dataset.mode));
+});
+
+/* ── XP card clicks ── */
+document.querySelectorAll(".ms-xpCard").forEach(card => {
+  card.addEventListener("click", () => applyMode(card.dataset.xp));
+  card.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyMode(card.dataset.xp); }
+  });
+});
+
+/* ── Restore saved mode ── */
+try {
+  const saved = localStorage.getItem("ms_xp_mode");
+  if (saved && MODES[saved]) applyMode(saved);
+} catch {}
+
+/* ── Scroll reveals ── */
+(function() {
+  const els = document.querySelectorAll(".ms-reveal");
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  els.forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

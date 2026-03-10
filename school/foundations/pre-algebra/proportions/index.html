@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Proportions • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <script src="../../ms-tracker.js" defer></script>
+  <link rel="stylesheet" href="../../../../theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="arcade"]  {--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.15);}
+    body[data-mode="rpg"]     {--xp-a:#a855f7;--xp-b:#7c3aed;--xp-glow:rgba(168,85,247,.16);}
+    body[data-mode="academic"]{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="lms"]     {--xp-a:#34d399;--xp-b:#059669;--xp-glow:rgba(52,211,153,.14);}
+
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),
+                 radial-gradient(500px 400px at 85% 85%,rgba(124,58,237,.07),transparent 60%);
+      transition:background .6s;}
+    .ms-wrap{position:relative;z-index:1;}
+
+    /* Mode bar */
+    .ms-modebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+      margin-bottom:24px;padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.03);}
+    .ms-modebar-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;
+      text-transform:uppercase;color:var(--muted,#6b7a99);margin-right:4px;flex-shrink:0;}
+    .ms-modeBtn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 13px;
+      border-radius:8px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);
+      cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .ms-modeBtn:hover{color:#e8edf5;border-color:rgba(255,255,255,.22);}
+    .ms-modeBtn.is-active{color:var(--xp-a);border-color:var(--xp-a);
+      background:rgba(255,255,255,.07);box-shadow:0 0 10px var(--xp-glow);}
+
+    /* Section chips */
+    .lesson-chip{display:inline-flex;align-items:center;gap:6px;
+      font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;
+      text-transform:uppercase;padding:4px 12px;border-radius:20px;
+      border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:12px;
+      transition:all .4s;}
+
+    /* Cards */
+    .lesson-card{margin-bottom:20px;padding:24px;border-radius:18px;
+      border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);}
+    .lesson-card h2{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;
+      margin-bottom:10px;}
+    .lesson-card p{font-size:14px;line-height:1.7;color:#c8d3e8;margin-bottom:10px;}
+    .lesson-card p:last-child{margin-bottom:0;}
+
+    /* Hack box */
+    .hack-box{padding:18px 20px;border-radius:14px;
+      border:2px solid var(--xp-a);background:rgba(255,255,255,.04);
+      box-shadow:0 0 20px var(--xp-glow);margin:16px 0;}
+    .hack-box .hack-label{font-family:'JetBrains Mono',monospace;font-size:10px;
+      letter-spacing:.2em;text-transform:uppercase;color:var(--xp-a);margin-bottom:8px;}
+    .hack-box .hack-text{font-size:15px;font-weight:700;line-height:1.5;}
+
+    /* Visual scale */
+    .prop-visual{display:flex;align-items:center;justify-content:center;
+      gap:16px;padding:20px;margin:16px 0;flex-wrap:wrap;}
+    .prop-side{text-align:center;padding:16px 24px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);min-width:120px;}
+    .prop-side .frac{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+      color:var(--xp-a);line-height:1;}
+    .prop-side .frac-label{font-size:11px;color:var(--muted,#6b7a99);margin-top:4px;
+      font-family:'JetBrains Mono',monospace;}
+    .prop-equals{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;
+      color:var(--xp-a);opacity:.7;}
+    .cross-box{padding:14px 18px;border-radius:12px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      margin:12px 0;font-size:14px;line-height:1.7;}
+    .cross-box b{color:var(--xp-a);}
+
+    /* Practice */
+    .practice-item{padding:16px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+      margin-bottom:12px;}
+    .practice-item .q{font-size:15px;font-weight:700;margin-bottom:10px;}
+    .practice-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .ms-input{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;
+      width:72px;padding:8px 12px;border-radius:10px;text-align:center;
+      border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);
+      color:#e8edf5;outline:none;transition:border-color .2s;}
+    .ms-input:focus{border-color:var(--xp-a);}
+    .ms-check-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+      padding:9px 18px;border-radius:10px;border:none;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      color:#06080e;cursor:pointer;transition:transform .18s,box-shadow .18s;}
+    .ms-check-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--xp-glow);}
+    .feedback{font-family:'JetBrains Mono',monospace;font-size:12px;
+      margin-top:8px;min-height:20px;transition:all .3s;}
+    .feedback.correct{color:#4ade80;}
+    .feedback.wrong{color:#f87171;}
+
+    /* Boss fight */
+    .boss-arena{padding:24px;border-radius:18px;
+      border:2px solid var(--xp-a);background:rgba(255,255,255,.03);
+      box-shadow:0 0 30px var(--xp-glow);}
+    .boss-header{display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+    .boss-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;
+      color:var(--xp-a);}
+    .boss-timer{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;
+      color:var(--xp-a);min-width:44px;text-align:right;transition:color .3s;}
+    .boss-timer.danger{color:#f87171;animation:timerPulse .6s ease-in-out infinite;}
+    @keyframes timerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.15)}}
+    .boss-pips{display:flex;gap:8px;margin-bottom:16px;}
+    .pip{width:16px;height:16px;border-radius:50%;
+      background:var(--xp-a);box-shadow:0 0 8px var(--xp-a);transition:all .3s;}
+    .pip.hit{background:rgba(255,255,255,.1);box-shadow:none;}
+    .boss-q{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;
+      text-align:center;margin:20px 0;color:var(--text,#e4eaf5);}
+    .boss-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .boss-result{text-align:center;padding:20px;font-size:14px;line-height:1.65;display:none;}
+    .boss-result.show{display:block;}
+    .boss-result b{font-family:'Orbitron',sans-serif;font-size:18px;color:var(--xp-a);}
+
+    /* Complete */
+    .complete-card{text-align:center;padding:28px 20px;border-radius:18px;
+      border:2px solid var(--xp-a);background:rgba(255,255,255,.04);
+      box-shadow:0 0 30px var(--xp-glow);}
+    .complete-icon{font-size:48px;margin-bottom:12px;}
+    .complete-chip{display:inline-block;font-family:'JetBrains Mono',monospace;
+      font-size:11px;padding:4px 14px;border-radius:20px;
+      border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:14px;}
+    .complete-card h2{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px;}
+    .complete-card p{font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;}
+    .ms-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+      padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);color:#e8edf5;cursor:pointer;
+      white-space:nowrap;text-decoration:none;display:inline-block;transition:all .2s;}
+    .ms-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);}
+    .ms-btn.primary{background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      border-color:transparent;color:#06080e;box-shadow:0 4px 18px var(--xp-glow);}
+    .ms-btn.primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px var(--xp-glow);}
+
+    /* Mark complete */
+    .ms-mark-btn{width:100%;padding:14px;border-radius:14px;font-family:'Syne',sans-serif;
+      font-size:15px;font-weight:700;border:none;cursor:pointer;
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a));
+      color:#06080e;box-shadow:0 4px 18px var(--xp-glow);
+      transition:transform .18s,box-shadow .18s,opacity .3s;margin-top:8px;}
+    .ms-mark-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px var(--xp-glow);}
+    .ms-mark-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+    /* Desmos */
+    .desmos-wrap{border-radius:14px;overflow:hidden;
+      border:1px solid rgba(255,255,255,.1);margin:16px 0;}
+
+    /* Reveal */
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+    @media(prefers-reduced-motion:reduce){.ms-reveal{opacity:1;transform:none;transition:none;}}
+  
+    /* ── Complete card score summary ── */
+    .ms-scoreSummary { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:16px 0 8px; }
+    .ms-scoreStat { text-align:center; padding:10px 14px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.05); min-width:70px; }
+    .ms-scoreStat .ssv { font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
+      color:var(--xp-a); line-height:1; }
+    .ms-scoreStat .ssl { font-family:'JetBrains Mono',monospace; font-size:9px;
+      color:var(--muted,#6b7a99); margin-top:4px; text-transform:uppercase; letter-spacing:.1em; }
+    .ms-alreadyDone { display:flex; align-items:center; gap:8px; padding:10px 16px;
+      border-radius:10px; background:rgba(34,211,238,.08); border:1px solid rgba(34,211,238,.2);
+      font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--xp-a);
+      margin-bottom:12px; }
+
+    
+    /* ── Live Lesson Scorecard ── */
+    .ms-liveScore {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 18px; border-radius: 14px; margin-bottom: 4px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(8px);
+      position: sticky; top: 8px; z-index: 100;
+    }
+    .ms-liveScore-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: var(--muted, #6b7a99); text-transform: uppercase; letter-spacing: .12em;
+      flex-shrink: 0;
+    }
+    .ms-liveScore-items { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .ms-lsItem {
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px 10px; border-radius: 8px;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #c8d0e7;
+      white-space: nowrap; transition: background .3s, border-color .3s;
+    }
+    .ms-lsItem.done { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.3); color: var(--xp-a); }
+    .ms-lsItem.won  { background: rgba(74,222,128,.12); border-color: rgba(74,222,128,.3); color: #4ade80; }
+    .ms-lsItem .ls-pip {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.2); transition: background .3s;
+    }
+    .ms-lsItem .ls-pip.hit { background: var(--xp-a); }
+    .ms-lsXP {
+      margin-left: auto; font-family: 'Orbitron', sans-serif; font-size: 11px;
+      font-weight: 900; color: var(--xp-a); flex-shrink: 0;
+    }
+
+    </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../../index.html">Home</a>
+      <a class="ms-link" href="../../../index.html">School</a>
+      <a class="ms-link" href="../../index.html">Foundations</a>
+      <a class="ms-link" href="../index.html">Pre-Algebra</a>
+      <a class="ms-link is-active" href="./index.html">Proportions</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <div class="lesson-chip" id="modeChip">🧠 Academic Mastery</div>
+    <span class="ms-kicker">📐 Pre-Algebra</span>
+    <h1 class="ms-h1" id="heroTitle">Proportions</h1>
+    <p class="ms-sub" id="heroSub">Two ratios that say the same thing — and how to find the missing piece.</p>
+  </section>
+
+  <!-- MODE BAR -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- LIVE SCORECARD -->
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span>
+        <span class="ls-pip" id="lsp-1"></span>
+        <span class="ls-pip" id="lsp-2"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-boss">⚔️ Boss</div>
+      <div class="ms-lsItem" id="ls-exit">🚪 Exit</div>
+    </div>
+    <div class="ms-lsXP" id="ls-xp" style="display:none;">+0 XP</div>
+  </div>
+
+  <!-- ① HOOK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">① Hook</div>
+    <h2 id="hookTitle">The Recipe Problem</h2>
+    <p>You have a recipe for 2 people that needs <b>3 cups of flour</b>. Now you're cooking for <b>8 people</b>. How much flour do you need?</p>
+    <p>You can't just guess. There's a locked-in relationship — a <b>proportion</b> — between people and flour. Find the pattern, find the answer.</p>
+    <div class="prop-visual">
+      <div class="prop-side">
+        <div class="frac">3/2</div>
+        <div class="frac-label">cups per person</div>
+      </div>
+      <div class="prop-equals">=</div>
+      <div class="prop-side">
+        <div class="frac">?/8</div>
+        <div class="frac-label">cups per person</div>
+      </div>
+    </div>
+    <p>The rate stays the same. That's a proportion. Now let's crack it.</p>
+  </div>
+
+  <!-- ② HACK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">② The Hack</div>
+    <h2 id="hackTitle">Cross-Multiply to Unlock the Unknown</h2>
+    <p>A proportion looks like this: <b>a/b = c/d</b>. The hack? <b>Cross-multiply</b> — multiply diagonally, set them equal, solve.</p>
+    <div class="hack-box">
+      <div class="hack-label">⚡ The Hack</div>
+      <div class="hack-text">If a/b = c/d, then a × d = b × c<br>
+      Multiply the diagonals. They're always equal.</div>
+    </div>
+    <div class="cross-box">
+      <b>3/2 = ?/8</b><br>
+      Step 1: Cross-multiply → <b>3 × 8 = 2 × ?</b><br>
+      Step 2: Simplify → <b>24 = 2 × ?</b><br>
+      Step 3: Divide → <b>? = 12</b><br><br>
+      ✅ You need <b>12 cups of flour</b> for 8 people.
+    </div>
+    <p>The cross-multiply trick works because both fractions represent the same rate — so their cross-products must be equal.</p>
+  </div>
+
+  <!-- ③ PLAY MODE -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">③ Play Mode</div>
+    <h2>Explore It</h2>
+    <p>Drag the sliders to build proportions. Watch how the cross-products stay equal when the proportion is true.</p>
+    <div class="desmos-wrap">
+      <iframe src="https://www.desmos.com/calculator/x6qkjqtize?embed"
+        width="100%" height="360" style="border:none;display:block;" title="Proportions Explorer"></iframe>
+    </div>
+    <p style="font-size:12px;color:var(--muted,#6b7a99);">Try setting up your own proportion. If a/b = c/d, cross-products a·d and b·c should always match.</p>
+  </div>
+
+  <!-- ④ PRACTICE -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip" id="practiceChip">④ Practice</div>
+    <h2 id="practiceTitle">Solve the Proportion</h2>
+
+    <div class="practice-item">
+      <div class="q">2/3 = 8/?&emsp; → Find the missing value</div>
+      <div class="practice-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;">? =</span>
+        <input class="ms-input" id="p1" type="number" placeholder="?" />
+        <button class="ms-check-btn" onclick="checkP(1,12,'p1','f1')">Check</button>
+      </div>
+      <div class="feedback" id="f1"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">5/4 = ?/20&emsp; → Find the missing value</div>
+      <div class="practice-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;">? =</span>
+        <input class="ms-input" id="p2" type="number" placeholder="?" />
+        <button class="ms-check-btn" onclick="checkP(2,25,'p2','f2')">Check</button>
+      </div>
+      <div class="feedback" id="f2"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">A car travels 90 miles in 2 hours. At the same rate, how far in 5 hours?</div>
+      <div class="practice-row">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:14px;">? =</span>
+        <input class="ms-input" id="p3" type="number" placeholder="?" />
+        <span style="font-size:12px;color:var(--muted,#6b7a99);">miles</span>
+        <button class="ms-check-btn" onclick="checkP(3,225,'p3','f3')">Check</button>
+      </div>
+      <div class="feedback" id="f3"></div>
+    </div>
+  </div>
+
+  <!-- ⑤ BOSS FIGHT -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip" id="bossChip">⑤ Boss Fight</div>
+    <div class="boss-arena" id="bossArena">
+      <div class="boss-header">
+        <div>
+          <div class="boss-title" id="bossTitleText">⚔️ The Proportion Boss</div>
+          <div style="font-size:12px;color:var(--muted,#6b7a99);margin-top:2px;" id="bossSubText">Solve 3 proportions before time runs out</div>
+        </div>
+        <div class="boss-timer" id="bossTimer">30</div>
+      </div>
+      <div class="boss-pips" id="bossPips">
+        <div class="pip" id="pip0"></div>
+        <div class="pip" id="pip1"></div>
+        <div class="pip" id="pip2"></div>
+      </div>
+      <div class="boss-q" id="bossQ">Press Start to begin</div>
+      <div class="boss-row">
+        <input class="ms-input" id="bossInput" type="number" placeholder="?" disabled style="width:90px;font-size:20px;"/>
+        <button class="ms-check-btn" id="bossBtn" onclick="startBoss()" style="min-width:110px;">
+          Start Fight
+        </button>
+      </div>
+      <div class="boss-result" id="bossResult"></div>
+    </div>
+  </div>
+
+  <!-- ⑥ EXIT CHECK -->
+  <div class="lesson-card ms-reveal">
+    <div class="lesson-chip">⑥ Exit Check</div>
+    <h2 id="exitTitle">One Question. Prove You Got It.</h2>
+    <p>A recipe uses 2 eggs for every 3 cups of milk. For 9 cups of milk, how many eggs?</p>
+    <div class="practice-row" style="margin-top:12px;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;">Eggs =</span>
+      <input class="ms-input" id="exitInput" type="number" placeholder="?"/>
+      <button class="ms-check-btn" id="exitBtn" onclick="checkExit()">Submit</button>
+    </div>
+    <div class="feedback" id="exitFeedback"></div>
+  </div>
+
+  <!-- COMPLETE -->
+  <div class="lesson-card ms-reveal complete-card" id="completeCard" style="display:none;">
+    <div class="complete-icon">📐</div>
+    <div class="complete-chip" id="completeChip">Lesson Complete</div>
+    <h2>Proportions Unlocked</h2>
+    <p id="completeMsg">You can now find any missing value in a proportion. Cross-multiply is your new superpower.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a class="ms-btn primary" href="../index.html">Back to Pre-Algebra →</a>
+      <a class="ms-btn" href="../percents/">Next: Percents →</a>
+    </div>
+  </div>
+
+  <!-- MARK COMPLETE -->
+  <button class="ms-mark-btn ms-reveal" id="markBtn" onclick="markComplete()">
+    ✓ Mark Lesson Complete
+  </button>
+
+  <footer class="ms-footer">© MindStrong Universe • Proportions</footer>
+</main>
+
+<script>
+/* ── Mode ── */
+const MODES={
+  arcade:{chip:"🕹️ Arcade",heroTitle:"Proportions Sprint",heroSub:"Cross-multiply fast. Beat the clock. Boss is waiting.",hookTitle:"Speed Run: The Recipe",hackTitle:"The Cross-Multiply Blitz",practiceChip:"④ Speed Practice",bossChip:"⑤ BOSS FIGHT",bossTitleText:"⚔️ Proportion Boss",bossSubText:"Solve 3 in 30 seconds — GO!",exitTitle:"Final Check — One Shot",completeChip:"🏆 Round Complete",completeMsg:"Speed + accuracy. You're built for this."},
+  rpg:{chip:"🎮 RPG Quest",heroTitle:"The Proportion Scroll",heroSub:"Ancient ratios hold the universe in balance. Learn to wield them.",hookTitle:"The Alchemist's Formula",hackTitle:"The Cross-Multiply Spell",practiceChip:"④ Quest Training",bossChip:"⑤ Boss Battle",bossTitleText:"⚔️ The Ratio Golem",bossSubText:"Defeat 3 attacks before time expires",exitTitle:"Final Seal — Prove Your Power",completeChip:"⭐ Quest Complete",completeMsg:"The Cross-Multiply spell is now yours. The Ratio Golem is defeated."},
+  academic:{chip:"🧠 Academic Mastery",heroTitle:"Proportions",heroSub:"Two ratios that say the same thing — and how to find the missing piece.",hookTitle:"The Recipe Problem",hackTitle:"Cross-Multiply to Unlock the Unknown",practiceChip:"④ Practice",bossChip:"⑤ Boss Fight",bossTitleText:"⚔️ The Proportion Boss",bossSubText:"Solve 3 proportions before time runs out",exitTitle:"One Question. Prove You Got It.",completeChip:"Lesson Complete",completeMsg:"You can now find any missing value in a proportion. Cross-multiply is your new superpower."},
+  lms:{chip:"🏫 Assignment",heroTitle:"Proportions — Lesson 2",heroSub:"Assigned lesson. Complete all sections for full credit.",hookTitle:"Real-World Application",hackTitle:"The Cross-Multiply Method",practiceChip:"④ Graded Practice",bossChip:"⑤ Assessment",bossTitleText:"📋 Assessment — Proportions",bossSubText:"Complete 3 problems for full credit",exitTitle:"Exit Ticket",completeChip:"✓ Submitted",completeMsg:"Lesson submitted. Your teacher can see your completion."},
+};
+function applyMode(m){
+  const c=MODES[m];if(!c)return;
+  document.body.dataset.mode=m;
+  document.getElementById("modeChip").textContent=c.chip;
+  document.getElementById("heroTitle").textContent=c.heroTitle;
+  document.getElementById("heroSub").textContent=c.heroSub;
+  document.getElementById("hookTitle").textContent=c.hookTitle;
+  document.getElementById("hackTitle").textContent=c.hackTitle;
+  document.getElementById("practiceChip").textContent=c.practiceChip;
+  document.getElementById("bossChip").textContent=c.bossChip;
+  document.getElementById("bossTitleText").textContent=c.bossTitleText;
+  document.getElementById("bossSubText").textContent=c.bossSubText;
+  document.getElementById("exitTitle").textContent=c.exitTitle;
+  document.getElementById("completeChip").textContent=c.completeChip;
+  document.getElementById("completeMsg").textContent=c.completeMsg;
+  document.querySelectorAll(".ms-modeBtn").forEach(b=>b.classList.toggle("is-active",b.dataset.mode===m));
+  try{localStorage.setItem("ms_xp_mode",m);}catch{}
+}
+document.querySelectorAll(".ms-modeBtn").forEach(b=>b.addEventListener("click",()=>applyMode(b.dataset.mode)));
+try{const s=localStorage.getItem("ms_xp_mode");applyMode(s&&MODES[s]?s:"academic");}catch{applyMode("academic");}
+
+const LESSON_KEY = "geo-proportions";
+const _practiceAnswered = new Set();
+if(window.MSTracker) MSTracker.init(LESSON_KEY, {
+  module:"Pre-Algebra", lessonNum:2, title:document.title.split("•")[0].trim(), practiceTotal:3
+});
+
+function showXPToast(xp){
+  if(!xp) return;
+  const t=document.createElement("div");
+  t.style.cssText="position:fixed;bottom:32px;right:24px;z-index:9999;padding:12px 20px;border-radius:14px;background:linear-gradient(135deg,var(--xp-b,#3b82f6),var(--xp-a,#22d3ee));color:#06080e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;box-shadow:0 8px 28px rgba(34,211,238,.35);transform:translateY(20px);opacity:0;transition:all .4s ease;pointer-events:none;";
+  t.textContent="+"+xp+" XP";
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>{t.style.transform="translateY(0)";t.style.opacity="1";});
+  setTimeout(()=>{t.style.transform="translateY(-12px)";t.style.opacity="0";setTimeout(()=>t.remove(),500);},2200);
+}
+
+
+/* ── Practice checks ── */
+function checkP(n,ans,inputId,feedbackId){
+  const val=parseInt(document.getElementById(inputId).value);
+  const fb=document.getElementById(feedbackId);
+  if(val===ans){fb.textContent="✓ Correct!";fb.className="feedback correct";}
+    if(window.MSTracker && !_practiceAnswered.has(n)){_practiceAnswered.add(n);MSTracker.practice(LESSON_KEY,true);}
+  else{fb.textContent=`✗ Not quite — try again. Hint: cross-multiply diagonally.`;fb.className="feedback wrong";}
+    if(window.MSTracker) MSTracker.practice(LESSON_KEY,false);
+}
+document.getElementById("p1").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(1,12,"p1","f1");});
+document.getElementById("p2").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(2,25,"p2","f2");});
+document.getElementById("p3").addEventListener("keydown",e=>{if(e.key==="Enter")checkP(3,225,"p3","f3");});
+
+/* ── Boss Fight ── */
+const BOSS_Q=[[2,3,10,15],[4,5,8,10],[3,7,9,21],[6,4,18,12],[5,6,15,18],[7,3,21,9],[2,9,6,27]];
+let bossState={running:false,score:0,timer:0,interval:null,qIdx:0,questions:[]};
+
+function shuffleQ(){
+  const q=[...BOSS_Q].sort(()=>Math.random()-.5).slice(0,5);
+  return q.map(([a,b,c,d])=>Math.random()<.5?{q:`${a}/${b} = ?/${d}`,ans:c}:{q:`${a}/${b} = ${c}/?`,ans:d});
+}
+
+function startBoss(){
+  if(bossState.running)return;
+  bossState={running:true,score:0,timer:30,interval:null,qIdx:0,questions:shuffleQ()};
+  document.getElementById("bossResult").className="boss-result";
+  document.getElementById("bossInput").disabled=false;
+  document.getElementById("bossInput").value="";
+  document.getElementById("bossBtn").textContent="Submit";
+  document.getElementById("bossBtn").onclick=submitBoss;
+  document.getElementById("bossInput").focus();
+  [0,1,2].forEach(i=>document.getElementById("pip"+i).className="pip");
+  showBossQ();
+  bossState.interval=setInterval(()=>{
+    bossState.timer--;
+    const t=document.getElementById("bossTimer");
+    t.textContent=bossState.timer;
+    t.className="boss-timer"+(bossState.timer<=10?" danger":"");
+    if(bossState.timer<=0){clearInterval(bossState.interval);endBoss(false);}
+  },1000);
+}
+
+function showBossQ(){
+  const q=bossState.questions[bossState.qIdx];
+  document.getElementById("bossQ").textContent=`Solve: ${q.q}`;
+  document.getElementById("bossInput").value="";
+  document.getElementById("bossInput").focus();
+}
+
+function submitBoss(){
+  if(!bossState.running)return;
+  const val=parseInt(document.getElementById("bossInput").value);
+  const q=bossState.questions[bossState.qIdx];
+  if(val===q.ans){
+    document.getElementById("pip"+bossState.score).classList.remove("hit");
+    bossState.score++;
+    bossState.qIdx++;
+    if(bossState.score>=3){clearInterval(bossState.interval);endBoss(true);return;}
+    showBossQ();
+  } else {
+    document.getElementById("pip"+(3-1-(2-bossState.score+bossState.score===3?0:0))).classList.add("hit");
+    bossState.qIdx=(bossState.qIdx+1)%bossState.questions.length;
+    showBossQ();
+  }
+}
+
+document.getElementById("bossInput").addEventListener("keydown",e=>{if(e.key==="Enter")submitBoss();});
+
+function endBoss(won){
+  bossState.running=false;
+  clearInterval(bossState.interval);
+  document.getElementById("bossInput").disabled=true;
+  document.getElementById("bossBtn").onclick=startBoss;
+  document.getElementById("bossBtn").textContent="Try Again";
+  const res=document.getElementById("bossResult");
+  res.className="boss-result show";
+  if(won){
+    res.innerHTML='<b>🎉 Boss Defeated!</b><br>Cross-multiply mastered. Proportions bend to your will.';
+    try{localStorage.setItem("ms_prop_boss","won");}catch{}
+    if(window.MSTracker) MSTracker.boss(LESSON_KEY, true, typeof bs!=="undefined"?bs.timer:0);
+  } else {
+    res.innerHTML='<b>⏰ Time\'s Up</b><br>Close! Review the cross-multiply hack and try again.';
+  }
+}
+
+/* ── Exit check ── */
+let exitPassed=false;
+function checkExit(){
+  const val=parseInt(document.getElementById("exitInput").value);
+  const fb=document.getElementById("exitFeedback");
+  if(val===6){
+    fb.textContent="✓ Perfect. 2/3 = 6/9 — cross-products both equal 18.";
+    fb.className="feedback correct";
+    exitPassed=true;
+    document.getElementById("exitBtn").disabled=true;
+  if(window.MSTracker) MSTracker.exit(LESSON_KEY, true);
+    document.getElementById("markBtn").disabled=false;
+  } else {
+    fb.textContent="✗ Try again. Set up: 2/3 = ?/9 — then cross-multiply.";
+    fb.className="feedback wrong";
+  }
+}
+document.getElementById("exitInput").addEventListener("keydown",e=>{if(e.key==="Enter")checkExit();});
+document.getElementById("markBtn").disabled=true;
+
+/* ── Mark complete ── */
+function markComplete(){
+  try{
+    const done=JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]");
+    if(!done.includes("proportions-1"))done.push("proportions-1");
+    localStorage.setItem("ms_pre_alg_done",JSON.stringify(done));
+    localStorage.setItem("ms_last_lesson_url",window.location.href);
+  }catch{}
+  document.getElementById("markBtn").textContent="✓ Complete!";
+  document.getElementById("markBtn").disabled=true;
+  document.getElementById("completeCard").style.display="block";
+  document.getElementById("completeCard").scrollIntoView({behavior:"smooth"});
+  if(window.MSTracker){const _xp=MSTracker.complete(LESSON_KEY);showXPToast(_xp);}
+}
+
+/* ── Scroll reveals ── */
+(function(){
+  const els=document.querySelectorAll(".ms-reveal");
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("is-in");io.unobserve(e.target);}});
+  },{threshold:.08});
+  els.forEach(el=>io.observe(el));
+})();
+
+try{localStorage.setItem("ms_last_lesson_url",window.location.href);}catch{}
+</script>
+</body>
+</html>
+<script>
+/* ═══════════════════════════════════════════════
+   SCORE SUMMARY + PAGE-LOAD RESTORE
+═══════════════════════════════════════════════ */
+function buildCompleteSummary(key) {
+  try {
+    const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+    const s = (raw.lessons || {})[key];
+    if (!s) return "";
+    const pips = Array.from({length: s.practiceTotal || 3}, (_,i) =>
+      `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:${i < (s.practiceScore||0) ? 'var(--xp-a)' : 'rgba(255,255,255,.15)'}"></span>`
+    ).join("");
+    return `<div class="ms-scoreSummary">
+      <div class="ms-scoreStat"><div class="ssv">${pips}</div><div class="ssl">Practice</div></div>
+      <div class="ms-scoreStat"><div class="ssv">${s.bossWon ? "⚔️" : "—"}</div><div class="ssl">Boss</div></div>
+      <div class="ms-scoreStat"><div class="ssv">+${s.xpEarned || 0}</div><div class="ssl">XP Earned</div></div>
+    </div>`;
+  } catch(e) { return ""; }
+}
+
+function restoreIfDone() {
+  try {
+    // Check legacy done array
+    const done = JSON.parse(localStorage.getItem("ms_pre_alg_done") || "[]");
+    if (!done.includes("proportions-1")) return;
+    // Already complete — show state
+    const markBtn = document.getElementById("markBtn");
+    if (markBtn) { markBtn.textContent = "✓ Complete!"; markBtn.disabled = true; }
+    const card = document.getElementById("completeCard");
+    if (card) {
+      // Inject score summary
+      const summary = buildCompleteSummary(LESSON_KEY);
+      const chipEl = document.getElementById("completeChip");
+      if (chipEl && summary && !document.getElementById("scoreSum")) {
+        const div = document.createElement("div");
+        div.id = "scoreSum";
+        div.innerHTML = summary;
+        chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+      }
+      card.style.display = "block";
+    }
+    // Add "already done" badge near markBtn if not complete card visible
+    const exitBtn = document.getElementById("exitBtn");
+    if (exitBtn) exitBtn.disabled = true;
+  } catch(e) {}
+}
+restoreIfDone();
+
+// Also inject score into completeCard when markComplete fires (after XP toast)
+const _origMC = typeof markComplete === "function" ? markComplete : null;
+// Patch completeCard to show score summary after completion
+function injectScoreSummary() {
+  const summary = buildCompleteSummary(LESSON_KEY);
+  if (!summary) return;
+  const chipEl = document.getElementById("completeChip");
+  if (chipEl && !document.getElementById("scoreSum")) {
+    const div = document.createElement("div");
+    div.id = "scoreSum";
+    div.innerHTML = summary;
+    chipEl.parentNode.insertBefore(div, chipEl.nextSibling);
+  }
+}
+// Hook into scrollIntoView timing
+const _baseCard = document.getElementById("completeCard");
+if (_baseCard) {
+  const _obs = new MutationObserver(() => {
+    if (_baseCard.style.display !== "none") {
+      setTimeout(injectScoreSummary, 300);
+      _obs.disconnect();
+    }
+  });
+  _obs.observe(_baseCard, { attributes: true, attributeFilter: ["style"] });
+}
+
+
+/* ═══════════════════════════════════════
+   LIVE SCORECARD
+═══════════════════════════════════════ */
+(function() {
+  const LS = {
+    practiceCorrect: 0,
+    practiceTotal: 3,
+    bossWon: false,
+    exitPassed: false,
+    xp: 0,
+  };
+
+  function updateScorecard() {
+    // Practice pips
+    for (let i = 0; i < 3; i++) {
+      const pip = document.getElementById("lsp-" + i);
+      if (pip) pip.className = "ls-pip" + (i < LS.practiceCorrect ? " hit" : "");
+    }
+    // Boss
+    const bossEl = document.getElementById("ls-boss");
+    if (bossEl) {
+      bossEl.textContent = LS.bossWon ? "⚔️ Boss Defeated" : "⚔️ Boss";
+      bossEl.className = "ms-lsItem" + (LS.bossWon ? " won" : "");
+    }
+    // Exit
+    const exitEl = document.getElementById("ls-exit");
+    if (exitEl) {
+      exitEl.textContent = LS.exitPassed ? "🚪 Exit ✓" : "🚪 Exit";
+      exitEl.className = "ms-lsItem" + (LS.exitPassed ? " done" : "");
+    }
+    // XP
+    const xpEl = document.getElementById("ls-xp");
+    if (xpEl && LS.xp > 0) {
+      xpEl.textContent = "+" + LS.xp + " XP";
+      xpEl.style.display = "";
+    }
+  }
+
+  // Hook into MSTracker events via polling ms_progress
+  function syncFromTracker() {
+    try {
+      const raw = JSON.parse(localStorage.getItem("ms_progress") || "{}");
+      const s = (raw.lessons || {})[typeof LESSON_KEY !== "undefined" ? LESSON_KEY : ""];
+      if (!s) return;
+      LS.practiceCorrect = Math.min(s.practiceScore || 0, LS.practiceTotal);
+      LS.bossWon = !!s.bossWon;
+      LS.exitPassed = (s.exitAttempts > 0 && s.completedAt) || false;
+      LS.xp = s.xpEarned || 0;
+      updateScorecard();
+    } catch(e) {}
+  }
+
+  // Intercept MSTracker calls by wrapping after load
+  function patchTracker() {
+    if (!window.MSTracker) return;
+    const origPractice = MSTracker.practice.bind(MSTracker);
+    MSTracker.practice = function(key, correct) {
+      const r = origPractice(key, correct);
+      if (correct) { LS.practiceCorrect = Math.min(LS.practiceCorrect + 1, LS.practiceTotal); }
+      updateScorecard();
+      return r;
+    };
+    const origBoss = MSTracker.boss.bind(MSTracker);
+    MSTracker.boss = function(key, won, timer) {
+      const r = origBoss(key, won, timer);
+      if (won) LS.bossWon = true;
+      updateScorecard();
+      return r;
+    };
+    const origExit = MSTracker.exit.bind(MSTracker);
+    MSTracker.exit = function(key, passed) {
+      const r = origExit(key, passed);
+      if (passed) LS.exitPassed = true;
+      updateScorecard();
+      return r;
+    };
+    const origComplete = MSTracker.complete.bind(MSTracker);
+    MSTracker.complete = function(key) {
+      const r = origComplete(key);
+      LS.xp = r || 0;
+      updateScorecard();
+      return r;
+    };
+  }
+
+  // Wait for MSTracker to be ready (it's deferred)
+  function init() {
+    syncFromTracker(); // restore existing data
+    updateScorecard();
+    if (window.MSTracker) {
+      patchTracker();
+    } else {
+      // MSTracker loads deferred - wait for it
+      let attempts = 0;
+      const t = setInterval(() => {
+        attempts++;
+        if (window.MSTracker) { clearInterval(t); patchTracker(); syncFromTracker(); updateScorecard(); }
+        if (attempts > 40) clearInterval(t);
+      }, 100);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+</script>

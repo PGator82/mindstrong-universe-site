@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Geometry Foundations • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="arcade"]{--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.15);}
+    body[data-mode="rpg"]{--xp-a:#a855f7;--xp-b:#7c3aed;--xp-glow:rgba(168,85,247,.16);}
+    body[data-mode="academic"]{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="lms"]{--xp-a:#34d399;--xp-b:#059669;--xp-glow:rgba(52,211,153,.14);}
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),radial-gradient(500px 400px at 85% 85%,rgba(124,58,237,.07),transparent 60%);transition:background .6s;}
+    .ms-wrap{position:relative;z-index:1;}
+    .ms-modebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px;padding:12px 16px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.03);}
+    .ms-modebar-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted,#6b7a99);margin-right:4px;}
+    .ms-modeBtn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .ms-modeBtn:hover{color:#e8edf5;border-color:rgba(255,255,255,.22);}
+    .ms-modeBtn.is-active{color:var(--xp-a);border-color:var(--xp-a);background:rgba(255,255,255,.07);box-shadow:0 0 10px var(--xp-glow);}
+    .ms-modeKicker{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;padding:4px 12px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:10px;transition:all .4s;}
+    .ms-nextLesson{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px solid var(--xp-a);border-radius:14px;background:rgba(255,255,255,.04);box-shadow:0 0 20px var(--xp-glow);margin-bottom:8px;text-decoration:none;transition:transform .18s,box-shadow .18s;}
+    .ms-nextLesson:hover{transform:translateY(-2px);box-shadow:0 8px 30px var(--xp-glow);}
+    .ms-nextLesson-icon{font-size:22px;flex-shrink:0;}
+    .ms-nextLesson-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--xp-a);margin-bottom:3px;}
+    .ms-nextLesson-title{font-weight:700;font-size:14px;}
+    .ms-nextLesson-sub{font-size:12px;color:var(--muted,#6b7a99);margin-top:2px;}
+    .ms-progress{margin:0 0 18px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.03);}
+    .ms-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:10px;}
+    .ms-bar div{height:100%;width:0%;background:linear-gradient(90deg,var(--xp-b),var(--xp-a));border-radius:999px;transition:width .8s ease,background .5s;}
+    .ms-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+    .ms-item:last-child{border-bottom:none;}
+    .ms-row{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+    .ms-badge{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);font-weight:800;font-size:14px;transition:all .3s;}
+    .ms-check{border-color:var(--xp-a)!important;background:rgba(255,255,255,.1)!important;box-shadow:0 0 0 3px var(--xp-glow);color:var(--xp-a);}
+    .ms-title{font-weight:700;font-size:14px;margin-bottom:2px;}
+    .ms-subtle{font-size:12px;color:var(--muted,#6b7a99);}
+    .ms-lessonMode{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--xp-a);margin-top:3px;opacity:.75;transition:color .4s;}
+    .ms-flavorTag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;padding:3px 8px;border-radius:5px;border:1px solid var(--xp-a);color:var(--xp-a);opacity:.65;display:inline-block;margin-left:8px;vertical-align:middle;transition:all .4s;}
+    .ms-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#e8edf5;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;transition:all .2s;}
+    .ms-btn:hover{background:rgba(255,255,255,.1);}
+    .ms-btn.primary{background:linear-gradient(135deg,var(--xp-b),var(--xp-a));border-color:transparent;color:#06080e;box-shadow:0 4px 18px var(--xp-glow);}
+    .ms-btn.primary:hover{transform:translateY(-2px);}
+    .ms-courseComplete{text-align:center;padding:32px 24px;border-radius:20px;margin-bottom:24px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));display:none;}
+    .ms-courseComplete .cc-icon{font-size:52px;margin-bottom:12px;}
+    .ms-courseComplete h2{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:#06080e;margin-bottom:8px;}
+    .ms-courseComplete p{font-size:14px;color:rgba(0,0,0,.7);margin-bottom:20px;}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+    @media(prefers-reduced-motion:reduce){.ms-reveal{opacity:1;transform:none;transition:none;}}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="./index.html">Geometry</a>
+    </nav>
+  </div>
+</header>
+<main class="ms-wrap">
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">🧠 Academic Mastery Mode</div>
+    <span class="ms-kicker">📐 Geometry Foundations</span>
+    <h1 class="ms-h1" id="heroTitle">Geometry Foundations</h1>
+    <p class="ms-sub" id="heroSub">Angles. Triangles. Shapes. Area. Circles. The coordinate plane. 6 lessons that build visual math thinking.</p>
+  </section>
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn is-active" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <div class="ms-courseComplete ms-reveal" id="courseCompleteBanner">
+    <div class="cc-icon">📐</div>
+    <h2 id="ccTitle">Geometry Complete!</h2>
+    <p id="ccMsg">All 6 lessons. Angles → Triangles → Polygons → Area → Circles → Coordinate Plane. Full geometric foundation built.</p>
+    <a class="ms-btn" href="../index.html" style="background:rgba(0,0,0,.18);color:#06080e;border-color:rgba(0,0,0,.2);">Back to Foundations →</a>
+  </div>
+
+  <div id="nextLessonWrap" style="display:none;" class="ms-reveal">
+    <a class="ms-nextLesson" id="nextLessonLink" href="#">
+      <span class="ms-nextLesson-icon" id="nextLessonIcon">▶</span>
+      <div style="flex:1;min-width:0;">
+        <div class="ms-nextLesson-label" id="nextLessonLabel">Continue</div>
+        <div class="ms-nextLesson-title" id="nextLessonTitle">Next Lesson</div>
+        <div class="ms-nextLesson-sub" id="nextLessonSub"></div>
+      </div>
+      <span style="font-size:20px;opacity:.5;flex-shrink:0;">→</span>
+    </a>
+  </div>
+
+  <section class="ms-card ms-reveal">
+    <h2>Course Progress <span class="ms-flavorTag" id="courseTag">In Progress</span></h2>
+    <div class="ms-progress">
+      <span><b id="doneCount">0</b> / 6 lessons complete</span>
+      <div class="ms-bar"><div id="courseBar"></div></div>
+    </div>
+    <div class="ms-list">
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-1">1</span><div><div class="ms-title">Angles &amp; Lines</div><div class="ms-subtle">Acute, obtuse, supplementary, complementary</div><div class="ms-lessonMode" id="lm-1"></div></div></div><span id="act-1"><a class="ms-btn primary" href="./angles/">Open →</a></span></div>
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-2">2</span><div><div class="ms-title">Triangles</div><div class="ms-subtle">Types, 180° law, missing angles</div><div class="ms-lessonMode" id="lm-2"></div></div></div><span id="act-2"><a class="ms-btn" href="./triangles/">Open →</a></span></div>
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-3">3</span><div><div class="ms-title">Quadrilaterals &amp; Polygons</div><div class="ms-subtle">(n−2)×180° formula, angle sums</div><div class="ms-lessonMode" id="lm-3"></div></div></div><span id="act-3"><a class="ms-btn" href="./polygons/">Open →</a></span></div>
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-4">4</span><div><div class="ms-title">Perimeter &amp; Area</div><div class="ms-subtle">Rectangles, triangles, composite shapes</div><div class="ms-lessonMode" id="lm-4"></div></div></div><span id="act-4"><a class="ms-btn" href="./area/">Open →</a></span></div>
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-5">5</span><div><div class="ms-title">Circles — π Unlocked</div><div class="ms-subtle">Circumference = 2πr, Area = πr²</div><div class="ms-lessonMode" id="lm-5"></div></div></div><span id="act-5"><a class="ms-btn" href="./circles/">Open →</a></span></div>
+      <div class="ms-item"><div class="ms-row"><span class="ms-badge" id="b-6">6</span><div><div class="ms-title">The Coordinate Plane</div><div class="ms-subtle">Quadrants, plotting, distance formula</div><div class="ms-lessonMode" id="lm-6"></div></div></div><span id="act-6"><a class="ms-btn" href="./coordinate/">Open →</a></span></div>
+    </div>
+  </section>
+  <footer class="ms-footer">© MindStrong Universe • Geometry Foundations</footer>
+</main>
+<script>
+const LESSONS=[
+  {n:1,title:"Angles & Lines",     sub:"Acute, obtuse, supplementary",   icon:"📐",href:"./angles/",     key:"angles-1"},
+  {n:2,title:"Triangles",          sub:"Types, 180° law",                 icon:"🔺",href:"./triangles/",  key:"triangles-1"},
+  {n:3,title:"Polygons",           sub:"(n−2)×180° formula",              icon:"⬛",href:"./polygons/",   key:"polygons-1"},
+  {n:4,title:"Area & Perimeter",   sub:"Rectangles, triangles",           icon:"📏",href:"./area/",       key:"area-1"},
+  {n:5,title:"Circles",            sub:"C=2πr, A=πr²",                    icon:"⭕",href:"./circles/",    key:"circles-1"},
+  {n:6,title:"Coordinate Plane",   sub:"Quadrants, distance formula",     icon:"🗺️",href:"./coordinate/", key:"coordinate-1"},
+];
+function getGeoDone(){try{return JSON.parse(localStorage.getItem("ms_geo_done")||"[]");}catch{return[];}}
+const geoDone=getGeoDone();
+const doneStatuses=LESSONS.map(l=>geoDone.includes(l.key));
+const doneCount=doneStatuses.filter(Boolean).length;
+const allDone=doneCount===6;
+
+document.getElementById("doneCount").textContent=doneCount;
+document.getElementById("courseBar").style.width=Math.round((doneCount/6)*100)+"%";
+if(allDone){document.getElementById("courseCompleteBanner").style.display="block";document.getElementById("courseTag").textContent="Complete";}
+else if(doneCount>0){document.getElementById("courseTag").textContent="In Progress";}
+
+LESSONS.forEach((l,i)=>{
+  const badge=document.getElementById("b-"+l.n),act=document.getElementById("act-"+l.n);
+  if(doneStatuses[i]){badge.textContent="✓";badge.classList.add("ms-check");if(act){const a=act.querySelector("a");if(a){a.textContent="Review →";a.classList.remove("primary");}}}
+});
+const nextIdx=doneStatuses.findIndex(d=>!d);
+if(nextIdx!==-1&&!allDone){
+  const next=LESSONS[nextIdx];
+  document.getElementById("nextLessonWrap").style.display="block";
+  document.getElementById("nextLessonLink").href=next.href;
+  document.getElementById("nextLessonIcon").textContent=next.icon;
+  document.getElementById("nextLessonTitle").textContent=next.title;
+  document.getElementById("nextLessonSub").textContent=next.sub;
+  const nact=document.getElementById("act-"+next.n);
+  if(nact){const a=nact.querySelector("a");if(a)a.classList.add("primary");}
+}
+
+const MODES={
+  arcade:{kicker:"🕹️ Arcade Mode",heroTitle:"Geometry Blitz",heroSub:"6 rounds. Visual math. Beat every boss.",courseTag:"Active",nextLabel:"Next Round",mode:"⚡ Speed round",ccTitle:"Geometry Blitz Complete!",ccMsg:"All 6 geometry bosses defeated."},
+  rpg:{kicker:"🎮 RPG Quest",heroTitle:"Geometry Quest Board",heroSub:"6 quests. Build the Math Wizard's spatial power.",courseTag:"In Progress",nextLabel:"Next Quest",mode:"🗺️ Main quest",ccTitle:"Geometry Quest Complete!",ccMsg:"All 6 quests cleared. Spatial mastery earned."},
+  academic:{kicker:"🧠 Academic Mastery Mode",heroTitle:"Geometry Foundations",heroSub:"Angles. Triangles. Shapes. Area. Circles. The coordinate plane.",courseTag:allDone?"Complete":doneCount>0?"In Progress":"Not Started",nextLabel:"Continue",mode:"📖 Mastery lesson",ccTitle:"Geometry Complete!",ccMsg:"All 6 lessons. Full geometric foundation built."},
+  lms:{kicker:"🏫 Full LMS Mode",heroTitle:"Geometry Course",heroSub:"6 assigned lessons. Graded assessments.",courseTag:allDone?"Submitted":doneCount>0?"In Progress":"Assigned",nextLabel:"Next Assignment",mode:"📋 Assignment",ccTitle:"Geometry Submitted!",ccMsg:"All 6 lessons submitted."},
+};
+function applyMode(m){const c=MODES[m];if(!c)return;document.body.setAttribute("data-mode",m);
+  document.getElementById("modeKicker").textContent=c.kicker;
+  document.getElementById("heroTitle").textContent=c.heroTitle;
+  document.getElementById("heroSub").textContent=c.heroSub;
+  document.getElementById("courseTag").textContent=allDone?c.ccTitle.includes("Complete")?"Complete":"Submitted":c.courseTag;
+  const nll=document.getElementById("nextLessonLabel");if(nll)nll.textContent=c.nextLabel;
+  document.getElementById("ccTitle").textContent=c.ccTitle;
+  document.getElementById("ccMsg").textContent=c.ccMsg;
+  LESSONS.forEach(l=>{const el=document.getElementById("lm-"+l.n);if(el)el.textContent=c.mode;});
+  document.querySelectorAll(".ms-modeBtn").forEach(b=>b.classList.toggle("is-active",b.dataset.mode===m));
+  try{localStorage.setItem("ms_xp_mode",m);}catch{}}
+document.querySelectorAll(".ms-modeBtn").forEach(b=>b.addEventListener("click",()=>applyMode(b.dataset.mode)));
+try{const s=localStorage.getItem("ms_xp_mode");applyMode(s&&MODES[s]?s:"academic");}catch{applyMode("academic");}
+(function(){const els=document.querySelectorAll(".ms-reveal"),io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add("is-in");io.unobserve(x.target);}});},{threshold:.08});els.forEach(el=>io.observe(el));})();
+</script>
+</body>
+</html>

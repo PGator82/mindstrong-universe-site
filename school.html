@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindStrong School</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../theme.css" />
+</head>
+<body>
+  <header class="ms-top">
+    <div class="ms-nav">
+      <div class="ms-brand">
+        <span class="ms-dot"></span>
+        <span>MindStrong Universe</span>
+      </div>
+      <nav class="ms-links">
+        <a class="ms-link" href="../index.html">Home</a>
+        <a class="ms-link is-active" href="./index.html">School</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="ms-wrap">
+    <section class="ms-hero">
+      <span class="ms-kicker">🚀 <b>Online School</b> • Foundations → Pre-Algebra</span>
+      <h1 class="ms-h1">Math that feels like a superpower.</h1>
+      <p class="ms-sub">Short lessons. Real hacks. Clean practice. “Continue Learning” remembers your last stop on this device.</p>
+    </section>
+
+    <div class="ms-grid">
+      <section class="ms-card">
+        <h2>Continue Learning</h2>
+        <p>Jump back to your last lesson.</p>
+        <div class="ms-actions">
+          <a id="continueBtn" class="ms-btn primary" href="./foundations/index.html">
+            Continue <span class="chev">→</span>
+          </a>
+          <a class="ms-btn" href="./foundations/index.html">Browse Foundations</a>
+        </div>
+        <div class="ms-note">Progress is saved locally for now (Supabase sync later).</div>
+      </section>
+
+      <section class="ms-card">
+        <h2>Courses</h2>
+        <ul class="ms-list">
+          <li class="ms-item">
+            <div class="left">
+              <div class="title">Math Foundations</div>
+              <div class="meta">Number sense • Fractions • Decimals • Problem solving</div>
+            </div>
+            <a class="ms-btn" href="./foundations/index.html">Open →</a>
+          </li>
+          <li class="ms-item">
+            <div class="left">
+              <div class="title">Pre-Algebra Mastery</div>
+              <div class="meta">Integers • Expressions • Equations • Ratios/percents</div>
+            </div>
+            <span class="ms-pill">Next</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <footer class="ms-footer">© MindStrong Universe</footer>
+  </main>
+
+  <script>
+    const last = localStorage.getItem("ms_last_lesson_url");
+    const btn = document.getElementById("continueBtn");
+    if (last && btn) btn.href = last;
+  </script>
+</body>
+</html>
