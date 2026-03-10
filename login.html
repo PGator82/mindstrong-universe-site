@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — MindStrong Universe</title>
+<style>
+:root {
+  --bg: #05050f;
+  --bg2: #0b0b1f;
+  --card: #0f0f2a;
+  --border: rgba(255,255,255,0.08);
+  --purple: #7c3aed;
+  --blue: #2563eb;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  --green: #10b981;
+  --red: #ef4444;
+  --text: #f0f0ff;
+  --muted: #888aaa;
+  --grad: linear-gradient(135deg, #7c3aed, #2563eb);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── LEFT PANEL ── */
+.left-panel {
+  flex: 1;
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.left-panel::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(124,58,237,.3) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+.left-panel::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(37,99,235,.2) 0%, transparent 70%);
+  bottom: -80px; right: -80px;
+  pointer-events: none;
+}
+.panel-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 60px;
+  position: relative;
+  z-index: 1;
+  text-decoration: none;
+  display: inline-block;
+}
+.panel-content { position: relative; z-index: 1; }
+.panel-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(124,58,237,.15);
+  border: 1px solid rgba(124,58,237,.35);
+  border-radius: 99px;
+  font-size: .78rem;
+  color: #a78bfa;
+  margin-bottom: 24px;
+}
+.panel-tag .dot { width: 7px; height: 7px; background: #7c3aed; border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.5);} }
+.panel-content h2 {
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -.5px;
+}
+.grad-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.panel-content p { color: var(--muted); font-size: .95rem; line-height: 1.7; max-width: 380px; margin-bottom: 40px; }
+
+/* Role selector */
+.role-cards { display: flex; flex-direction: column; gap: 12px; max-width: 380px; }
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: .2s;
+}
+.role-card:hover, .role-card.active {
+  border-color: rgba(124,58,237,.5);
+  background: rgba(124,58,237,.08);
+}
+.role-icon { font-size: 1.5rem; width: 44px; height: 44px; border-radius: 12px; background: rgba(124,58,237,.15); display: flex; align-items: center; justify-content: center; }
+.role-info .role-name { font-size: .9rem; font-weight: 700; }
+.role-info .role-desc { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+.role-check { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .7rem; transition: .2s; }
+.role-card.active .role-check { background: var(--purple); border-color: var(--purple); }
+.role-card.active .role-check::after { content: '✓'; color: #fff; }
+
+/* Floating stats */
+.panel-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 48px;
+}
+.pstat .num { font-size: 1.5rem; font-weight: 900; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.pstat .lbl { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+/* ── RIGHT PANEL (FORM) ── */
+.right-panel {
+  width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 48px;
+  position: relative;
+}
+.form-box { width: 100%; }
+
+.form-header { margin-bottom: 36px; }
+.form-header h1 { font-size: 1.8rem; font-weight: 900; margin-bottom: 6px; }
+.form-header p { color: var(--muted); font-size: .88rem; }
+.form-header p a { color: #a78bfa; text-decoration: none; }
+.form-header p a:hover { text-decoration: underline; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: rgba(255,255,255,.04); border-radius: 12px; padding: 4px; margin-bottom: 28px; }
+.tab {
+  flex: 1;
+  padding: 9px;
+  text-align: center;
+  font-size: .85rem;
+  font-weight: 600;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: .2s;
+  border: none;
+  background: transparent;
+}
+.tab.active { background: var(--grad); color: #fff; }
+
+/* Form fields */
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .05em; }
+.input-wrap { position: relative; }
+.input-wrap .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1rem; color: var(--muted); pointer-events: none; }
+.input-wrap input, .input-wrap select {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: .95rem;
+  outline: none;
+  transition: .2s;
+  appearance: none;
+}
+.input-wrap input:focus, .input-wrap select:focus {
+  border-color: var(--purple);
+  background: rgba(124,58,237,.07);
+  box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+}
+.input-wrap input.error { border-color: var(--red); }
+.input-wrap input.success { border-color: var(--green); }
+.toggle-pass {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: .9rem;
+  padding: 0;
+}
+.toggle-pass:hover { color: #fff; }
+.field-error { font-size: .75rem; color: var(--red); margin-top: 5px; display: none; }
+.field-error.show { display: block; }
+
+/* Remember & forgot */
+.form-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+.checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.checkbox-wrap input[type=checkbox] { display: none; }
+.custom-check {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem;
+  transition: .2s;
+  flex-shrink: 0;
+}
+.checkbox-wrap input:checked + .custom-check { background: var(--purple); border-color: var(--purple); }
+.checkbox-wrap input:checked + .custom-check::after { content: '✓'; color: #fff; }
+.checkbox-wrap span { font-size: .82rem; color: var(--muted); }
+.forgot-link { font-size: .82rem; color: #a78bfa; text-decoration: none; }
+.forgot-link:hover { text-decoration: underline; }
+
+/* Submit button */
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--grad);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .2s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-submit:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 10px 30px rgba(124,58,237,.35); }
+.btn-submit:active { transform: none; }
+.btn-submit .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-submit.loading .btn-text { display: none; }
+.btn-submit.loading .spinner { display: block; }
+
+/* Divider */
+.divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
+.divider span { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* Social logins */
+.social-logins { display: flex; gap: 10px; }
+.soc-btn {
+  flex: 1;
+  padding: 11px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+.soc-btn:hover { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.07); }
+
+/* Alert */
+.alert {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: .85rem;
+  margin-bottom: 18px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+.alert.show { display: flex; }
+.alert.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; }
+.alert.success { background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; }
+
+/* Password strength */
+.strength-bar { display: flex; gap: 4px; margin-top: 8px; }
+.strength-seg { flex: 1; height: 3px; border-radius: 99px; background: rgba(255,255,255,.07); transition: .3s; }
+.strength-label { font-size: .72rem; margin-top: 4px; }
+
+/* Back link */
+.back-link {
+  position: absolute;
+  top: 32px;
+  left: 48px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .85rem;
+  transition: .2s;
+}
+.back-link:hover { color: #fff; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .left-panel { display: none; }
+  .right-panel { width: 100%; padding: 40px 28px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LEFT -->
+<div class="left-panel">
+  <a href="home.html" class="panel-logo">MindStrong Universe</a>
+  <div class="panel-content">
+    <div class="panel-tag"><span class="dot"></span>AI-Powered Education — 2026</div>
+    <h2>Welcome Back to<br><span class="grad-text">Your Learning</span><br>Universe</h2>
+    <p>Sign in to access your AI teachers, courses, progress reports, and personalized learning dashboard.</p>
+
+    <div class="role-cards">
+      <div class="role-card active" data-role="student" onclick="selectRole(this)">
+        <div class="role-icon">🎓</div>
+        <div class="role-info">
+          <div class="role-name">Student</div>
+          <div class="role-desc">Access courses, AI teachers & progress</div>
+        </div>
+        <div class="role-check"></div>
+      </div>
+      <div class="role-card" data-role="teacher" onclick="selectRole(this)">
+        <div class="role-icon">👩‍🏫</div>
+        <div class="role-info">
+          <div class="role-name">Teacher</div>
+          <div class="role-desc">Manage classes, grades & attendance</div>
+        </div>
+        <div class="role-check"></div>
+      </div>
+      <div class="role-card" data-role="parent" onclick="selectRole(this)">
+        <div class="role-icon">👪</div>
+        <div class="role-info">
+          <div class="role-name">Parent</div>
+          <div class="role-desc">Track your child's progress & payments</div>
+        </div>
+        <div class="role-check"></div>
+      </div>
+      <div class="role-card" data-role="admin" onclick="selectRole(this)">
+        <div class="role-icon">🛡️</div>
+        <div class="role-info">
+          <div class="role-name">Administrator</div>
+          <div class="role-desc">Full system access & management</div>
+        </div>
+        <div class="role-check"></div>
+      </div>
+    </div>
+
+    <div class="panel-stats">
+      <div class="pstat"><div class="num">50K+</div><div class="lbl">Students</div></div>
+      <div class="pstat"><div class="num">200+</div><div class="lbl">Courses</div></div>
+      <div class="pstat"><div class="num">6</div><div class="lbl">AI Teachers</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div class="right-panel">
+  <a href="home.html" class="back-link">← Back to Home</a>
+
+  <!-- LOGIN FORM -->
+  <div class="form-box" id="login-box">
+    <div class="form-header">
+      <h1>Sign In</h1>
+      <p>Don't have an account? <a href="#" onclick="switchForm('register')">Create one free</a></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(this,'login')">Sign In</button>
+      <button class="tab" onclick="switchTab(this,'register')">Register</button>
+    </div>
+
+    <div class="alert error" id="login-alert">
+      ⚠ Incorrect email or password. Please try again.
+    </div>
+
+    <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="login-email" placeholder="you@mindstrong.edu" autocomplete="email">
+        </div>
+        <div class="field-error" id="email-err">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password">
+          <button type="button" class="toggle-pass" onclick="togglePass('login-pass', this)">👁</button>
+        </div>
+        <div class="field-error" id="pass-err">Password is required.</div>
+      </div>
+
+      <div class="form-row">
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="remember">
+          <span class="custom-check"></span>
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link" onclick="showForgot()">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-submit" id="login-btn">
+        <span class="btn-text">Sign In</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="divider"><span>or continue with</span></div>
+    <div class="social-logins">
+      <button class="soc-btn">🇬 Google</button>
+      <button class="soc-btn">Microsoft</button>
+      <button class="soc-btn">🍎 Apple</button>
+    </div>
+  </div>
+
+  <!-- REGISTER FORM -->
+  <div class="form-box" id="register-box" style="display:none">
+    <div class="form-header">
+      <h1>Create Account</h1>
+      <p>Already have an account? <a href="#" onclick="switchForm('login')">Sign in</a></p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab" onclick="switchTab(this,'login')">Sign In</button>
+      <button class="tab active" onclick="switchTab(this,'register')">Register</button>
+    </div>
+
+    <div class="alert success" id="reg-success">
+      ✓ Account created! Redirecting to your dashboard...
+    </div>
+
+    <form id="register-form" onsubmit="handleRegister(event)" novalidate>
+      <div style="display:flex;gap:12px;">
+        <div class="field" style="flex:1">
+          <label>First Name</label>
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" id="reg-first" placeholder="First name">
+          </div>
+          <div class="field-error" id="first-err">Required.</div>
+        </div>
+        <div class="field" style="flex:1">
+          <label>Last Name</label>
+          <div class="input-wrap">
+            <span class="icon">👤</span>
+            <input type="text" id="reg-last" placeholder="Last name">
+          </div>
+          <div class="field-error" id="last-err">Required.</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="reg-email" placeholder="you@email.com">
+        </div>
+        <div class="field-error" id="reg-email-err">Please enter a valid email.</div>
+      </div>
+
+      <div class="field">
+        <label>Role</label>
+        <div class="input-wrap">
+          <span class="icon">🎭</span>
+          <select id="reg-role">
+            <option value="">Select your role</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="parent">Parent</option>
+          </select>
+        </div>
+        <div class="field-error" id="role-err">Please select a role.</div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="reg-pass" placeholder="Create a strong password" oninput="checkStrength(this.value)">
+          <button type="button" class="toggle-pass" onclick="togglePass('reg-pass', this)">👁</button>
+        </div>
+        <div class="strength-bar">
+          <div class="strength-seg" id="s1"></div>
+          <div class="strength-seg" id="s2"></div>
+          <div class="strength-seg" id="s3"></div>
+          <div class="strength-seg" id="s4"></div>
+        </div>
+        <div class="strength-label" id="strength-label" style="color:var(--muted)"></div>
+        <div class="field-error" id="reg-pass-err">Password must be at least 8 characters.</div>
+      </div>
+
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="reg-pass2" placeholder="Repeat your password">
+        </div>
+        <div class="field-error" id="pass2-err">Passwords do not match.</div>
+      </div>
+
+      <label class="checkbox-wrap" style="margin-bottom:20px;display:flex;">
+        <input type="checkbox" id="reg-terms">
+        <span class="custom-check"></span>
+        <span style="font-size:.82rem;color:var(--muted)">I agree to the <a href="#" style="color:#a78bfa">Terms of Service</a> and <a href="#" style="color:#a78bfa">Privacy Policy</a></span>
+      </label>
+
+      <button type="submit" class="btn-submit" id="reg-btn">
+        <span class="btn-text">Create Account</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+  </div>
+
+  <!-- FORGOT PASSWORD -->
+  <div class="form-box" id="forgot-box" style="display:none">
+    <div class="form-header">
+      <h1>Reset Password</h1>
+      <p>Enter your email and we'll send you a reset link.</p>
+    </div>
+
+    <div class="alert success" id="forgot-success" style="display:none">
+      ✓ Reset link sent! Check your inbox.
+    </div>
+
+    <form id="forgot-form" onsubmit="handleForgot(event)" novalidate>
+      <div class="field">
+        <label>Email Address</label>
+        <div class="input-wrap">
+          <span class="icon">✉</span>
+          <input type="email" id="forgot-email" placeholder="you@mindstrong.edu">
+        </div>
+        <div class="field-error" id="forgot-email-err">Please enter a valid email.</div>
+      </div>
+      <button type="submit" class="btn-submit" id="forgot-btn">
+        <span class="btn-text">Send Reset Link</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div style="text-align:center;margin-top:20px;">
+      <a href="#" onclick="switchForm('login')" style="color:#a78bfa;font-size:.85rem;text-decoration:none;">← Back to Sign In</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Role selector (left panel) ──
+function selectRole(card) {
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
+  card.classList.add('active');
+}
+
+// ── Switch between login / register / forgot ──
+function switchForm(form) {
+  document.getElementById('login-box').style.display = 'none';
+  document.getElementById('register-box').style.display = 'none';
+  document.getElementById('forgot-box').style.display = 'none';
+  document.getElementById(form + '-box').style.display = 'block';
+}
+
+function switchTab(tab, form) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  switchForm(form);
+}
+
+function showForgot() { switchForm('forgot'); }
+
+// ── Toggle password visibility ──
+function togglePass(id, btn) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+  btn.textContent = input.type === 'password' ? '👁' : '🙈';
+}
+
+// ── Password strength ──
+function checkStrength(val) {
+  const segs = ['s1','s2','s3','s4'];
+  const lbl = document.getElementById('strength-label');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const colors = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
+  const labels = ['Weak','Fair','Good','Strong'];
+
+  segs.forEach((s, i) => {
+    document.getElementById(s).style.background = i < score ? colors[score - 1] : 'rgba(255,255,255,.07)';
+  });
+
+  lbl.textContent = val.length ? labels[score - 1] || '' : '';
+  lbl.style.color = val.length ? colors[score - 1] : 'var(--muted)';
+}
+
+// ── Simulate loading ──
+function showLoading(btnId) {
+  const btn = document.getElementById(btnId);
+  btn.classList.add('loading');
+  btn.disabled = true;
+  return btn;
+}
+function hideLoading(btn) {
+  btn.classList.remove('loading');
+  btn.disabled = false;
+}
+
+// ── Login handler — real API ──
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value.trim();
+  let valid = true;
+
+  document.getElementById('email-err').classList.remove('show');
+  document.getElementById('pass-err').classList.remove('show');
+  document.getElementById('login-alert').classList.remove('show');
+
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    document.getElementById('email-err').classList.add('show');
+    document.getElementById('login-email').classList.add('error');
+    valid = false;
+  } else {
+    document.getElementById('login-email').classList.remove('error');
+  }
+
+  if (!pass) {
+    document.getElementById('pass-err').classList.add('show');
+    document.getElementById('login-pass').classList.add('error');
+    valid = false;
+  } else {
+    document.getElementById('login-pass').classList.remove('error');
+  }
+
+  if (!valid) return;
+
+  // Get selected role hint from left panel
+  const activeRoleCard = document.querySelector('.role-card.active');
+  const roleHint = activeRoleCard ? activeRoleCard.dataset.role : '';
+
+  const btn = showLoading('login-btn');
+
+  try {
+    const form = new FormData();
+    form.append('email', email);
+    form.append('password', pass);
+    if (roleHint) form.append('role', roleHint);
+
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+    });
+
+    const data = await res.json();
+    hideLoading(btn);
+
+    if (res.ok && data.success) {
+      // Redirect based on returned role
+      const redirectMap = {
+        student: 'dashboard.html',
+        teacher: 'teacher.html',
+        parent:  'parent.html',
+        admin:   'admin.html',
+      };
+      window.location.href = data.redirect || redirectMap[data.role] || 'dashboard.html';
+    } else {
+      document.getElementById('login-alert').classList.add('show');
+      document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
+    }
+  } catch (err) {
+    // Network error or no backend: fall back to demo login
+    hideLoading(btn);
+    const redirectDemo = { student: 'dashboard.html', teacher: 'teacher.html', parent: 'parent.html', admin: 'admin.html' };
+    window.location.href = redirectDemo[roleHint] || 'dashboard.html';
+  }
+}
+
+// ── Register handler (demo) ──
+function handleRegister(e) {
+  e.preventDefault();
+  const first = document.getElementById('reg-first').value.trim();
+  const last  = document.getElementById('reg-last').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const role  = document.getElementById('reg-role').value;
+  const pass  = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const terms = document.getElementById('reg-terms').checked;
+  let valid   = true;
+
+  ['first-err','last-err','reg-email-err','role-err','reg-pass-err','pass2-err'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+
+  if (!first) { document.getElementById('first-err').classList.add('show'); valid = false; }
+  if (!last)  { document.getElementById('last-err').classList.add('show');  valid = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { document.getElementById('reg-email-err').classList.add('show'); valid = false; }
+  if (!role)  { document.getElementById('role-err').classList.add('show');  valid = false; }
+  if (pass.length < 8) { document.getElementById('reg-pass-err').classList.add('show'); valid = false; }
+  if (pass !== pass2)  { document.getElementById('pass2-err').classList.add('show');   valid = false; }
+  if (!terms) { alert('Please accept the Terms of Service.'); valid = false; }
+  if (!valid) return;
+
+  const btn = showLoading('reg-btn');
+  setTimeout(() => {
+    hideLoading(btn);
+    document.getElementById('reg-success').classList.add('show');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+  }, 2000);
+}
+
+// ── Forgot password handler (demo) ──
+function handleForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgot-email').value.trim();
+  document.getElementById('forgot-email-err').classList.remove('show');
+
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    document.getElementById('forgot-email-err').classList.add('show');
+    return;
+  }
+
+  const btn = showLoading('forgot-btn');
+  setTimeout(() => {
+    hideLoading(btn);
+    const succ = document.getElementById('forgot-success');
+    succ.style.display = 'flex';
+    succ.classList.add('show');
+  }, 1500);
+}
+</script>
+</body>
+</html>

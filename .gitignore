@@ -1,0 +1,25 @@
+# Database credentials — never commit real credentials
+application/config/database.php
+
+# SQL dump contains API keys — keep off GitHub
+myschool.sql
+
+# Uploads & user content
+uploads/
+uploads.zip
+
+# CodeIgniter cache & logs
+application/logs/*.php
+application/cache/*
+
+# System folder (framework files — not needed in repo)
+system/
+
+# Update pack
+update_pack/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+*.code-workspace
+desktop.ini

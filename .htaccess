@@ -1,0 +1,66 @@
+# MindStrong Universe — Apache URL Rewriting for CodeIgniter
+# Removes index.php from all URLs so /api/login works cleanly
+
+Options -Indexes
+Options +FollowSymLinks
+
+# ── Main rewrite engine ──
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Allow direct access to real files and directories
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Route .html files directly (static dashboards)
+    RewriteRule ^(home|login|dashboard|teacher|admin|parent)\.html$ - [L]
+
+    # Route everything else through CodeIgniter's index.php
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+# ── Security headers ──
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ── Hide sensitive files ──
+<FilesMatch "\.(sql|log|env|htpasswd|git)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# ── Block direct access to application/ and system/ ──
+RedirectMatch 403 ^/application/.*$
+RedirectMatch 403 ^/system/.*$
+
+# ── PHP settings ──
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /var/log/php_errors.log
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /var/log/php_errors.log
+</IfModule>
+
+# ── Compression ──
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/json
+</IfModule>
+
+# ── Cache static assets ──
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+</IfModule>
