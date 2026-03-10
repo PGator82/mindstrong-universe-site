@@ -18,6 +18,13 @@ system/
 # Update pack
 update_pack/
 
+# Heavy vendor libraries (install on server separately)
+application/libraries/stripe/
+application/libraries/twilio_library/
+
+# Assets (large JS/CSS files — serve from CDN or upload separately)
+assets/
+
 # OS & editor files
 .DS_Store
 Thumbs.db
