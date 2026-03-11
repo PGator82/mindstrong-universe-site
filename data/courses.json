@@ -1,5 +1,7 @@
 {
+  "schemaVersion": 2,
   "course": "MindStrong Foundations",
+  "description": "Middle-school math progression with unlock-based modules.",
   "modules": [
     {
       "id": "m1",
@@ -21,10 +23,10 @@
       "title": "Pre-Algebra",
       "unlock": "moduleComplete:m1",
       "lessons": [
-        { "key": "geo-proportions", "title": "Proportions", "url": "./foundations/pre-algebra/proportions/" },
-        { "key": "geo-percents", "title": "Percents", "url": "./foundations/pre-algebra/percents/" },
-        { "key": "geo-expressions", "title": "Expressions", "url": "./foundations/pre-algebra/expressions/" },
-        { "key": "geo-equations", "title": "Equations", "url": "./foundations/pre-algebra/equations/" }
+        { "key": "pa-proportions", "aliases": ["geo-proportions"], "title": "Proportions", "url": "./foundations/pre-algebra/proportions/" },
+        { "key": "pa-percents", "aliases": ["geo-percents"], "title": "Percents", "url": "./foundations/pre-algebra/percents/" },
+        { "key": "pa-expressions", "aliases": ["geo-expressions"], "title": "Expressions", "url": "./foundations/pre-algebra/expressions/" },
+        { "key": "pa-equations", "aliases": ["geo-equations"], "title": "Equations", "url": "./foundations/pre-algebra/equations/" }
       ]
     },
     {
