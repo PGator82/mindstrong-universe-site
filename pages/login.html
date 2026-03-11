@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>MindStrong Login</title>
 
 <style>
+
 body{
 font-family:Arial;
 background:#0b0b1f;
@@ -22,7 +23,7 @@ border-radius:10px;
 width:320px;
 }
 
-input{
+input,select{
 width:100%;
 padding:10px;
 margin-bottom:15px;
@@ -38,14 +39,7 @@ border:none;
 color:white;
 font-weight:bold;
 cursor:pointer;
-}
-
-select{
-width:100%;
-padding:10px;
-margin-bottom:15px;
 border-radius:6px;
-border:none;
 }
 
 </style>
@@ -82,10 +76,10 @@ function login(e){
 
 e.preventDefault()
 
-let email = document.getElementById("email").value
-let role = document.getElementById("role").value
+let email=document.getElementById("email").value
+let role=document.getElementById("role").value
 
-let session = {
+let session={
 email:email,
 role:role,
 loggedIn:true
@@ -93,14 +87,14 @@ loggedIn:true
 
 localStorage.setItem("ms_session",JSON.stringify(session))
 
-let redirect = {
-student:"pages/dashboard.html",
-teacher:"pages/teacher.html",
-parent:"pages/parent.html",
-admin:"pages/admin.html"
+let redirect={
+student:"dashboard.html",
+teacher:"teacher.html",
+parent:"parent.html",
+admin:"admin.html"
 }
 
-window.location.href = redirect[role]
+window.location.href=redirect[role]
 
 }
 
