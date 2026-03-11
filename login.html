@@ -683,10 +683,12 @@ async function handleLogin(e) {
       document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
     }
   } catch (err) {
-    // Network error or no backend: fall back to demo login
+    // No backend yet - store session in localStorage and redirect by role
     hideLoading(btn);
-    const redirectDemo = { student: 'dashboard.html', teacher: 'teacher.html', parent: 'parent.html', admin: 'admin.html' };
-    window.location.href = redirectDemo[roleHint] || 'dashboard.html';
+    const uname = email.split('@')[0];
+    localStorage.setItem('ms_session', JSON.stringify({ email: email, role: roleHint, name: uname, loggedIn: true }));
+    const redirectDemo = { student: '../dashboard.html', teacher: '../teacher.html', parent: '../parent.html', admin: '../admin.html' };
+    window.location.href = redirectDemo[roleHint] || '../dashboard.html';
   }
 }
 
@@ -714,12 +716,15 @@ function handleRegister(e) {
   if (pass !== pass2)  { document.getElementById('pass2-err').classList.add('show');   valid = false; }
   if (!terms) { alert('Please accept the Terms of Service.'); valid = false; }
   if (!valid) return;
+  if (!valid) return;
 
   const btn = showLoading('reg-btn');
   setTimeout(() => {
     hideLoading(btn);
+    localStorage.setItem('ms_session', JSON.stringify({ email: email, role: role, name: first + ' ' + last, loggedIn: true }));
     document.getElementById('reg-success').classList.add('show');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+    const regRedirect = { student: '../dashboard.html', teacher: '../teacher.html', parent: '../parent.html', admin: '../admin.html' };
+    setTimeout(() => { window.location.href = regRedirect[role] || '../dashboard.html'; }, 2000);
   }, 2000);
 }
 
