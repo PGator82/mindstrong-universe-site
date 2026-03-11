@@ -712,7 +712,8 @@
 /* ═══ GLOBALS ═══ */
 const _sess = JSON.parse(localStorage.getItem('ms_session') || '{}');
 let currentPage = 1, perPage = 10, allUsers = [], currentRole = '';
-
+const ATT_NAMES=['Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson','Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez'];
+let attState={};
 /* ═══ INIT ═══ */
 (function init(){
   const n = _sess.name || 'Super Admin';
@@ -1063,8 +1064,7 @@ function renderAnnouncements(){
 }
 
 /* ═══ ATTENDANCE ═══ */
-const ATT_NAMES=['Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson','Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez'];
-let attState={};
+
 function renderAttTable(){
   attState={};
   const tb=document.getElementById('attBody');
