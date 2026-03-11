@@ -23,7 +23,14 @@ application/libraries/stripe/
 application/libraries/twilio_library/
 
 # Assets (large JS/CSS files — serve from CDN or upload separately)
-assets/
+assets/*
+!assets/css/
+!assets/css/style.css
+!assets/css/theme.css
+!assets/js/
+!assets/js/auth.js
+!assets/js/progress.js
+!assets/js/leaderboard.js
 
 # OS & editor files
 .DS_Store

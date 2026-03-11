@@ -687,8 +687,8 @@ async function handleLogin(e) {
     hideLoading(btn);
     const uname = email.split('@')[0];
     localStorage.setItem('ms_session', JSON.stringify({ email: email, role: roleHint, name: uname, loggedIn: true }));
-    const redirectDemo = { student: '../dashboard.html', teacher: '../teacher.html', parent: '../parent.html', admin: '../admin.html' };
-    window.location.href = redirectDemo[roleHint] || '../dashboard.html';
+    const redirectDemo = { student: 'dashboard.html', teacher: 'teacher.html', parent: 'parent.html', admin: 'admin.html' };
+    window.location.href = redirectDemo[roleHint] || 'dashboard.html';
   }
 }
 
@@ -723,8 +723,8 @@ function handleRegister(e) {
     hideLoading(btn);
     localStorage.setItem('ms_session', JSON.stringify({ email: email, role: role, name: first + ' ' + last, loggedIn: true }));
     document.getElementById('reg-success').classList.add('show');
-    const regRedirect = { student: '../dashboard.html', teacher: '../teacher.html', parent: '../parent.html', admin: '../admin.html' };
-    setTimeout(() => { window.location.href = regRedirect[role] || '../dashboard.html'; }, 2000);
+    const regRedirect = { student: 'dashboard.html', teacher: 'teacher.html', parent: 'parent.html', admin: 'admin.html' };
+    setTimeout(() => { window.location.href = regRedirect[role] || 'dashboard.html'; }, 2000);
   }, 2000);
 }
 
