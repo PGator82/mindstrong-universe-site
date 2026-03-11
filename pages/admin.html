@@ -1,1 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — MindStrong Universe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+:root{--accent:#f43f5e;--accent-dim:rgba(244,63,94,.12);--accent-glow:rgba(244,63,94,.25)}
+.user-avatar{background:linear-gradient(135deg,#f43f5e,#6366f1)}
+.nav-item.active{background:rgba(244,63,94,.12);color:#f43f5e}
+.nav-item.active::before{background:#f43f5e;box-shadow:0 0 12px #f43f5e}
+.user-info .role{color:#f43f5e}
+.sc:nth-child(1) .sc-icon{background:rgba(6,182,212,.15);color:#06b6d4}
+.sc:nth-child(2) .sc-icon{background:rgba(16,185,129,.15);color:#10b981}
+.sc:nth-child(3) .sc-icon{background:rgba(245,158,11,.15);color:#f59e0b}
+.sc:nth-child(4) .sc-icon{background:rgba(168,85,247,.15);color:#a855f7}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:3000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#111827;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:28px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:2px 6px}
+.modal-close:hover{color:var(--text)}
+.form-row{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.form-row label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.form-row input,.form-row select,.form-row textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:9px 12px;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent)}
+.form-row textarea{resize:vertical;min-height:80px}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07)}
+.btn-cancel{padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-cancel:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn-save{padding:8px 20px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-save:hover{opacity:.88}
+
+/* PANELS */
+.view-panel{display:none}.view-panel.active{display:block}
+
+/* TABLES */
+.user-meta{display:flex;align-items:center;gap:11px}
+.u-avatar{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.u-name{font-size:13px;font-weight:600}.u-email{font-size:11px;color:var(--muted);margin-top:1px}
+.att-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.1);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.04);color:var(--muted);transition:all .18s}
+.att-btn:hover{opacity:.8}
+.btn-edit{padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--subtle);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s}
+.btn-edit:hover{border-color:var(--accent);color:var(--accent)}
+.btn-del{padding:4px 12px;border-radius:6px;border:1px solid rgba(244,63,94,.25);background:rgba(244,63,94,.06);color:var(--red);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s}
+.btn-del:hover{background:rgba(244,63,94,.15)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;gap:6px;margin-top:16px;justify-content:flex-end}
+.pg-btn{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .2s}
+.pg-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.pg-btn:hover:not(.active){border-color:rgba(255,255,255,.2);color:var(--text)}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.filter-bar select{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-size:12px;font-family:inherit;padding:6px 10px;outline:none;cursor:pointer}
+
+/* ACTIVITY FEED */
+.activity-feed{display:flex;flex-direction:column}
+.act-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.act-item:last-child{border-bottom:none}
+.act-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.act-body{flex:1}
+.act-title{font-size:13px;font-weight:500;line-height:1.4}
+.act-title em{font-style:normal;font-weight:700;color:var(--text)}
+.act-time{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px 10px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-size:12px;font-weight:600;color:var(--subtle);transition:all .2s;font-family:inherit;text-align:center}
+.qa-btn:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--text);transform:translateY(-2px)}
+.qa-btn .qi{font-size:24px;margin-bottom:2px}
+
+/* REVENUE CHART */
+.rev-bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:8px}
+.rev-bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(6,182,212,.7),rgba(59,130,246,.4));transition:opacity .2s;position:relative;cursor:pointer;min-height:6px}
+.rev-bar:hover{opacity:.75}
+.rev-bar::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap;opacity:0;transition:opacity .2s}
+.rev-bar:hover::after{opacity:1}
+.rev-months{display:flex;gap:6px;margin-top:5px}
+.rev-months span{flex:1;text-align:center;font-size:9px;color:var(--muted)}
+
+/* TIMETABLE */
+.tt-wrap{overflow-x:auto}
+.tt-grid{display:grid;grid-template-columns:64px repeat(5,1fr);gap:3px;min-width:600px}
+.tt-hd{background:rgba(255,255,255,.06);border-radius:6px;padding:8px 4px;text-align:center;font-weight:700;color:var(--subtle);font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.tt-time{background:rgba(255,255,255,.03);border-radius:6px;padding:6px 4px;text-align:center;font-size:10px;color:var(--muted);display:flex;align-items:center;justify-content:center;min-height:56px}
+.tt-cell{border-radius:8px;padding:8px 7px;display:flex;flex-direction:column;gap:2px;min-height:56px;justify-content:center}
+.tt-cell.empty{background:rgba(255,255,255,.02)}
+.tt-subject{font-size:11px;font-weight:700;line-height:1.2}
+.tt-room{font-size:10px;color:var(--muted)}
+
+/* ANNOUNCEMENT */
+.ann-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:10px}
+.ann-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.ann-title{font-size:13px;font-weight:700}
+.ann-meta{font-size:11px;color:var(--muted)}
+.ann-body{font-size:13px;color:var(--subtle);line-height:1.55}
+.ann-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px;line-height:1}
+.ann-del:hover{color:var(--red);background:rgba(244,63,94,.1)}
+
+/* PERF BARS */
+.perf-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.perf-label{font-size:12px;font-weight:500;color:var(--subtle);width:110px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.perf-track{flex:1;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.perf-fill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.perf-val{font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+
+/* SETTINGS */
+.settings-section{margin-bottom:28px}
+.settings-section-title{font-size:13px;font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.07)}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* FEE ROW */
+.fee-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.fee-row:last-child{border-bottom:none}
+.fee-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.fee-info{flex:1}.fee-title{font-size:13px;font-weight:600}.fee-date{font-size:11px;color:var(--muted);margin-top:2px}
+.fee-right{display:flex;align-items:center;gap:8px}
+.fee-amount{font-size:15px;font-weight:800}
+
+/* ROLE BREAKDOWN */
+.rb-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.rb-top{display:flex;justify-content:space-between;align-items:center}
+.rb-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.rb-fill{height:100%;border-radius:3px;transition:width 1s}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#facc15;font-family:monospace;font-weight:700;padding:12px 24px;border-radius:10px;z-index:9999;border:1px solid rgba(250,204,21,.3);pointer-events:none;animation:toastIn .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- ADD / EDIT USER -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="userModalTitle">Add User</div>
+      <button class="modal-close" onclick="closeModal('userModal')">×</button>
+    </div>
+    <input type="hidden" id="editUserId">
+    <div class="form-2col">
+      <div class="form-row"><label>First Name</label><input id="uf-first" placeholder="First"></div>
+      <div class="form-row"><label>Last Name</label><input id="uf-last" placeholder="Last"></div>
+    </div>
+    <div class="form-row"><label>Email</label><input id="uf-email" type="email" placeholder="user@school.edu"></div>
+    <div class="form-2col">
+      <div class="form-row"><label>Role</label>
+        <select id="uf-role">
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="parent">Parent</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Status</label>
+        <select id="uf-status">
+          <option value="1">Active</option>
+          <option value="0">Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Phone</label><input id="uf-phone" placeholder="+1 (555) 000-0000"></div>
+    <div class="form-row"><label>Class / Department</label><input id="uf-class" placeholder="e.g. Class 9-A or Mathematics Dept."></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('userModal')">Cancel</button>
+      <button class="btn-save" onclick="saveUser()">Save User</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECORD PAYMENT -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Record Payment</div>
+      <button class="modal-close" onclick="closeModal('paymentModal')">×</button>
+    </div>
+    <div class="form-row"><label>Student / Family Name</label><input id="pf-name" placeholder="e.g. Garcia Family"></div>
+    <div class="form-2col">
+      <div class="form-row"><label>Amount (₱)</label><input id="pf-amount" type="number" placeholder="0.00"></div>
+      <div class="form-row"><label>Date</label><input id="pf-date" type="date"></div>
+    </div>
+    <div class="form-row"><label>Fee Type</label>
+      <select id="pf-type">
+        <option>Tuition Fee</option><option>Lab &amp; Materials</option><option>Sports Levy</option>
+        <option>Registration Fee</option><option>Exam Fee</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Notes</label><textarea id="pf-notes" placeholder="Optional notes…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('paymentModal')">Cancel</button>
+      <button class="btn-save" onclick="savePayment()">Record Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENT -->
+<div class="modal-overlay" id="announceModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Post Announcement</div>
+      <button class="modal-close" onclick="closeModal('announceModal')">×</button>
+    </div>
+    <div class="form-row"><label>Title</label><input id="af-title" placeholder="Announcement title…"></div>
+    <div class="form-row"><label>Message</label><textarea id="af-body" placeholder="Write your announcement here…"></textarea></div>
+    <div class="form-2col">
+      <div class="form-row"><label>Audience</label>
+        <select id="af-audience">
+          <option>All</option><option>Students</option><option>Teachers</option><option>Parents</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Priority</label>
+        <select id="af-priority">
+          <option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('announceModal')">Cancel</button>
+      <button class="btn-save" onclick="postAnnouncement()">Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🧠</div>
+    <div class="logo-text">MindStrong<span>Universe</span></div>
+  </div>
+  <div class="user-block">
+    <div class="user-avatar" id="sidebarAvatar">SA</div>
+    <div class="user-info">
+      <div class="name" id="sidebarName">Super Admin</div>
+      <div class="role">Administrator</div>
+      <div class="user-online">Online now</div>
+    </div>
+  </div>
+
+  <div class="nav-section">Dashboard</div>
+  <a class="nav-item active" id="nav-overview" href="#" onclick="showView('overview');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Overview
+  </a>
+
+  <div class="nav-section">People</div>
+  <a class="nav-item" id="nav-users" href="#" onclick="showView('users');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    All Users
+  </a>
+  <a class="nav-item" id="nav-students" href="#" onclick="showView('users','student');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    Students
+  </a>
+  <a class="nav-item" id="nav-teachers" href="#" onclick="showView('users','teacher');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+    Teachers
+  </a>
+
+  <div class="nav-section">Academic</div>
+  <a class="nav-item" id="nav-analytics" href="#" onclick="showView('analytics');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Analytics
+  </a>
+  <a class="nav-item" id="nav-attendance" href="#" onclick="showView('attendance');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Attendance
+  </a>
+  <a class="nav-item" id="nav-timetable" href="#" onclick="showView('timetable');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Timetable
+  </a>
+
+  <div class="nav-section">Finance & Admin</div>
+  <a class="nav-item" id="nav-finance" href="#" onclick="showView('finance');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    Finance
+  </a>
+  <a class="nav-item" id="nav-reports" href="#" onclick="showView('reports');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Reports
+  </a>
+  <a class="nav-item" id="nav-announcements" href="#" onclick="showView('announcements');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/></svg>
+    Announcements <span id="annBadge" style="display:none;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px">0</span>
+  </a>
+  <a class="nav-item" id="nav-settings" href="#" onclick="showView('settings');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    Settings
+  </a>
+  <a class="nav-item" id="nav-security" href="#" onclick="showView('security');return false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Security
+  </a>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" href="#" onclick="logout();return false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Sign Out
+    </a>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title">
+      <span style="color:var(--muted);font-weight:400">Admin · </span>
+      <span id="viewTitle">Overview</span>
+    </div>
+    <div class="search-bar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search users…" id="topSearch" oninput="topbarSearch()">
+    </div>
+    <div style="position:relative">
+      <div class="icon-btn" onclick="toggleNotif()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="badge" id="notifBadge">5</span>
+      </div>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">System Alerts</div>
+        <div class="notif-item"><div class="notif-title">New student enrollment</div><div class="notif-time">5 students · 8 min ago</div></div>
+        <div class="notif-item"><div class="notif-title">Fee payment received</div><div class="notif-time">₱ 4,500 · 24 min ago</div></div>
+        <div class="notif-item"><div class="notif-title">Teacher absence reported</div><div class="notif-time">Mr. Torres · 1 hr ago</div></div>
+        <div class="notif-item"><div class="notif-title">Backup completed</div><div class="notif-time">System · 3 hr ago</div></div>
+        <div class="notif-item"><div class="notif-title">Monthly report ready</div><div class="notif-time">Feb 2026</div></div>
+      </div>
+    </div>
+    <div class="icon-btn" onclick="showView('settings')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ══ OVERVIEW PANEL ══ -->
+    <div id="panel-overview" class="view-panel active">
+      <div class="page-header">
+        <h2>Admin Overview</h2>
+        <p id="pageDate">Loading…</p>
+      </div>
+      <div class="stat-grid">
+        <div class="sc"><div class="sc-icon">👥</div><div class="sc-val" id="sc-users">1,284</div><div class="sc-label">Total Users</div><div class="sc-trend up">↑ 23 enrolled this week</div></div>
+        <div class="sc"><div class="sc-icon">💰</div><div class="sc-val" id="sc-revenue">₱ 248K</div><div class="sc-label">Monthly Revenue</div><div class="sc-trend up">↑ 8.4% vs last month</div></div>
+        <div class="sc"><div class="sc-icon">✅</div><div class="sc-val" id="sc-attendance">87%</div><div class="sc-label">Avg Attendance</div><div class="sc-trend down">↓ 0.9% this week</div></div>
+        <div class="sc"><div class="sc-icon">🎓</div><div class="sc-val" id="sc-students">942</div><div class="sc-label">Active Students</div><div class="sc-trend up">↑ +5 this month</div></div>
+      </div>
+      <div class="grid-2col" style="--col1:1fr;--col2:320px;align-items:start;margin-top:0">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-title">Recent Users</div><div class="card-sub">Latest 6 accounts</div></div>
+              <button class="btn-sm" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(244,63,94,.25)" onclick="showView('users')">View all →</button>
+            </div>
+            <table class="data-table"><thead><tr><th>User</th><th>Role</th><th>Status</th><th></th></tr></thead>
+            <tbody id="overviewUserBody"></tbody></table>
+          </div>
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-title">Monthly Revenue</div><div class="card-sub">Fee collections — last 8 months</div></div>
+              <div style="font-size:20px;font-weight:800;color:#10b981">₱ 248K</div>
+            </div>
+            <div class="rev-bars" id="revBars"></div>
+            <div class="rev-months" id="revMonths"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Quick Actions</div></div>
+            <div class="qa-grid">
+              <button class="qa-btn" onclick="openAddUser()"><div class="qi">➕</div>Enroll Student</button>
+              <button class="qa-btn" onclick="showView('attendance')"><div class="qi">📋</div>Attendance</button>
+              <button class="qa-btn" onclick="openPaymentModal()"><div class="qi">💳</div>Record Payment</button>
+              <button class="qa-btn" onclick="openAnnounceModal()"><div class="qi">📢</div>Announce</button>
+              <button class="qa-btn" onclick="showView('reports')"><div class="qi">📊</div>Reports</button>
+              <button class="qa-btn" onclick="showView('settings')"><div class="qi">⚙️</div>Settings</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div><div class="card-title">Recent Activity</div><div class="card-sub">Live log</div></div><span class="pill pill-cyan">Live</span></div>
+            <div class="activity-feed" id="activityFeed"></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div><div class="card-title">Role Breakdown</div><div class="card-sub">Active accounts</div></div></div>
+            <div id="roleBreakdown" style="margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ USERS PANEL ══ -->
+    <div id="panel-users" class="view-panel">
+      <div class="page-header">
+        <h2 id="usersTitle">All Users</h2>
+        <p>Manage system accounts — add, edit, or remove</p>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="filter-bar">
+            <select id="roleFilter" onchange="loadUsers()">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+              <option value="parent">Parent</option>
+            </select>
+            <div class="search-bar" style="width:220px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" placeholder="Search users…" id="tableSearch" oninput="filterTable()">
+            </div>
+          </div>
+          <button class="btn-sm" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(244,63,94,.25);white-space:nowrap" onclick="openAddUser()">+ Add User</button>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>User</th><th>Role</th><th>Class/Dept</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="userBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ ANALYTICS PANEL ══ -->
+    <div id="panel-analytics" class="view-panel">
+      <div class="page-header"><h2>Analytics</h2><p>School-wide performance & enrollment trends</p></div>
+      <div class="stat-grid">
+        <div class="sc"><div class="sc-icon">📈</div><div class="sc-val">94.2%</div><div class="sc-label">Pass Rate</div><div class="sc-trend up">↑ 1.3% this term</div></div>
+        <div class="sc"><div class="sc-icon">🏆</div><div class="sc-val">78.4</div><div class="sc-label">Avg Score</div><div class="sc-trend up">↑ 2.1 pts</div></div>
+        <div class="sc"><div class="sc-icon">📚</div><div class="sc-val">6</div><div class="sc-label">Subjects Tracked</div><div class="sc-trend neutral">Spring Term</div></div>
+        <div class="sc"><div class="sc-icon">🎯</div><div class="sc-val">12</div><div class="sc-label">Classes Active</div><div class="sc-trend up">All running</div></div>
+      </div>
+      <div class="grid-2col" style="--col1:1fr;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Subject Performance</div><div class="card-sub">School-wide average per subject</div></div></div>
+          <div id="subjPerf" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Enrollment Trend</div><div class="card-sub">New students per month</div></div></div>
+          <div class="rev-bars" id="enrollBars" style="height:100px"></div>
+          <div class="rev-months" id="enrollMonths"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Attendance by Class</div><div class="card-sub">Current term average</div></div></div>
+          <div id="classAttPerf" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Top Students</div><div class="card-sub">Highest academic scores</div></div></div>
+          <table class="data-table" id="topStudentsTable">
+            <thead><tr><th>Student</th><th>Class</th><th>Score</th></tr></thead>
+            <tbody id="topStudentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FINANCE PANEL ══ -->
+    <div id="panel-finance" class="view-panel">
+      <div class="page-header"><h2>Finance</h2><p>Fee management, payments & revenue tracking</p></div>
+      <div class="stat-grid">
+        <div class="sc"><div class="sc-icon">💵</div><div class="sc-val">₱ 248K</div><div class="sc-label">Monthly Revenue</div><div class="sc-trend up">↑ 8.4%</div></div>
+        <div class="sc"><div class="sc-icon">⚠️</div><div class="sc-val" id="fin-outstanding">—</div><div class="sc-label">Outstanding</div><div class="sc-trend down">Needs collection</div></div>
+        <div class="sc"><div class="sc-icon">✅</div><div class="sc-val" id="fin-paid">—</div><div class="sc-label">Paid This Month</div><div class="sc-trend up">On track</div></div>
+        <div class="sc"><div class="sc-icon">📊</div><div class="sc-val">₱ 1.9M</div><div class="sc-label">Annual Target</div><div class="sc-trend neutral">78% reached</div></div>
+      </div>
+      <div class="grid-2col" style="--col1:1fr;--col2:340px;align-items:start">
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-title">Payment Records</div><div class="card-sub">All transactions</div></div>
+            <button class="btn-sm" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(244,63,94,.25)" onclick="openPaymentModal()">+ Record Payment</button>
+          </div>
+          <div id="paymentsList"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Revenue Trend</div><div class="card-sub">Last 8 months</div></div></div>
+          <div class="rev-bars" id="finRevBars"></div>
+          <div class="rev-months" id="finRevMonths"></div>
+          <div style="margin-top:20px">
+            <div class="card-title" style="margin-bottom:10px;font-size:12px">Outstanding by Type</div>
+            <div id="feeTypeBreakdown"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ATTENDANCE PANEL ══ -->
+    <div id="panel-attendance" class="view-panel">
+      <div class="page-header"><h2>Attendance</h2><p>Daily attendance tracking across all classes</p></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-hd">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div><div class="card-title">Mark Attendance</div><div class="card-sub" id="attDate"></div></div>
+            <select id="attClassSel" onchange="renderAttTable()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:7px 12px;outline:none">
+              <option>Class 9-A</option><option>Class 9-B</option><option>Class 10-A</option><option>Class 10-B</option><option>Class 11-A</option><option>Class 12-A</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.25)" onclick="markAll('P')">Mark All Present</button>
+            <button class="btn-sm" style="background:rgba(244,63,94,.1);color:var(--red);border:1px solid rgba(244,63,94,.25)" onclick="saveAttendance()">Save</button>
+          </div>
+        </div>
+        <table class="data-table">
+          <thead><tr><th>Student</th><th>ID</th><th>Yesterday</th><th>Today</th></tr></thead>
+          <tbody id="attBody"></tbody>
+        </table>
+      </div>
+      <div class="grid-2col" style="--col1:1fr;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Weekly Summary</div><div class="card-sub">This week's attendance by class</div></div></div>
+          <div id="attWeekSummary"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Absent Today</div><div class="card-sub">Students not present</div></div></div>
+          <div id="absentList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TIMETABLE PANEL ══ -->
+    <div id="panel-timetable" class="view-panel">
+      <div class="page-header"><h2>Timetable</h2><p>Weekly class schedule</p></div>
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Weekly Schedule</div><div class="card-sub">All periods · Spring Term 2026</div></div>
+          <select id="ttClassSel" onchange="renderTimetable()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;padding:7px 12px;outline:none">
+            <option>Class 9-A</option><option>Class 9-B</option><option>Class 10-A</option><option>Class 10-B</option><option>Class 11-A</option><option>Class 12-A</option>
+          </select>
+        </div>
+        <div class="tt-wrap"><div class="tt-grid" id="ttGrid"></div></div>
+      </div>
+    </div>
+
+    <!-- ══ REPORTS PANEL ══ -->
+    <div id="panel-reports" class="view-panel">
+      <div class="page-header">
+        <h2>Reports</h2>
+        <p>Academic & administrative summaries</p>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="btn-sm" style="background:var(--accent-dim);color:var(--accent);border:1px solid rgba(244,63,94,.25);padding:9px 18px;font-size:13px" onclick="window.print()">🖨 Print Report</button>
+        <button class="btn-sm" style="background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.25);padding:9px 18px;font-size:13px" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <div class="stat-grid">
+        <div class="sc"><div class="sc-icon">📚</div><div class="sc-val">942</div><div class="sc-label">Students Enrolled</div><div class="sc-trend up">Spring 2026</div></div>
+        <div class="sc"><div class="sc-icon">👩‍🏫</div><div class="sc-val">87</div><div class="sc-label">Teaching Staff</div><div class="sc-trend neutral">Active</div></div>
+        <div class="sc"><div class="sc-icon">📊</div><div class="sc-val">78.4%</div><div class="sc-label">School Average</div><div class="sc-trend up">↑ 2.1%</div></div>
+        <div class="sc"><div class="sc-icon">🏫</div><div class="sc-val">94.2%</div><div class="sc-label">Pass Rate</div><div class="sc-trend up">↑ 1.3%</div></div>
+      </div>
+      <div class="grid-2col" style="--col1:1fr;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Subject Summary</div><div class="card-sub">School-wide average scores</div></div></div>
+          <table class="data-table">
+            <thead><tr><th>Subject</th><th>Avg Score</th><th>Pass Rate</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Mathematics</td><td>82%</td><td>96%</td><td><span class="pill pill-green">Strong</span></td></tr>
+              <tr><td>Science</td><td>74%</td><td>91%</td><td><span class="pill pill-green">Good</span></td></tr>
+              <tr><td>English</td><td>79%</td><td>95%</td><td><span class="pill pill-green">Strong</span></td></tr>
+              <tr><td>History</td><td>68%</td><td>84%</td><td><span class="pill pill-amber">Fair</span></td></tr>
+              <tr><td>Physics</td><td>77%</td><td>89%</td><td><span class="pill pill-green">Good</span></td></tr>
+              <tr><td>Chemistry</td><td>65%</td><td>80%</td><td><span class="pill pill-amber">Fair</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Attendance Summary</div><div class="card-sub">This term by class</div></div></div>
+          <table class="data-table">
+            <thead><tr><th>Class</th><th>Students</th><th>Avg Att.</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Class 9-A</td><td>28</td><td>92%</td><td><span class="pill pill-green">Excellent</span></td></tr>
+              <tr><td>Class 9-B</td><td>26</td><td>88%</td><td><span class="pill pill-green">Good</span></td></tr>
+              <tr><td>Class 10-A</td><td>30</td><td>85%</td><td><span class="pill pill-cyan">Good</span></td></tr>
+              <tr><td>Class 10-B</td><td>29</td><td>79%</td><td><span class="pill pill-amber">Fair</span></td></tr>
+              <tr><td>Class 11-A</td><td>25</td><td>91%</td><td><span class="pill pill-green">Excellent</span></td></tr>
+              <tr><td>Class 12-A</td><td>22</td><td>94%</td><td><span class="pill pill-green">Excellent</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ANNOUNCEMENTS PANEL ══ -->
+    <div id="panel-announcements" class="view-panel">
+      <div class="page-header"><h2>Announcements</h2><p>Post and manage school-wide notices</p></div>
+      <div class="grid-2col" style="--col1:340px;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">New Announcement</div></div>
+          <div class="form-row" style="margin-top:4px"><label>Title</label><input id="ann-title" placeholder="Announcement title…"></div>
+          <div class="form-row"><label>Message</label><textarea id="ann-body" placeholder="Write your message here…" style="min-height:110px"></textarea></div>
+          <div class="form-2col">
+            <div class="form-row"><label>Audience</label>
+              <select id="ann-audience"><option>All</option><option>Students</option><option>Teachers</option><option>Parents</option></select>
+            </div>
+            <div class="form-row"><label>Priority</label>
+              <select id="ann-priority"><option value="normal">Normal</option><option value="high">High</option><option value="urgent">Urgent</option></select>
+            </div>
+          </div>
+          <button class="btn-save" style="width:100%;margin-top:4px" onclick="postAnnouncementInline()">Post Announcement</button>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="font-size:14px;font-weight:700">Posted Announcements</div>
+            <button class="btn-cancel" onclick="clearAnnouncements()" style="font-size:11px;padding:5px 12px">Clear All</button>
+          </div>
+          <div id="annList"><div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">No announcements yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SETTINGS PANEL ══ -->
+    <div id="panel-settings" class="view-panel">
+      <div class="page-header"><h2>Settings</h2><p>School configuration & preferences</p></div>
+      <div class="grid-2col" style="--col1:1fr;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="settings-section-title">School Information</div>
+          <div class="form-row"><label>School Name</label><input id="set-name" placeholder="MindStrong Universe"></div>
+          <div class="form-row"><label>Tagline / Motto</label><input id="set-motto" placeholder="Empowering Every Mind"></div>
+          <div class="form-row"><label>Address</label><input id="set-address" placeholder="123 Education Ave, City"></div>
+          <div class="form-2col">
+            <div class="form-row"><label>Phone</label><input id="set-phone" placeholder="+1 (555) 000-0000"></div>
+            <div class="form-row"><label>Email</label><input id="set-email" placeholder="admin@school.edu"></div>
+          </div>
+          <div class="settings-section-title" style="margin-top:20px">Academic Term</div>
+          <div class="form-2col">
+            <div class="form-row"><label>Current Term</label><input id="set-term" placeholder="Spring 2026"></div>
+            <div class="form-row"><label>Academic Year</label><input id="set-year" placeholder="2025–2026"></div>
+          </div>
+          <div class="form-2col">
+            <div class="form-row"><label>Term Start</label><input id="set-start" type="date"></div>
+            <div class="form-row"><label>Term End</label><input id="set-end" type="date"></div>
+          </div>
+          <button class="btn-save" style="margin-top:6px" onclick="saveSettings()">Save Settings</button>
+        </div>
+        <div class="card">
+          <div class="settings-section-title">Grade Thresholds</div>
+          <div class="form-2col">
+            <div class="form-row"><label>A+ (min %)</label><input id="set-aplus" type="number" placeholder="95"></div>
+            <div class="form-row"><label>A (min %)</label><input id="set-a" type="number" placeholder="90"></div>
+            <div class="form-row"><label>B (min %)</label><input id="set-b" type="number" placeholder="80"></div>
+            <div class="form-row"><label>C (min %)</label><input id="set-c" type="number" placeholder="70"></div>
+            <div class="form-row"><label>D (min %)</label><input id="set-d" type="number" placeholder="60"></div>
+            <div class="form-row"><label>Fail below</label><input id="set-f" type="number" placeholder="60"></div>
+          </div>
+          <div class="settings-section-title" style="margin-top:20px">Attendance Rules</div>
+          <div class="form-2col">
+            <div class="form-row"><label>Min Attendance %</label><input id="set-minatt" type="number" placeholder="75"></div>
+            <div class="form-row"><label>Late Threshold (min)</label><input id="set-late" type="number" placeholder="15"></div>
+          </div>
+          <button class="btn-save" style="margin-top:6px" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SECURITY PANEL ══ -->
+    <div id="panel-security" class="view-panel">
+      <div class="page-header"><h2>Security</h2><p>Account security & session management</p></div>
+      <div class="grid-2col" style="--col1:1fr;--col2:1fr;align-items:start">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Admin Account</div></div>
+          <div style="display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:16px">
+            <div class="user-avatar" style="width:56px;height:56px;font-size:20px;font-weight:800;display:flex;align-items:center;justify-content:center;border-radius:14px" id="secAvatar">SA</div>
+            <div>
+              <div style="font-size:15px;font-weight:700" id="secName">Super Admin</div>
+              <div style="font-size:12px;color:var(--muted)" id="secEmail">admin@school.edu</div>
+              <div style="margin-top:6px"><span class="pill pill-green">Active Session</span></div>
+            </div>
+          </div>
+          <div class="settings-section-title">Change Password</div>
+          <div class="form-row"><label>Current Password</label><input id="sec-current" type="password" placeholder="••••••••"></div>
+          <div class="form-row"><label>New Password</label><input id="sec-new" type="password" placeholder="••••••••"></div>
+          <div class="form-row"><label>Confirm Password</label><input id="sec-confirm" type="password" placeholder="••••••••"></div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button class="btn-save" onclick="changePassword()">Update Password</button>
+            <button class="btn-cancel" onclick="logout()">Sign Out Now</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div><div class="card-title">Active Sessions</div><div class="card-sub">All logged-in devices</div></div></div>
+          <div class="act-item">
+            <div class="act-icon" style="background:rgba(16,185,129,.12)">💻</div>
+            <div class="act-body">
+              <div class="act-title">This Device — <em>Chrome / Windows</em></div>
+              <div class="act-time">Current session · <span id="sessTime">Active now</span></div>
+            </div>
+            <span class="pill pill-green" style="font-size:10px">Current</span>
+          </div>
+          <div style="margin-top:20px">
+            <div class="settings-section-title">Two-Factor Authentication</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Add an extra layer of security to your account.</div>
+            <button class="btn-save" onclick="toast('2FA setup — Coming Soon')">Enable 2FA</button>
+          </div>
+          <div style="margin-top:20px">
+            <div class="settings-section-title">Login History</div>
+            <div style="font-size:13px;color:var(--muted)">Last login: <span style="color:var(--text)" id="lastLogin">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+/* ═══ GLOBALS ═══ */
+const _sess = JSON.parse(localStorage.getItem('ms_session') || '{}');
+let currentPage = 1, perPage = 10, allUsers = [], currentRole = '';
+
+/* ═══ INIT ═══ */
+(function init(){
+  const n = _sess.name || 'Super Admin';
+  const initials = n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('sidebarName').textContent = n;
+  document.getElementById('sidebarAvatar').textContent = initials;
+  document.getElementById('secAvatar').textContent = initials;
+  document.getElementById('secName').textContent = n;
+  document.getElementById('secEmail').textContent = _sess.email || 'admin@school.edu';
+  document.getElementById('pageDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' · Spring Term 2026';
+  document.getElementById('attDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('lastLogin').textContent = new Date().toLocaleString();
+  document.getElementById('sessTime').textContent = new Date().toLocaleTimeString();
+  loadSettings();
+  renderOverview();
+  loadUsers();
+  renderActivity();
+  renderRevChart('revBars','revMonths');
+  renderRevChart('finRevBars','finRevMonths');
+  renderRoleBreakdown();
+  renderAttTable();
+  renderTimetable();
+  renderAnnouncements();
+  renderAnalytics();
+  renderFinance();
+  updateAnnBadge();
+})();
+
+/* ═══ VIEW SYSTEM ═══ */
+function showView(name, roleFilter){
+  document.querySelectorAll('.view-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const panel = document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
+  const navEl = document.getElementById('nav-'+name) || document.getElementById('nav-'+name+'s');
+  if(navEl) navEl.classList.add('active');
+  const titles = {overview:'Overview',users:'User Management',analytics:'Analytics',finance:'Finance',attendance:'Attendance',timetable:'Timetable',reports:'Reports',announcements:'Announcements',settings:'Settings',security:'Security'};
+  document.getElementById('viewTitle').textContent = titles[name] || name;
+  if(name==='users' && roleFilter){
+    document.getElementById('roleFilter').value = roleFilter;
+    currentRole = roleFilter;
+    document.getElementById('usersTitle').textContent = roleFilter.charAt(0).toUpperCase()+roleFilter.slice(1)+'s';
+    loadUsers();
+    document.getElementById('nav-'+roleFilter+'s').classList.add('active');
+  } else if(name==='users'){
+    document.getElementById('usersTitle').textContent = 'All Users';
+    document.getElementById('nav-users').classList.add('active');
+  }
+}
+
+/* ═══ TOAST ═══ */
+function toast(msg, color){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  if(color) t.style.color = color;
+  document.body.appendChild(t);
+  setTimeout(()=>t.style.opacity='0',2000);
+  setTimeout(()=>t.remove(),2300);
+}
+function comingSoon(l){toast(l||'Coming Soon')}
+
+/* ═══ AUTH ═══ */
+function logout(){localStorage.removeItem('ms_session');window.location.href='login.html'}
+
+/* ═══ NOTIFICATIONS ═══ */
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open')}
+document.addEventListener('click',e=>{if(!e.target.closest('.icon-btn')&&!e.target.closest('.notif-panel'))document.getElementById('notifPanel').classList.remove('open')});
+
+/* ═══ TOPBAR SEARCH ═══ */
+function topbarSearch(){
+  const q = document.getElementById('topSearch').value.toLowerCase();
+  if(!q){loadUsers();return}
+  showView('users');
+  allUsers = getUsers().filter(u=>u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q)||(u.role||'').includes(q));
+  currentPage=1; renderUserTable(); renderPagination();
+}
+
+/* ═══ LOCALSTORAGE HELPERS ═══ */
+function getUsers(){
+  const s = localStorage.getItem('ms_admin_users');
+  if(s) return JSON.parse(s);
+  const demo = buildDemoUsers();
+  localStorage.setItem('ms_admin_users', JSON.stringify(demo));
+  return demo;
+}
+function saveUsers(u){localStorage.setItem('ms_admin_users',JSON.stringify(u))}
+
+function getPayments(){return JSON.parse(localStorage.getItem('ms_payments')||'[]')}
+function savePayments(p){localStorage.setItem('ms_payments',JSON.stringify(p))}
+
+function getAnnouncements(){return JSON.parse(localStorage.getItem('ms_announcements')||'[]')}
+function saveAnnouncements(a){localStorage.setItem('ms_announcements',JSON.stringify(a))}
+
+function getSettings(){return JSON.parse(localStorage.getItem('ms_settings')||'{"name":"MindStrong Universe","motto":"Empowering Every Mind","address":"123 Education Ave","phone":"+1 555 000 0000","email":"admin@school.edu","term":"Spring 2026","year":"2025–2026","start":"2026-01-15","end":"2026-06-30","aplus":95,"a":90,"b":80,"c":70,"d":60,"f":60,"minatt":75,"late":15}')}
+
+/* ═══ DEMO USERS ═══ */
+function buildDemoUsers(){
+  const roles=['student','teacher','student','parent','student','teacher','student','admin','student','parent','student','teacher','student','student','teacher','student','student','parent','student','student'];
+  const names=['Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson','Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez','Karen Nguyen','Leo Patel','Maya Robinson','Nathan Scott','Olivia Thomas','Paul Adams','Quinn Baker','Rachel Clark','Sam Torres','Tina Walker'];
+  const classes=['Class 9-A','Mathematics','Class 10-A','—','Class 9-B','Science','Class 11-A','Administration','Class 10-B','—','Class 9-A','English','Class 12-A','Class 10-A','History','Class 9-B','Class 11-A','—','Class 12-A','Class 10-B'];
+  return names.map((n,i)=>({
+    id:1000+i, name:n,
+    email:n.toLowerCase().replace(' ','.')+('@school.edu'),
+    role:roles[i],
+    dept:classes[i],
+    phone:'',
+    joined:'2025-0'+(Math.floor(i/4)+1).toString().padStart(2,'0')+'-'+String(10+i%18).padStart(2,'0'),
+    active:i!==7&&i!==14
+  }));
+}
+
+/* ═══ USERS ═══ */
+function loadUsers(){
+  const roleF = document.getElementById('roleFilter')?.value || '';
+  let users = getUsers();
+  if(roleF) users = users.filter(u=>u.role===roleF);
+  allUsers = users;
+  currentPage = 1;
+  renderUserTable();
+  renderPagination();
+}
+
+function renderUserTable(){
+  const tb = document.getElementById('userBody');
+  const start = (currentPage-1)*perPage;
+  const page = allUsers.slice(start, start+perPage);
+  if(!page.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No users found.</td></tr>';return}
+  const rc={'student':'#3b82f6','teacher':'#10b981','parent':'#06b6d4','admin':'#f43f5e'};
+  const rb={'student':'rgba(59,130,246,.15)','teacher':'rgba(16,185,129,.15)','parent':'rgba(6,182,212,.15)','admin':'rgba(244,63,94,.15)'};
+  tb.innerHTML = page.map(u=>{
+    const ini=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const c=rc[u.role]||'var(--muted)', b=rb[u.role]||'rgba(255,255,255,.05)';
+    return `<tr>
+      <td><div class="user-meta"><div class="u-avatar" style="background:${b};color:${c}">${ini}</div>
+        <div><div class="u-name">${u.name}</div><div class="u-email">${u.email}</div></div>
+      </div></td>
+      <td><span class="pill" style="background:${b};color:${c};border:1px solid ${c}40">${u.role}</span></td>
+      <td style="color:var(--muted);font-size:12px">${u.dept||'—'}</td>
+      <td style="color:var(--muted);font-size:12px">${u.joined||'—'}</td>
+      <td><span class="pill ${u.active?'pill-green':'pill-red'}">${u.active?'Active':'Inactive'}</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn-edit" onclick="openEditUser(${u.id})">Edit</button>
+        <button class="btn-del" onclick="removeUser(${u.id})">Remove</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPagination(){
+  const total = Math.ceil(allUsers.length/perPage);
+  const pg = document.getElementById('pagination');
+  if(total<=1){pg.innerHTML='';return}
+  let html='';
+  for(let i=1;i<=total;i++) html+=`<button class="pg-btn${i===currentPage?' active':''}" onclick="goPage(${i})">${i}</button>`;
+  pg.innerHTML=html;
+}
+function goPage(n){currentPage=n;renderUserTable();renderPagination()}
+
+function filterTable(){
+  const q = document.getElementById('tableSearch').value.toLowerCase();
+  document.querySelectorAll('#userBody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'});
+}
+
+/* OVERVIEW USER PREVIEW */
+function renderOverview(){
+  const users = getUsers().slice(0,6);
+  const rc={'student':'#3b82f6','teacher':'#10b981','parent':'#06b6d4','admin':'#f43f5e'};
+  const rb={'student':'rgba(59,130,246,.15)','teacher':'rgba(16,185,129,.15)','parent':'rgba(6,182,212,.15)','admin':'rgba(244,63,94,.15)'};
+  const tb = document.getElementById('overviewUserBody');
+  tb.innerHTML = users.map(u=>{
+    const ini=(u.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const c=rc[u.role]||'var(--muted)',b=rb[u.role]||'rgba(255,255,255,.05)';
+    return `<tr><td><div class="user-meta"><div class="u-avatar" style="background:${b};color:${c}">${ini}</div>
+      <div><div class="u-name">${u.name}</div><div class="u-email">${u.email}</div></div></div></td>
+      <td><span class="pill" style="background:${b};color:${c};border:1px solid ${c}40">${u.role}</span></td>
+      <td><span class="pill ${u.active?'pill-green':'pill-red'}">${u.active?'Active':'Inactive'}</span></td>
+      <td><button class="btn-edit" onclick="openEditUser(${u.id})">Edit</button></td></tr>`;
+  }).join('');
+}
+
+/* ═══ ADD / EDIT USER ═══ */
+function openAddUser(){
+  document.getElementById('userModalTitle').textContent='Add User';
+  document.getElementById('editUserId').value='';
+  ['uf-first','uf-last','uf-email','uf-phone','uf-class'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('uf-role').value='student';
+  document.getElementById('uf-status').value='1';
+  openModal('userModal');
+}
+
+function openEditUser(id){
+  const users = getUsers();
+  const u = users.find(x=>x.id===id);
+  if(!u) return;
+  document.getElementById('userModalTitle').textContent='Edit User';
+  document.getElementById('editUserId').value=id;
+  const [first,...rest]=u.name.split(' ');
+  document.getElementById('uf-first').value=first||'';
+  document.getElementById('uf-last').value=rest.join(' ')||'';
+  document.getElementById('uf-email').value=u.email||'';
+  document.getElementById('uf-role').value=u.role||'student';
+  document.getElementById('uf-status').value=u.active?'1':'0';
+  document.getElementById('uf-phone').value=u.phone||'';
+  document.getElementById('uf-class').value=u.dept||'';
+  openModal('userModal');
+}
+
+function saveUser(){
+  const first=document.getElementById('uf-first').value.trim();
+  const last=document.getElementById('uf-last').value.trim();
+  if(!first){toast('First name is required','#f43f5e');return}
+  const email=document.getElementById('uf-email').value.trim();
+  const role=document.getElementById('uf-role').value;
+  const active=document.getElementById('uf-status').value==='1';
+  const phone=document.getElementById('uf-phone').value.trim();
+  const dept=document.getElementById('uf-class').value.trim();
+  const name=[first,last].filter(Boolean).join(' ');
+  let users=getUsers();
+  const editId=parseInt(document.getElementById('editUserId').value)||0;
+  if(editId){
+    const idx=users.findIndex(u=>u.id===editId);
+    if(idx>-1) users[idx]={...users[idx],name,email,role,active,phone,dept};
+    toast('User updated ✓','#10b981');
+  } else {
+    const newId=Math.max(...users.map(u=>u.id),999)+1;
+    users.push({id:newId,name,email,role,active,phone,dept,joined:new Date().toISOString().slice(0,10)});
+    toast('User added ✓','#10b981');
+  }
+  saveUsers(users);
+  closeModal('userModal');
+  loadUsers();
+  renderOverview();
+}
+
+function removeUser(id){
+  if(!confirm('Remove this user permanently?')) return;
+  let users=getUsers().filter(u=>u.id!==id);
+  saveUsers(users);
+  loadUsers();
+  renderOverview();
+  toast('User removed','#f43f5e');
+}
+
+/* ═══ PAYMENTS ═══ */
+function openPaymentModal(){
+  document.getElementById('pf-date').value=new Date().toISOString().slice(0,10);
+  openModal('paymentModal');
+}
+function savePayment(){
+  const name=document.getElementById('pf-name').value.trim();
+  const amount=document.getElementById('pf-amount').value;
+  if(!name||!amount){toast('Name and amount are required','#f43f5e');return}
+  const payments=getPayments();
+  payments.unshift({id:Date.now(),name,amount:parseFloat(amount),date:document.getElementById('pf-date').value,type:document.getElementById('pf-type').value,notes:document.getElementById('pf-notes').value});
+  savePayments(payments);
+  closeModal('paymentModal');
+  renderFinance();
+  toast('Payment recorded ✓','#10b981');
+}
+function renderFinance(){
+  const payments=getPayments();
+  const defaultFees=[
+    {id:'d1',name:'Garcia Family',amount:4500,date:'2026-03-10',type:'Tuition Fee',status:'paid'},
+    {id:'d2',name:'Johnson Family',amount:850,date:'2026-03-08',type:'Tuition Fee',status:'paid'},
+    {id:'d3',name:'Smith Family',amount:75,date:'2026-02-28',type:'Sports Levy',status:'overdue'},
+    {id:'d4',name:'Brown Family',amount:850,date:'2026-03-15',type:'Tuition Fee',status:'pending'},
+    {id:'d5',name:'Wilson Family',amount:120,date:'2026-01-10',type:'Lab & Materials',status:'paid'},
+  ];
+  const all=[...payments.map(p=>({...p,status:'paid'})),...defaultFees];
+  const paid=all.filter(p=>p.status==='paid').reduce((s,p)=>s+Number(p.amount),0);
+  const outstanding=all.filter(p=>p.status!=='paid').reduce((s,p)=>s+Number(p.amount),0);
+  document.getElementById('fin-paid').textContent='₱'+paid.toLocaleString();
+  document.getElementById('fin-outstanding').textContent='₱'+outstanding.toLocaleString();
+  const icons={paid:'✅',pending:'📄',overdue:'⚠️'};
+  const ibgs={paid:'rgba(16,185,129,.12)',pending:'rgba(245,158,11,.12)',overdue:'rgba(244,63,94,.12)'};
+  const pills={paid:'pill-green',pending:'pill-amber',overdue:'pill-red'};
+  document.getElementById('paymentsList').innerHTML=all.slice(0,8).map(p=>`
+    <div class="fee-row">
+      <div class="fee-icon" style="background:${ibgs[p.status]||ibgs.pending}">${icons[p.status]||'📄'}</div>
+      <div class="fee-info"><div class="fee-title">${p.name} — ${p.type||'Fee'}</div><div class="fee-date">${p.status==='paid'?'Paid':'Due'}: ${p.date||'—'}</div></div>
+      <div class="fee-right"><div class="fee-amount" style="color:${p.status==='paid'?'#10b981':p.status==='overdue'?'#f43f5e':'#f59e0b'}">₱${Number(p.amount).toLocaleString()}</div>
+      <span class="pill ${pills[p.status]||'pill-amber'}">${p.status}</span></div>
+    </div>`).join('');
+  document.getElementById('feeTypeBreakdown').innerHTML=[
+    {label:'Tuition',pct:64,color:'#06b6d4'},{label:'Sports',pct:12,color:'#a855f7'},
+    {label:'Lab',pct:14,color:'#10b981'},{label:'Registration',pct:10,color:'#f59e0b'}
+  ].map(r=>`<div class="perf-row"><div class="perf-label">${r.label}</div>
+    <div class="perf-track"><div class="perf-fill" style="width:${r.pct}%;background:${r.color}"></div></div>
+    <div class="perf-val" style="color:${r.color}">${r.pct}%</div></div>`).join('');
+  renderRevChart('finRevBars','finRevMonths');
+}
+
+/* ═══ ANNOUNCEMENTS ═══ */
+function updateAnnBadge(){
+  const a=getAnnouncements();
+  const badge=document.getElementById('annBadge');
+  if(a.length){badge.style.display='inline';badge.textContent=a.length}
+  else badge.style.display='none';
+}
+function postAnnouncementInline(){
+  const title=document.getElementById('ann-title').value.trim();
+  const body=document.getElementById('ann-body').value.trim();
+  if(!title||!body){toast('Title and message are required','#f43f5e');return}
+  const a=getAnnouncements();
+  a.unshift({id:Date.now(),title,body,audience:document.getElementById('ann-audience').value,priority:document.getElementById('ann-priority').value,date:new Date().toLocaleString()});
+  saveAnnouncements(a);
+  document.getElementById('ann-title').value='';
+  document.getElementById('ann-body').value='';
+  renderAnnouncements();
+  updateAnnBadge();
+  toast('Announcement posted ✓','#10b981');
+}
+function openAnnounceModal(){openModal('announceModal')}
+function postAnnouncement(){
+  const title=document.getElementById('af-title').value.trim();
+  const body=document.getElementById('af-body').value.trim();
+  if(!title||!body){toast('Fill in all fields','#f43f5e');return}
+  const a=getAnnouncements();
+  a.unshift({id:Date.now(),title,body,audience:document.getElementById('af-audience').value,priority:document.getElementById('af-priority').value,date:new Date().toLocaleString()});
+  saveAnnouncements(a);
+  closeModal('announceModal');
+  renderAnnouncements();
+  updateAnnBadge();
+  toast('Announcement posted ✓','#10b981');
+}
+function deleteAnnouncement(id){
+  const a=getAnnouncements().filter(x=>x.id!==id);
+  saveAnnouncements(a);renderAnnouncements();updateAnnBadge();toast('Deleted','#f43f5e');
+}
+function clearAnnouncements(){if(confirm('Delete all announcements?')){saveAnnouncements([]);renderAnnouncements();updateAnnBadge();}}
+function renderAnnouncements(){
+  const a=getAnnouncements();
+  const el=document.getElementById('annList');
+  if(!a.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:24px;text-align:center">No announcements yet.</div>';return}
+  const pColors={normal:'#06b6d4',high:'#f59e0b',urgent:'#f43f5e'};
+  el.innerHTML=a.map(ann=>`
+    <div class="ann-card">
+      <div class="ann-hd">
+        <div>
+          <div class="ann-title">${ann.title} <span style="font-size:10px;background:${pColors[ann.priority]||'#06b6d4'}22;color:${pColors[ann.priority]||'#06b6d4'};padding:2px 8px;border-radius:6px;font-weight:700;text-transform:uppercase">${ann.priority||'normal'}</span></div>
+          <div class="ann-meta">${ann.audience||'All'} · ${ann.date}</div>
+        </div>
+        <button class="ann-del" onclick="deleteAnnouncement(${ann.id})">×</button>
+      </div>
+      <div class="ann-body">${ann.body}</div>
+    </div>`).join('');
+}
+
+/* ═══ ATTENDANCE ═══ */
+const ATT_NAMES=['Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson','Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez'];
+let attState={};
+function renderAttTable(){
+  attState={};
+  const tb=document.getElementById('attBody');
+  tb.innerHTML=ATT_NAMES.map((n,i)=>{
+    const id='s'+i;attState[id]='';
+    const yest=['P','P','P','L','P','A','P','P','P','P'][i];
+    return `<tr>
+      <td><div class="user-meta"><div class="u-avatar" style="background:rgba(59,130,246,.15);color:#3b82f6">${n.split(' ').map(w=>w[0]).join('')}</div><div class="u-name">${n}</div></div></td>
+      <td style="color:var(--muted);font-size:12px">#${1000+i}</td>
+      <td><span class="pill ${yest==='P'?'pill-green':yest==='L'?'pill-amber':'pill-red'}" style="font-size:10px">${yest==='P'?'Present':yest==='L'?'Late':'Absent'}</span></td>
+      <td><div style="display:flex;gap:6px" id="att-${id}">
+        <button class="att-btn" style="border-color:#10b981;color:#10b981;background:rgba(16,185,129,.08)" onclick="markOne('${id}','P',this)">P</button>
+        <button class="att-btn" style="border-color:#f43f5e;color:#f43f5e;background:rgba(244,63,94,.08)" onclick="markOne('${id}','A',this)">A</button>
+        <button class="att-btn" style="border-color:#f59e0b;color:#f59e0b;background:rgba(245,158,11,.08)" onclick="markOne('${id}','L',this)">L</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  renderAbsentList();
+  renderWeekSummary();
+}
+function markOne(id,status,btn){
+  attState[id]=status;
+  document.getElementById('att-'+id).querySelectorAll('button').forEach(b=>b.style.opacity='.35');
+  btn.style.opacity='1';btn.style.transform='scale(1.1)';
+  renderAbsentList();
+}
+function markAll(status){
+  Object.keys(attState).forEach(id=>{
+    attState[id]=status;
+    const btns=document.getElementById('att-'+id);
+    if(!btns)return;
+    btns.querySelectorAll('button').forEach(b=>b.style.opacity='.35');
+    btns.querySelectorAll('button')[status==='P'?0:status==='A'?1:2].style.opacity='1';
+  });
+  renderAbsentList();
+}
+function saveAttendance(){
+  const cls=document.getElementById('attClassSel').value;
+  const key='att_'+cls+'_'+new Date().toISOString().slice(0,10);
+  localStorage.setItem(key,JSON.stringify(attState));
+  toast('Attendance saved for '+cls+' ✓','#10b981');
+}
+function renderAbsentList(){
+  const absent=ATT_NAMES.filter((_,i)=>attState['s'+i]==='A');
+  const el=document.getElementById('absentList');
+  if(!absent.length){el.innerHTML='<div style="color:#10b981;font-size:13px;padding:12px 0">All students present ✓</div>';return}
+  el.innerHTML=absent.map(n=>`<div class="fee-row" style="padding:8px 0"><div class="u-avatar" style="background:rgba(244,63,94,.15);color:#f43f5e;width:30px;height:30px;font-size:10px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700">${n.split(' ').map(w=>w[0]).join('')}</div><div class="u-name" style="margin-left:10px">${n}</div><span class="pill pill-red" style="font-size:10px">Absent</span></div>`).join('');
+}
+function renderWeekSummary(){
+  const classes=['Class 9-A','Class 9-B','Class 10-A','Class 10-B','Class 11-A','Class 12-A'];
+  const pcts=[92,88,85,79,91,94];
+  document.getElementById('attWeekSummary').innerHTML=classes.map((c,i)=>`
+    <div class="perf-row"><div class="perf-label">${c}</div>
+    <div class="perf-track"><div class="perf-fill" style="width:${pcts[i]}%;background:${pcts[i]>=90?'#10b981':pcts[i]>=80?'#06b6d4':'#f59e0b'}"></div></div>
+    <div class="perf-val" style="color:${pcts[i]>=90?'#10b981':pcts[i]>=80?'#06b6d4':'#f59e0b'}">${pcts[i]}%</div></div>`).join('');
+}
+
+/* ═══ TIMETABLE ═══ */
+const TT_DATA={
+  'Class 9-A':[
+    [{s:'Mathematics',r:'Rm 101',t:'Mr. Martinez',c:'#a855f7'},{s:'Science',r:'Lab 2',t:'Ms. Singh',c:'#06b6d4'},{s:'English',r:'Rm 204',t:'Mrs. Johnson',c:'#10b981'},{s:'',r:'',t:'',c:''},,{s:'History',r:'Rm 305',t:'Mr. Lee',c:'#f59e0b'}],
+    [{s:'Science',r:'Lab 2',t:'Ms. Singh',c:'#06b6d4'},{s:'Mathematics',r:'Rm 101',t:'Mr. Martinez',c:'#a855f7'},{s:'',r:'',t:'',c:''},,{s:'Physics',r:'Lab 1',t:'Dr. Okafor',c:'#3b82f6'},{s:'English',r:'Rm 204',t:'Mrs. Johnson',c:'#10b981'}],
+    [{s:'English',r:'Rm 204',t:'Mrs. Johnson',c:'#10b981'},{s:'History',r:'Rm 305',t:'Mr. Lee',c:'#f59e0b'},{s:'Mathematics',r:'Rm 101',t:'Mr. Martinez',c:'#a855f7'},,{s:'',r:'',t:'',c:''},{s:'Science',r:'Lab 2',t:'Ms. Singh',c:'#06b6d4'}],
+    [{s:'Physics',r:'Lab 1',t:'Dr. Okafor',c:'#3b82f6'},{s:'English',r:'Rm 204',t:'Mrs. Johnson',c:'#10b981'},{s:'History',r:'Rm 305',t:'Mr. Lee',c:'#f59e0b'},,{s:'Mathematics',r:'Rm 101',t:'Mr. Martinez',c:'#a855f7'},{s:'',r:'',t:'',c:''}],
+    [{s:'History',r:'Rm 305',t:'Mr. Lee',c:'#f59e0b'},{s:'Physics',r:'Lab 1',t:'Dr. Okafor',c:'#3b82f6'},{s:'Science',r:'Lab 2',t:'Ms. Singh',c:'#06b6d4'},,{s:'English',r:'Rm 204',t:'Mrs. Johnson',c:'#10b981'},{s:'Mathematics',r:'Rm 101',t:'Mr. Martinez',c:'#a855f7'}],
+  ]
+};
+const PERIODS=['8:00–9:00','9:15–10:15','10:30–11:30','BREAK','13:00–14:00','14:15–15:15'];
+const DAYS=['Mon','Tue','Wed','Thu','Fri'];
+function renderTimetable(){
+  const cls=document.getElementById('ttClassSel').value;
+  const data=TT_DATA[cls]||TT_DATA['Class 9-A'];
+  let html='<div class="tt-hd">Period</div>'+DAYS.map(d=>`<div class="tt-hd">${d}</div>`).join('');
+  PERIODS.forEach((p,pi)=>{
+    if(p==='BREAK'){
+      html+=`<div class="tt-time" style="opacity:.5">Break</div>`+DAYS.map(()=>`<div class="tt-cell empty" style="background:rgba(255,255,255,.015);display:flex;align-items:center;justify-content:center"><span style="font-size:10px;color:var(--muted)">Lunch / Break</span></div>`).join('');
+      return;
+    }
+    html+=`<div class="tt-time">${p}</div>`;
+    DAYS.forEach((_,di)=>{
+      const cell=data[di]&&data[di][pi];
+      if(cell&&cell.s) html+=`<div class="tt-cell" style="background:${cell.c}18;border:1px solid ${cell.c}30"><div class="tt-subject" style="color:${cell.c}">${cell.s}</div><div class="tt-room">${cell.r}</div><div class="tt-room" style="opacity:.7">${cell.t}</div></div>`;
+      else html+=`<div class="tt-cell empty"></div>`;
+    });
+  });
+  document.getElementById('ttGrid').innerHTML=html;
+}
+
+/* ═══ ANALYTICS ═══ */
+function renderAnalytics(){
+  const subj=[{s:'Mathematics',avg:82,c:'#a855f7'},{s:'Science',avg:74,c:'#06b6d4'},{s:'English',avg:79,c:'#10b981'},{s:'History',avg:68,c:'#f59e0b'},{s:'Physics',avg:77,c:'#3b82f6'},{s:'Chemistry',avg:65,c:'#f43f5e'}];
+  document.getElementById('subjPerf').innerHTML=subj.map(s=>`<div class="perf-row"><div class="perf-label">${s.s}</div><div class="perf-track"><div class="perf-fill" style="width:${s.avg}%;background:${s.c}"></div></div><div class="perf-val" style="color:${s.c}">${s.avg}</div></div>`).join('');
+  const classAtt=[{c:'9-A',pct:92},{c:'9-B',pct:88},{c:'10-A',pct:85},{c:'10-B',pct:79},{c:'11-A',pct:91},{c:'12-A',pct:94}];
+  document.getElementById('classAttPerf').innerHTML=classAtt.map(x=>`<div class="perf-row"><div class="perf-label">Class ${x.c}</div><div class="perf-track"><div class="perf-fill" style="width:${x.pct}%;background:${x.pct>=90?'#10b981':'#06b6d4'}"></div></div><div class="perf-val" style="color:${x.pct>=90?'#10b981':'#06b6d4'}">${x.pct}%</div></div>`).join('');
+  const tops=[{n:'Alice Johnson',cls:'9-A',sc:98},{n:'Emma Wilson',cls:'10-A',sc:96},{n:'Grace Lee',cls:'11-A',sc:95},{n:'Maya Robinson',cls:'12-A',sc:94},{n:'Isla Garcia',cls:'9-B',sc:93}];
+  document.getElementById('topStudentsBody').innerHTML=tops.map(t=>`<tr><td>${t.n}</td><td>Class ${t.cls}</td><td><span style="font-weight:700;color:#10b981">${t.sc}%</span></td></tr>`).join('');
+  const enrollVals=[42,38,55,61,48,70,65,58];
+  const enrollMonths=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+  const max=Math.max(...enrollVals);
+  document.getElementById('enrollBars').innerHTML=enrollVals.map(v=>`<div class="rev-bar" style="height:${Math.round((v/max)*90)+4}px;background:linear-gradient(180deg,rgba(168,85,247,.7),rgba(59,130,246,.4))" data-val="${v} new"></div>`).join('');
+  document.getElementById('enrollMonths').innerHTML=enrollMonths.map(m=>`<span>${m}</span>`).join('');
+}
+
+/* ═══ REVENUE CHART ═══ */
+function renderRevChart(barsId, monthsId){
+  const months=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb'];
+  const vals=[128,145,132,168,155,191,174,248];
+  const max=Math.max(...vals);
+  const barsEl=document.getElementById(barsId);
+  const monthsEl=document.getElementById(monthsId);
+  if(barsEl) barsEl.innerHTML=vals.map(v=>`<div class="rev-bar" style="height:${Math.round((v/max)*80)+4}px" data-val="₱${v}K"></div>`).join('');
+  if(monthsEl) monthsEl.innerHTML=months.map(m=>`<span>${m}</span>`).join('');
+}
+
+/* ═══ ROLE BREAKDOWN ═══ */
+function renderRoleBreakdown(){
+  const users=getUsers();
+  const counts={student:0,teacher:0,parent:0,admin:0};
+  users.forEach(u=>{if(counts[u.role]!==undefined)counts[u.role]++});
+  const total=users.length||1;
+  const roles=[{l:'Students',k:'student',c:'#3b82f6'},{l:'Teachers',k:'teacher',c:'#10b981'},{l:'Parents',k:'parent',c:'#06b6d4'},{l:'Admins',k:'admin',c:'#f43f5e'}];
+  document.getElementById('roleBreakdown').innerHTML=roles.map(r=>`
+    <div class="rb-row"><div class="rb-top">
+      <span style="font-size:12px;font-weight:500;color:var(--subtle)">${r.l}</span>
+      <span style="font-size:13px;font-weight:700;color:${r.c}">${counts[r.k]}</span>
+    </div>
+    <div class="rb-track"><div class="rb-fill" style="width:${Math.round(counts[r.k]/total*100)}%;background:${r.c}"></div></div></div>`).join('');
+}
+
+/* ═══ ACTIVITY FEED ═══ */
+function renderActivity(){
+  const acts=[
+    {icon:'📥',text:'<em>Alice Johnson</em> submitted Chapter 4 assignment',time:'2 min ago',bg:'rgba(6,182,212,.12)'},
+    {icon:'💰',text:'Fee payment of <em>₱ 4,500</em> from Garcia family',time:'18 min ago',bg:'rgba(16,185,129,.12)'},
+    {icon:'✅',text:'Attendance recorded for <em>Class 9-A</em> — 24/25 present',time:'35 min ago',bg:'rgba(16,185,129,.12)'},
+    {icon:'👤',text:'New student <em>Nathan Scott</em> enrolled in Class 10-B',time:'1 hr ago',bg:'rgba(59,130,246,.12)'},
+    {icon:'⚠️',text:'<em>Mr. Torres</em> marked absent — substitute needed',time:'1 hr ago',bg:'rgba(245,158,11,.12)'},
+    {icon:'📊',text:'February grade report generated for <em>all classes</em>',time:'3 hr ago',bg:'rgba(168,85,247,.12)'},
+  ];
+  document.getElementById('activityFeed').innerHTML=acts.map(a=>`
+    <div class="act-item"><div class="act-icon" style="background:${a.bg}">${a.icon}</div>
+    <div class="act-body"><div class="act-title">${a.text}</div><div class="act-time">${a.time}</div></div></div>`).join('');
+}
+
+/* ═══ SETTINGS ═══ */
+function loadSettings(){
+  const s=getSettings();
+  const map={'set-name':'name','set-motto':'motto','set-address':'address','set-phone':'phone','set-email':'email','set-term':'term','set-year':'year','set-start':'start','set-end':'end','set-aplus':'aplus','set-a':'a','set-b':'b','set-c':'c','set-d':'d','set-f':'f','set-minatt':'minatt','set-late':'late'};
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el&&s[key]!==undefined)el.value=s[key]});
+}
+function saveSettings(){
+  const map={'set-name':'name','set-motto':'motto','set-address':'address','set-phone':'phone','set-email':'email','set-term':'term','set-year':'year','set-start':'start','set-end':'end','set-aplus':'aplus','set-a':'a','set-b':'b','set-c':'c','set-d':'d','set-f':'f','set-minatt':'minatt','set-late':'late'};
+  const s={};
+  Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)s[key]=el.value});
+  localStorage.setItem('ms_settings',JSON.stringify(s));
+  toast('Settings saved ✓','#10b981');
+}
+
+/* ═══ SECURITY ═══ */
+function changePassword(){
+  const cur=document.getElementById('sec-current').value;
+  const nw=document.getElementById('sec-new').value;
+  const cf=document.getElementById('sec-confirm').value;
+  if(!cur){toast('Enter your current password','#f43f5e');return}
+  if(nw.length<6){toast('New password must be 6+ characters','#f43f5e');return}
+  if(nw!==cf){toast('Passwords do not match','#f43f5e');return}
+  ['sec-current','sec-new','sec-confirm'].forEach(id=>document.getElementById(id).value='');
+  toast('Password updated ✓','#10b981');
+}
+
+/* ═══ EXPORT ═══ */
+function exportCSV(){
+  const users=getUsers();
+  const rows=[['Name','Email','Role','Department','Joined','Status'],...users.map(u=>[u.name,u.email,u.role,u.dept||'',u.joined,u.active?'Active':'Inactive'])];
+  const csv=rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='users_export.csv';a.click();
+  toast('CSV exported ✓','#10b981');
+}
+
+/* ═══ MODAL HELPERS ═══ */
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+</script>
+</body>
+</html>
 
