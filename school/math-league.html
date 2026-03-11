@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Math League — MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#060810; --bg2:#0b0e1a; --border:rgba(255,255,255,.07);
+      --text:#e4eaf5; --muted:#5a6a88;
+      --xp-a:#facc15; --xp-b:#f97316; --xp-c:#ef4444;
+      --xp-glow:rgba(250,204,21,.18);
+    }
+    body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; background:rgba(6,8,16,.85); backdrop-filter:blur(12px); }
+    .nav-brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:17px; color:var(--xp-a); text-decoration:none; }
+    .nav-links { display:flex; gap:24px; align-items:center; }
+    .nav-link { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; transition:color .2s; }
+    .nav-link:hover { color:var(--text); }
+    .btn-sm { font-family:'Syne',sans-serif; font-weight:700; font-size:13px; padding:8px 18px; border-radius:8px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; text-decoration:none; }
+    .hero { text-align:center; padding:64px 24px 40px; background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(250,204,21,.08),transparent); }
+    .hero-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--xp-a); background:rgba(250,204,21,.1); border:1px solid rgba(250,204,21,.25); border-radius:20px; padding:6px 16px; margin-bottom:20px; }
+    .hero h1 { font-family:'Orbitron',sans-serif; font-size:clamp(32px,6vw,64px); font-weight:900; line-height:1.1; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero p { color:var(--muted); font-size:17px; margin-top:14px; max-width:520px; margin-inline:auto; }
+    .profile-strip { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; padding:20px 24px; border-bottom:1px solid var(--border); }
+    .stat-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; }
+    .stat-chip .label { color:var(--muted); font-size:11px; display:block; }
+    .stat-chip .val { color:var(--xp-a); font-size:16px; }
+    .game-wrap { max-width:860px; margin:0 auto; padding:40px 24px 80px; }
+    .category-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:32px; }
+    .cat-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:28px 20px; cursor:pointer; transition:transform .2s,border-color .2s,box-shadow .2s; text-align:center; }
+    .cat-card:hover { transform:translateY(-4px); border-color:var(--xp-a); box-shadow:0 8px 32px var(--xp-glow); }
+    .cat-icon { font-size:36px; margin-bottom:12px; display:block; }
+    .cat-name { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:var(--xp-a); }
+    .cat-desc { font-size:12px; color:var(--muted); margin-top:6px; }
+    .cat-diff { display:inline-block; margin-top:10px; font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:1px; padding:3px 10px; border-radius:20px; }
+    .diff-easy { background:rgba(52,211,153,.15); color:#34d399; }
+    .diff-med  { background:rgba(250,204,21,.15);  color:#facc15; }
+    .diff-hard { background:rgba(239,68,68,.15);   color:#ef4444; }
+    #arena { display:none; }
+    .arena-header { display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 24px; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+    .arena-cat { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); }
+    .arena-meta { display:flex; gap:20px; align-items:center; }
+    .q-counter { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+    .score-live { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); }
+    .score-live span { color:var(--xp-a); font-size:18px; }
+    .timer-wrap { display:flex; flex-direction:column; align-items:center; }
+    .timer-ring { width:56px; height:56px; position:relative; }
+    .timer-ring svg { transform:rotate(-90deg); }
+    .timer-ring circle { fill:none; stroke-width:4; stroke-linecap:round; }
+    .timer-ring .bg  { stroke:var(--border); }
+    .timer-ring .bar { stroke:var(--xp-a); transition:stroke-dashoffset .9s linear,stroke .3s; }
+    .timer-num { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--text); }
+    .q-card { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:36px 32px; margin-bottom:24px; text-align:center; }
+    .q-text { font-family:'JetBrains Mono',monospace; font-size:clamp(20px,3.5vw,32px); font-weight:700; color:var(--text); line-height:1.4; }
+    .q-hint { font-size:13px; color:var(--muted); margin-top:10px; }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .choice-btn { background:var(--bg2); border:2px solid var(--border); border-radius:12px; padding:18px 12px; font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--text); cursor:pointer; transition:border-color .15s,background .15s,transform .1s; }
+    .choice-btn:hover:not(:disabled) { border-color:var(--xp-a); background:rgba(250,204,21,.07); transform:translateY(-2px); }
+    .choice-btn.correct { border-color:#34d399; background:rgba(52,211,153,.15); color:#34d399; }
+    .choice-btn.wrong   { border-color:#ef4444; background:rgba(239,68,68,.12);  color:#ef4444; }
+    .choice-btn:disabled { cursor:default; }
+    .feedback { text-align:center; font-size:15px; font-weight:700; min-height:28px; margin-top:16px; letter-spacing:.5px; }
+    .feedback.ok  { color:#34d399; }
+    .feedback.bad { color:#ef4444; }
+    .xp-toast { position:fixed; top:80px; right:24px; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; font-family:'Orbitron',sans-serif; font-weight:900; font-size:15px; padding:12px 20px; border-radius:12px; opacity:0; transform:translateY(-10px); transition:opacity .3s,transform .3s; pointer-events:none; z-index:999; }
+    .xp-toast.show { opacity:1; transform:translateY(0); }
+    #results { display:none; text-align:center; }
+    .results-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:48px 32px; margin-top:24px; }
+    .results-emoji { font-size:64px; }
+    .results-title { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:16px 0 8px; }
+    .results-sub { color:var(--muted); font-size:15px; margin-bottom:28px; }
+    .results-stats { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:32px; }
+    .r-stat { text-align:center; }
+    .r-stat .big { font-family:'Orbitron',sans-serif; font-size:36px; font-weight:900; color:var(--xp-a); }
+    .r-stat .lbl { font-size:12px; color:var(--muted); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; text-transform:uppercase; }
+    .badge-earned { display:inline-flex; align-items:center; gap:8px; background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.3); border-radius:24px; padding:10px 20px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--xp-a); margin-bottom:24px; }
+    .action-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .btn-primary { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; padding:14px 28px; border-radius:12px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#06080e; text-decoration:none; display:inline-block; transition:transform .2s,box-shadow .2s; }
+    .btn-primary:hover { transform:translateY(-3px); box-shadow:0 10px 32px var(--xp-glow); }
+    .btn-secondary { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; padding:14px 28px; border-radius:12px; cursor:pointer; background:transparent; color:var(--text); border:1px solid var(--border); text-decoration:none; display:inline-block; transition:border-color .2s,background .2s; }
+    .btn-secondary:hover { border-color:rgba(255,255,255,.2); background:rgba(255,255,255,.04); }
+    .leaderboard { margin-top:48px; text-align:left; }
+    .lb-title { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; }
+    .lb-row { display:flex; align-items:center; gap:16px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px 18px; margin-bottom:8px; }
+    .lb-rank { font-family:'Orbitron',sans-serif; font-size:12px; font-weight:900; color:var(--muted); width:24px; }
+    .lb-rank.gold{color:#facc15;} .lb-rank.silver{color:#94a3b8;} .lb-rank.bronze{color:#c2825a;}
+    .lb-cat { font-size:13px; color:var(--muted); flex:1; }
+    .lb-score { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--xp-a); }
+    @media(max-width:540px){ .choices{grid-template-columns:1fr;} nav{padding:14px 20px;} .nav-links{gap:14px;} .q-card{padding:24px 16px;} }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="../index.html">MindStrong</a>
+  <div class="nav-links">
+    <a class="nav-link" href="../index.html">Home</a>
+    <a class="nav-link" href="index.html">School</a>
+    <a class="btn-sm" href="../login.html">Login</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-badge">&#9889; Math League</div>
+  <h1>Math League</h1>
+  <p>10 rounds. Timed. Earn XP and badges. Choose your category and compete.</p>
+</div>
+<div class="profile-strip">
+  <div class="stat-chip"><div><span class="label">LEVEL</span><span class="val" id="pLevel">1</span></div></div>
+  <div class="stat-chip"><div><span class="label">XP</span><span class="val" id="pXP">0</span></div></div>
+  <div class="stat-chip"><div><span class="label">STREAK</span><span class="val" id="pStreak">1</span> &#128293;</div></div>
+  <div class="stat-chip"><div><span class="label">BADGES</span><span class="val" id="pBadges">0</span></div></div>
+</div>
+<div class="game-wrap">
+  <div id="lobby">
+    <div style="text-align:center;margin-bottom:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">Select a category to start your match</span></div>
+    <div class="category-grid">
+      <div class="cat-card" onclick="startGame('arithmetic')"><span class="cat-icon">&#10133;</span><div class="cat-name">Arithmetic</div><div class="cat-desc">Add, subtract, multiply, divide</div><span class="cat-diff diff-easy">EASY</span></div>
+      <div class="cat-card" onclick="startGame('prealgebra')"><span class="cat-icon">&#128291;</span><div class="cat-name">Pre-Algebra</div><div class="cat-desc">Variables, equations, expressions</div><span class="cat-diff diff-med">MEDIUM</span></div>
+      <div class="cat-card" onclick="startGame('geometry')"><span class="cat-icon">&#128208;</span><div class="cat-name">Geometry</div><div class="cat-desc">Area, perimeter, angles, shapes</div><span class="cat-diff diff-med">MEDIUM</span></div>
+      <div class="cat-card" onclick="startGame('ratios')"><span class="cat-icon">&#9878;</span><div class="cat-name">Ratios &amp; Fractions</div><div class="cat-desc">Ratios, proportions, fractions</div><span class="cat-diff diff-hard">HARD</span></div>
+    </div>
+    <div class="leaderboard" id="leaderboard"></div>
+  </div>
+  <div id="arena">
+    <div class="arena-header">
+      <div class="arena-cat" id="arenaCategory"></div>
+      <div class="arena-meta">
+        <div class="q-counter" id="qCounter">Q 1 / 10</div>
+        <div class="score-live">Score <span id="scoreLive">0</span></div>
+        <div class="timer-wrap">
+          <div class="timer-ring">
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle class="bg" cx="28" cy="28" r="24"/>
+              <circle class="bar" id="timerBar" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-num" id="timerNum">15</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-text" id="qText">Loading...</div>
+      <div class="q-hint" id="qHint"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div id="results">
+    <div class="results-card">
+      <div class="results-emoji" id="resultsEmoji">&#127942;</div>
+      <div class="results-title" id="resultsTitle">Match Complete!</div>
+      <div class="results-sub" id="resultsSub"></div>
+      <div id="badgeRow"></div>
+      <div class="results-stats">
+        <div class="r-stat"><div class="big" id="rScore">0</div><div class="lbl">Score</div></div>
+        <div class="r-stat"><div class="big" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+        <div class="r-stat"><div class="big" id="rXP">0</div><div class="lbl">XP Earned</div></div>
+        <div class="r-stat"><div class="big" id="rLevel">1</div><div class="lbl">Level</div></div>
+      </div>
+      <div class="action-row">
+        <button class="btn-primary" onclick="rematch()">Play Again</button>
+        <button class="btn-secondary" onclick="backToLobby()">Change Category</button>
+      </div>
+    </div>
+    <div class="leaderboard" id="leaderboard2"></div>
+  </div>
+</div>
+<div class="xp-toast" id="xpToast">+25 XP</div>
+<script src="game-engine.js"></script>
+<script>
+const BANKS = {
+  arithmetic: [
+    {q:'147 + 285 = ?', a:432, choices:[422,432,442,412]},
+    {q:'1000 - 364 = ?', a:636, choices:[636,626,646,664]},
+    {q:'23 x 17 = ?', a:391, choices:[381,391,401,361]},
+    {q:'324 / 12 = ?', a:27, choices:[26,27,28,24]},
+    {q:'56 + 78 - 34 = ?', a:100, choices:[98,100,102,104]},
+    {q:'15 x 15 = ?', a:225, choices:[215,220,225,230]},
+    {q:'500 / 20 = ?', a:25, choices:[20,22,25,28]},
+    {q:'999 + 111 = ?', a:1110, choices:[1100,1110,1120,1011]},
+    {q:'72 x 8 = ?', a:576, choices:[556,566,576,586]},
+    {q:'1296 / 36 = ?', a:36, choices:[32,34,36,38]},
+    {q:'48 x 25 = ?', a:1200, choices:[1100,1150,1200,1250]},
+    {q:'2048 - 987 = ?', a:1061, choices:[1051,1061,1071,1081]},
+    {q:'What is 12 squared?', a:144, choices:[124,134,144,154]},
+    {q:'Square root of 169 = ?', a:13, choices:[11,12,13,14]},
+    {q:'What is 5 cubed?', a:125, choices:[100,115,120,125]}
+  ],
+  prealgebra: [
+    {q:'If x + 7 = 15, then x = ?', a:8, choices:[6,7,8,9], hint:'Subtract 7 from both sides'},
+    {q:'Solve: 3x = 42', a:14, choices:[12,13,14,15], hint:'Divide both sides by 3'},
+    {q:'If 2x - 5 = 11, then x = ?', a:8, choices:[7,8,9,10], hint:'Add 5, then divide by 2'},
+    {q:'What is 3x + 2 when x = 4?', a:14, choices:[10,12,14,16]},
+    {q:'Solve: x/4 = 9', a:36, choices:[28,32,36,40], hint:'Multiply both sides by 4'},
+    {q:'Evaluate: 2(3 + 4) - 5', a:9, choices:[7,8,9,10]},
+    {q:'Which equals 5x + 3x?', a:'8x', choices:['5x','6x','8x','15x']},
+    {q:'If y = 2x + 1 and x = 3, y = ?', a:7, choices:[5,6,7,8]},
+    {q:'Solve: 5x + 10 = 35', a:5, choices:[4,5,6,7], hint:'Subtract 10, then divide'},
+    {q:'What is the slope of y = 3x - 2?', a:3, choices:[-2,1,2,3], hint:'Slope is coefficient of x'},
+    {q:'Solve: 2x + 3x = 25', a:5, choices:[4,5,6,7]},
+    {q:'Simplify: 6x - 2x + 4', a:'4x+4', choices:['4x+4','4x-4','8x+4','2x+4']},
+    {q:'If 4x = 3x + 9, then x = ?', a:9, choices:[7,8,9,10]},
+    {q:'y-intercept of y = 2x + 7?', a:7, choices:[2,5,7,9]},
+    {q:'Evaluate: 3(x - 2) when x = 5', a:9, choices:[7,8,9,10]}
+  ],
+  geometry: [
+    {q:'Area: rectangle length 8, width 5?', a:40, choices:[26,32,40,45], hint:'A = length x width'},
+    {q:'Perimeter: square with side 9?', a:36, choices:[18,27,36,45], hint:'P = 4 x side'},
+    {q:'Area: triangle base 10, height 6?', a:30, choices:[20,30,40,60], hint:'A = 1/2 x base x height'},
+    {q:'Circumference: circle radius 7? (pi=3.14)', a:'43.96', choices:['21.98','43.96','49.00','87.92'], hint:'C = 2 x pi x r'},
+    {q:'Area: circle radius 5? (pi=3.14)', a:'78.5', choices:['15.7','31.4','78.5','157'], hint:'A = pi x r squared'},
+    {q:'Angles in a triangle sum to?', a:180, choices:[90,180,270,360]},
+    {q:'Degrees in a right angle?', a:90, choices:[45,60,90,180]},
+    {q:'Volume: cube with side 4?', a:64, choices:[16,48,64,96], hint:'V = side cubed'},
+    {q:'A polygon with 6 sides is called?', a:'Hexagon', choices:['Pentagon','Hexagon','Heptagon','Octagon']},
+    {q:'Perimeter: rectangle length 12, width 7?', a:38, choices:[34,36,38,40], hint:'P = 2(l + w)'},
+    {q:'Area: parallelogram base 9, height 4?', a:36, choices:[26,32,36,40], hint:'A = base x height'},
+    {q:'The longest side of a right triangle?', a:'Hypotenuse', choices:['Adjacent','Hypotenuse','Opposite','Median']},
+    {q:'How many faces does a cube have?', a:6, choices:[4,5,6,8]},
+    {q:'Supplementary angles sum to?', a:180, choices:[90,180,270,360]},
+    {q:'Right triangle legs 3 and 4, hypotenuse = ?', a:5, choices:[5,6,7,8], hint:'a squared + b squared = c squared'}
+  ],
+  ratios: [
+    {q:'Simplify the ratio 12:18', a:'2:3', choices:['1:2','2:3','3:4','4:6']},
+    {q:'What fraction of 30 is 12?', a:'2/5', choices:['1/3','2/5','3/8','5/12']},
+    {q:'3/4 + 1/4 = ?', a:1, choices:['1/2','3/4','1','5/4']},
+    {q:'1/2 x 4/5 = ?', a:'2/5', choices:['1/5','2/5','4/10','2/3']},
+    {q:'Convert 3/4 to a percentage', a:'75%', choices:['50%','60%','70%','75%']},
+    {q:'If 5:x = 10:6, then x = ?', a:3, choices:[2,3,4,5], hint:'Cross multiply'},
+    {q:'2/3 of 90 = ?', a:60, choices:[50,55,60,65]},
+    {q:'What is 25% of 200?', a:50, choices:[25,40,50,75]},
+    {q:'Simplify: 8/12', a:'2/3', choices:['1/2','2/3','3/4','4/6']},
+    {q:'3/5 divided by 3/10 = ?', a:2, choices:[1,2,3,4], hint:'Flip and multiply'},
+    {q:'What percent is 18 of 72?', a:'25%', choices:['18%','20%','25%','30%']},
+    {q:'5/6 - 1/3 = ?', a:'1/2', choices:['1/3','1/2','2/3','5/9'], hint:'Get common denominator'},
+    {q:'Ratio boys:girls = 3:5, total 40. Girls = ?', a:25, choices:[15,20,25,30]},
+    {q:'What is 0.375 as a fraction?', a:'3/8', choices:['1/4','3/8','3/5','5/8']},
+    {q:'120% of 50 = ?', a:60, choices:[50,55,60,70]}
+  ]
+};
+
+const CAT_NAMES = {arithmetic:'Arithmetic', prealgebra:'Pre-Algebra', geometry:'Geometry', ratios:'Ratios & Fractions'};
+const TOTAL_Q = 10, TIME_PER_Q = 15, CIRCUMFERENCE = 150.8;
+let currentCat = '', questions = [], qIndex = 0, score = 0, correct = 0;
+let timerInterval = null, timeLeft = TIME_PER_Q, answered = false;
+
+function refreshProfile() {
+  const p = getProfile();
+  document.getElementById('pLevel').textContent  = p.level  || 1;
+  document.getElementById('pXP').textContent     = p.xp     || 0;
+  document.getElementById('pStreak').textContent = p.streak || 1;
+  document.getElementById('pBadges').textContent = (p.badges || []).length;
+}
+
+function shuffle(arr) { return arr.slice().sort(() => Math.random() - .5); }
+
+function startGame(cat) {
+  currentCat = cat;
+  questions  = shuffle(BANKS[cat]).slice(0, TOTAL_Q);
+  qIndex = 0; score = 0; correct = 0;
+  document.getElementById('lobby').style.display   = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('arena').style.display   = 'block';
+  document.getElementById('arenaCategory').textContent = '\u26a1 ' + CAT_NAMES[cat];
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (qIndex >= TOTAL_Q) { endGame(); return; }
+  answered = false;
+  const q = questions[qIndex];
+  document.getElementById('qCounter').textContent  = 'Q ' + (qIndex + 1) + ' / ' + TOTAL_Q;
+  document.getElementById('scoreLive').textContent = score;
+  document.getElementById('qText').textContent     = q.q;
+  document.getElementById('qHint').textContent     = q.hint ? '\ud83d\udca1 Hint: ' + q.hint : '';
+  document.getElementById('feedback').textContent  = '';
+  document.getElementById('feedback').className    = 'feedback';
+  const choices = shuffle(q.choices.map(c => ({val: c, isAnswer: String(c) === String(q.a)})));
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = c.val;
+    btn.onclick = () => handleAnswer(btn, c.isAnswer);
+    box.appendChild(btn);
+  });
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_Q;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) { clearInterval(timerInterval); if (!answered) timeUp(); }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const offset = CIRCUMFERENCE * (1 - timeLeft / TIME_PER_Q);
+  const bar = document.getElementById('timerBar');
+  bar.style.strokeDashoffset = offset;
+  bar.style.stroke = timeLeft <= 5 ? '#ef4444' : timeLeft <= 8 ? '#f97316' : '#facc15';
+  document.getElementById('timerNum').textContent = timeLeft;
+}
+
+function handleAnswer(btn, isCorrect) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    const pts = Math.max(10, timeLeft * 10);
+    score += pts; correct++;
+    fb.textContent = '\u2705 Correct! +' + pts + ' pts';
+    fb.className = 'feedback ok';
+    addXP(25);
+    showXPToast('+25 XP');
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = '\u274c Answer: ' + questions[qIndex].a;
+    fb.className = 'feedback bad';
+  }
+  qIndex++;
+  setTimeout(loadQuestion, 1400);
+}
+
+function timeUp() {
+  answered = true;
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  const fb = document.getElementById('feedback');
+  fb.textContent = '\u23f0 Time up! Answer: ' + questions[qIndex].a;
+  fb.className = 'feedback bad';
+  qIndex++;
+  setTimeout(loadQuestion, 1600);
+}
+
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('arena').style.display   = 'none';
+  document.getElementById('results').style.display = 'block';
+  const pct = correct / TOTAL_Q;
+  let emoji = '\ud83d\ude24', title = 'Keep Practicing!';
+  if (pct === 1)      { emoji = '\ud83c\udfc6'; title = 'Perfect Score!'; }
+  else if (pct >= .8) { emoji = '\ud83c\udf1f'; title = 'Math Champion!'; }
+  else if (pct >= .6) { emoji = '\ud83d\udcaa'; title = 'Great Work!';    }
+  else if (pct >= .4) { emoji = '\ud83d\udcda'; title = 'Getting There!'; }
+  document.getElementById('resultsEmoji').textContent = emoji;
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsSub').textContent   = CAT_NAMES[currentCat] + ' \u00b7 ' + correct + ' of ' + TOTAL_Q + ' correct';
+  document.getElementById('rScore').textContent   = score;
+  document.getElementById('rCorrect').textContent = correct + '/' + TOTAL_Q;
+  document.getElementById('rXP').textContent      = correct * 25;
+  document.getElementById('rLevel').textContent   = getProfile().level;
+  let badgeName = null;
+  if (pct === 1)      badgeName = '\ud83c\udfc6 Perfect ' + CAT_NAMES[currentCat];
+  else if (pct >= .8) badgeName = '\u2b50 ' + CAT_NAMES[currentCat] + ' Master';
+  const badgeRow = document.getElementById('badgeRow');
+  if (badgeName) {
+    unlockBadge(badgeName);
+    badgeRow.innerHTML = '<div class="badge-earned">\ud83c\udf96\ufe0f Badge Unlocked: ' + badgeName + '</div><br>';
+  } else {
+    badgeRow.innerHTML = '';
+  }
+  saveHighScore(currentCat, score);
+  renderLeaderboard('leaderboard2');
+  refreshProfile();
+}
+
+function saveHighScore(cat, s) {
+  const scores = JSON.parse(localStorage.getItem('ml_scores') || '[]');
+  scores.push({cat, score: s, date: new Date().toLocaleDateString()});
+  scores.sort((a, b) => b.score - a.score);
+  localStorage.setItem('ml_scores', JSON.stringify(scores.slice(0, 10)));
+}
+
+function renderLeaderboard(id) {
+  const scores = JSON.parse(localStorage.getItem('ml_scores') || '[]');
+  const el = document.getElementById(id);
+  if (!scores.length) { el.innerHTML = ''; return; }
+  const ranks = ['gold','silver','bronze'];
+  const rows = scores.slice(0, 5).map((s, i) =>
+    '<div class="lb-row"><div class="lb-rank ' + (ranks[i] || '') + '">#' + (i+1) + '</div>' +
+    '<div class="lb-cat">' + (CAT_NAMES[s.cat] || s.cat) + ' \u00b7 ' + s.date + '</div>' +
+    '<div class="lb-score">' + s.score + ' pts</div></div>'
+  ).join('');
+  el.innerHTML = '<div class="lb-title">\ud83c\udfc5 Your Best Scores</div>' + rows;
+}
+
+function rematch()    { document.getElementById('results').style.display='none'; startGame(currentCat); }
+function backToLobby(){ document.getElementById('results').style.display='none'; document.getElementById('lobby').style.display='block'; renderLeaderboard('leaderboard'); }
+function showXPToast(msg) { const t=document.getElementById('xpToast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+
+refreshProfile();
+renderLeaderboard('leaderboard');
+</script>
+</body>
+</html>
