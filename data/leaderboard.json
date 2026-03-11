@@ -1,1 +1,8 @@
-[]
+[
+  {"name":"Ava","score":1820,"source":"seed"},
+  {"name":"Noah","score":1690,"source":"seed"},
+  {"name":"Mia","score":1540,"source":"seed"},
+  {"name":"Ethan","score":1490,"source":"seed"},
+  {"name":"Zara","score":1450,"source":"seed"},
+  {"name":"Liam","score":1410,"source":"seed"}
+]
