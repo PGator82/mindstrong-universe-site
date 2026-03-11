@@ -1,0 +1,15 @@
+:root { --max: 980px; }
+
+body { font-family: system-ui, Arial, sans-serif; line-height: 1.55; margin: 0; }
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.ms-wrap { max-width: var(--max); margin: 0 auto; padding: 24px; }
+.ms-nav { display:flex; gap:12px; flex-wrap:wrap; padding:16px 24px; border-bottom:1px solid #eee; }
+.ms-card { padding:16px; border:1px solid #e5e5e5; border-radius:12px; margin-top:16px; }
+.ms-btn { display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid #222; }
+.ms-btn:hover { text-decoration:none; opacity:.9; }
+.ms-muted { opacity:.75; }
+.ms-footer { padding:24px; text-align:center; opacity:.7; border-top:1px solid #eee; margin-top:24px; }
+.ms-hr { margin:24px 0; border:0; border-top:1px solid #eee; }
+.ms-badge { display:inline-block; font-size:12px; padding:2px 8px; border:1px solid #ddd; border-radius:999px; opacity:.8; }
