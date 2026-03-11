@@ -1,0 +1,45 @@
+{
+  "course": "MindStrong Foundations",
+  "modules": [
+    {
+      "id": "m1",
+      "number": 1,
+      "title": "Number Sense",
+      "unlock": "start",
+      "lessons": [
+        { "key": "m1-l1", "title": "Numbers Are Stories", "url": "./foundations/module-1/lesson-1.html" },
+        { "key": "m1-l2", "title": "Place Value Is a Volume Knob", "url": "./foundations/module-1/lesson-2.html" },
+        { "key": "m1-l3", "title": "Expanded Form", "url": "./foundations/module-1/lesson-3.html" },
+        { "key": "m1-l4", "title": "Compare Without Guessing", "url": "./foundations/module-1/lesson-4.html" },
+        { "key": "m1-l5", "title": "Rounding That Makes Sense", "url": "./foundations/module-1/lesson-5.html" },
+        { "key": "m1-l6", "title": "Estimation as a Superpower", "url": "./foundations/module-1/lesson-6.html" }
+      ]
+    },
+    {
+      "id": "m2",
+      "number": 2,
+      "title": "Pre-Algebra",
+      "unlock": "moduleComplete:m1",
+      "lessons": [
+        { "key": "geo-proportions", "title": "Proportions", "url": "./foundations/pre-algebra/proportions/" },
+        { "key": "geo-percents", "title": "Percents", "url": "./foundations/pre-algebra/percents/" },
+        { "key": "geo-expressions", "title": "Expressions", "url": "./foundations/pre-algebra/expressions/" },
+        { "key": "geo-equations", "title": "Equations", "url": "./foundations/pre-algebra/equations/" }
+      ]
+    },
+    {
+      "id": "m3",
+      "number": 3,
+      "title": "Geometry",
+      "unlock": "moduleComplete:m2",
+      "lessons": [
+        { "key": "geo-angles", "title": "Angles", "url": "./foundations/geometry/angles/" },
+        { "key": "geo-triangles", "title": "Triangles", "url": "./foundations/geometry/triangles/" },
+        { "key": "geo-polygons", "title": "Polygons", "url": "./foundations/geometry/polygons/" },
+        { "key": "geo-area", "title": "Area", "url": "./foundations/geometry/area/" },
+        { "key": "geo-circles", "title": "Circles", "url": "./foundations/geometry/circles/" },
+        { "key": "geo-coordinate", "title": "Coordinate Plane", "url": "./foundations/geometry/coordinate/" }
+      ]
+    }
+  ]
+}
