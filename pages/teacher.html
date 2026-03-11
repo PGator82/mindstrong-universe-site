@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Dashboard — MindStrong Universe</title>
+<style>
+:root{--bg:#05050f;--bg2:#0b0b1f;--card:#0f0f2a;--card2:#121228;--border:rgba(255,255,255,0.07);--purple:#7c3aed;--blue:#2563eb;--cyan:#06b6d4;--pink:#ec4899;--green:#10b981;--yellow:#f59e0b;--red:#ef4444;--text:#f0f0ff;--muted:#888aaa;--grad:linear-gradient(135deg,#7c3aed,#2563eb);--sidebar-w:260px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow-x:hidden;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s;}
+.sidebar-logo{padding:24px 20px 20px;font-size:1.15rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;border-bottom:1px solid var(--border);text-decoration:none;display:block;}
+.sidebar-user{padding:18px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);}
+.user-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.user-name{font-size:.88rem;font-weight:700;}
+.user-role{font-size:.72rem;color:#f472b6;margin-top:1px;}
+.user-sub{font-size:.68rem;color:var(--muted);margin-top:2px;}
+.nav-section{padding:16px 12px 6px;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:10px;cursor:pointer;transition:.2s;font-size:.88rem;color:var(--muted);text-decoration:none;position:relative;}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text);}
+.nav-item.active{background:rgba(236,72,153,.12);color:var(--text);}
+.nav-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--pink);border-radius:0 3px 3px 0;}
+.nav-item .ico{font-size:1.1rem;width:22px;text-align:center;}
+.nav-badge{margin-left:auto;padding:2px 8px;background:var(--purple);border-radius:99px;font-size:.65rem;font-weight:700;color:#fff;}
+.nav-badge.red{background:var(--red);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;}
+.topbar{position:sticky;top:0;z-index:90;background:rgba(5,5,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;gap:16px;}
+.search-wrap{flex:1;max-width:400px;position:relative;}
+.search-wrap input{width:100%;padding:9px 14px 9px 38px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.88rem;outline:none;transition:.2s;}
+.search-wrap input:focus{border-color:var(--pink);}
+.search-wrap .s-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.icon-btn{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;position:relative;transition:.2s;}
+.icon-btn:hover{border-color:rgba(236,72,153,.4);}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--red);border-radius:50%;border:2px solid var(--bg);}
+.topbar-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;}
+.hamburger-btn{display:none;background:none;border:none;color:var(--text);font-size:1.3rem;cursor:pointer;}
+
+/* PAGE */
+.page{padding:28px;}
+.greeting{margin-bottom:28px;}
+.greeting h1{font-size:1.7rem;font-weight:900;}
+.greeting p{color:var(--muted);font-size:.9rem;margin-top:4px;}
+.grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.pink-text{background:linear-gradient(135deg,#ec4899,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:.2s;}
+.stat-card:hover{border-color:rgba(236,72,153,.3);transform:translateY(-2px);}
+.stat-top{display:flex;align-items:center;justify-content:space-between;}
+.stat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.si-pk{background:rgba(236,72,153,.15);}
+.si-p{background:rgba(124,58,237,.15);}
+.si-g{background:rgba(16,185,129,.15);}
+.si-y{background:rgba(245,158,11,.15);}
+.stat-change{font-size:.72rem;padding:3px 8px;border-radius:99px;font-weight:700;}
+.up{background:rgba(16,185,129,.15);color:var(--green);}
+.stat-num{font-size:1.8rem;font-weight:900;}
+.stat-lbl{font-size:.78rem;color:var(--muted);}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.grid-3-1{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;}
+.grid-1-2{display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:20px;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.card-title{font-size:1rem;font-weight:800;}
+.card-link{font-size:.78rem;color:#f472b6;text-decoration:none;cursor:pointer;}
+.card-link:hover{text-decoration:underline;}
+
+/* BTN */
+.btn{padding:9px 18px;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:.2s;}
+.btn-primary{background:linear-gradient(135deg,#ec4899,#7c3aed);color:#fff;}
+.btn-primary:hover{opacity:.85;}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);}
+.btn-ghost:hover{border-color:rgba(255,255,255,.2);}
+.btn-sm{padding:6px 12px;font-size:.75rem;}
+
+/* CLASS CARDS */
+.class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:0;}
+.class-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;cursor:pointer;transition:.2s;position:relative;overflow:hidden;}
+.class-card:hover{border-color:rgba(236,72,153,.4);transform:translateY(-2px);}
+.class-card.selected{border-color:#ec4899;background:rgba(236,72,153,.07);}
+.class-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.class-card.c1::before{background:linear-gradient(90deg,#ec4899,#7c3aed);}
+.class-card.c2::before{background:linear-gradient(90deg,#7c3aed,#2563eb);}
+.class-card.c3::before{background:linear-gradient(90deg,#06b6d4,#10b981);}
+.class-card.c4::before{background:linear-gradient(90deg,#f59e0b,#ef4444);}
+.class-emoji{font-size:1.6rem;margin-bottom:10px;}
+.class-name{font-size:.9rem;font-weight:800;margin-bottom:2px;}
+.class-meta{font-size:.72rem;color:var(--muted);}
+.class-count{position:absolute;top:14px;right:14px;padding:2px 8px;background:rgba(124,58,237,.2);border-radius:99px;font-size:.68rem;color:#a78bfa;font-weight:700;}
+
+/* STUDENT TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);}
+td{padding:12px 14px;font-size:.85rem;border-bottom:1px solid var(--border);}
+tr:last-child td{border:none;}
+tr:hover td{background:rgba(255,255,255,.02);}
+.student-cell{display:flex;align-items:center;gap:10px;}
+.s-avatar{width:32px;height:32px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.s-name{font-size:.85rem;font-weight:600;}
+.s-id{font-size:.7rem;color:var(--muted);}
+.grade-pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.72rem;font-weight:700;}
+.ga{background:rgba(16,185,129,.15);color:var(--green);}
+.gb{background:rgba(37,99,235,.15);color:#60a5fa;}
+.gc{background:rgba(245,158,11,.15);color:var(--yellow);}
+.gd{background:rgba(239,68,68,.15);color:var(--red);}
+.att-bar{height:5px;background:rgba(255,255,255,.07);border-radius:99px;width:80px;overflow:hidden;}
+.att-fill{height:100%;border-radius:99px;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+
+/* ATTENDANCE */
+.att-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px;}
+.att-day{text-align:center;}
+.att-day-label{font-size:.65rem;color:var(--muted);margin-bottom:4px;}
+.att-cell{width:100%;aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;cursor:pointer;transition:.2s;}
+.att-p{background:rgba(16,185,129,.2);color:var(--green);}
+.att-a{background:rgba(239,68,68,.15);color:var(--red);}
+.att-l{background:rgba(245,158,11,.15);color:var(--yellow);}
+.att-none{background:rgba(255,255,255,.04);color:var(--muted);}
+
+/* ASSIGNMENT CREATOR */
+.form-field{margin-bottom:14px;}
+.form-field label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:.88rem;outline:none;transition:.2s;font-family:inherit;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--pink);}
+.form-field textarea{resize:vertical;min-height:70px;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* DONUT CHART */
+.donut-wrap{display:flex;align-items:center;gap:20px;}
+.donut{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--green) 0% 87%,var(--yellow) 87% 96%,var(--red) 96% 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.donut-inner{width:70px;height:70px;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-num{font-size:1.1rem;font-weight:900;}
+.donut-sub{font-size:.6rem;color:var(--muted);}
+.donut-legend{display:flex;flex-direction:column;gap:8px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:.78rem;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* SCHEDULE */
+.sched-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.sched-item:last-child{border:none;}
+.sched-time{font-size:.72rem;color:var(--muted);width:70px;flex-shrink:0;text-align:right;}
+.sched-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.sched-info{flex:1;}
+.sched-name{font-size:.85rem;font-weight:700;}
+.sched-sub{font-size:.72rem;color:var(--muted);margin-top:2px;}
+.badge{padding:3px 10px;border-radius:99px;font-size:.68rem;font-weight:700;}
+.badge-live{background:rgba(16,185,129,.15);color:var(--green);}
+.badge-soon{background:rgba(245,158,11,.1);color:var(--yellow);}
+.badge-done{background:rgba(255,255,255,.05);color:var(--muted);}
+
+/* NOTIF PANEL */
+.notif-panel{position:fixed;top:66px;right:16px;width:320px;background:var(--card2);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:200;display:none;overflow:hidden;}
+.notif-panel.open{display:block;}
+.notif-header{padding:16px 18px;border-bottom:1px solid var(--border);font-size:.9rem;font-weight:800;display:flex;justify-content:space-between;}
+.notif-item{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;gap:12px;cursor:pointer;transition:.2s;}
+.notif-item:hover{background:rgba(255,255,255,.03);}
+.notif-item:last-child{border:none;}
+.notif-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.notif-text{font-size:.8rem;color:var(--muted);line-height:1.5;}
+.notif-text b{color:var(--text);font-weight:700;}
+.notif-time{font-size:.7rem;color:var(--muted);margin-top:3px;}
+
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}.grid-2,.grid-3-1,.grid-1-2{grid-template-columns:1fr;}}
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.hamburger-btn{display:block}.stats-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="home.html" class="sidebar-logo">MindStrong Universe</a>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩‍🏫</div>
+    <div>
+      <div class="user-name">Ms. Rachel Osei</div>
+      <div class="user-role">Teacher · Mathematics</div>
+      <div class="user-sub">4 classes · 112 students</div>
+    </div>
+  </div>
+  <nav style="flex:1;overflow-y:auto;padding-bottom:12px;">
+    <div class="nav-section">Teaching</div>
+    <a class="nav-item active" href="#"><span class="ico">🏠</span> Dashboard</a>
+    <a class="nav-item" href="#"><span class="ico">👥</span> My Classes</a>
+    <a class="nav-item" href="#"><span class="ico">🎓</span> Students <span class="nav-badge">112</span></a>
+    <a class="nav-item" href="#"><span class="ico">📝</span> Assignments <span class="nav-badge red">6</span></a>
+    <a class="nav-item" href="#"><span class="ico">✅</span> Attendance</a>
+    <a class="nav-item" href="#"><span class="ico">📊</span> Gradebook</a>
+    <a class="nav-item" href="#"><span class="ico">📅</span> Schedule</a>
+    <div class="nav-section">Tools</div>
+    <a class="nav-item" href="#"><span class="ico">🤖</span> AI Assistant</a>
+    <a class="nav-item" href="#"><span class="ico">📋</span> Lesson Planner</a>
+    <a class="nav-item" href="#"><span class="ico">📈</span> Reports</a>
+    <a class="nav-item" href="#"><span class="ico">📚</span> Resources</a>
+    <div class="nav-section">Account</div>
+    <a class="nav-item" href="#"><span class="ico">💬</span> Messages <span class="nav-badge">3</span></a>
+    <a class="nav-item" href="#"><span class="ico">⚙️</span> Settings</a>
+    <a class="nav-item" href="login.html"><span class="ico">🚪</span> Sign Out</a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <button class="hamburger-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input type="text" placeholder="Search students, assignments, resources...">
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-primary btn-sm" onclick="openModal('assign-modal')">+ New Assignment</button>
+      <div class="icon-btn" onclick="toggleNotif()">🔔<div class="notif-dot"></div></div>
+      <div class="topbar-avatar">👩‍🏫</div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Greeting -->
+    <div class="greeting">
+      <h1>Welcome, <span class="pink-text">Ms. Osei</span> 👩‍🏫</h1>
+      <p>You have 6 assignments to grade and a live class starting at 2:00 PM today.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon si-pk">🎓</div><span class="stat-change up">↑ 4</span></div>
+        <div class="stat-num">112</div><div class="stat-lbl">Total Students</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon si-p">📝</div><span class="stat-change up">↑ 2</span></div>
+        <div class="stat-num">87%</div><div class="stat-lbl">Avg. Class Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon si-g">✅</div><span class="stat-change up">↑ 3%</span></div>
+        <div class="stat-num">91%</div><div class="stat-lbl">Attendance Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon si-y">⏳</div><span></span></div>
+        <div class="stat-num">6</div><div class="stat-lbl">Assignments to Grade</div>
+      </div>
+    </div>
+
+    <!-- My Classes + Schedule -->
+    <div class="grid-3-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">My Classes</span>
+          <a class="card-link" href="#">Manage</a>
+        </div>
+        <div class="class-grid">
+          <div class="class-card c1 selected" onclick="selectClass(this)">
+            <span class="class-count">28</span>
+            <div class="class-emoji">🧮</div>
+            <div class="class-name">Advanced Algebra</div>
+            <div class="class-meta">Grade 10 · Section A</div>
+          </div>
+          <div class="class-card c2" onclick="selectClass(this)">
+            <span class="class-count">30</span>
+            <div class="class-emoji">📐</div>
+            <div class="class-name">Geometry</div>
+            <div class="class-meta">Grade 9 · Section B</div>
+          </div>
+          <div class="class-card c3" onclick="selectClass(this)">
+            <span class="class-count">26</span>
+            <div class="class-emoji">∫</div>
+            <div class="class-name">Calculus Intro</div>
+            <div class="class-meta">Grade 11 · Section A</div>
+          </div>
+          <div class="class-card c4" onclick="selectClass(this)">
+            <span class="class-count">28</span>
+            <div class="class-emoji">📊</div>
+            <div class="class-name">Statistics</div>
+            <div class="class-meta">Grade 12 · Section C</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Today's Schedule</span></div>
+        <div class="sched-item">
+          <div class="sched-time">8:00 AM</div>
+          <div class="sched-dot" style="background:#10b981"></div>
+          <div class="sched-info"><div class="sched-name">Geometry · Gr 9</div><div class="sched-sub">Room 204</div></div>
+          <span class="badge badge-done">Done</span>
+        </div>
+        <div class="sched-item">
+          <div class="sched-time">10:00 AM</div>
+          <div class="sched-dot" style="background:#10b981"></div>
+          <div class="sched-info"><div class="sched-name">Advanced Algebra · Gr 10</div><div class="sched-sub">Room 204</div></div>
+          <span class="badge badge-done">Done</span>
+        </div>
+        <div class="sched-item">
+          <div class="sched-time">2:00 PM</div>
+          <div class="sched-dot" style="background:#10b981;animation:pulse 1s infinite"></div>
+          <div class="sched-info"><div class="sched-name">Calculus Intro · Gr 11</div><div class="sched-sub">Room 204 + Live</div></div>
+          <span class="badge badge-live">Live Now</span>
+        </div>
+        <div class="sched-item">
+          <div class="sched-time">4:00 PM</div>
+          <div class="sched-dot" style="background:#7c3aed"></div>
+          <div class="sched-info"><div class="sched-name">Statistics · Gr 12</div><div class="sched-sub">Room 204</div></div>
+          <span class="badge badge-soon">Soon</span>
+        </div>
+        <div class="sched-item">
+          <div class="sched-time">5:30 PM</div>
+          <div class="sched-dot" style="background:#2563eb"></div>
+          <div class="sched-info"><div class="sched-name">Parent Meeting</div><div class="sched-sub">Online</div></div>
+          <span class="badge badge-soon">Soon</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Table + Attendance -->
+    <div class="grid-3-1">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Students — Advanced Algebra</span>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost btn-sm">Export</button>
+            <button class="btn btn-primary btn-sm">+ Add Student</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Grade</th>
+                <th>Score</th>
+                <th>Attendance</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="student-table">
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">👩</div><div><div class="s-name">Sarah Kim</div><div class="s-id">#2024001</div></div></div></td>
+                <td><span class="grade-pill ga">A+</span></td>
+                <td>97%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:98%;background:var(--green)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--green)"></span>Active</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">👦</div><div><div class="s-name">Alex Johnson</div><div class="s-id">#2024002</div></div></div></td>
+                <td><span class="grade-pill gb">B+</span></td>
+                <td>87%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:85%;background:var(--blue)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--green)"></span>Active</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">👧</div><div><div class="s-name">Priya Raj</div><div class="s-id">#2024003</div></div></div></td>
+                <td><span class="grade-pill ga">A</span></td>
+                <td>93%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:94%;background:var(--green)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--green)"></span>Active</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">🧒</div><div><div class="s-name">Marcus T.</div><div class="s-id">#2024004</div></div></div></td>
+                <td><span class="grade-pill gc">C+</span></td>
+                <td>74%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:72%;background:var(--yellow)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--yellow)"></span>At Risk</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">👦</div><div><div class="s-name">James Osei</div><div class="s-id">#2024005</div></div></div></td>
+                <td><span class="grade-pill gd">D</span></td>
+                <td>61%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:58%;background:var(--red)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--red)"></span>Struggling</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+              <tr>
+                <td><div class="student-cell"><div class="s-avatar">👩</div><div><div class="s-name">Amara Diallo</div><div class="s-id">#2024006</div></div></div></td>
+                <td><span class="grade-pill ga">A-</span></td>
+                <td>91%</td>
+                <td><div class="att-bar"><div class="att-fill" style="width:90%;background:var(--green)"></div></div></td>
+                <td><span class="status-dot" style="background:var(--green)"></span>Active</td>
+                <td><button class="btn btn-ghost btn-sm">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Attendance Summary + AI Assistant -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Attendance Summary</span></div>
+          <div class="donut-wrap" style="margin-bottom:16px;">
+            <div class="donut">
+              <div class="donut-inner">
+                <div class="donut-num">91%</div>
+                <div class="donut-sub">Rate</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Present: 87%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Late: 9%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Absent: 4%</div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="openModal('attendance-modal')">Mark Today's Attendance</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">AI Teaching Assistant</span><span style="font-size:.72rem;color:var(--green)">● Online</span></div>
+          <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;">Get lesson plans, quiz ideas, or student insights instantly.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+            <button class="btn btn-ghost" style="text-align:left;font-size:.8rem;" onclick="aiSuggest('plan')">📋 Generate Lesson Plan</button>
+            <button class="btn btn-ghost" style="text-align:left;font-size:.8rem;" onclick="aiSuggest('quiz')">🧪 Create a Quiz</button>
+            <button class="btn btn-ghost" style="text-align:left;font-size:.8rem;" onclick="aiSuggest('insight')">📊 Student Insights</button>
+          </div>
+          <div id="ai-output" style="font-size:.82rem;color:var(--muted);background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;min-height:60px;line-height:1.6;display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</div><!-- /main -->
+
+<!-- ASSIGNMENT MODAL -->
+<div id="assign-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:1.1rem;font-weight:800;">New Assignment</h2>
+      <button onclick="closeModal('assign-modal')" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div class="form-field"><label>Title</label><input type="text" placeholder="e.g. Algebra Problem Set Ch.8"></div>
+    <div class="form-field"><label>Class</label>
+      <select><option>Advanced Algebra — Gr 10A</option><option>Geometry — Gr 9B</option><option>Calculus — Gr 11A</option><option>Statistics — Gr 12C</option></select>
+    </div>
+    <div class="form-row-2">
+      <div class="form-field"><label>Due Date</label><input type="date"></div>
+      <div class="form-field"><label>Max Score</label><input type="number" placeholder="100"></div>
+    </div>
+    <div class="form-field"><label>Description</label><textarea placeholder="Describe the assignment..."></textarea></div>
+    <div class="form-field"><label>Type</label>
+      <select><option>Homework</option><option>Quiz</option><option>Test</option><option>Project</option><option>Lab</option></select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('assign-modal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:2" onclick="closeModal('assign-modal');showToast('Assignment created!')">Create Assignment</button>
+    </div>
+  </div>
+</div>
+
+<!-- ATTENDANCE MODAL -->
+<div id="attendance-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="font-size:1.1rem;font-weight:800;">Mark Attendance — Advanced Algebra</h2>
+      <button onclick="closeModal('attendance-modal')" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div id="att-list"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('attendance-modal')">Cancel</button>
+      <button class="btn btn-primary" style="flex:2" onclick="closeModal('attendance-modal');showToast('Attendance saved!')">Save Attendance</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION PANEL -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-header">Notifications<span class="card-link" onclick="toggleNotif()">✕</span></div>
+  <div class="notif-item"><div class="notif-ico" style="background:rgba(239,68,68,.15)">📝</div><div><div class="notif-text"><b>6 assignments</b> are waiting to be graded</div><div class="notif-time">Just now</div></div></div>
+  <div class="notif-item"><div class="notif-ico" style="background:rgba(245,158,11,.15)">⚠️</div><div><div class="notif-text"><b>James Osei</b> is at risk — 3 missed assignments</div><div class="notif-time">1 hour ago</div></div></div>
+  <div class="notif-item"><div class="notif-ico" style="background:rgba(16,185,129,.15)">💬</div><div><div class="notif-text"><b>Parent of Marcus T.</b> sent you a message</div><div class="notif-time">2 hours ago</div></div></div>
+  <div class="notif-item"><div class="notif-ico" style="background:rgba(124,58,237,.15)">📅</div><div><div class="notif-text">Live Calculus class starts in <b>30 minutes</b></div><div class="notif-time">3 hours ago</div></div></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--green);color:#fff;padding:12px 24px;border-radius:99px;font-size:.88rem;font-weight:700;z-index:999;transition:.3s;opacity:0;pointer-events:none;"></div>
+
+<script>
+function toggleNotif(){document.getElementById('notif-panel').classList.toggle('open');}
+document.addEventListener('click',e=>{const p=document.getElementById('notif-panel');if(!p.contains(e.target)&&!e.target.closest('.icon-btn'))p.classList.remove('open');});
+
+function openModal(id){const m=document.getElementById(id);m.style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+document.querySelectorAll('[id$="-modal"]').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});});
+
+function selectClass(el){document.querySelectorAll('.class-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(80px)';},2500);}
+
+const aiOutputs={
+  plan:"📋 Lesson Plan: Introduction to Quadratic Equations\n\n1. Warm-up (10 min): Review of linear equations\n2. Concept (20 min): Introduce ax²+bx+c=0 with visual graphs\n3. Practice (15 min): 5 example problems (scaffolded)\n4. Group work (10 min): Real-world application\n5. Exit ticket: Solve one quadratic problem independently",
+  quiz:"🧪 Quiz Generated — 10 Questions\n\nQ1. Solve: x²-5x+6=0\nQ2. Factor: x²+7x+12\nQ3. Graph: y=x²-4\nQ4. Word Problem: A ball is thrown...\nQ5. Discriminant: Find nature of roots...\n\n[5 more questions generated — click to view full quiz]",
+  insight:"📊 Student Insights — Advanced Algebra\n\n⚠️ 3 students need attention:\n• James Osei — 61% avg, 58% attendance. Recommend: 1-on-1 session\n• Marcus T. — Missing 2 assignments. Parent contact suggested\n• Tom B. — Consistent decline last 3 weeks\n\n✅ Top performers: Sarah Kim (97%), Priya Raj (93%)",
+};
+
+function aiSuggest(type){const out=document.getElementById('ai-output');out.style.display='block';out.innerHTML='<i style="color:var(--purple)">AI is thinking...</i>';setTimeout(()=>{out.textContent=aiOutputs[type];},1000);}
+
+// Build attendance modal list
+const students=['Sarah Kim','Alex Johnson','Priya Raj','Marcus T.','James Osei','Amara Diallo','Tom B.','Lisa Chen','Kevin Park','Nina Scott'];
+const attList=document.getElementById('att-list');
+students.forEach(name=>{
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);';
+  row.innerHTML=`<span style="font-size:.88rem;font-weight:600">${name}</span>
+  <div style="display:flex;gap:8px;">
+    <button onclick="setAtt(this,'P')" class="btn btn-primary btn-sm att-opt" data-v="P">P</button>
+    <button onclick="setAtt(this,'L')" class="btn btn-ghost btn-sm att-opt" data-v="L">L</button>
+    <button onclick="setAtt(this,'A')" class="btn btn-ghost btn-sm att-opt" data-v="A" style="color:var(--red)">A</button>
+  </div>`;
+  attList.appendChild(row);
+});
+
+function setAtt(btn,val){
+  btn.closest('div').querySelectorAll('.att-opt').forEach(b=>b.classList.replace('btn-primary','btn-ghost'));
+  btn.classList.replace('btn-ghost','btn-primary');
+}
+
+// ── Load real data from API ──
+async function loadData() {
+  try {
+    const res = await fetch('/api/teacher/stats', { credentials: 'include' });
+    if (res.status === 401) { window.location.href = 'login.html'; return; }
+    if (!res.ok) return;
+    const d = await res.json();
+
+    // Update stat cards (first 4 .stat-num elements)
+    const nums = document.querySelectorAll('.stat-num');
+    if (nums[0] && d.student_count !== undefined) nums[0].textContent = d.student_count;
+    if (nums[2] && d.avg_score !== undefined) nums[2].textContent = d.avg_score + '%';
+
+    // Update greeting name
+    if (d.name) {
+      const greetEl = document.querySelector('.greeting h1 .pink-text, .greeting h1 .grad-text');
+      if (greetEl) greetEl.textContent = d.name.split(' ')[0];
+    }
+  } catch (e) { /* silently keep demo data */ }
+
+  // Load student list
+  try {
+    const res = await fetch('/api/teacher/students', { credentials: 'include' });
+    if (!res.ok) return;
+    const d = await res.json();
+    if (!d.students || !d.students.length) return;
+    // Update student rows if table exists
+    const tbody = document.querySelector('#students-table tbody, .student-table tbody');
+    if (!tbody) return;
+    tbody.innerHTML = d.students.map((s, i) => `<tr>
+      <td>${i+1}</td>
+      <td>${s.name}</td>
+      <td>${s.email || ''}</td>
+      <td>${s.average}%</td>
+    </tr>`).join('');
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}
+</script>
+<style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}</style>
+</body>
+</html>
