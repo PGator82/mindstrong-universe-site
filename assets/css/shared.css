@@ -1,0 +1,73 @@
+element.style {
+}
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    margin: 0px;
+    padding: 0px;
+}
+user agent stylesheet
+link {
+    display: none;
+}
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    margin: 0px;
+    padding: 0px;
+}
+:root {
+    --accent: #f43f5e;
+    --accent-dim: rgba(244, 63, 94, .12);
+    --accent-glow: rgba(244, 63, 94, .25);
+}
+<style>
+:root {
+    --bg: #060b18;
+    --layer1: #0d1526;
+    --card: rgba(255, 255, 255, 0.035);
+    --card-s: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.07);
+    --border-s: rgba(255, 255, 255, 0.12);
+    --grad: linear-gradient(135deg, #06b6d4, #3b82f6);
+    --grad-v: linear-gradient(180deg, #06b6d4, #3b82f6);
+    --cyan: #06b6d4;
+    --blue: #3b82f6;
+    --indigo: #6366f1;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #f43f5e;
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --text
+#f1f5f9
+: #f1f5f9;
+    --muted: #64748b;
+    --subtle: #94a3b8;
+    --sidebar-w: 260px;
+    --topbar-h: 64px;
+    --radius: 16px;
+    --radius-s: 10px;
+}
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    margin: 0px;
+    padding: 0px;
+}
+<style>
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+<style>
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+<style>
+::-webkit-scrollbar-track {
+    background: transparent;
