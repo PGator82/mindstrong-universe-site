@@ -1,141 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Mindstrong Universe Admin Dashboard</title>
+<title>MindStrong Admin</title>
+
 <style>
-body{margin:0;font-family:Arial;background:#0d1117;color:#fff}
-header{background:#161b22;padding:15px 30px;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:20px;margin:0}
-nav a{color:#9cdcfe;margin-left:15px;text-decoration:none}
-.container{padding:30px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:30px}
-.card{background:#161b22;padding:20px;border-radius:10px;text-align:center}
-.card h2{margin:5px 0}
-.section{background:#161b22;padding:20px;border-radius:10px;margin-bottom:25px}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border-bottom:1px solid #333;padding:10px;text-align:left}
-button{background:#00b4ff;border:none;color:#fff;padding:8px 12px;border-radius:5px;cursor:pointer}
-button:hover{background:#0090cc}
-input{padding:7px;border-radius:4px;border:none;margin-right:6px}
+
+body{
+font-family:Arial;
+background:#05050f;
+color:white;
+margin:0;
+}
+
+header{
+background:#161b22;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.container{
+padding:40px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:20px;
+}
+
+.card{
+background:#161b22;
+padding:20px;
+border-radius:10px;
+text-align:center;
+}
+
+button{
+padding:10px 20px;
+background:#7c3aed;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:6px;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <header>
-<h1>Mindstrong Universe – Admin Control</h1>
-<nav>
-<a href="index.html">Home</a>
-<a href="school/index.html">School</a>
-<a href="#" onclick="logout()">Logout</a>
-</nav>
+
+<h2>MindStrong Universe Admin</h2>
+
+<button onclick="logout()">Logout</button>
+
 </header>
 
 <div class="container">
 
+<h1>Admin Dashboard</h1>
+
 <div class="cards">
-<div class="card"><h2 id="studentCount">0</h2><p>Students</p></div>
-<div class="card"><h2 id="teacherCount">0</h2><p>Teachers</p></div>
-<div class="card"><h2 id="courseCount">0</h2><p>Courses</p></div>
-<div class="card"><h2 id="xpTotal">0</h2><p>Total XP</p></div>
+
+<div class="card">
+<h2>124</h2>
+<p>Students</p>
 </div>
 
-<div class="section">
-<h2>Add Student</h2>
-<input id="studentName" placeholder="Student name">
-<button onclick="addStudent()">Add</button>
-
-<table>
-<thead><tr><th>Name</th><th>XP</th></tr></thead>
-<tbody id="studentTable"></tbody>
-</table>
+<div class="card">
+<h2>8</h2>
+<p>Teachers</p>
 </div>
 
-<div class="section">
-<h2>Add Teacher</h2>
-<input id="teacherName" placeholder="Teacher name">
-<button onclick="addTeacher()">Add</button>
-
-<table>
-<thead><tr><th>Name</th></tr></thead>
-<tbody id="teacherTable"></tbody>
-</table>
+<div class="card">
+<h2>16</h2>
+<p>Courses</p>
 </div>
 
-<div class="section">
-<h2>Add Course</h2>
-<input id="courseName" placeholder="Course title">
-<button onclick="addCourse()">Add</button>
+<div class="card">
+<h2>3210</h2>
+<p>Total XP</p>
+</div>
 
-<table>
-<thead><tr><th>Course</th></tr></thead>
-<tbody id="courseTable"></tbody>
-</table>
 </div>
 
 </div>
 
 <script>
-if(localStorage.getItem("role")!=="admin"){
-alert("Access denied");
-window.location="login.html";
-}
 
-let students=JSON.parse(localStorage.getItem("students")||"[]");
-let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
-let courses=JSON.parse(localStorage.getItem("courses")||"[]");
+const session=JSON.parse(localStorage.getItem("ms_session")||"{}")
 
-function save(){
-localStorage.setItem("students",JSON.stringify(students));
-localStorage.setItem("teachers",JSON.stringify(teachers));
-localStorage.setItem("courses",JSON.stringify(courses));
-render();
-}
+if(!session.loggedIn || session.role!=="admin"){
 
-function render(){
-document.getElementById("studentTable").innerHTML=students.map(s=>`<tr><td>${s.name}</td><td>${s.xp}</td></tr>`).join("");
-document.getElementById("teacherTable").innerHTML=teachers.map(t=>`<tr><td>${t}</td></tr>`).join("");
-document.getElementById("courseTable").innerHTML=courses.map(c=>`<tr><td>${c}</td></tr>`).join("");
+alert("Access denied")
+window.location.href="login.html"
 
-document.getElementById("studentCount").innerText=students.length;
-document.getElementById("teacherCount").innerText=teachers.length;
-document.getElementById("courseCount").innerText=courses.length;
-
-let totalXP=students.reduce((sum,s)=>sum+s.xp,0);
-document.getElementById("xpTotal").innerText=totalXP;
-}
-
-function addStudent(){
-let name=document.getElementById("studentName").value;
-if(!name)return;
-students.push({name:name,xp:0});
-document.getElementById("studentName").value="";
-save();
-}
-
-function addTeacher(){
-let name=document.getElementById("teacherName").value;
-if(!name)return;
-teachers.push(name);
-document.getElementById("teacherName").value="";
-save();
-}
-
-function addCourse(){
-let name=document.getElementById("courseName").value;
-if(!name)return;
-courses.push(name);
-document.getElementById("courseName").value="";
-save();
 }
 
 function logout(){
-localStorage.removeItem("role");
-window.location="login.html";
+
+localStorage.removeItem("ms_session")
+window.location.href="login.html"
+
 }
 
-render();
 </script>
 
 </body>
