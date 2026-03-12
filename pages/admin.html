@@ -651,22 +651,33 @@
 /* ═══ GLOBALS ═══ */
 const _sess = JSON.parse(localStorage.getItem('ms_session') || '{}');
 let currentPage = 1, perPage = 10, allUsers = [], currentRole = '';
-const ATT_NAMES=['Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson','Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez'];
-let attState={};
+const ATT_NAMES = [
+  'Alice Johnson','Bob Smith','Carol White','David Brown','Emma Wilson',
+  'Frank Miller','Grace Lee','Henry Davis','Isla Garcia','Jack Martinez'
+];
+let attState = {};
 
 /* ═══ INIT ═══ */
 (function init(){
   const n = _sess.name || 'Super Admin';
   const initials = n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
   document.getElementById('sidebarName').textContent = n;
   document.getElementById('sidebarAvatar').textContent = initials;
   document.getElementById('secAvatar').textContent = initials;
   document.getElementById('secName').textContent = n;
   document.getElementById('secEmail').textContent = _sess.email || 'admin@school.edu';
-  document.getElementById('pageDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'}) + ' · Spring Term 2026';
-  document.getElementById('attDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+  document.getElementById('pageDate').textContent =
+    new Date().toLocaleDateString('en-GB',{
+      weekday:'long',day:'numeric',month:'long',year:'numeric'
+    }) + ' · Spring Term 2026';
+  document.getElementById('attDate').textContent =
+    new Date().toLocaleDateString('en-US',{
+      weekday:'long',month:'long',day:'numeric'
+    });
   document.getElementById('lastLogin').textContent = new Date().toLocaleString();
   document.getElementById('sessTime').textContent = new Date().toLocaleTimeString();
+
   loadSettings();
   renderOverview();
   loadUsers();
