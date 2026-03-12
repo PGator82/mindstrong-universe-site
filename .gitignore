@@ -25,8 +25,7 @@ application/libraries/twilio_library/
 # Assets (large JS/CSS files — serve from CDN or upload separately)
 assets/*
 !assets/css/
-!assets/css/style.css
-!assets/css/theme.css
+!assets/css/*.css
 !assets/js/
 !assets/js/auth.js
 !assets/js/progress.js
