@@ -4,7 +4,7 @@
     order php_server before file_server
 }
 
-:80 {
+:{$PORT:80} {
     root * /app
     encode zstd br gzip
 
