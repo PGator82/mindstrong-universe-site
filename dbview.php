@@ -1,4 +1,6 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // ── Auto-connect using Railway DB credentials ──
 $mysql_url = getenv('MYSQL_URL') ?: getenv('DATABASE_URL') ?: '';
 if ($mysql_url) {

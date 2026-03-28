@@ -3,6 +3,8 @@
     "description": "MindStrong Universe School Platform",
     "require": {
         "php": ">=8.1",
+        "ext-mysqli": "*",
+        "ext-pdo_mysql": "*",
         "codeigniter/framework": "3.1.*"
     },
     "config": {
