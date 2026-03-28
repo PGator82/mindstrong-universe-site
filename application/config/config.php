@@ -213,7 +213,7 @@ $config['directory_trigger'] = 'd';
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = (ENVIRONMENT === 'production') ? 1 : 2;
 
 /*
 |--------------------------------------------------------------------------
@@ -307,7 +307,7 @@ $config['cache_query_string'] = FALSE;
 | http://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = 'Creativeitem';
+$config['encryption_key'] = getenv('APP_KEY') ?: 'MS-Univ-2026-!xK9pR#mZ2qL7vN4wA';
 
 /*
 |--------------------------------------------------------------------------
@@ -383,8 +383,8 @@ $config['sess_regenerate_destroy'] = FALSE;
 $config['cookie_prefix']	= '';
 $config['cookie_domain']	= '';
 $config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_secure']	= (ENVIRONMENT === 'production');
+$config['cookie_httponly'] 	= TRUE;
 
 /*
 |--------------------------------------------------------------------------
@@ -428,9 +428,9 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_regenerate' = Regenerate token on every submission
 | 'csrf_exclude_uris' = Array of URIs which ignore CSRF checks
 */
-$config['csrf_protection'] = FALSE;
-$config['csrf_token_name'] = 'creativeitem';
-$config['csrf_cookie_name'] = 'creativeitem';
+$config['csrf_protection'] = TRUE;
+$config['csrf_token_name'] = 'ms_csrf_token';
+$config['csrf_cookie_name'] = 'ms_csrf_cookie';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array();

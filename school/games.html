@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Games Hub — MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <style>
+    :root {
+      --accent: #7c3aed;
+      --accent2: #2563eb;
+      --gold: #facc15;
+      --green: #22c55e;
+      --red: #ef4444;
+      --surface: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #070b14;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* ── Background glow ── */
+    .ms-pageFX {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(124,58,237,.12), transparent 60%),
+        radial-gradient(700px 500px at 85% 85%, rgba(37,99,235,.08), transparent 60%);
+    }
+
+    /* ── Nav ── */
+    .ms-top { position: sticky; top: 0; z-index: 100;
+      background: rgba(7,11,20,.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border); }
+    .ms-nav { max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 24px; }
+    .ms-brand { display: flex; align-items: center; gap: 10px;
+      font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 700; color: #f1f5f9; }
+    .ms-dot { width: 10px; height: 10px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+    .ms-links { display: flex; gap: 6px; }
+    .ms-link { color: #94a3b8; text-decoration: none; font-size: 14px;
+      padding: 6px 14px; border-radius: 8px; transition: all .2s ease; }
+    .ms-link:hover, .ms-link.is-active { background: var(--surface); color: #f1f5f9; }
+
+    /* ── Wrap ── */
+    .ms-wrap { position: relative; z-index: 1; max-width: 1200px;
+      margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Hero ── */
+    .games-hero { text-align: center; padding: 32px 0 40px; }
+    .games-kicker { display: inline-block; font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+      color: #a78bfa; background: rgba(124,58,237,.12); border: 1px solid rgba(124,58,237,.25);
+      padding: 5px 14px; border-radius: 20px; margin-bottom: 18px; }
+    .games-title { font-family: 'Orbitron', sans-serif;
+      font-size: clamp(28px, 5vw, 52px); font-weight: 900;
+      background: linear-gradient(135deg, #f1f5f9 0%, #a78bfa 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1.1; margin-bottom: 14px; }
+    .games-sub { color: #94a3b8; font-size: 16px; max-width: 520px; margin: 0 auto 28px; }
+
+    /* ── HUD strip ── */
+    #games-hud { margin-bottom: 32px; }
+
+    /* ── Tab nav ── */
+    .ms-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px;
+      padding: 6px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; width: fit-content; }
+    .ms-tab {
+      padding: 8px 18px; border-radius: 10px; border: none;
+      background: transparent; color: #64748b; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .2s ease; font-family: 'Syne', sans-serif;
+    }
+    .ms-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.05); }
+    .ms-tab.is-active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,.4);
+    }
+
+    /* ── Game panels ── */
+    .ms-panel { display: none; }
+    .ms-panel.is-active { display: block; }
+
+    /* ── Game card ── */
+    .ms-game-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 24px; margin-bottom: 20px;
+    }
+    .ms-game-card-hdr { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .ms-game-card-icon { font-size: 36px; }
+    .ms-game-card-info { flex: 1; }
+    .ms-game-card-title { font-size: 18px; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
+    .ms-game-card-desc  { font-size: 13px; color: #94a3b8; }
+    .ms-game-card-meta  { display: flex; gap: 12px; align-items: center; }
+    .ms-pill {
+      font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      padding: 3px 10px; border-radius: 20px; font-weight: 600;
+    }
+    .ms-pill-xp    { background: rgba(250,204,21,.12); color: var(--gold); border: 1px solid rgba(250,204,21,.2); }
+    .ms-pill-subj  { background: rgba(124,58,237,.12); color: #a78bfa; border: 1px solid rgba(124,58,237,.2); }
+    .ms-pill-diff  { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.2); }
+    .ms-game-zone { min-height: 200px; }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 22px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--surface); color: #e2e8f0; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all .2s ease; text-decoration: none;
+      font-family: 'Syne', sans-serif;
+    }
+    .ms-btn:hover { background: rgba(255,255,255,.08); transform: translateY(-1px); }
+    .ms-btn.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color: transparent; color: #fff;
+      box-shadow: 0 4px 20px rgba(124,58,237,.4);
+    }
+    .ms-btn.primary:hover { opacity: .9; transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,58,237,.5); }
+
+    /* ── Badges tab ── */
+    .ms-badges-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
+    }
+    .ms-badge-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px 12px; text-align: center;
+      transition: all .2s ease;
+    }
+    .ms-badge-card.earned { border-color: rgba(124,58,237,.4); background: rgba(124,58,237,.08); }
+    .ms-badge-card:hover  { transform: translateY(-2px); }
+    .ms-badge-card-icon   { font-size: 32px; margin-bottom: 8px; }
+    .ms-badge-card-name   { font-size: 13px; font-weight: 700; color: #f1f5f9; margin-bottom: 2px; }
+    .ms-badge-card-desc   { font-size: 11px; color: #64748b; }
+    .ms-badge-card.locked { opacity: .4; filter: grayscale(1); }
+
+    /* ── Leaderboard tab ── */
+    .ms-lb-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; margin-bottom: 8px;
+    }
+    .ms-lb-rank  { font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: 18px; color: #64748b; min-width: 28px; }
+    .ms-lb-rank.top { color: var(--gold); }
+    .ms-lb-name  { flex: 1; font-weight: 600; }
+    .ms-lb-xp    { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--gold); }
+
+    /* ── Game section headers ── */
+    .ms-section-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      letter-spacing: .15em; text-transform: uppercase; color: #a78bfa;
+      margin-bottom: 14px; padding-left: 2px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .ms-nav { padding: 12px 16px; }
+      .ms-wrap { padding: 24px 16px 60px; }
+      .games-hero { padding: 20px 0 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ms-pageFX"></div>
+
+  <!-- Nav -->
+  <header class="ms-top">
+    <div class="ms-nav">
+      <div class="ms-brand">
+        <span class="ms-dot"></span>
+        <span>MindStrong Universe</span>
+      </div>
+      <nav class="ms-links">
+        <a class="ms-link" href="../home.html">Home</a>
+        <a class="ms-link" href="./index.html">School</a>
+        <a class="ms-link is-active" href="./games.html">Games</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="ms-wrap">
+
+    <!-- Hero -->
+    <section class="games-hero">
+      <div class="games-kicker">🎮 Games Hub • Earn XP • Unlock Badges</div>
+      <h1 class="games-title">Learn Through Play</h1>
+      <p class="games-sub">8 game modes. Math, science, words. Every correct answer earns real XP toward your level.</p>
+    </section>
+
+    <!-- HUD -->
+    <div id="games-hud"></div>
+
+    <!-- Tabs -->
+    <div class="ms-tabs">
+      <button class="ms-tab is-active" onclick="showTab('arcade')">⚡ Arcade</button>
+      <button class="ms-tab" onclick="showTab('puzzle')">🧩 Puzzles</button>
+      <button class="ms-tab" onclick="showTab('battle')">⚔️ Battle</button>
+      <button class="ms-tab" onclick="showTab('daily')">📅 Daily</button>
+      <button class="ms-tab" onclick="showTab('badges')">🏅 Badges</button>
+      <button class="ms-tab" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
+    </div>
+
+    <!-- ── ARCADE ── -->
+    <div id="panel-arcade" class="ms-panel is-active">
+      <p class="ms-section-label">Fast-Paced Arcade Games</p>
+
+      <!-- Speed Math -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">⚡</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Speed Math</div>
+            <div class="ms-game-card-desc">Answer as many arithmetic problems as possible in 30 seconds. Build combos for bonus XP.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">10+ XP each</span>
+            <span class="ms-pill ms-pill-subj">Math</span>
+          </div>
+        </div>
+        <div id="speed-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startSpeedMath('+','-')">➕ Easy (+ −)</button>
+          <button class="ms-btn primary" onclick="startSpeedMath('+','-','×','÷')">🔥 Hard (all ops)</button>
+          <span style="font-size:13px;color:#64748b">Best: <b id="sm-best">0</b></span>
+        </div>
+        <div id="speed-math-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <!-- Number Ninja -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">🥷</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Number Ninja</div>
+            <div class="ms-game-card-desc">Tap numbers 1–9 in ascending order as fast as you can. New grid every round for 60 seconds.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">5 XP each</span>
+            <span class="ms-pill ms-pill-subj">Numbers</span>
+          </div>
+        </div>
+        <div id="ninja-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startNinja()">Start Ninja</button>
+          <span style="font-size:13px;color:#64748b">Best: <b id="nn-best">0</b></span>
+        </div>
+        <div id="ninja-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <!-- Word Scramble -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">📝</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Word Scramble</div>
+            <div class="ms-game-card-desc">Unscramble vocabulary words from math, science, or English. Type your answer and hit Check.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">25 XP each</span>
+            <span class="ms-pill ms-pill-subj">All Subjects</span>
+          </div>
+        </div>
+        <div id="scramble-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startScramble('math')">📐 Math Words</button>
+          <button class="ms-btn primary" onclick="startScramble('science')">🔬 Science</button>
+          <button class="ms-btn primary" onclick="startScramble('english')">📖 English</button>
+        </div>
+        <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ── PUZZLES ── -->
+    <div id="panel-puzzle" class="ms-panel">
+      <p class="ms-section-label">Logic & Puzzle Games</p>
+
+      <!-- Memory Match -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">🧠</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Memory Match</div>
+            <div class="ms-game-card-desc">Flip cards to find matching pairs. Fewer moves = better score. Perfect match unlocks a badge.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">20 XP per pair</span>
+            <span class="ms-pill ms-pill-subj">Memory</span>
+          </div>
+        </div>
+        <div id="memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startMemory('math',6)">📐 Math Symbols</button>
+          <button class="ms-btn primary" onclick="startMemory('emoji',8)">😎 Emoji (Hard)</button>
+          <button class="ms-btn primary" onclick="startMemory('words',6)">💻 Code Words</button>
+        </div>
+        <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <!-- Equation Builder -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">🧮</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Equation Builder</div>
+            <div class="ms-game-card-desc">One number is missing from the equation. Pick the correct value from four choices.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">30 XP each</span>
+            <span class="ms-pill ms-pill-subj">Algebra</span>
+          </div>
+        </div>
+        <div id="eq-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
+          <button class="ms-btn primary" onclick="startEquation()">Start Building</button>
+        </div>
+        <div id="eq-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <!-- Math Puzzle -->
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">🧩</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Math Grid Puzzle</div>
+            <div class="ms-game-card-desc">Fill the 3×3 grid so every row and column hits its target sum. Numbers 1–9, no repeats.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">50 XP each</span>
+            <span class="ms-pill ms-pill-subj">Logic</span>
+          </div>
+        </div>
+        <div id="puzzle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
+          <button class="ms-btn primary" onclick="startPuzzle()">Start Puzzle</button>
+          <span style="font-size:13px;color:#64748b">Solved: <b id="puzzle-count">0</b></span>
+        </div>
+        <div id="puzzle-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ── BATTLE ── -->
+    <div id="panel-battle" class="ms-panel">
+      <p class="ms-section-label">Boss Battle Mode</p>
+
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">⚔️</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Boss Battle</div>
+            <div class="ms-game-card-desc">Face off against increasingly tough math bosses. Each correct answer deals damage. Wrong answers hurt you. Defeat all 3 bosses!</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">100 XP on win</span>
+            <span class="ms-pill ms-pill-diff">Hard</span>
+          </div>
+        </div>
+        <div id="boss-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startBoss(0)">👹 Algebra Ogre (Easy)</button>
+          <button class="ms-btn primary" onclick="startBoss(1)">🧙 Fraction Witch (Med)</button>
+          <button class="ms-btn primary" onclick="startBoss(2)">🐉 Geometry Dragon (Hard)</button>
+        </div>
+        <div id="boss-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ── DAILY ── -->
+    <div id="panel-daily" class="ms-panel">
+      <p class="ms-section-label">Today's Challenge</p>
+
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">📅</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Daily Challenge</div>
+            <div class="ms-game-card-desc">One special challenge per day. Complete it for a +150 XP bonus and daily streak rewards. Resets at midnight.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">+150 XP</span>
+            <span class="ms-pill ms-pill-subj">All Types</span>
+          </div>
+        </div>
+        <div id="daily-game" class="ms-game-zone"></div>
+      </div>
+    </div>
+
+    <!-- ── BADGES ── -->
+    <div id="panel-badges" class="ms-panel">
+      <p class="ms-section-label">Your Badges</p>
+      <div id="badges-grid" class="ms-badges-grid"></div>
+    </div>
+
+    <!-- ── LEADERBOARD ── -->
+    <div id="panel-leaderboard" class="ms-panel">
+      <p class="ms-section-label">Top Players</p>
+      <div id="leaderboard-list"></div>
+    </div>
+
+  </main>
+
+  <script src="./game-engine.js"></script>
+  <script>
+    /* ── Tab switching ── */
+    function showTab(name) {
+      document.querySelectorAll('.ms-panel').forEach(p => p.classList.remove('is-active'));
+      document.querySelectorAll('.ms-tab').forEach(t => t.classList.remove('is-active'));
+      document.getElementById('panel-' + name)?.classList.add('is-active');
+      event.target.classList.add('is-active');
+      if (name === 'badges')      renderBadges();
+      if (name === 'leaderboard') renderLeaderboard();
+      if (name === 'daily')       initDaily();
+    }
+
+    /* ── Render HUD ── */
+    msRenderHUD('games-hud');
+
+    /* ── Init best scores on load ── */
+    document.getElementById('sm-best').textContent   = msGetHighScore('speed_math');
+    document.getElementById('nn-best').textContent   = msGetHighScore('number_ninja');
+    document.getElementById('puzzle-count').textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
+
+    /* ── Game launchers ── */
+    function startSpeedMath(...ops) {
+      document.getElementById('speed-math-start').style.display = 'none';
+      document.getElementById('speed-math-game').style.display  = 'block';
+      const g = new SpeedMathGame('speed-math-game', { ops, timeLimit: 30 });
+      g.start();
+      window._smGame = g;
+    }
+
+    function startNinja() {
+      document.getElementById('ninja-start').style.display = 'none';
+      document.getElementById('ninja-game').style.display  = 'block';
+      const g = new NumberNinjaGame('ninja-game');
+      g.start();
+      window._nnGame = g;
+    }
+
+    function startScramble(subject) {
+      document.getElementById('scramble-start').style.display = 'none';
+      document.getElementById('scramble-game').style.display  = 'block';
+      const g = new WordScrambleGame('scramble-game', { subject });
+      g.start();
+      window._wsGame = g;
+    }
+
+    function startMemory(subject, pairs) {
+      document.getElementById('memory-start').style.display = 'none';
+      document.getElementById('memory-game').style.display  = 'block';
+      const g = new MemoryMatchGame('memory-game', { subject, pairs });
+      g.start();
+      window._mmGame = g;
+    }
+
+    function startEquation() {
+      document.getElementById('eq-start').style.display = 'none';
+      document.getElementById('eq-game').style.display  = 'block';
+      const g = new EquationBuilderGame('eq-game');
+      g.start();
+      window._ebGame = g;
+    }
+
+    function startPuzzle() {
+      document.getElementById('puzzle-start').style.display = 'none';
+      document.getElementById('puzzle-game').style.display  = 'block';
+      const g = new MathPuzzleGame('puzzle-game');
+      g.start();
+      window._mpGame = g;
+    }
+
+    function startBoss(idx) {
+      document.getElementById('boss-start').style.display = 'none';
+      document.getElementById('boss-game').style.display  = 'block';
+      const g = new BossBattleGame('boss-game', { bossIndex: idx });
+      g.start();
+      window._bossGame = g;
+    }
+
+    function initDaily() {
+      const g = new DailyChallengeGame('daily-game');
+      g.start();
+    }
+
+    /* ── Badges tab ── */
+    function renderBadges() {
+      const earned = msInitProfile().badges ?? [];
+      const el = document.getElementById('badges-grid');
+      if (!el) return;
+      el.innerHTML = Object.entries(ALL_BADGES).map(([key, b]) => {
+        const have = earned.includes(key);
+        return `
+          <div class="ms-badge-card ${have ? 'earned' : 'locked'}">
+            <div class="ms-badge-card-icon">${b.icon}</div>
+            <div class="ms-badge-card-name">${b.name}</div>
+            <div class="ms-badge-card-desc">${b.desc}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ── Leaderboard tab ── */
+    async function renderLeaderboard() {
+      const el = document.getElementById('leaderboard-list');
+      if (!el) return;
+      // Load from leaderboard.json + merge local profile
+      try {
+        const res  = await fetch('../data/leaderboard.json');
+        const data = await res.json();
+        const p    = msInitProfile();
+        const me   = { name: 'You', xp: p.xp, level: p.level, isMe: true };
+        const list = [...data.players, me]
+          .sort((a, b) => (b.xp ?? b.score ?? 0) - (a.xp ?? a.score ?? 0))
+          .slice(0, 10);
+        el.innerHTML = list.map((player, i) => {
+          const score = player.xp ?? player.score ?? 0;
+          const rank  = i + 1;
+          return `
+            <div class="ms-lb-row ${player.isMe ? 'ms-lb-me' : ''}" style="${player.isMe ? 'border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)' : ''}">
+              <span class="ms-lb-rank ${rank <= 3 ? 'top' : ''}">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</span>
+              <span class="ms-lb-name">${player.isMe ? '⭐ ' : ''}${player.name ?? player.student_name ?? 'Player'}</span>
+              <span class="ms-lb-xp">${score.toLocaleString()} XP</span>
+            </div>
+          `;
+        }).join('');
+      } catch {
+        el.innerHTML = '<p style="color:#64748b;padding:20px">Could not load leaderboard.</p>';
+      }
+    }
+
+    /* ── Refresh HUD after any XP gain ── */
+    const _origAddXP = msAddXP;
+    window.msAddXP = function(amount, label) {
+      const result = _origAddXP(amount, label);
+      msRenderHUD('games-hud');
+      return result;
+    };
+  </script>
+</body>
+</html>

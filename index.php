@@ -53,7 +53,7 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-date_default_timezone_set('Asia/Dhaka');
+date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'America/New_York');
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'production');
 
 /*

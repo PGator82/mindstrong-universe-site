@@ -1,13 +1,28 @@
-name: Deploy
+name: Deploy to Railway
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
+    name: Deploy MindStrong Universe
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Deploy placeholder
-        run: echo "Configure deployment steps for mindstrong-universe-site"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service mindstrong-universe-site --detach
+
+      - name: Deployment summary
+        run: |
+          echo "✅ MindStrong Universe deployed to Railway"
+          echo "🔗 https://mindstrong-universe-school-production.up.railway.app"
