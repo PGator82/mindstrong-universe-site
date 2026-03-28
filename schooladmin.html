@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Admin Login — MindStrong</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#05050f;color:#f0f0ff;font-family:'Segoe UI',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.box{background:#0f0f2a;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:44px;width:380px;}
+.logo{font-size:1.1rem;font-weight:900;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;}
+h2{font-size:1.4rem;font-weight:900;margin-bottom:6px;}
+p{color:#888aaa;font-size:.85rem;margin-bottom:28px;}
+label{display:block;font-size:.72rem;font-weight:700;color:#888aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+input[type=email],input[type=password]{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f0ff;font-size:.9rem;outline:none;margin-bottom:16px;}
+input:focus{border-color:#f59e0b;}
+button{width:100%;padding:12px;background:linear-gradient(135deg,#f59e0b,#ef4444);border:none;border-radius:10px;color:#fff;font-weight:800;font-size:.95rem;cursor:pointer;}
+button:hover{opacity:.9;}
+.err{color:#ef4444;font-size:.8rem;margin-bottom:12px;}
+.back{display:block;text-align:center;margin-top:18px;font-size:.8rem;color:#888aaa;text-decoration:none;}
+.back:hover{color:#f0f0ff;}
+.info{margin-top:20px;padding:12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:.78rem;color:#fbbf24;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">MindStrong Universe</div>
+  <h2>School Admin Login</h2>
+  <p>Direct access to the MySchool management backend</p>
+  <script>
+    const _err = new URLSearchParams(location.search).get('error');
+    if (_err === 'superadmin')
+      document.write('<div class="err">Super Admin accounts must log in at <a href="/login.html" style="color:#f59e0b">/login.html</a></div>');
+    else if (_err)
+      document.write('<div class="err">Incorrect credentials. Try again.</div>');
+  </script>
+  <!-- Real form POST — lets the browser handle the session cookie correctly -->
+  <form method="POST" action="/login/validate_school_login">
+    <label>Email</label>
+    <input type="email" name="email" placeholder="admin@email.com" required autofocus>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login to School Admin →</button>
+  </form>
+  <div class="info">
+    This logs you directly into MySchool's original admin backend.<br>
+    Use your <strong>Administrator</strong> account credentials.
+  </div>
+  <a href="/login.html" class="back">← Back to main login</a>
+</div>
+</body>
+</html>
