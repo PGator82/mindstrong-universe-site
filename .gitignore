@@ -1,5 +1,3 @@
-# Database credentials — never commit real credentials
-application/config/database.php
 
 # SQL dump contains API keys — keep off GitHub
 myschool.sql
