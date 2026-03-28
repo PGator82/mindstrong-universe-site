@@ -1,0 +1,32 @@
+{
+    admin off
+    frankenphp
+    order php_server before file_server
+}
+
+:80 {
+    root * /app
+    encode zstd br gzip
+
+    # Serve PHP files directly (Adminer DB tool, etc.)
+    @phpFiles {
+        path *.php
+    }
+    handle @phpFiles {
+        php_server
+    }
+
+    # Serve static HTML dashboards directly
+    @staticHtml {
+        path *.html
+    }
+    handle @staticHtml {
+        file_server
+    }
+
+    # Route everything else through CodeIgniter front controller
+    handle {
+        try_files {path} {path}/ /index.php?{query}
+        php_server
+    }
+}
