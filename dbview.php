@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
 // ── Auto-connect using Railway DB credentials ──
 $mysql_url = getenv('MYSQL_URL') ?: getenv('DATABASE_URL') ?: '';
 if ($mysql_url) {
@@ -16,18 +14,5 @@ if ($mysql_url) {
     $DB_NAME   = getenv('MYSQLDATABASE') ?: 'railway';
 }
 
-function adminer_object() {
-    class AdminerSecure extends Adminer {
-        function login($login, $password) { return true; }
-        function credentials() {
-            global $DB_SERVER, $DB_USER, $DB_PASS;
-            return [$DB_SERVER, $DB_USER, $DB_PASS];
-        }
-        function database() { global $DB_NAME; return $DB_NAME; }
-        function name() { return 'MindStrong Admin'; }
-        function permanentLogin() { return true; }
-    }
-    return new AdminerSecure();
-}
-
+define('MS_DB_ADMIN', true);
 include __DIR__ . '/admin-db.php';
