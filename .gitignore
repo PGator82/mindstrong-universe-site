@@ -20,15 +20,8 @@ update_pack/
 application/libraries/stripe/
 application/libraries/twilio_library/
 
-# Assets (large JS/CSS files — serve from CDN or upload separately)
-assets/*
-!assets/css/
-!assets/css/style.css
-!assets/css/theme.css
-!assets/js/
-!assets/js/auth.js
-!assets/js/progress.js
-!assets/js/leaderboard.js
+# Assets — all committed (Ekattor theme required for backend UI)
+# assets/
 
 # OS & editor files
 .DS_Store
