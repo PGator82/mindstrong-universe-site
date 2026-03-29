@@ -349,6 +349,21 @@
     .chip { font-size:10px; border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:2px 8px; color:var(--muted,#6b7a99); }
     #globalLeaderboard ol { margin:8px 0 0; padding-left:18px; display:grid; gap:6px; }
     #globalLeaderboard li { display:flex; justify-content:space-between; font-size:13px; }
+
+    /* ── Subject filter bar ── */
+    .ms-subjectbar {
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:20px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-subjBtn {
+      font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 14px;
+      border-radius:8px; border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:var(--muted,#6b7a99);
+      cursor:pointer; transition:all .2s ease; white-space:nowrap;
+    }
+    .ms-subjBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-subjBtn.is-active { color:var(--xp-a); border-color:var(--xp-a); background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow); }
   </style>
 </head>
 <body data-mode="arcade">
@@ -370,6 +385,15 @@
 </header>
 
 <main class="ms-wrap">
+
+  <!-- SUBJECT FILTER -->
+  <div class="ms-subjectbar ms-reveal">
+    <span class="ms-modebar-label">Subject:</span>
+    <button class="ms-subjBtn is-active" data-subj="all"     onclick="filterSubjectPage('all',this)">📚 All</button>
+    <button class="ms-subjBtn"           data-subj="math"    onclick="filterSubjectPage('math',this)">📐 Math</button>
+    <button class="ms-subjBtn"           data-subj="science" onclick="filterSubjectPage('science',this)">🔬 Science</button>
+    <button class="ms-subjBtn"           data-subj="english" onclick="filterSubjectPage('english',this)">📖 English</button>
+  </div>
 
   <!-- HERO -->
   <section class="ms-hero ms-reveal">
@@ -408,7 +432,7 @@
   </section>
 
   <!-- FOUNDATIONS -->
-  <section class="ms-card ms-reveal">
+  <section class="ms-card ms-reveal" data-subject="math">
     <h2>Foundations <span class="ms-flavorLabel" id="foundationsLabel">Active</span></h2>
 
     <div class="ms-courseItem">
@@ -427,7 +451,7 @@
   </section>
 
   <!-- PRE-ALGEBRA -->
-  <section class="ms-card ms-reveal">
+  <section class="ms-card ms-reveal" data-subject="math">
     <h2>Pre-Algebra <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
@@ -443,7 +467,7 @@
   </section>
 
   <!-- GEOMETRY -->
-  <section class="ms-card ms-reveal">
+  <section class="ms-card ms-reveal" data-subject="math">
     <h2>Geometry <span class="ms-flavorLabel" id="geoLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
@@ -459,7 +483,7 @@
   </section>
 
   <!-- MATH LEAGUE -->
-  <section class="ms-card ms-reveal" style="text-align:center;padding:28px 24px;">
+  <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:28px 24px;">
     <div style="font-size:36px;margin-bottom:10px;">⚡</div>
     <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#facc15;margin-bottom:6px;">Math League</div>
     <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">10-round timed matches across Arithmetic, Pre-Algebra, Geometry &amp; Ratios. Earn XP. Win badges.</div>
@@ -467,11 +491,117 @@
   </section>
 
   <!-- PROGRESS DASHBOARD LINK -->
-  <section class="ms-card ms-reveal" style="text-align:center;padding:20px 24px;">
+  <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:20px 24px;">
     <div style="font-size:24px;margin-bottom:8px;">📊</div>
     <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">Full Progress Report</div>
     <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:14px;">See scores, XP, boss wins & streaks for every lesson.</div>
     <a class="ms-btn primary" href="./foundations/progress-dashboard.html">View My Progress →</a>
+  </section>
+
+  <!-- ══════ SCIENCE ══════ -->
+  <section class="ms-card ms-reveal" data-subject="science">
+    <h2>Life Science <span class="ms-flavorLabel" style="border-color:#22d3ee;color:#22d3ee;">Active</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge" style="border-color:#22d3ee;color:#22d3ee;">1</div>
+        <div>
+          <div class="ms-courseTitle">Module 1 — Life Science</div>
+          <div class="ms-courseSubtitle">6 Lessons · Cells, Ecosystems &amp; Adaptations</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="sciBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <a class="ms-btn primary" href="./foundations-science/index.html">Open →</a>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="science">
+    <h2>Earth Science <span class="ms-flavorLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 2 — Earth Science</div>
+          <div class="ms-courseSubtitle">5 Lessons · Rocks, Weather &amp; Space</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <button class="ms-btn" disabled>Locked</button>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="science">
+    <h2>Physical Science <span class="ms-flavorLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 3 — Physical Science</div>
+          <div class="ms-courseSubtitle">6 Lessons · Matter, Energy &amp; Forces</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <button class="ms-btn" disabled>Locked</button>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="science" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">🔬</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#22d3ee;margin-bottom:6px;">Science Lab</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Experiments, observations &amp; discovery challenges across Life, Earth &amp; Physical Science.</div>
+    <a class="ms-btn primary" href="./foundations-science/index.html">Enter Science Lab →</a>
+  </section>
+
+  <!-- ══════ ENGLISH ══════ -->
+  <section class="ms-card ms-reveal" data-subject="english">
+    <h2>Grammar Foundations <span class="ms-flavorLabel" style="border-color:#a78bfa;color:#a78bfa;">Active</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge" style="border-color:#a78bfa;color:#a78bfa;">1</div>
+        <div>
+          <div class="ms-courseTitle">Module 1 — Grammar Foundations</div>
+          <div class="ms-courseSubtitle">6 Lessons · Nouns, Verbs, Sentences &amp; More</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="engBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <a class="ms-btn primary" href="./foundations-english/index.html">Open →</a>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="english">
+    <h2>Reading Comprehension <span class="ms-flavorLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 2 — Reading Comprehension</div>
+          <div class="ms-courseSubtitle">5 Lessons · Main Idea, Inference &amp; Analysis</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <button class="ms-btn" disabled>Locked</button>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="english">
+    <h2>Writing &amp; Composition <span class="ms-flavorLabel">Locked</span></h2>
+    <div class="ms-courseItem">
+      <div class="ms-courseMeta">
+        <div class="ms-courseBadge is-locked">🔒</div>
+        <div>
+          <div class="ms-courseTitle">Module 3 — Writing &amp; Composition</div>
+          <div class="ms-courseSubtitle">6 Lessons · Paragraphs, Essays &amp; Creative Writing</div>
+          <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <button class="ms-btn" disabled>Locked</button>
+    </div>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="english" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">📖</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#a78bfa;margin-bottom:6px;">English League</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Speed reading, word scrambles, grammar quizzes. Build vocabulary, earn badges, beat the clock.</div>
+    <a class="ms-btn primary" href="./foundations-english/index.html">Enter English League →</a>
   </section>
 
   <!-- EXPERIENCE SELECTOR -->
@@ -750,6 +880,15 @@ try {
   }, { threshold: 0.1 });
   els.forEach(el => io.observe(el));
 })();
+
+/* ── Subject filter ── */
+function filterSubjectPage(subj, btn) {
+  document.querySelectorAll('.ms-subjBtn').forEach(b => b.classList.remove('is-active'));
+  btn.classList.add('is-active');
+  document.querySelectorAll('section[data-subject]').forEach(sec => {
+    sec.style.display = (subj === 'all' || sec.dataset.subject === subj) ? '' : 'none';
+  });
+}
 
 if (window.MSCourseEngine) {
   MSCourseEngine.renderCourseEngine({

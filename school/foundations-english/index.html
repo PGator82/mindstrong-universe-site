@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindStrong Universe • English Foundations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../../assets/css/theme.css" />
+  <link rel="icon" type="image/svg+xml" href="../../mindstronguniverse.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family:'Syne',sans-serif; }
+    :root { --xp-a:#a78bfa; --xp-b:#7c3aed; --xp-glow:rgba(167,139,250,.16); }
+    body[data-mode="arcade"]   { --xp-a:#facc15; --xp-b:#f97316; --xp-glow:rgba(250,204,21,.15); }
+    body[data-mode="rpg"]      { --xp-a:#a855f7; --xp-b:#7c3aed; --xp-glow:rgba(168,85,247,.16); }
+    body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-glow:rgba(34,211,238,.15); }
+    body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-glow:rgba(52,211,153,.14); }
+
+    .ms-pageFX {
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(800px 500px at 15% 0%, var(--xp-glow), transparent 60%),
+        radial-gradient(500px 400px at 85% 90%, rgba(124,58,237,.07), transparent 60%);
+      transition:background .6s ease;
+    }
+    .ms-wrap { position:relative; z-index:1; }
+
+    .ms-modebar {
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:24px; padding:12px 16px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-modebar-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--muted,#6b7a99); margin-right:4px; flex-shrink:0; }
+    .ms-modeBtn { font-family:'JetBrains Mono',monospace; font-size:11px; padding:6px 13px; border-radius:8px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--muted,#6b7a99); cursor:pointer; transition:all .2s ease; white-space:nowrap; }
+    .ms-modeBtn:hover { color:#e8edf5; border-color:rgba(255,255,255,.22); }
+    .ms-modeBtn.is-active { color:var(--xp-a); border-color:var(--xp-a); background:rgba(255,255,255,.07); box-shadow:0 0 10px var(--xp-glow); }
+    .ms-modeKicker { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; padding:4px 12px; border-radius:20px; border:1px solid var(--xp-a); color:var(--xp-a); margin-bottom:10px; transition:all .4s ease; }
+
+    .ms-overallProgress {
+      padding:16px 18px; margin-bottom:8px;
+      border:1px solid rgba(255,255,255,.08); border-radius:14px; background:rgba(255,255,255,.03);
+    }
+    .ms-overallProgress .op-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .ms-overallProgress .op-title { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted,#6b7a99); }
+    .ms-overallProgress .op-count { font-family:'Orbitron',monospace; font-size:18px; font-weight:900; color:var(--xp-a); }
+    .ms-bar { height:8px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; }
+    .ms-bar div { height:100%; width:0%; background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); border-radius:999px; transition:width .8s ease, background .5s ease; }
+
+    .ms-nextLesson {
+      display:flex; align-items:center; gap:14px; padding:14px 16px;
+      border:1px solid var(--xp-a); border-radius:14px;
+      background:rgba(255,255,255,.04); box-shadow:0 0 20px var(--xp-glow);
+      margin-bottom:8px; text-decoration:none;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .ms-nextLesson:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--xp-glow); }
+    .ms-nextLesson-icon { font-size:22px; flex-shrink:0; }
+    .ms-nextLesson-label { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--xp-a); margin-bottom:3px; }
+    .ms-nextLesson-title { font-weight:700; font-size:14px; }
+    .ms-nextLesson-sub { font-size:12px; color:var(--muted,#6b7a99); margin-top:2px; }
+
+    details.ms-card { margin-bottom:18px; }
+    summary { list-style:none; cursor:pointer; }
+    summary::-webkit-details-marker { display:none; }
+    .summary-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .summary-left { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+    .chev { transition:transform .25s ease; flex-shrink:0; }
+    details[open] .chev { transform:rotate(90deg); }
+
+    .ms-modNum {
+      width:36px; height:36px; border-radius:10px; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-family:'Orbitron',sans-serif; font-weight:900; font-size:14px;
+      border:2px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05);
+      transition:border-color .4s ease;
+    }
+    .ms-modNum.is-done  { border-color:var(--xp-a); color:var(--xp-a); box-shadow:0 0 12px var(--xp-glow); }
+    .ms-modNum.is-locked { opacity:.35; }
+
+    .ms-modTitle { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; }
+    .ms-modMeta  { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted,#6b7a99); margin-top:2px; }
+
+    .ms-miniBar { height:5px; border-radius:999px; background:rgba(255,255,255,.1); overflow:hidden; margin-top:7px; width:120px; }
+    .ms-miniBar div { height:100%; background:linear-gradient(90deg,var(--xp-b),var(--xp-a)); border-radius:999px; transition:width .8s ease; }
+
+    .ms-lessonList { margin-top:14px; display:grid; gap:8px; }
+    .ms-lessonRow {
+      display:flex; align-items:center; gap:12px; padding:10px 12px;
+      border:1px solid rgba(255,255,255,.07); border-radius:10px;
+      background:rgba(255,255,255,.025); text-decoration:none; color:inherit;
+      transition:all .18s ease;
+    }
+    .ms-lessonRow:hover:not(.is-locked) { background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.14); transform:translateX(2px); }
+    .ms-lessonRow.is-locked { opacity:.4; cursor:not-allowed; }
+    .ms-lessonRow.is-done   { border-color:rgba(167,139,250,.25); }
+    .ms-lDot { width:22px; height:22px; border-radius:50%; border:1.5px solid rgba(255,255,255,.18); background:rgba(255,255,255,.04); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all .3s ease; }
+    .ms-lessonRow.is-done .ms-lDot { background:var(--xp-a); border-color:var(--xp-a); color:#07090f; }
+    .ms-lName { font-size:13px; font-weight:600; flex:1; }
+    .ms-lXP { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--xp-a); opacity:.7; white-space:nowrap; }
+
+    .ms-btn {
+      font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+      padding:9px 18px; border-radius:10px;
+      border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:#e8edf5;
+      cursor:pointer; white-space:nowrap; text-decoration:none;
+      transition:all .2s ease; display:inline-block;
+    }
+    .ms-btn:hover { background:rgba(255,255,255,.1); }
+    .ms-btn.primary {
+      background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); border-color:transparent; color:#07090f;
+      box-shadow:0 4px 16px var(--xp-glow);
+    }
+    .ms-btn.primary:hover { transform:translateY(-2px); box-shadow:0 8px 24px var(--xp-glow); }
+
+    .ms-reveal { opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease; }
+    .ms-reveal.is-in { opacity:1; transform:translateY(0); }
+    @media (prefers-reduced-motion:reduce) { .ms-reveal { opacity:1; transform:none; transition:none; } }
+  </style>
+</head>
+<body data-mode="rpg">
+<div class="ms-pageFX"></div>
+
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand">
+      <span class="ms-dot"></span>
+      <span>MindStrong Universe</span>
+    </div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../home.html">Home</a>
+      <a class="ms-link is-active" href="../index.html">School</a>
+      <a class="ms-link" href="../games.html">Games</a>
+    </nav>
+    <a class="ms-btn primary" href="../../login.html" style="font-size:13px;padding:8px 18px;">Login</a>
+  </div>
+</header>
+
+<main class="ms-wrap">
+
+  <!-- HERO -->
+  <section class="ms-hero ms-reveal">
+    <div class="ms-modeKicker" id="modeKicker">📖 English Foundations</div>
+    <h1 class="ms-h1">Grammar, Reading &amp; Writing</h1>
+    <p class="ms-sub">Master language, one lesson at a time. Earn XP. Unlock new modules.</p>
+  </section>
+
+  <!-- MODE SWITCHER -->
+  <div class="ms-modebar ms-reveal">
+    <span class="ms-modebar-label">Mode:</span>
+    <button class="ms-modeBtn" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn is-active" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
+  </div>
+
+  <!-- OVERALL PROGRESS -->
+  <div class="ms-overallProgress ms-reveal">
+    <div class="op-row">
+      <span class="op-title">English Progress</span>
+      <span class="op-count" id="engTotalCount">0 / 17 lessons</span>
+    </div>
+    <div class="ms-bar"><div id="engTotalBar" style="width:0%"></div></div>
+  </div>
+
+  <!-- NEXT LESSON CTA -->
+  <a class="ms-nextLesson ms-reveal" id="nextLessonLink" href="./lesson-1.html">
+    <div class="ms-nextLesson-icon">📖</div>
+    <div>
+      <div class="ms-nextLesson-label">▶ Up Next</div>
+      <div class="ms-nextLesson-title" id="nextLessonTitle">Lesson 1 — Nouns &amp; Pronouns</div>
+      <div class="ms-nextLesson-sub">Module 1: Grammar Foundations · +100 XP</div>
+    </div>
+  </a>
+
+  <!-- MODULE 1: GRAMMAR FOUNDATIONS -->
+  <details class="ms-card ms-reveal" open>
+    <summary>
+      <div class="summary-head">
+        <div class="summary-left">
+          <div class="ms-modNum" id="eng-mod1-badge">1</div>
+          <div>
+            <div class="ms-modTitle">Module 1 — Grammar Foundations</div>
+            <div class="ms-modMeta">6 Lessons · <span id="eng-m1-count">0</span> completed</div>
+            <div class="ms-miniBar"><div id="eng-m1-bar" style="width:0%"></div></div>
+          </div>
+        </div>
+        <span class="chev" style="color:var(--muted,#6b7a99);">▶</span>
+      </div>
+    </summary>
+    <div class="ms-lessonList">
+      <a class="ms-lessonRow" id="eng-l1" href="./lesson-1.html">
+        <div class="ms-lDot" id="eng-d1">1</div>
+        <span class="ms-lName">Lesson 1 — Nouns &amp; Pronouns</span>
+        <span class="ms-lXP">+100 XP</span>
+      </a>
+      <a class="ms-lessonRow" id="eng-l2" href="./lesson-2.html">
+        <div class="ms-lDot" id="eng-d2">2</div>
+        <span class="ms-lName">Lesson 2 — Verbs &amp; Tenses</span>
+        <span class="ms-lXP">+100 XP</span>
+      </a>
+      <a class="ms-lessonRow" id="eng-l3" href="./lesson-3.html">
+        <div class="ms-lDot" id="eng-d3">3</div>
+        <span class="ms-lName">Lesson 3 — Adjectives &amp; Adverbs</span>
+        <span class="ms-lXP">+100 XP</span>
+      </a>
+      <a class="ms-lessonRow" id="eng-l4" href="./lesson-4.html">
+        <div class="ms-lDot" id="eng-d4">4</div>
+        <span class="ms-lName">Lesson 4 — Sentence Structure</span>
+        <span class="ms-lXP">+100 XP</span>
+      </a>
+      <a class="ms-lessonRow" id="eng-l5" href="./lesson-5.html">
+        <div class="ms-lDot" id="eng-d5">5</div>
+        <span class="ms-lName">Lesson 5 — Punctuation</span>
+        <span class="ms-lXP">+100 XP</span>
+      </a>
+      <a class="ms-lessonRow" id="eng-l6" href="./lesson-6.html">
+        <div class="ms-lDot" id="eng-d6">6</div>
+        <span class="ms-lName">Lesson 6 — Parts of Speech Review</span>
+        <span class="ms-lXP">+120 XP</span>
+      </a>
+    </div>
+  </details>
+
+  <!-- MODULE 2: READING COMPREHENSION (locked) -->
+  <details class="ms-card ms-reveal">
+    <summary>
+      <div class="summary-head">
+        <div class="summary-left">
+          <div class="ms-modNum is-locked" id="eng-mod2-badge">🔒</div>
+          <div>
+            <div class="ms-modTitle">Module 2 — Reading Comprehension</div>
+            <div class="ms-modMeta">5 Lessons · Complete Module 1 to unlock</div>
+            <div class="ms-miniBar"><div style="width:0%"></div></div>
+          </div>
+        </div>
+        <span class="chev" style="color:var(--muted,#6b7a99);">▶</span>
+      </div>
+    </summary>
+    <div class="ms-lessonList">
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">1</div><span class="ms-lName">Lesson 1 — Finding the Main Idea</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">2</div><span class="ms-lName">Lesson 2 — Making Inferences</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">3</div><span class="ms-lName">Lesson 3 — Context Clues</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">4</div><span class="ms-lName">Lesson 4 — Author's Purpose</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">5</div><span class="ms-lName">Lesson 5 — Text Analysis</span><span class="ms-lXP">+120 XP</span></div>
+    </div>
+  </details>
+
+  <!-- MODULE 3: WRITING & COMPOSITION (locked) -->
+  <details class="ms-card ms-reveal">
+    <summary>
+      <div class="summary-head">
+        <div class="summary-left">
+          <div class="ms-modNum is-locked" id="eng-mod3-badge">🔒</div>
+          <div>
+            <div class="ms-modTitle">Module 3 — Writing &amp; Composition</div>
+            <div class="ms-modMeta">6 Lessons · Complete Module 2 to unlock</div>
+            <div class="ms-miniBar"><div style="width:0%"></div></div>
+          </div>
+        </div>
+        <span class="chev" style="color:var(--muted,#6b7a99);">▶</span>
+      </div>
+    </summary>
+    <div class="ms-lessonList">
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">1</div><span class="ms-lName">Lesson 1 — Writing Sentences</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">2</div><span class="ms-lName">Lesson 2 — Building Paragraphs</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">3</div><span class="ms-lName">Lesson 3 — Narrative Writing</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">4</div><span class="ms-lName">Lesson 4 — Descriptive Writing</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">5</div><span class="ms-lName">Lesson 5 — Opinion &amp; Persuasion</span><span class="ms-lXP">+100 XP</span></div>
+      <div class="ms-lessonRow is-locked"><div class="ms-lDot">6</div><span class="ms-lName">Lesson 6 — Essay Writing</span><span class="ms-lXP">+120 XP</span></div>
+    </div>
+  </details>
+
+  <!-- ENGLISH LEAGUE CTA -->
+  <section class="ms-card ms-reveal" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">📖</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#a78bfa;margin-bottom:6px;">English League</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Word Scramble, grammar quizzes &amp; timed reading challenges. Earn XP. Win badges.</div>
+    <a class="ms-btn primary" href="../games.html">Play English Games →</a>
+  </section>
+
+  <footer class="ms-footer">© MindStrong Universe</footer>
+</main>
+
+<script src="../ms-tracker.js"></script>
+<script>
+// Load English progress from localStorage
+const ENG_KEY = 'ms_eng_m1_done';
+const engDone = new Set(JSON.parse(localStorage.getItem(ENG_KEY) || '[]'));
+const engCount = engDone.size;
+const TOTAL_ENG = 17;
+
+// Update overall bar
+document.getElementById('engTotalCount').textContent = `${engCount} / ${TOTAL_ENG} lessons`;
+document.getElementById('engTotalBar').style.width = `${Math.round((engCount / TOTAL_ENG) * 100)}%`;
+
+// Module 1 bar
+document.getElementById('eng-m1-count').textContent = Math.min(engCount, 6);
+document.getElementById('eng-m1-bar').style.width = `${Math.round((Math.min(engCount, 6) / 6) * 100)}%`;
+if (engCount >= 6) {
+  const b = document.getElementById('eng-mod1-badge');
+  b.textContent = '✓'; b.classList.add('is-done');
+}
+
+// Mark completed lessons
+['l1','l2','l3','l4','l5','l6'].forEach((id, i) => {
+  const key = `lesson-${i+1}`;
+  if (engDone.has(key) || engCount > i) {
+    const row = document.getElementById(`eng-${id}`);
+    const dot = document.getElementById(`eng-d${i+1}`);
+    if (row) row.classList.add('is-done');
+    if (dot) dot.textContent = '✓';
+  }
+});
+
+// Next lesson pointer
+const nextIdx = Math.min(engCount, 5);
+const lessonNames = [
+  'Lesson 1 — Nouns & Pronouns',
+  'Lesson 2 — Verbs & Tenses',
+  'Lesson 3 — Adjectives & Adverbs',
+  'Lesson 4 — Sentence Structure',
+  'Lesson 5 — Punctuation',
+  'Lesson 6 — Parts of Speech Review'
+];
+if (engCount < 6) {
+  document.getElementById('nextLessonTitle').textContent = lessonNames[nextIdx];
+  document.getElementById('nextLessonLink').href = `./lesson-${nextIdx + 1}.html`;
+} else {
+  const cta = document.getElementById('nextLessonLink');
+  cta.querySelector('.ms-nextLesson-label').textContent = '✓ Module 1 Complete';
+  cta.querySelector('.ms-nextLesson-title').textContent = 'Reading Comprehension — Coming Soon';
+  cta.querySelector('.ms-nextLesson-sub').textContent = 'Module 2 unlocks when lessons are published';
+  cta.style.pointerEvents = 'none';
+}
+
+// Mode switcher
+const MODES_ENG = {
+  arcade:   { kicker:'🕹️ Arcade English Mode' },
+  rpg:      { kicker:'📖 English Quest Board' },
+  academic: { kicker:'🧠 Academic English' },
+  lms:      { kicker:'🏫 English LMS' }
+};
+function applyMode(mode) {
+  document.body.setAttribute('data-mode', mode);
+  const cfg = MODES_ENG[mode] || MODES_ENG.rpg;
+  document.getElementById('modeKicker').textContent = cfg.kicker;
+  document.querySelectorAll('.ms-modeBtn').forEach(b => b.classList.toggle('is-active', b.dataset.mode === mode));
+  try { localStorage.setItem('ms_xp_mode', mode); } catch {}
+}
+document.querySelectorAll('.ms-modeBtn').forEach(b => b.addEventListener('click', () => applyMode(b.dataset.mode)));
+try { const s = localStorage.getItem('ms_xp_mode'); if (s && MODES_ENG[s]) applyMode(s); } catch {}
+
+// Scroll reveals
+(function() {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.ms-reveal').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
