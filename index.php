@@ -67,7 +67,8 @@ date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'America/New_York');
 switch (ENVIRONMENT)
 {
 	case 'development':
-		error_reporting(-1);
+		// Suppress deprecations from CI3 running on PHP 8.2+ to prevent headers-already-sent
+		error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 		ini_set('display_errors', 1);
 	break;
 
