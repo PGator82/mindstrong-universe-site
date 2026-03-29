@@ -1,1045 +1,1382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard — MindStrong Universe</title>
-<style>
-:root {
-  --bg: #05050f;
-  --bg2: #0b0b1f;
-  --card: #0f0f2a;
-  --card2: #121228;
-  --border: rgba(255,255,255,0.07);
-  --purple: #7c3aed;
-  --blue: #2563eb;
-  --cyan: #06b6d4;
-  --pink: #ec4899;
-  --green: #10b981;
-  --yellow: #f59e0b;
-  --red: #ef4444;
-  --text: #f0f0ff;
-  --muted: #888aaa;
-  --grad: linear-gradient(135deg, #7c3aed, #2563eb);
-  --sidebar-w: 260px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; overflow-x: hidden; }
-body.light { --bg:#f4f4f8; --bg2:#ffffff; --card:#ffffff; --card2:#f9f9fc; --border:rgba(0,0,0,.1); --text:#0f0f1a; --muted:#666880; }
-[id^="sec-"] { scroll-margin-top: 80px; }
+  <meta charset="UTF-8" />
+  <title>Student Dashboard — MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Variables & Reset ── */
+    :root {
+      --accent: #7c3aed;
+      --accent2: #2563eb;
+      --gold: #facc15;
+      --surface: rgba(255,255,255,.04);
+      --border: rgba(255,255,255,.08);
+      --bg: #060810;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --sidebar-w: 260px;
+      --mode-a: #7c3aed;
+      --mode-b: #2563eb;
+    }
+    body[data-mode="arcade"]  { --mode-a:#facc15; --mode-b:#f97316; }
+    body[data-mode="rpg"]     { --mode-a:#a855f7; --mode-b:#7c3aed; }
+    body[data-mode="academic"]{ --mode-a:#22d3ee; --mode-b:#3b82f6; }
+    body[data-mode="lms"]     { --mode-a:#34d399; --mode-b:#059669; }
 
-/* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  z-index: 100;
-  transition: transform .3s;
-}
-.sidebar-logo {
-  padding: 24px 20px 20px;
-  font-size: 1.15rem;
-  font-weight: 900;
-  background: var(--grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  border-bottom: 1px solid var(--border);
-  text-decoration: none;
-  display: block;
-}
-.sidebar-user {
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--border);
-}
-.user-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: var(--grad);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem;
-  flex-shrink: 0;
-}
-.user-name { font-size: .88rem; font-weight: 700; }
-.user-role { font-size: .72rem; color: #a78bfa; margin-top: 1px; }
-.user-xp { font-size: .68rem; color: var(--muted); margin-top: 3px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.nav-section { padding: 16px 12px 6px; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 700; }
-.nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 10px 16px;
-  margin: 2px 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: .2s;
-  font-size: .88rem;
-  color: var(--muted);
-  text-decoration: none;
-  position: relative;
-}
-.nav-item:hover { background: rgba(255,255,255,.04); color: var(--text); }
-.nav-item.active { background: rgba(124,58,237,.15); color: var(--text); }
-.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; background: var(--purple); border-radius: 0 3px 3px 0; }
-.nav-item .ico { font-size: 1.1rem; width: 22px; text-align: center; }
-.nav-badge { margin-left: auto; padding: 2px 8px; background: var(--purple); border-radius: 99px; font-size: .65rem; font-weight: 700; color: #fff; }
-.nav-badge.green { background: var(--green); }
-.nav-badge.yellow { background: var(--yellow); }
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-.sidebar-footer {
-  margin-top: auto;
-  padding: 16px 12px;
-  border-top: 1px solid var(--border);
-}
+    /* ── Background glow blobs ── */
+    .ms-pageFX {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(900px 600px at 10% 5%,  rgba(124,58,237,.13), transparent 60%),
+        radial-gradient(700px 500px at 90% 90%,  rgba(37,99,235,.09),  transparent 60%),
+        radial-gradient(400px 400px at 50% 50%,  rgba(124,58,237,.04), transparent 70%);
+    }
 
-/* ── MAIN ── */
-.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+    /* ── Particle canvas ── */
+    #particle-canvas { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.4; }
 
-/* ── TOPBAR ── */
-.topbar {
-  position: sticky; top: 0; z-index: 90;
-  background: rgba(5,5,15,.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 28px;
-  display: flex; align-items: center; gap: 16px;
-}
-.hamburger-btn { display: none; background: none; border: none; color: var(--text); font-size: 1.3rem; cursor: pointer; }
-.search-wrap { flex: 1; max-width: 400px; position: relative; }
-.search-wrap input {
-  width: 100%;
-  padding: 9px 14px 9px 38px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-size: .88rem;
-  outline: none;
-  transition: .2s;
-}
-.search-wrap input:focus { border-color: var(--purple); background: rgba(124,58,237,.07); }
-.search-wrap .s-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .9rem; }
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.icon-btn {
-  width: 38px; height: 38px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 1.1rem;
-  position: relative; transition: .2s;
-}
-.icon-btn:hover { border-color: rgba(124,58,237,.4); }
-.notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--red); border-radius: 50%; border: 2px solid var(--bg); }
-.topbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; }
+    /* ── Cursor glow ── */
+    #cursor-glow {
+      position:fixed; width:300px; height:300px; border-radius:50%;
+      background:radial-gradient(circle, rgba(124,58,237,.12), transparent 70%);
+      pointer-events:none; z-index:1; transform:translate(-50%,-50%);
+      transition:opacity .3s ease; opacity:0;
+    }
 
-/* ── PAGE CONTENT ── */
-.page { padding: 28px; }
+    /* ── Layout shell ── */
+    .dash-shell { position:relative; z-index:2; display:flex; min-height:100vh; }
 
-/* greeting */
-.greeting { margin-bottom: 28px; }
-.greeting h1 { font-size: 1.7rem; font-weight: 900; }
-.greeting p { color: var(--muted); font-size: .9rem; margin-top: 4px; }
-.grad-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    /* ─────────── SIDEBAR ─────────── */
+    .dash-sidebar {
+      width: var(--sidebar-w); flex-shrink:0;
+      background: rgba(6,8,16,.88); backdrop-filter:blur(20px);
+      border-right: 1px solid var(--border);
+      display:flex; flex-direction:column;
+      position:fixed; top:0; left:0; height:100vh;
+      overflow-y:auto; overflow-x:hidden;
+      transition:transform .3s ease; z-index:200;
+    }
+    .dash-sidebar::-webkit-scrollbar { width:4px; }
+    .dash-sidebar::-webkit-scrollbar-thumb { background:rgba(124,58,237,.3); border-radius:4px; }
 
-/* ── STAT CARDS ── */
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-.stat-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  display: flex; flex-direction: column; gap: 12px;
-  transition: .2s;
-}
-.stat-card:hover { border-color: rgba(124,58,237,.3); transform: translateY(-2px); }
-.stat-top { display: flex; align-items: center; justify-content: space-between; }
-.stat-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-.si-p { background: rgba(124,58,237,.15); }
-.si-b { background: rgba(37,99,235,.15); }
-.si-g { background: rgba(16,185,129,.15); }
-.si-y { background: rgba(245,158,11,.15); }
-.stat-change { font-size: .72rem; padding: 3px 8px; border-radius: 99px; font-weight: 700; }
-.up   { background: rgba(16,185,129,.15); color: var(--green); }
-.down { background: rgba(239,68,68,.15);  color: var(--red); }
-.stat-num { font-size: 1.8rem; font-weight: 900; }
-.stat-lbl { font-size: .78rem; color: var(--muted); }
+    .sidebar-logo {
+      padding:22px 20px 18px; border-bottom:1px solid var(--border);
+      display:flex; align-items:center; gap:10px;
+    }
+    .sidebar-logo-dot {
+      width:12px; height:12px; border-radius:50%;
+      background:linear-gradient(135deg, var(--mode-a), var(--mode-b));
+      box-shadow:0 0 10px rgba(124,58,237,.6); flex-shrink:0;
+    }
+    .sidebar-logo-text  { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:#f1f5f9; }
+    .sidebar-logo-sub   { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
 
-/* ── GRID LAYOUT ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-.grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .sidebar-profile {
+      margin:16px 14px;
+      background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:16px 14px;
+    }
+    .sidebar-avatar {
+      width:52px; height:52px; border-radius:50%;
+      background:linear-gradient(135deg, var(--mode-a), var(--mode-b));
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px; margin:0 auto 10px;
+      box-shadow:0 0 20px rgba(124,58,237,.4);
+    }
+    .sidebar-name       { font-size:15px; font-weight:700; color:#f1f5f9; text-align:center; margin-bottom:2px; }
+    .sidebar-level-lbl  { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); text-align:center; margin-bottom:10px; }
+    .sb-xp-wrap         { background:rgba(255,255,255,.06); border-radius:6px; height:6px; overflow:hidden; margin-bottom:5px; }
+    .sb-xp-bar          { height:100%; border-radius:6px; background:linear-gradient(90deg, var(--mode-a), var(--mode-b)); transition:width .6s ease; }
+    .sb-xp-txt          { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); display:flex; justify-content:space-between; }
 
-/* ── CARD ── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 22px;
-}
-.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.card-title { font-size: 1rem; font-weight: 800; }
-.card-link { font-size: .78rem; color: #a78bfa; text-decoration: none; cursor: pointer; }
-.card-link:hover { text-decoration: underline; }
+    .sidebar-mode-lbl {
+      padding:10px 20px 6px;
+      font-family:'JetBrains Mono',monospace; font-size:10px;
+      letter-spacing:.12em; text-transform:uppercase; color:#475569;
+    }
+    .sidebar-modes { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:0 14px 14px; }
+    .mode-btn {
+      padding:7px 6px; border-radius:10px; border:1px solid var(--border);
+      background:var(--surface); color:var(--muted);
+      font-size:11px; font-weight:600; cursor:pointer;
+      transition:all .2s ease; font-family:'Syne',sans-serif;
+    }
+    .mode-btn:hover { background:rgba(255,255,255,.07); color:#f1f5f9; }
+    .mode-btn.active {
+      background:linear-gradient(135deg, var(--mode-a), var(--mode-b));
+      border-color:transparent; color:#fff;
+      box-shadow:0 3px 12px rgba(124,58,237,.35);
+    }
 
-/* ── PROGRESS CHART (CSS only) ── */
-.progress-chart { display: flex; align-items: flex-end; gap: 10px; height: 120px; margin-bottom: 16px; }
-.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.bar-wrap { width: 100%; flex: 1; display: flex; align-items: flex-end; }
-.bar {
-  width: 100%; border-radius: 6px 6px 0 0;
-  background: rgba(124,58,237,.3);
-  transition: height .8s cubic-bezier(.4,0,.2,1);
-  position: relative;
-  cursor: pointer;
-}
-.bar.active { background: var(--grad); }
-.bar:hover::after {
-  content: attr(data-val);
-  position: absolute;
-  top: -24px; left: 50%;
-  transform: translateX(-50%);
-  font-size: .7rem;
-  background: var(--purple);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-.bar-label { font-size: .7rem; color: var(--muted); }
+    .sidebar-nav { flex:1; padding:6px 10px; }
+    .nav-link {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:10px;
+      color:var(--muted); text-decoration:none; font-size:14px; font-weight:600;
+      cursor:pointer; border:none; background:transparent;
+      width:100%; text-align:left; margin-bottom:2px;
+      transition:all .2s ease; font-family:'Syne',sans-serif;
+    }
+    .nav-link:hover { background:rgba(255,255,255,.05); color:#f1f5f9; }
+    .nav-link.active { background:rgba(124,58,237,.15); color:#a78bfa; border:1px solid rgba(124,58,237,.2); }
+    .nav-icon { font-size:16px; width:20px; flex-shrink:0; }
 
-/* ── COURSE PROGRESS LIST ── */
-.course-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-.course-item:last-child { border: none; padding-bottom: 0; }
-.course-emoji { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
-.ce-p { background: rgba(124,58,237,.15); }
-.ce-b { background: rgba(37,99,235,.15); }
-.ce-g { background: rgba(16,185,129,.15); }
-.ce-c { background: rgba(6,182,212,.15); }
-.ce-pk { background: rgba(236,72,153,.15); }
-.course-info { flex: 1; min-width: 0; }
-.course-name { font-size: .88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.course-teacher { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.prog-bar-wrap { height: 5px; background: rgba(255,255,255,.07); border-radius: 99px; margin-top: 7px; }
-.prog-bar-fill { height: 100%; border-radius: 99px; background: var(--grad); }
-.course-pct { font-size: .75rem; font-weight: 700; color: #a78bfa; flex-shrink: 0; }
+    .sidebar-footer { padding:14px; border-top:1px solid var(--border); }
+    .signout-btn {
+      width:100%; padding:9px; border-radius:10px;
+      background:rgba(239,68,68,.08); border:1px solid rgba(239,68,68,.2);
+      color:#fca5a5; font-size:13px; font-weight:600; cursor:pointer;
+      font-family:'Syne',sans-serif; transition:all .2s ease;
+    }
+    .signout-btn:hover { background:rgba(239,68,68,.15); }
 
-/* ── AI TEACHER QUICK CHAT ── */
-.ai-teachers-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-.ai-chip {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 14px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border);
-  border-radius: 99px;
-  cursor: pointer;
-  transition: .2s;
-  font-size: .82rem;
-}
-.ai-chip:hover { border-color: rgba(124,58,237,.5); background: rgba(124,58,237,.08); }
-.ai-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.5);} }
+    /* ─────────── MAIN ─────────── */
+    .dash-main { margin-left:var(--sidebar-w); flex:1; min-width:0; display:flex; flex-direction:column; }
 
-.chat-area {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  min-height: 160px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
-  max-height: 220px;
-  overflow-y: auto;
-}
-.msg { display: flex; gap: 10px; }
-.msg.ai { }
-.msg.user { flex-direction: row-reverse; }
-.msg-bubble {
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: .83rem;
-  line-height: 1.55;
-  max-width: 80%;
-}
-.msg.ai .msg-bubble { background: rgba(124,58,237,.12); border: 1px solid rgba(124,58,237,.2); }
-.msg.user .msg-bubble { background: var(--grad); color: #fff; }
-.msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-size: .8rem; flex-shrink: 0; }
-.chat-input-row { display: flex; gap: 8px; }
-.chat-input-row input {
-  flex: 1;
-  padding: 10px 14px;
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-size: .85rem;
-  outline: none;
-}
-.chat-input-row input:focus { border-color: var(--purple); }
-.send-btn {
-  padding: 10px 16px;
-  background: var(--grad);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-size: .9rem;
-  transition: .2s;
-}
-.send-btn:hover { opacity: .85; }
+    .dash-topbar {
+      position:sticky; top:0; z-index:100;
+      background:rgba(6,8,16,.82); backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border);
+      padding:14px 28px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+    }
+    .topbar-greeting { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; color:#f1f5f9; }
+    .topbar-greeting span { color:#a78bfa; }
+    .topbar-hud { display:flex; gap:10px; flex-wrap:wrap; }
+    .hud-stat {
+      display:flex; align-items:center; gap:6px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:10px; padding:5px 12px;
+      font-family:'JetBrains Mono',monospace; font-size:12px;
+    }
+    .hud-stat-icon { font-size:14px; }
+    .hud-stat-val  { color:#f1f5f9; font-weight:700; }
+    .hud-stat-lbl  { color:var(--muted); font-size:10px; }
 
-/* ── SCHEDULE ── */
-.schedule-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-.schedule-item:last-child { border: none; }
-.sched-time { font-size: .72rem; color: var(--muted); width: 70px; flex-shrink: 0; text-align: right; }
-.sched-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.sched-info { flex: 1; }
-.sched-name { font-size: .85rem; font-weight: 700; }
-.sched-teacher { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.sched-badge {
-  padding: 3px 10px;
-  border-radius: 99px;
-  font-size: .68rem;
-  font-weight: 700;
-}
-.live-now { background: rgba(16,185,129,.15); color: var(--green); }
-.upcoming { background: rgba(245,158,11,.1); color: var(--yellow); }
-.done     { background: rgba(255,255,255,.05); color: var(--muted); }
+    .hamburger {
+      display:none; flex-direction:column; gap:5px;
+      cursor:pointer; padding:4px; background:none; border:none;
+    }
+    .hamburger span { display:block; width:22px; height:2px; background:var(--muted); border-radius:2px; transition:all .3s ease; }
 
-/* ── ASSIGNMENTS ── */
-.assign-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--border);
-}
-.assign-item:last-child { border: none; }
-.assign-check {
-  width: 20px; height: 20px;
-  border-radius: 6px;
-  border: 2px solid var(--border);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: .2s;
-}
-.assign-check.done { background: var(--green); border-color: var(--green); }
-.assign-check.done::after { content: '✓'; color: #fff; font-size: .7rem; }
-.assign-info { flex: 1; }
-.assign-title { font-size: .85rem; font-weight: 600; }
-.assign-title.done { text-decoration: line-through; color: var(--muted); }
-.assign-due { font-size: .72rem; color: var(--muted); margin-top: 2px; }
-.assign-due.overdue { color: var(--red); }
-.assign-sub { font-size: .72rem; color: #a78bfa; font-weight: 600; }
+    /* ── Content ── */
+    .dash-content { flex:1; padding:28px 28px 60px; }
 
-/* ── LEADERBOARD ── */
-.leader-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
-.leader-item:last-child { border: none; }
-.leader-rank { width: 26px; text-align: center; font-size: .85rem; font-weight: 900; color: var(--muted); }
-.leader-rank.gold   { color: #f59e0b; }
-.leader-rank.silver { color: #94a3b8; }
-.leader-rank.bronze { color: #b45309; }
-.leader-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--grad); display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
-.leader-name { flex: 1; font-size: .85rem; font-weight: 600; }
-.leader-xp { font-size: .78rem; color: #a78bfa; font-weight: 700; }
-.leader-bar-wrap { width: 80px; height: 4px; background: rgba(255,255,255,.07); border-radius: 99px; }
-.leader-bar { height: 100%; border-radius: 99px; background: var(--grad); }
-.me { background: rgba(124,58,237,.08); border-radius: 10px; padding-left: 8px; border: 1px solid rgba(124,58,237,.2); }
+    /* ── Main tabs ── */
+    .dash-tabs {
+      display:flex; gap:4px; flex-wrap:wrap; margin-bottom:24px;
+      padding:5px; background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; width:fit-content;
+    }
+    .dash-tab {
+      padding:7px 15px; border-radius:9px; border:none;
+      background:transparent; color:#64748b;
+      font-size:13px; font-weight:600; cursor:pointer;
+      transition:all .2s ease; font-family:'Syne',sans-serif; white-space:nowrap;
+    }
+    .dash-tab:hover { color:var(--text); background:rgba(255,255,255,.05); }
+    .dash-tab.active {
+      background:linear-gradient(135deg, var(--mode-a), var(--mode-b));
+      color:#fff; box-shadow:0 3px 14px rgba(124,58,237,.4);
+    }
 
-/* ── XP BAR ── */
-.xp-wrap { margin-top: 8px; }
-.xp-meta { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); margin-bottom: 6px; }
-.xp-bar { height: 8px; background: rgba(255,255,255,.07); border-radius: 99px; overflow: hidden; }
-.xp-fill { height: 100%; background: linear-gradient(90deg, #7c3aed, #ec4899); border-radius: 99px; width: 68%; transition: width 1s ease; }
+    .dash-section { display:none; }
+    .dash-section.active { display:block; }
 
-/* ── ACHIEVEMENT BADGES ── */
-.badges-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.badge-item { text-align: center; }
-.badge-icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem;
-  margin: 0 auto 5px;
-}
-.badge-item .badge-name { font-size: .65rem; color: var(--muted); }
-.b-gold   { background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.3); }
-.b-purple { background: rgba(124,58,237,.15); border: 1px solid rgba(124,58,237,.3); }
-.b-blue   { background: rgba(37,99,235,.15);  border: 1px solid rgba(37,99,235,.3); }
-.b-green  { background: rgba(16,185,129,.15); border: 1px solid rgba(16,185,129,.3); }
-.b-pink   { background: rgba(236,72,153,.15); border: 1px solid rgba(236,72,153,.3); }
-.b-dim    { background: rgba(255,255,255,.04); border: 1px dashed var(--border); opacity: .5; }
+    /* ── Cards ── */
+    .ms-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:22px;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .ms-card:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(124,58,237,.12); }
+    .ms-card-title { font-family:'Orbitron',sans-serif; font-size:13px; color:#f1f5f9; font-weight:700; margin-bottom:8px; }
 
-/* ── NOTIFICATION PANEL ── */
-.notif-panel {
-  position: fixed;
-  top: 66px; right: 16px;
-  width: 320px;
-  background: var(--card2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
-  z-index: 200;
-  display: none;
-  overflow: hidden;
-}
-.notif-panel.open { display: block; }
-.notif-header { padding: 16px 18px; border-bottom: 1px solid var(--border); font-size: .9rem; font-weight: 800; display: flex; justify-content: space-between; }
-.notif-item { padding: 13px 18px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; cursor: pointer; transition: .2s; }
-.notif-item:hover { background: rgba(255,255,255,.03); }
-.notif-item:last-child { border: none; }
-.notif-ico { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-.notif-text { font-size: .8rem; color: var(--muted); line-height: 1.5; }
-.notif-text b { color: var(--text); font-weight: 700; }
-.notif-time { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+    /* ── Grid helpers ── */
+    .grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 1100px) {
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
-}
-@media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: none; }
-  .main { margin-left: 0; }
-  .hamburger-btn { display: block; }
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .stats-row { grid-template-columns: 1fr; }
-  .page { padding: 16px; }
-}
-</style>
+    /* ── Stat cards ── */
+    .stat-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px;
+      display:flex; flex-direction:column; gap:6px; transition:all .2s ease;
+    }
+    .stat-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(124,58,237,.14); }
+    .stat-icon { font-size:26px; }
+    .stat-val {
+      font-family:'Orbitron',sans-serif; font-size:26px; font-weight:900;
+      background:linear-gradient(135deg, var(--mode-a), var(--mode-b));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+    .stat-lbl { font-size:12px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+
+    /* ── Pills ── */
+    .ms-pill {
+      display:inline-block; font-size:11px; font-family:'JetBrains Mono',monospace;
+      padding:3px 10px; border-radius:20px; font-weight:600;
+    }
+    .ms-pill-xp   { background:rgba(250,204,21,.12); color:var(--gold); border:1px solid rgba(250,204,21,.2); }
+    .ms-pill-subj { background:rgba(124,58,237,.12); color:#a78bfa; border:1px solid rgba(124,58,237,.2); }
+    .ms-pill-diff { background:rgba(239,68,68,.1); color:#fca5a5; border:1px solid rgba(239,68,68,.2); }
+
+    /* ── Buttons ── */
+    .ms-btn {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:10px 22px; border-radius:12px; border:1px solid var(--border);
+      background:var(--surface); color:var(--text); font-size:14px; font-weight:600;
+      cursor:pointer; transition:all .2s ease; text-decoration:none; font-family:'Syne',sans-serif;
+    }
+    .ms-btn:hover { background:rgba(255,255,255,.08); transform:translateY(-1px); }
+    .ms-btn.primary {
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      border-color:transparent; color:#fff; box-shadow:0 4px 20px rgba(124,58,237,.4);
+    }
+    .ms-btn.primary:hover { opacity:.9; transform:translateY(-2px); box-shadow:0 6px 28px rgba(124,58,237,.5); }
+    .ms-btn.sm { padding:7px 14px; font-size:12px; border-radius:9px; }
+
+    /* ── Progress bar ── */
+    .prog-wrap { background:rgba(255,255,255,.06); border-radius:6px; height:7px; overflow:hidden; flex:1; }
+    .prog-bar { height:100%; border-radius:6px; background:linear-gradient(90deg, var(--mode-a), var(--mode-b)); transition:width .6s ease; }
+
+    /* ── Section label ── */
+    .ms-section-label {
+      font-family:'JetBrains Mono',monospace; font-size:11px;
+      letter-spacing:.15em; text-transform:uppercase; color:#a78bfa;
+      margin-bottom:14px; padding-left:2px;
+    }
+
+    /* ── Daily banner ── */
+    .daily-banner {
+      background:linear-gradient(135deg, rgba(124,58,237,.18), rgba(37,99,235,.12));
+      border:1px solid rgba(124,58,237,.3); border-radius:20px; padding:22px 24px; margin-bottom:22px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    }
+    .daily-banner-left { display:flex; align-items:center; gap:14px; }
+    .daily-banner-icon { font-size:36px; }
+    .daily-banner-title { font-family:'Orbitron',sans-serif; font-size:15px; font-weight:700; color:#f1f5f9; margin-bottom:3px; }
+    .daily-banner-desc  { font-size:13px; color:var(--muted); }
+
+    /* ── Activity feed ── */
+    .activity-feed { display:flex; flex-direction:column; gap:8px; }
+    .activity-item {
+      display:flex; align-items:center; gap:12px;
+      padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    }
+    .activity-icon { font-size:18px; width:28px; flex-shrink:0; text-align:center; }
+    .activity-text { flex:1; font-size:13px; }
+    .activity-time { font-size:11px; color:#475569; font-family:'JetBrains Mono',monospace; }
+
+    /* ── Module cards ── */
+    .module-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:20px;
+      transition:all .2s ease;
+    }
+    .module-card:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(124,58,237,.12); }
+    .module-hdr { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .module-icon  { font-size:26px; }
+    .module-title { font-size:15px; font-weight:700; color:#f1f5f9; }
+    .module-sub   { font-size:12px; color:var(--muted); }
+    .module-prog-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .module-prog-pct { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); min-width:36px; text-align:right; }
+
+    /* ── Course table ── */
+    .course-table { width:100%; border-collapse:collapse; }
+    .course-table th {
+      font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.1em;
+      text-transform:uppercase; color:#475569; text-align:left;
+      padding:8px 12px; border-bottom:1px solid var(--border);
+    }
+    .course-table td { padding:10px 12px; font-size:13px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .course-table tr:last-child td { border-bottom:none; }
+    .course-table tr:hover td { background:rgba(255,255,255,.03); }
+
+    /* ── Game sub-tabs ── */
+    .ms-tabs {
+      display:flex; gap:6px; flex-wrap:wrap; margin-bottom:22px;
+      padding:5px; background:var(--surface); border:1px solid var(--border);
+      border-radius:13px; width:fit-content;
+    }
+    .ms-tab {
+      padding:7px 16px; border-radius:9px; border:none;
+      background:transparent; color:#64748b;
+      font-size:13px; font-weight:600; cursor:pointer;
+      transition:all .2s ease; font-family:'Syne',sans-serif;
+    }
+    .ms-tab:hover { color:var(--text); background:rgba(255,255,255,.05); }
+    .ms-tab.is-active {
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff; box-shadow:0 3px 14px rgba(124,58,237,.4);
+    }
+    .ms-panel { display:none; }
+    .ms-panel.is-active { display:block; }
+
+    /* ── Game cards ── */
+    .ms-game-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:20px; padding:24px; margin-bottom:18px;
+    }
+    .ms-game-card-hdr { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+    .ms-game-card-icon  { font-size:36px; }
+    .ms-game-card-info  { flex:1; }
+    .ms-game-card-title { font-size:17px; font-weight:700; color:#f1f5f9; margin-bottom:2px; }
+    .ms-game-card-desc  { font-size:13px; color:var(--muted); }
+    .ms-game-card-meta  { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .ms-game-zone { min-height:180px; }
+
+    /* ── Badges ── */
+    .ms-badges-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(148px,1fr)); gap:12px; }
+    .ms-badge-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; padding:16px 10px; text-align:center; transition:all .2s ease;
+    }
+    .ms-badge-card.earned { border-color:rgba(124,58,237,.4); background:rgba(124,58,237,.08); }
+    .ms-badge-card:hover { transform:translateY(-2px); }
+    .ms-badge-card.locked { opacity:.4; filter:grayscale(1); }
+    .ms-badge-card-icon { font-size:30px; margin-bottom:8px; }
+    .ms-badge-card-name { font-size:12px; font-weight:700; color:#f1f5f9; margin-bottom:2px; }
+    .ms-badge-card-desc { font-size:11px; color:#64748b; }
+
+    /* ── Leaderboard ── */
+    .ms-lb-row {
+      display:flex; align-items:center; gap:14px;
+      padding:12px 16px; background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; margin-bottom:8px;
+    }
+    .ms-lb-rank { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:18px; color:#64748b; min-width:28px; }
+    .ms-lb-rank.top { color:var(--gold); }
+    .ms-lb-name { flex:1; font-weight:600; }
+    .ms-lb-xp   { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--gold); }
+
+    /* ── AI teachers ── */
+    .ai-teachers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+    .ai-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:20px; padding:24px; transition:all .25s ease;
+      position:relative; overflow:hidden;
+    }
+    .ai-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:3px;
+      background:var(--ai-grad, linear-gradient(90deg,#7c3aed,#2563eb));
+    }
+    .ai-card:hover { transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,.4); }
+    .ai-avatar  { font-size:44px; text-align:center; margin-bottom:12px; }
+    .ai-name    { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:700; color:#f1f5f9; margin-bottom:2px; }
+    .ai-subject { font-size:12px; color:var(--muted); margin-bottom:10px; font-family:'JetBrains Mono',monospace; }
+    .ai-tags    { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+    .ai-tag {
+      font-size:10px; padding:3px 9px; border-radius:20px;
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+      color:var(--muted); font-family:'JetBrains Mono',monospace;
+    }
+    .ai-actions { display:flex; gap:8px; align-items:center; }
+    .ai-start-btn {
+      flex:1; padding:9px 14px; border-radius:10px;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      border:none; color:#fff; font-size:13px; font-weight:700;
+      cursor:pointer; font-family:'Syne',sans-serif; text-align:center;
+      transition:all .2s ease; text-decoration:none;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
+    .ai-start-btn:hover { opacity:.9; transform:translateY(-1px); }
+    .ai-link-btn {
+      padding:9px 12px; border-radius:10px;
+      background:var(--surface); border:1px solid var(--border);
+      color:var(--muted); font-size:12px; font-weight:600;
+      text-decoration:none; transition:all .2s ease;
+    }
+    .ai-link-btn:hover { color:#f1f5f9; background:rgba(255,255,255,.07); }
+
+    /* ── XP chart ── */
+    .xp-chart { display:flex; align-items:flex-end; gap:8px; height:120px; }
+    .xp-bar-col { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+    .xp-bar-fill {
+      width:100%; background:linear-gradient(180deg, var(--mode-a), var(--mode-b));
+      border-radius:4px 4px 0 0; transition:height .6s ease; min-height:4px;
+    }
+    .xp-bar-day { font-family:'JetBrains Mono',monospace; font-size:9px; color:#475569; }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s ease, transform .5s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ── Sidebar overlay ── */
+    .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:199; }
+    .sidebar-overlay.open { display:block; }
+
+    /* ── Responsive ── */
+    @media (max-width:900px) {
+      .dash-sidebar { transform:translateX(-100%); }
+      .dash-sidebar.open { transform:translateX(0); }
+      .dash-main { margin-left:0; }
+      .hamburger { display:flex; }
+      .grid-4 { grid-template-columns:repeat(2,1fr); }
+      .grid-3 { grid-template-columns:repeat(2,1fr); }
+      .dash-content { padding:18px 16px 50px; }
+      .dash-topbar { padding:12px 16px; }
+    }
+    @media (max-width:600px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns:1fr; }
+      .daily-banner { flex-direction:column; align-items:flex-start; }
+      .dash-tabs { gap:2px; }
+      .dash-tab { padding:6px 10px; font-size:11px; }
+      .ai-teachers-grid { grid-template-columns:1fr; }
+    }
+  </style>
 </head>
-<body>
+<body data-mode="rpg">
+  <div class="ms-pageFX"></div>
+  <canvas id="particle-canvas"></canvas>
+  <div id="cursor-glow"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <a href="home.html" class="sidebar-logo">MindStrong Universe</a>
+  <div class="dash-shell">
 
-  <div class="sidebar-user">
-    <div class="user-avatar">👦</div>
-    <div>
-      <div class="user-name">Alex Johnson</div>
-      <div class="user-role">Student · Grade 10</div>
-      <div class="user-xp">⚡ 3,240 XP · Level 12</div>
-    </div>
-  </div>
+    <!-- ══════ SIDEBAR ══════ -->
+    <aside class="dash-sidebar" id="sidebar">
 
-  <nav style="flex:1;overflow-y:auto;padding-bottom:12px;">
-    <div class="nav-section">Main</div>
-    <a class="nav-item active" href="#"><span class="ico">🏠</span> Dashboard</a>
-    <a class="nav-item" href="#sec-courses"><span class="ico">📚</span> My Courses <span class="nav-badge">5</span></a>
-    <a class="nav-item" href="#sec-ai"><span class="ico">🤖</span> AI Teachers</a>
-    <a class="nav-item" href="#sec-assignments"><span class="ico">📝</span> Assignments <span class="nav-badge yellow">3</span></a>
-    <a class="nav-item" href="#sec-schedule"><span class="ico">📅</span> Schedule</a>
-    <a class="nav-item" href="#sec-courses"><span class="ico">📊</span> Progress</a>
-
-    <div class="nav-section">Learning</div>
-    <a class="nav-item" href="#sec-stats"><span class="ico">🧪</span> Practice Tests</a>
-    <a class="nav-item" href="#sec-leaderboard"><span class="ico">🏆</span> Leaderboard</a>
-    <a class="nav-item" href="#sec-stats"><span class="ico">🎯</span> Goals</a>
-    <a class="nav-item" href="#sec-courses"><span class="ico">📖</span> Library</a>
-
-    <div class="nav-section">Account</div>
-    <a class="nav-item" href="#sec-ai"><span class="ico">💬</span> Messages <span class="nav-badge green">2</span></a>
-    <a class="nav-item" href="#"><span class="ico">⚙️</span> Settings</a>
-    <a class="nav-item" href="login.html"><span class="ico">🚪</span> Sign Out</a>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="xp-wrap">
-      <div class="xp-meta"><span>Level 12</span><span>3,240 / 4,800 XP</span></div>
-      <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-    </div>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
-    <div class="search-wrap">
-      <span class="s-icon">🔍</span>
-      <input type="text" placeholder="Search courses, teachers, topics...">
-    </div>
-    <div class="topbar-right">
-      <div class="icon-btn" onclick="toggleNotif()">🔔<div class="notif-dot"></div></div>
-      <div class="icon-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark">🌙</div>
-      <div class="topbar-avatar">👦</div>
-    </div>
-  </div>
-
-  <!-- PAGE -->
-  <div class="page">
-
-    <!-- Greeting -->
-    <div class="greeting">
-      <h1>Good morning, <span class="grad-text">Alex</span> 👋</h1>
-      <p>You have 3 assignments due this week and a live class at 2:00 PM today.</p>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-row" id="sec-stats">
-      <div class="stat-card">
-        <div class="stat-top">
-          <div class="stat-icon si-p">📚</div>
-          <span class="stat-change up">↑ 2</span>
-        </div>
-        <div class="stat-num">5</div>
-        <div class="stat-lbl">Active Courses</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-top">
-          <div class="stat-icon si-b">⚡</div>
-          <span class="stat-change up">↑ 320</span>
-        </div>
-        <div class="stat-num">3,240</div>
-        <div class="stat-lbl">Total XP Earned</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-top">
-          <div class="stat-icon si-g">✅</div>
-          <span class="stat-change up">↑ 8%</span>
-        </div>
-        <div class="stat-num">87%</div>
-        <div class="stat-lbl">Assignment Score</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-top">
-          <div class="stat-icon si-y">🔥</div>
-          <span class="stat-change up">↑ 3</span>
-        </div>
-        <div class="stat-num">14</div>
-        <div class="stat-lbl">Day Streak</div>
-      </div>
-    </div>
-
-    <!-- Row 1: Weekly Activity + Course Progress -->
-    <div class="grid-2" id="sec-courses">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Weekly Activity</span>
-          <span class="card-link">This Week</span>
-        </div>
-        <div class="progress-chart" id="weekly-chart">
-          <div class="bar-col"><div class="bar-wrap"><div class="bar" data-val="45 min" style="height:38%"></div></div><div class="bar-label">Mon</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar active" data-val="90 min" style="height:75%"></div></div><div class="bar-label">Tue</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar" data-val="60 min" style="height:50%"></div></div><div class="bar-label">Wed</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar active" data-val="120 min" style="height:100%"></div></div><div class="bar-label">Thu</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar" data-val="30 min" style="height:25%"></div></div><div class="bar-label">Fri</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar" data-val="75 min" style="height:63%"></div></div><div class="bar-label">Sat</div></div>
-          <div class="bar-col"><div class="bar-wrap"><div class="bar" data-val="—" style="height:5%;opacity:.3"></div></div><div class="bar-label">Sun</div></div>
-        </div>
-        <div style="font-size:.78rem;color:var(--muted)">Total this week: <b style="color:var(--text)">7h 30m</b> &nbsp;|&nbsp; Goal: <b style="color:#a78bfa">10h</b></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Course Progress</span>
-          <a class="card-link" href="#">View All</a>
-        </div>
-        <div class="course-item">
-          <div class="course-emoji ce-p">🧮</div>
-          <div class="course-info">
-            <div class="course-name">Advanced Algebra</div>
-            <div class="course-teacher">Nova AI</div>
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:72%"></div></div>
-          </div>
-          <div class="course-pct">72%</div>
-        </div>
-        <div class="course-item">
-          <div class="course-emoji ce-b">🔬</div>
-          <div class="course-info">
-            <div class="course-name">Physics with Simulations</div>
-            <div class="course-teacher">Aria AI</div>
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:48%"></div></div>
-          </div>
-          <div class="course-pct">48%</div>
-        </div>
-        <div class="course-item">
-          <div class="course-emoji ce-g">💻</div>
-          <div class="course-info">
-            <div class="course-name">Python Programming</div>
-            <div class="course-teacher">Zeno AI</div>
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:91%"></div></div>
-          </div>
-          <div class="course-pct">91%</div>
-        </div>
-        <div class="course-item">
-          <div class="course-emoji ce-c">📖</div>
-          <div class="course-info">
-            <div class="course-name">English Writing</div>
-            <div class="course-teacher">Sage AI</div>
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:35%"></div></div>
-          </div>
-          <div class="course-pct">35%</div>
-        </div>
-        <div class="course-item">
-          <div class="course-emoji ce-pk">🌍</div>
-          <div class="course-info">
-            <div class="course-name">World History</div>
-            <div class="course-teacher">Clio AI</div>
-            <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:60%"></div></div>
-          </div>
-          <div class="course-pct">60%</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Row 2: AI Chat + Schedule -->
-    <div class="grid-3-1" id="sec-ai">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Ask an AI Teacher</span>
-          <span class="card-link" id="active-teacher-label">Nova AI · Math</span>
-        </div>
-        <div class="ai-teachers-row">
-          <div class="ai-chip active-chip" onclick="selectTeacher(this,'Nova','🧮','Math')" data-teacher="Nova" data-subject="Math"><span>🧮</span><span class="dot"></span>Nova</div>
-          <div class="ai-chip" onclick="selectTeacher(this,'Aria','🔬','Science')" data-teacher="Aria" data-subject="Science"><span>🔬</span><span class="dot"></span>Aria</div>
-          <div class="ai-chip" onclick="selectTeacher(this,'Zeno','💻','CS')" data-teacher="Zeno" data-subject="CS"><span>💻</span><span class="dot"></span>Zeno</div>
-          <div class="ai-chip" onclick="selectTeacher(this,'Sage','📖','English')" data-teacher="Sage" data-subject="English"><span>📖</span><span class="dot"></span>Sage</div>
-          <div class="ai-chip" onclick="selectTeacher(this,'Clio','🌍','History')" data-teacher="Clio" data-subject="History"><span>🌍</span><span class="dot"></span>Clio</div>
-        </div>
-        <div class="chat-area" id="chat-area">
-          <div class="msg ai">
-            <div class="msg-avatar">🧮</div>
-            <div class="msg-bubble">Hi Alex! I'm Nova, your Math AI teacher. What would you like to work on today? You're 72% through Advanced Algebra — want to continue?</div>
-          </div>
-        </div>
-        <div class="chat-input-row">
-          <input type="text" id="chat-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter') sendMsg()">
-          <button class="send-btn" onclick="sendMsg()">➤</button>
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-dot"></div>
+        <div>
+          <div class="sidebar-logo-text">MindStrong</div>
+          <div class="sidebar-logo-sub">UNIVERSE</div>
         </div>
       </div>
 
-      <div class="card" id="sec-schedule">
-        <div class="card-header">
-          <span class="card-title">Today's Schedule</span>
-          <a class="card-link" href="#">Full</a>
-        </div>
-        <div class="schedule-item">
-          <div class="sched-time">9:00 AM</div>
-          <div class="sched-dot" style="background:#10b981"></div>
-          <div class="sched-info">
-            <div class="sched-name">Advanced Algebra</div>
-            <div class="sched-teacher">Nova AI</div>
-          </div>
-          <span class="sched-badge done">Done</span>
-        </div>
-        <div class="schedule-item">
-          <div class="sched-time">11:00 AM</div>
-          <div class="sched-dot" style="background:#f59e0b"></div>
-          <div class="sched-info">
-            <div class="sched-name">Physics Lab Sim</div>
-            <div class="sched-teacher">Aria AI</div>
-          </div>
-          <span class="sched-badge done">Done</span>
-        </div>
-        <div class="schedule-item">
-          <div class="sched-time">2:00 PM</div>
-          <div class="sched-dot" style="background:#10b981;animation:pulse 1s infinite"></div>
-          <div class="sched-info">
-            <div class="sched-name">Python Live Class</div>
-            <div class="sched-teacher">Zeno AI</div>
-          </div>
-          <span class="sched-badge live-now">Live Now</span>
-        </div>
-        <div class="schedule-item">
-          <div class="sched-time">4:00 PM</div>
-          <div class="sched-dot" style="background:#7c3aed"></div>
-          <div class="sched-info">
-            <div class="sched-name">English Essay Review</div>
-            <div class="sched-teacher">Sage AI</div>
-          </div>
-          <span class="sched-badge upcoming">Soon</span>
-        </div>
-        <div class="schedule-item">
-          <div class="sched-time">6:00 PM</div>
-          <div class="sched-dot" style="background:#2563eb"></div>
-          <div class="sched-info">
-            <div class="sched-name">World History Quiz</div>
-            <div class="sched-teacher">Clio AI</div>
-          </div>
-          <span class="sched-badge upcoming">Soon</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Row 3: Assignments + Leaderboard + Badges -->
-    <div class="grid-2" id="sec-assignments">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Assignments</span>
-          <a class="card-link" href="#">View All</a>
-        </div>
-        <div class="assign-item">
-          <div class="assign-check done" onclick="toggleCheck(this)"></div>
-          <div class="assign-info">
-            <div class="assign-title done">Algebra Problem Set Ch.7</div>
-            <div class="assign-due">Submitted · Yesterday</div>
-          </div>
-          <div class="assign-sub">Math</div>
-        </div>
-        <div class="assign-item">
-          <div class="assign-check" onclick="toggleCheck(this)"></div>
-          <div class="assign-info">
-            <div class="assign-title">Write a Python Fibonacci Function</div>
-            <div class="assign-due">Due Today · 11:59 PM</div>
-          </div>
-          <div class="assign-sub">CS</div>
-        </div>
-        <div class="assign-item">
-          <div class="assign-check" onclick="toggleCheck(this)"></div>
-          <div class="assign-info">
-            <div class="assign-title">Essay: Causes of WW2</div>
-            <div class="assign-due">Due Tomorrow</div>
-          </div>
-          <div class="assign-sub">History</div>
-        </div>
-        <div class="assign-item">
-          <div class="assign-check" onclick="toggleCheck(this)"></div>
-          <div class="assign-info">
-            <div class="assign-title">Physics Lab Report — Gravity</div>
-            <div class="assign-due overdue">Overdue · Mar 7</div>
-          </div>
-          <div class="assign-sub">Science</div>
-        </div>
-        <div class="assign-item">
-          <div class="assign-check done" onclick="toggleCheck(this)"></div>
-          <div class="assign-info">
-            <div class="assign-title done">English Grammar Quiz</div>
-            <div class="assign-due">Submitted · 92%</div>
-          </div>
-          <div class="assign-sub">English</div>
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">🎓</div>
+        <div class="sidebar-name" id="sb-name">Student</div>
+        <div class="sidebar-level-lbl" id="sb-level-lbl">Level 1 · Rookie</div>
+        <div class="sb-xp-wrap"><div class="sb-xp-bar" id="sb-xp-bar" style="width:0%"></div></div>
+        <div class="sb-xp-txt">
+          <span id="sb-xp-cur">0 XP</span>
+          <span id="sb-xp-next">200 XP next</span>
         </div>
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:20px;">
-        <!-- Leaderboard -->
-        <div class="card" id="sec-leaderboard">
-          <div class="card-header">
-            <span class="card-title">Class Leaderboard</span>
-            <a class="card-link" href="#">Full</a>
-          </div>
-          <div class="leader-item">
-            <div class="leader-rank gold">🥇</div>
-            <div class="leader-avatar">👩</div>
-            <div class="leader-name">Sarah K.</div>
-            <div class="leader-bar-wrap"><div class="leader-bar" style="width:100%"></div></div>
-            <div class="leader-xp">4,820 XP</div>
-          </div>
-          <div class="leader-item">
-            <div class="leader-rank silver">🥈</div>
-            <div class="leader-avatar">👦</div>
-            <div class="leader-name">Marcus T.</div>
-            <div class="leader-bar-wrap"><div class="leader-bar" style="width:85%"></div></div>
-            <div class="leader-xp">4,105 XP</div>
-          </div>
-          <div class="leader-item">
-            <div class="leader-rank bronze">🥉</div>
-            <div class="leader-avatar">👧</div>
-            <div class="leader-name">Priya R.</div>
-            <div class="leader-bar-wrap"><div class="leader-bar" style="width:78%"></div></div>
-            <div class="leader-xp">3,760 XP</div>
-          </div>
-          <div class="leader-item me">
-            <div class="leader-rank" style="color:#a78bfa">4</div>
-            <div class="leader-avatar">👦</div>
-            <div class="leader-name">You (Alex)</div>
-            <div class="leader-bar-wrap"><div class="leader-bar" style="width:67%"></div></div>
-            <div class="leader-xp">3,240 XP</div>
-          </div>
-          <div class="leader-item">
-            <div class="leader-rank">5</div>
-            <div class="leader-avatar">🧒</div>
-            <div class="leader-name">James O.</div>
-            <div class="leader-bar-wrap"><div class="leader-bar" style="width:58%"></div></div>
-            <div class="leader-xp">2,800 XP</div>
-          </div>
-        </div>
-
-        <!-- Badges -->
-        <div class="card" id="sec-achievements">
-          <div class="card-header">
-            <span class="card-title">Achievements</span>
-            <a class="card-link" href="#">12 / 30</a>
-          </div>
-          <div class="badges-row">
-            <div class="badge-item"><div class="badge-icon b-gold">🔥</div><div class="badge-name">14-Day Streak</div></div>
-            <div class="badge-item"><div class="badge-icon b-purple">⚡</div><div class="badge-name">Speed Learner</div></div>
-            <div class="badge-item"><div class="badge-icon b-blue">💻</div><div class="badge-name">Code Master</div></div>
-            <div class="badge-item"><div class="badge-icon b-green">✅</div><div class="badge-name">Perfect Score</div></div>
-            <div class="badge-item"><div class="badge-icon b-pink">🏆</div><div class="badge-name">Top 5</div></div>
-            <div class="badge-item"><div class="badge-icon b-dim">🌟</div><div class="badge-name">Locked</div></div>
-            <div class="badge-item"><div class="badge-icon b-dim">🎓</div><div class="badge-name">Locked</div></div>
-            <div class="badge-item"><div class="badge-icon b-dim">🚀</div><div class="badge-name">Locked</div></div>
-          </div>
-        </div>
+      <div class="sidebar-mode-lbl">Mode</div>
+      <div class="sidebar-modes">
+        <button class="mode-btn" data-mode="arcade"   onclick="applyMode('arcade')">⚡ Arcade</button>
+        <button class="mode-btn active" data-mode="rpg" onclick="applyMode('rpg')">🧙 RPG</button>
+        <button class="mode-btn" data-mode="academic" onclick="applyMode('academic')">🎓 Academic</button>
+        <button class="mode-btn" data-mode="lms"      onclick="applyMode('lms')">📋 LMS</button>
       </div>
-    </div>
 
-  </div><!-- /page -->
-</div><!-- /main -->
+      <nav class="sidebar-nav">
+        <button class="nav-link active" onclick="showSection('overview',this)"><span class="nav-icon">🏠</span>Overview</button>
+        <button class="nav-link" onclick="showSection('learn',this)"><span class="nav-icon">📚</span>Learn</button>
+        <button class="nav-link" onclick="showSection('games',this)"><span class="nav-icon">🎮</span>Games</button>
+        <button class="nav-link" onclick="showSection('progress',this)"><span class="nav-icon">📊</span>Progress</button>
+        <button class="nav-link" onclick="showSection('badges',this)"><span class="nav-icon">🏅</span>Badges</button>
+        <button class="nav-link" onclick="showSection('leaderboard',this)"><span class="nav-icon">🏆</span>Leaderboard</button>
+        <button class="nav-link" onclick="showSection('ai',this)"><span class="nav-icon">🤖</span>AI Teachers</button>
+      </nav>
 
-<!-- NOTIFICATION PANEL -->
-<div class="notif-panel" id="notif-panel">
-  <div class="notif-header">
-    Notifications
-    <span class="card-link" onclick="toggleNotif()">✕</span>
-  </div>
-  <div class="notif-item">
-    <div class="notif-ico" style="background:rgba(16,185,129,.15)">✅</div>
-    <div>
-      <div class="notif-text"><b>Nova AI</b> graded your Algebra assignment — <b>94%</b></div>
-      <div class="notif-time">5 minutes ago</div>
-    </div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-ico" style="background:rgba(124,58,237,.15)">🏆</div>
-    <div>
-      <div class="notif-text">You earned the <b>Speed Learner</b> badge!</div>
-      <div class="notif-time">1 hour ago</div>
-    </div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-ico" style="background:rgba(245,158,11,.15)">📅</div>
-    <div>
-      <div class="notif-text"><b>Live Python Class</b> starts in 30 minutes with Zeno AI</div>
-      <div class="notif-time">2 hours ago</div>
-    </div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-ico" style="background:rgba(239,68,68,.15)">⚠️</div>
-    <div>
-      <div class="notif-text"><b>Physics Lab Report</b> is overdue. Submit soon to avoid penalty.</div>
-      <div class="notif-time">Yesterday</div>
-    </div>
-  </div>
-</div>
+      <div class="sidebar-footer">
+        <button class="signout-btn" onclick="signOut()">⏻ Sign Out</button>
+      </div>
+    </aside>
 
-<script>
-// ── Sidebar toggle ──
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
+    <!-- ══════ MAIN ══════ -->
+    <div class="dash-main">
 
-// ── Notification panel ──
-function toggleNotif() {
-  document.getElementById('notif-panel').classList.toggle('open');
-}
-document.addEventListener('click', e => {
-  const panel = document.getElementById('notif-panel');
-  if (!panel.contains(e.target) && !e.target.closest('.icon-btn')) {
-    panel.classList.remove('open');
+      <header class="dash-topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="topbar-greeting">Good day, <span id="tb-name">Student</span> 👋</div>
+        </div>
+        <div class="topbar-hud">
+          <div class="hud-stat">
+            <span class="hud-stat-icon">⚡</span>
+            <div><div class="hud-stat-val" id="hud-xp">—</div><div class="hud-stat-lbl">XP</div></div>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-stat-icon">🎯</span>
+            <div><div class="hud-stat-val" id="hud-level">—</div><div class="hud-stat-lbl">Level</div></div>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-stat-icon">🔥</span>
+            <div><div class="hud-stat-val" id="hud-streak">—</div><div class="hud-stat-lbl">Streak</div></div>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-stat-icon">📅</span>
+            <div><div class="hud-stat-val" id="hud-att">—%</div><div class="hud-stat-lbl">Attendance</div></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dash-content">
+
+        <!-- Tab bar -->
+        <div class="dash-tabs">
+          <button class="dash-tab active"  onclick="showSection('overview',null,this)">🏠 Overview</button>
+          <button class="dash-tab" onclick="showSection('learn',null,this)">📚 Learn</button>
+          <button class="dash-tab" onclick="showSection('games',null,this)">🎮 Games</button>
+          <button class="dash-tab" onclick="showSection('progress',null,this)">📊 Progress</button>
+          <button class="dash-tab" onclick="showSection('badges',null,this)">🏅 Badges</button>
+          <button class="dash-tab" onclick="showSection('leaderboard',null,this)">🏆 Leaderboard</button>
+          <button class="dash-tab" onclick="showSection('ai',null,this)">🤖 AI Teachers</button>
+        </div>
+
+        <!-- ════ OVERVIEW ════ -->
+        <div id="sec-overview" class="dash-section active">
+          <div class="grid-4 reveal" style="margin-bottom:20px;">
+            <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-val" id="ov-xp">0</div><div class="stat-lbl">Total XP</div></div>
+            <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-val" id="ov-level">1</div><div class="stat-lbl">Current Level</div></div>
+            <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="ov-streak">1</div><div class="stat-lbl">Day Streak</div></div>
+            <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="ov-att">—%</div><div class="stat-lbl">Attendance</div></div>
+          </div>
+
+          <div class="grid-3 reveal" style="margin-bottom:20px;transition-delay:.08s">
+            <div class="ms-card">
+              <div class="ms-card-title">📚 Courses Enrolled</div>
+              <div class="stat-val" id="ov-courses" style="font-size:28px;">—</div>
+              <div style="font-size:12px;color:var(--muted);">Active courses</div>
+            </div>
+            <div class="ms-card">
+              <div class="ms-card-title">📈 Average Grade</div>
+              <div class="stat-val" id="ov-grade" style="font-size:28px;">—%</div>
+              <div style="font-size:12px;color:var(--muted);">Across all subjects</div>
+            </div>
+            <div class="ms-card">
+              <div class="ms-card-title">⚡ Today's XP</div>
+              <div class="stat-val" id="ov-today-xp" style="font-size:28px;">0</div>
+              <div style="font-size:12px;color:var(--muted);">XP earned today</div>
+            </div>
+          </div>
+
+          <!-- Daily challenge banner -->
+          <div class="daily-banner reveal" style="transition-delay:.14s">
+            <div class="daily-banner-left">
+              <div class="daily-banner-icon">📅</div>
+              <div>
+                <div class="daily-banner-title">Daily Challenge</div>
+                <div class="daily-banner-desc">Complete today's challenge for +150 XP bonus and streak rewards.</div>
+              </div>
+            </div>
+            <div id="overview-daily" style="min-width:180px;"></div>
+          </div>
+
+          <!-- Quick launch -->
+          <div class="ms-card reveal" style="margin-bottom:20px;transition-delay:.18s">
+            <div class="ms-card-title" style="margin-bottom:12px;">⚡ Quick Launch Games</div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;">
+              <button class="ms-btn sm primary" onclick="quickLaunch('speedmath')">⚡ Speed Math</button>
+              <button class="ms-btn sm primary" onclick="quickLaunch('ninja')">🥷 Number Ninja</button>
+              <button class="ms-btn sm primary" onclick="quickLaunch('scramble')">📝 Word Scramble</button>
+              <a class="ms-btn sm" href="/school/games.html">🎮 Full Games Hub</a>
+            </div>
+          </div>
+
+          <!-- Activity feed -->
+          <div class="ms-card reveal" style="transition-delay:.22s">
+            <div class="ms-card-title" style="margin-bottom:12px;">🕐 Recent Activity</div>
+            <div class="activity-feed" id="activity-feed">
+              <div class="activity-item">
+                <div class="activity-icon">⚡</div>
+                <div class="activity-text">Earned XP from Speed Math game</div>
+                <div class="activity-time">Today</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">📚</div>
+                <div class="activity-text">Completed lesson in Foundations module</div>
+                <div class="activity-time">Today</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🏅</div>
+                <div class="activity-text">Unlocked a new badge</div>
+                <div class="activity-time">Yesterday</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">🔥</div>
+                <div class="activity-text">Streak maintained — keep it up!</div>
+                <div class="activity-time">Yesterday</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ LEARN ════ -->
+        <div id="sec-learn" class="dash-section">
+          <p class="ms-section-label">Modules</p>
+          <div class="grid-3 reveal" style="margin-bottom:26px;">
+            <div class="module-card">
+              <div class="module-hdr">
+                <div class="module-icon">🧱</div>
+                <div><div class="module-title">Foundations</div><div class="module-sub">6 lessons</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" id="mod-foundations-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct" id="mod-foundations-pct">0%</div>
+              </div>
+              <a class="ms-btn sm primary" href="/school/foundations/index.html">Open Module →</a>
+            </div>
+            <div class="module-card">
+              <div class="module-hdr">
+                <div class="module-icon">📐</div>
+                <div><div class="module-title">Pre-Algebra</div><div class="module-sub">5 lessons</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" id="mod-prealgebra-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct" id="mod-prealgebra-pct">0%</div>
+              </div>
+              <a class="ms-btn sm primary" href="/school/pre-algebra/">Open Module →</a>
+            </div>
+            <div class="module-card">
+              <div class="module-hdr">
+                <div class="module-icon">📏</div>
+                <div><div class="module-title">Geometry</div><div class="module-sub">6 lessons</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" id="mod-geometry-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct" id="mod-geometry-pct">0%</div>
+              </div>
+              <a class="ms-btn sm primary" href="/school/index.html">Open Module →</a>
+            </div>
+          </div>
+
+          <p class="ms-section-label">Your Courses</p>
+          <div class="ms-card reveal" style="margin-bottom:20px;transition-delay:.1s">
+            <div id="courses-loading" style="color:var(--muted);font-size:13px;padding:12px 0;">Loading courses…</div>
+            <table class="course-table" id="courses-table" style="display:none;">
+              <thead><tr><th>Subject</th><th>Teacher</th><th>Progress</th><th>Grade</th></tr></thead>
+              <tbody id="courses-tbody"></tbody>
+            </table>
+          </div>
+          <a class="ms-btn primary" href="/school/index.html">📚 View All Lessons</a>
+        </div>
+
+        <!-- ════ GAMES ════ -->
+        <div id="sec-games" class="dash-section">
+          <div class="ms-tabs">
+            <button class="ms-tab is-active" onclick="showGameTab('arcade',event)">⚡ Arcade</button>
+            <button class="ms-tab" onclick="showGameTab('puzzle',event)">🧩 Puzzles</button>
+            <button class="ms-tab" onclick="showGameTab('battle',event)">⚔️ Battle</button>
+            <button class="ms-tab" onclick="showGameTab('daily',event)">📅 Daily</button>
+          </div>
+
+          <!-- Arcade -->
+          <div id="gpanel-arcade" class="ms-panel is-active">
+            <p class="ms-section-label">Fast-Paced Arcade Games</p>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">⚡</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Speed Math</div>
+                  <div class="ms-game-card-desc">Answer as many arithmetic problems as possible in 30 seconds. Build combos for bonus XP.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">10+ XP each</span>
+                  <span class="ms-pill ms-pill-subj">Math</span>
+                </div>
+              </div>
+              <div id="speed-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button class="ms-btn primary" onclick="startSpeedMath('+','-')">➕ Easy (+ −)</button>
+                <button class="ms-btn primary" onclick="startSpeedMath('+','-','×','÷')">🔥 Hard (all ops)</button>
+                <span style="font-size:13px;color:#64748b">Best: <b id="sm-best">0</b></span>
+              </div>
+              <div id="speed-math-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">🥷</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Number Ninja</div>
+                  <div class="ms-game-card-desc">Tap numbers 1–9 in ascending order as fast as you can. New grid every round for 60 seconds.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">5 XP each</span>
+                  <span class="ms-pill ms-pill-subj">Numbers</span>
+                </div>
+              </div>
+              <div id="ninja-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button class="ms-btn primary" onclick="startNinja()">Start Ninja</button>
+                <span style="font-size:13px;color:#64748b">Best: <b id="nn-best">0</b></span>
+              </div>
+              <div id="ninja-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">📝</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Word Scramble</div>
+                  <div class="ms-game-card-desc">Unscramble vocabulary words from math, science, or English. Type your answer and hit Check.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">25 XP each</span>
+                  <span class="ms-pill ms-pill-subj">All Subjects</span>
+                </div>
+              </div>
+              <div id="scramble-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button class="ms-btn primary" onclick="startScramble('math')">📐 Math Words</button>
+                <button class="ms-btn primary" onclick="startScramble('science')">🔬 Science</button>
+                <button class="ms-btn primary" onclick="startScramble('english')">📖 English</button>
+              </div>
+              <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Puzzles -->
+          <div id="gpanel-puzzle" class="ms-panel">
+            <p class="ms-section-label">Logic &amp; Puzzle Games</p>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">🧠</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Memory Match</div>
+                  <div class="ms-game-card-desc">Flip cards to find matching pairs. Fewer moves = better score. Perfect match unlocks a badge.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">20 XP per pair</span>
+                  <span class="ms-pill ms-pill-subj">Memory</span>
+                </div>
+              </div>
+              <div id="memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button class="ms-btn primary" onclick="startMemory('math',6)">📐 Math Symbols</button>
+                <button class="ms-btn primary" onclick="startMemory('emoji',8)">😎 Emoji (Hard)</button>
+                <button class="ms-btn primary" onclick="startMemory('words',6)">💻 Code Words</button>
+              </div>
+              <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">🧮</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Equation Builder</div>
+                  <div class="ms-game-card-desc">One number is missing from the equation. Pick the correct value from four choices.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">30 XP each</span>
+                  <span class="ms-pill ms-pill-subj">Algebra</span>
+                </div>
+              </div>
+              <div id="eq-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
+                <button class="ms-btn primary" onclick="startEquation()">Start Building</button>
+              </div>
+              <div id="eq-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">🧩</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Math Grid Puzzle</div>
+                  <div class="ms-game-card-desc">Fill the 3×3 grid so every row and column hits its target sum. Numbers 1–9, no repeats.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">50 XP each</span>
+                  <span class="ms-pill ms-pill-subj">Logic</span>
+                </div>
+              </div>
+              <div id="puzzle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
+                <button class="ms-btn primary" onclick="startPuzzle()">Start Puzzle</button>
+                <span style="font-size:13px;color:#64748b">Solved: <b id="puzzle-count">0</b></span>
+              </div>
+              <div id="puzzle-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Battle -->
+          <div id="gpanel-battle" class="ms-panel">
+            <p class="ms-section-label">Boss Battle Mode</p>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">⚔️</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Boss Battle</div>
+                  <div class="ms-game-card-desc">Face off against increasingly tough math bosses. Each correct answer deals damage. Wrong answers hurt you. Defeat all 3 bosses!</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">100 XP on win</span>
+                  <span class="ms-pill ms-pill-diff">Hard</span>
+                </div>
+              </div>
+              <div id="boss-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <button class="ms-btn primary" onclick="startBoss(0)">👹 Algebra Ogre (Easy)</button>
+                <button class="ms-btn primary" onclick="startBoss(1)">🧙 Fraction Witch (Med)</button>
+                <button class="ms-btn primary" onclick="startBoss(2)">🐉 Geometry Dragon (Hard)</button>
+              </div>
+              <div id="boss-game" class="ms-game-zone" style="display:none;"></div>
+            </div>
+          </div>
+
+          <!-- Daily -->
+          <div id="gpanel-daily" class="ms-panel">
+            <p class="ms-section-label">Today's Challenge</p>
+            <div class="ms-game-card">
+              <div class="ms-game-card-hdr">
+                <div class="ms-game-card-icon">📅</div>
+                <div class="ms-game-card-info">
+                  <div class="ms-game-card-title">Daily Challenge</div>
+                  <div class="ms-game-card-desc">One special challenge per day. Complete it for a +150 XP bonus and daily streak rewards. Resets at midnight.</div>
+                </div>
+                <div class="ms-game-card-meta">
+                  <span class="ms-pill ms-pill-xp">+150 XP</span>
+                  <span class="ms-pill ms-pill-subj">All Types</span>
+                </div>
+              </div>
+              <div id="games-daily-game" class="ms-game-zone"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ PROGRESS ════ -->
+        <div id="sec-progress" class="dash-section">
+          <p class="ms-section-label">Grades</p>
+          <div class="ms-card reveal" style="margin-bottom:22px;">
+            <div id="prog-courses-loading" style="color:var(--muted);font-size:13px;padding:12px 0;">Loading grades…</div>
+            <table class="course-table" id="prog-courses-table" style="display:none;">
+              <thead><tr><th>Subject</th><th>Teacher</th><th>Progress</th><th>Grade %</th></tr></thead>
+              <tbody id="prog-courses-tbody"></tbody>
+            </table>
+          </div>
+
+          <p class="ms-section-label">Weekly XP</p>
+          <div class="ms-card reveal" style="margin-bottom:22px;transition-delay:.08s">
+            <div style="margin-bottom:10px;font-size:13px;color:var(--muted);">XP earned over the past 7 days</div>
+            <div class="xp-chart" id="xp-chart"></div>
+          </div>
+
+          <p class="ms-section-label">Module Completion</p>
+          <div class="ms-card reveal" style="transition-delay:.16s">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:13px;font-weight:600;">🧱 Foundations</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-foundations-pct">0%</span>
+                </div>
+                <div class="prog-wrap" style="height:9px;"><div class="prog-bar" id="prog-foundations-bar" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:13px;font-weight:600;">📐 Pre-Algebra</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-prealgebra-pct">0%</span>
+                </div>
+                <div class="prog-wrap" style="height:9px;"><div class="prog-bar" id="prog-prealgebra-bar" style="width:0%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:13px;font-weight:600;">📏 Geometry</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-geometry-pct">0%</span>
+                </div>
+                <div class="prog-wrap" style="height:9px;"><div class="prog-bar" id="prog-geometry-bar" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════ BADGES ════ -->
+        <div id="sec-badges" class="dash-section">
+          <p class="ms-section-label">Your Badges</p>
+          <div id="dash-badges-grid" class="ms-badges-grid reveal"></div>
+        </div>
+
+        <!-- ════ LEADERBOARD ════ -->
+        <div id="sec-leaderboard" class="dash-section">
+          <p class="ms-section-label">Top Players</p>
+          <div id="dash-leaderboard-list" class="reveal"></div>
+        </div>
+
+        <!-- ════ AI TEACHERS ════ -->
+        <div id="sec-ai" class="dash-section">
+          <p class="ms-section-label">AI Tutoring Sessions</p>
+          <div style="margin-bottom:18px;padding:14px 18px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:14px;font-size:13px;color:#a78bfa;">
+            🤖 AI tutoring sessions available — click <strong>Start Session</strong> to begin a guided learning conversation with your AI teacher.
+          </div>
+          <div class="ai-teachers-grid">
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#7c3aed,#a855f7)">
+              <div class="ai-avatar">🧮</div>
+              <div class="ai-name">Ms. Euler</div>
+              <div class="ai-subject">Mathematics</div>
+              <div class="ai-tags"><span class="ai-tag">Algebra</span><span class="ai-tag">Geometry</span><span class="ai-tag">Calculus</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#22d3ee,#06b6d4);transition-delay:.05s">
+              <div class="ai-avatar">🔬</div>
+              <div class="ai-name">Dr. Curie</div>
+              <div class="ai-subject">Science</div>
+              <div class="ai-tags"><span class="ai-tag">Physics</span><span class="ai-tag">Chemistry</span><span class="ai-tag">Biology</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#ec4899,#f43f5e);transition-delay:.1s">
+              <div class="ai-avatar">📖</div>
+              <div class="ai-name">Prof. Shakespeare</div>
+              <div class="ai-subject">English</div>
+              <div class="ai-tags"><span class="ai-tag">Literature</span><span class="ai-tag">Writing</span><span class="ai-tag">Grammar</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#f59e0b,#d97706);transition-delay:.15s">
+              <div class="ai-avatar">🌍</div>
+              <div class="ai-name">Mr. Vespucci</div>
+              <div class="ai-subject">History &amp; Geography</div>
+              <div class="ai-tags"><span class="ai-tag">World History</span><span class="ai-tag">Maps</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#22c55e,#16a34a);transition-delay:.2s">
+              <div class="ai-avatar">💻</div>
+              <div class="ai-name">Ada</div>
+              <div class="ai-subject">Computer Science</div>
+              <div class="ai-tags"><span class="ai-tag">Coding</span><span class="ai-tag">Logic</span><span class="ai-tag">Algorithms</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+            <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#f97316,#ea580c);transition-delay:.25s">
+              <div class="ai-avatar">🎨</div>
+              <div class="ai-name">Maestro</div>
+              <div class="ai-subject">Arts &amp; Music</div>
+              <div class="ai-tags"><span class="ai-tag">Creativity</span><span class="ai-tag">Theory</span><span class="ai-tag">Design</span></div>
+              <div class="ai-actions">
+                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
+                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dash-content -->
+    </div><!-- /dash-main -->
+  </div><!-- /dash-shell -->
+
+  <script src="/school/game-engine.js"></script>
+  <script>
+  /* ═══════════════════════════════════════════════════════════
+     MINDSTRONG UNIVERSE — DASHBOARD v1.0
+  ═══════════════════════════════════════════════════════════ */
+
+  /* ── Auth guard + API bootstrap ── */
+  (async function boot() {
+    try {
+      const res = await fetch('/api/student/stats', { credentials: 'include' });
+      if (res.status === 401) { location.href = '/login.html'; return; }
+      if (res.ok) { applyAPIStats(await res.json()); }
+    } catch(e) { /* offline, fall through */ }
+    loadLocalProfile();
+    loadCourses();
+    initModuleProgress();
+    initXPChart();
+    initDailyChallenge();
+    initScrollReveal();
+    if (typeof msUpdateStreak === 'function') msUpdateStreak();
+  })();
+
+  function applyAPIStats(d) {
+    window._apiName = d.student_name || d.name || null;
+    const name = window._apiName || 'Student';
+    document.getElementById('tb-name').textContent    = name;
+    document.getElementById('sb-name').textContent    = name;
+    document.getElementById('hud-att').textContent    = (d.att_rate  ?? '—') + '%';
+    document.getElementById('ov-att').textContent     = (d.att_rate  ?? '—') + '%';
+    document.getElementById('ov-courses').textContent = d.course_count ?? '—';
+    document.getElementById('ov-grade').textContent   = (d.avg_score ?? '—') + '%';
   }
-});
 
-// ── Assignment checkboxes ──
-function toggleCheck(el) {
-  el.classList.toggle('done');
-  const title = el.closest('.assign-item').querySelector('.assign-title');
-  title.classList.toggle('done');
-}
+  /* ── Local profile (game engine) ── */
+  function loadLocalProfile() {
+    if (typeof msInitProfile !== 'function') return;
+    const p      = msInitProfile();
+    const xp     = p.xp    ?? 0;
+    const level  = p.level ?? 1;
+    const streak = p.streak ?? 1;
+    const title  = typeof msGetLevelTitle   === 'function' ? msGetLevelTitle(level)       : 'Scholar';
+    const xpNext = typeof msXPForNextLevel  === 'function' ? msXPForNextLevel(level)      : level * 200;
+    const xpInLevel = xp - ((level - 1) * 200);
+    const xpPct  = Math.min(100, Math.round(xpInLevel / 200 * 100));
 
-// ── AI Chat ──
-let currentTeacher = { name: 'Nova', emoji: '🧮', subject: 'Math' };
+    const name = window._apiName || p.name || 'Student';
+    document.getElementById('sb-name').textContent      = name;
+    document.getElementById('tb-name').textContent      = name;
+    document.getElementById('sb-level-lbl').textContent = `Level ${level} · ${title}`;
+    document.getElementById('sb-xp-bar').style.width    = xpPct + '%';
+    document.getElementById('sb-xp-cur').textContent    = xp.toLocaleString() + ' XP';
+    document.getElementById('sb-xp-next').textContent   = xpNext.toLocaleString() + ' XP next';
+    document.getElementById('hud-xp').textContent       = xp.toLocaleString();
+    document.getElementById('hud-level').textContent    = level;
+    document.getElementById('hud-streak').textContent   = streak;
+    document.getElementById('ov-xp').textContent        = xp.toLocaleString();
+    document.getElementById('ov-level').textContent     = level;
+    document.getElementById('ov-streak').textContent    = streak;
 
-const responses = {
-  Nova: [
-    "Great question! Let me break down that algebra concept step by step for you. 🧮",
-    "In mathematics, this is solved by applying the quadratic formula. Want me to walk you through it?",
-    "That's a common misconception. Here's the correct approach to solving for x...",
-    "You're doing great! Your algebra skills have improved by 18% this week. Keep it up!",
-  ],
-  Aria: [
-    "Excellent! Physics becomes clearer when we visualize it. Let me run a simulation for you. 🔬",
-    "Newton's third law states: for every action, there is an equal and opposite reaction.",
-    "Let's set up a virtual experiment to demonstrate this concept!",
-  ],
-  Zeno: [
-    "Here's a Python snippet that solves that: `def fibonacci(n): return n if n <= 1 else fibonacci(n-1) + fibonacci(n-2)` 💻",
-    "In programming, we call this recursion. Want me to explain the call stack?",
-    "Your Python progress is at 91% — you're almost done! The next topic is Object-Oriented Programming.",
-  ],
-  Sage: [
-    "Great essay structure! Consider strengthening your thesis statement for more impact. 📖",
-    "Try using the PEEL method: Point, Evidence, Explanation, Link.",
-    "Your writing has improved significantly. The vocabulary range in your last essay was excellent!",
-  ],
-  Clio: [
-    "The causes of WW2 are complex. Let me outline the key factors across economic, political, and social dimensions. 🌍",
-    "A great resource for this topic is primary sources from the 1930s. Want me to summarize key events?",
-    "History helps us understand the present. Your essay thesis is strong — add more specific dates and figures.",
-  ],
-};
+    const todayKey = 'ms_xp_' + new Date().toISOString().slice(0,10);
+    document.getElementById('ov-today-xp').textContent  = parseInt(localStorage.getItem(todayKey)||'0',10).toLocaleString();
 
-function selectTeacher(el, name, emoji, subject) {
-  document.querySelectorAll('.ai-chip').forEach(c => c.classList.remove('active-chip'));
-  el.classList.add('active-chip');
-  currentTeacher = { name, emoji, subject };
-  document.getElementById('active-teacher-label').textContent = `${name} AI · ${subject}`;
-
-  const area = document.getElementById('chat-area');
-  area.innerHTML = `
-    <div class="msg ai">
-      <div class="msg-avatar">${emoji}</div>
-      <div class="msg-bubble">Hi Alex! I'm ${name}, your ${subject} AI teacher. How can I help you today?</div>
-    </div>`;
-}
-
-function sendMsg() {
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text) return;
-
-  const area = document.getElementById('chat-area');
-
-  // User bubble
-  area.innerHTML += `
-    <div class="msg user">
-      <div class="msg-bubble">${text}</div>
-      <div class="msg-avatar">👦</div>
-    </div>`;
-  input.value = '';
-  area.scrollTop = area.scrollHeight;
-
-  // AI typing indicator
-  const typingId = 'typing-' + Date.now();
-  area.innerHTML += `
-    <div class="msg ai" id="${typingId}">
-      <div class="msg-avatar">${currentTeacher.emoji}</div>
-      <div class="msg-bubble" style="color:var(--muted);font-style:italic">${currentTeacher.name} is typing...</div>
-    </div>`;
-  area.scrollTop = area.scrollHeight;
-
-  setTimeout(() => {
-    const typing = document.getElementById(typingId);
-    const pool = responses[currentTeacher.name] || responses.Nova;
-    const reply = pool[Math.floor(Math.random() * pool.length)];
-    if (typing) {
-      typing.querySelector('.msg-bubble').textContent = reply;
-      typing.querySelector('.msg-bubble').style.color = '';
-      typing.querySelector('.msg-bubble').style.fontStyle = '';
+    if (typeof msGetHighScore === 'function') {
+      const smEl = document.getElementById('sm-best');
+      const nnEl = document.getElementById('nn-best');
+      if (smEl) smEl.textContent = msGetHighScore('speed_math');
+      if (nnEl) nnEl.textContent = msGetHighScore('number_ninja');
     }
-    area.scrollTop = area.scrollHeight;
-  }, 1200);
-}
+    const pcEl = document.getElementById('puzzle-count');
+    if (pcEl) pcEl.textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
+  }
 
-// ── XP bar animate on load ──
-setTimeout(() => {
-  document.getElementById('xp-fill').style.width = '68%';
-}, 400);
-
-// ── Load real data from API ──
-async function loadData() {
-  try {
-    const res = await fetch('/api/student/stats', { credentials: 'include' });
-    if (res.status === 401) { window.location.href = 'login.html'; return; }
-    if (!res.ok) return;
-    const d = await res.json();
-
-    // Update stat cards
-    const cards = document.querySelectorAll('.stat-num');
-    if (cards[0]) cards[0].textContent = d.course_count ?? cards[0].textContent;
-    if (cards[1]) cards[1].textContent = (d.xp ?? 3240).toLocaleString();
-    if (cards[2]) cards[2].textContent = (d.avg_score ?? 87) + '%';
-
-    // Update greeting name
-    const greetEl = document.querySelector('.greeting h1 .grad-text');
-    if (greetEl && d.name) greetEl.textContent = d.name.split(' ')[0];
-
-    // Update XP bar
-    if (d.xp) {
-      const pct = Math.min(100, Math.round((d.xp % 1600) / 1600 * 100));
-      const fill = document.getElementById('xp-fill');
-      if (fill) setTimeout(() => { fill.style.width = pct + '%'; }, 400);
+  /* ── Courses from API ── */
+  async function loadCourses() {
+    try {
+      const res = await fetch('/api/student/courses', { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      const courses = await res.json();
+      renderCourseTable(courses, 'courses-table',      'courses-tbody',      'courses-loading');
+      renderCourseTable(courses, 'prog-courses-table', 'prog-courses-tbody', 'prog-courses-loading');
+    } catch(e) {
+      const msg = 'No course data available.';
+      ['courses-loading','prog-courses-loading'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = msg;
+      });
     }
-  } catch (e) { /* silently keep demo data */ }
+  }
 
-  // Load courses
-  try {
-    const res = await fetch('/api/student/courses', { credentials: 'include' });
-    if (!res.ok) return;
-    const d = await res.json();
-    if (!d.courses || !d.courses.length) return;
-    // Update course progress bars (first card in grid-2 → second card)
-    const items = document.querySelectorAll('.course-item');
-    d.courses.forEach((c, i) => {
-      if (!items[i]) return;
-      const nameEl = items[i].querySelector('.course-name');
-      const teachEl = items[i].querySelector('.course-teacher');
-      const fillEl  = items[i].querySelector('.prog-bar-fill');
-      const pctEl   = items[i].querySelector('.course-pct');
-      if (nameEl) nameEl.textContent = c.subject;
-      if (teachEl) teachEl.textContent = c.teacher;
-      if (fillEl) fillEl.style.width = c.progress + '%';
-      if (pctEl) pctEl.textContent = c.progress + '%';
+  function renderCourseTable(courses, tableId, tbodyId, loadingId) {
+    const loading = document.getElementById(loadingId);
+    const table   = document.getElementById(tableId);
+    const tbody   = document.getElementById(tbodyId);
+    if (!courses || !courses.length) { if (loading) loading.textContent = 'No courses found.'; return; }
+    if (loading) loading.style.display = 'none';
+    if (table)   table.style.display   = 'table';
+    tbody.innerHTML = courses.map(c => {
+      const pct = Math.min(100, Math.round(c.progress ?? c.score ?? 0));
+      return `<tr>
+        <td><span class="ms-pill ms-pill-subj">${c.subject||'—'}</span></td>
+        <td>${c.teacher||'—'}</td>
+        <td style="min-width:140px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-width:32px;">${pct}%</span>
+          </div>
+        </td>
+        <td style="font-family:'JetBrains Mono',monospace;color:var(--gold);">${pct}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* ── Module progress ── */
+  function initModuleProgress() {
+    const modules = [
+      { key:'foundations', lessons:6,
+        bars:['mod-foundations-bar','prog-foundations-bar'],
+        pcts:['mod-foundations-pct','prog-foundations-pct'] },
+      { key:'pre-algebra',  lessons:5,
+        bars:['mod-prealgebra-bar','prog-prealgebra-bar'],
+        pcts:['mod-prealgebra-pct','prog-prealgebra-pct'] },
+      { key:'geometry',     lessons:6,
+        bars:['mod-geometry-bar','prog-geometry-bar'],
+        pcts:['mod-geometry-pct','prog-geometry-pct'] },
+    ];
+    modules.forEach(m => {
+      const done = parseInt(localStorage.getItem('ms_mod_'+m.key+'_done')||'0',10);
+      const pct  = Math.min(100, Math.round(done / m.lessons * 100));
+      m.bars.forEach(id => { const el=document.getElementById(id); if(el) el.style.width=pct+'%'; });
+      m.pcts.forEach(id => { const el=document.getElementById(id); if(el) el.textContent=pct+'%'; });
     });
-  } catch (e) {}
-}
+  }
 
-document.addEventListener('DOMContentLoaded', loadData);
+  /* ── XP bar chart ── */
+  function initXPChart() {
+    const chart = document.getElementById('xp-chart');
+    if (!chart) return;
+    const days  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const today = new Date();
+    const vals  = days.map((_,i) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() - (6-i));
+      return parseInt(localStorage.getItem('ms_xp_'+d.toISOString().slice(0,10))||'0',10);
+    });
+    const max = Math.max(...vals, 1);
+    chart.innerHTML = vals.map((v,i) => {
+      const h = Math.round((v/max)*100);
+      return `<div class="xp-bar-col">
+        <div class="xp-bar-fill" style="height:${h}%;"></div>
+        <div class="xp-bar-day">${days[i]}</div>
+      </div>`;
+    }).join('');
+  }
 
-// ── Theme toggle ──
-function toggleTheme() {
-  document.body.classList.toggle('light');
-  const btn = document.getElementById('theme-btn');
-  btn.textContent = document.body.classList.contains('light') ? '🌑' : '🌙';
-  localStorage.setItem('ms_theme', document.body.classList.contains('light') ? 'light' : 'dark');
-}
-if (localStorage.getItem('ms_theme') === 'light') {
-  document.body.classList.add('light');
-  const btn = document.getElementById('theme-btn');
-  if (btn) btn.textContent = '🌑';
-}
+  /* ── Daily challenge (overview) ── */
+  function initDailyChallenge() {
+    if (typeof DailyChallengeGame === 'function') {
+      try { new DailyChallengeGame('overview-daily').start(); } catch(e) {}
+    }
+  }
 
-// ── Active nav highlight on scroll ──
-const navLinks = document.querySelectorAll('.nav-item[href^="#sec-"]');
-const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = '#' + s.id; });
-  navLinks.forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === current);
+  /* ── Section navigation ── */
+  function showSection(name, navEl, tabEl) {
+    document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l  => l.classList.remove('active'));
+    document.querySelectorAll('.dash-tab').forEach(t  => t.classList.remove('active'));
+
+    const sec = document.getElementById('sec-'+name);
+    if (sec) sec.classList.add('active');
+
+    // Sync sidebar
+    document.querySelectorAll('.nav-link').forEach(l => {
+      if ((l.getAttribute('onclick')||'').includes("'"+name+"'")) l.classList.add('active');
+    });
+    // Sync top tab bar
+    document.querySelectorAll('.dash-tab').forEach(t => {
+      if ((t.getAttribute('onclick')||'').includes("'"+name+"'")) t.classList.add('active');
+    });
+
+    if (name === 'badges')      renderDashBadges();
+    if (name === 'leaderboard') renderDashLeaderboard();
+    if (name === 'games')       refreshGameDefaults();
+    if (name === 'progress')   { initXPChart(); initModuleProgress(); }
+
+    setTimeout(initScrollReveal, 50);
+    closeSidebar();
+  }
+
+  /* ── Games sub-tabs ── */
+  function showGameTab(name, e) {
+    document.querySelectorAll('#sec-games .ms-panel').forEach(p => p.classList.remove('is-active'));
+    document.querySelectorAll('#sec-games .ms-tab').forEach(t  => t.classList.remove('is-active'));
+    const panel = document.getElementById('gpanel-'+name);
+    if (panel) panel.classList.add('is-active');
+    if (e && e.target) e.target.classList.add('is-active');
+    if (name === 'daily' && typeof DailyChallengeGame === 'function') {
+      try { new DailyChallengeGame('games-daily-game').start(); } catch(er) {}
+    }
+  }
+
+  function refreshGameDefaults() {
+    if (typeof msGetHighScore === 'function') {
+      const sm = document.getElementById('sm-best');
+      const nn = document.getElementById('nn-best');
+      if (sm) sm.textContent = msGetHighScore('speed_math');
+      if (nn) nn.textContent = msGetHighScore('number_ninja');
+    }
+    const pc = document.getElementById('puzzle-count');
+    if (pc) pc.textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
+  }
+
+  /* ── Game launchers ── */
+  function startSpeedMath(...ops) {
+    document.getElementById('speed-math-start').style.display = 'none';
+    document.getElementById('speed-math-game').style.display  = 'block';
+    const g = new SpeedMathGame('speed-math-game', { ops, timeLimit: 30 });
+    g.start(); window._smGame = g;
+  }
+  function startNinja() {
+    document.getElementById('ninja-start').style.display = 'none';
+    document.getElementById('ninja-game').style.display  = 'block';
+    const g = new NumberNinjaGame('ninja-game');
+    g.start(); window._nnGame = g;
+  }
+  function startScramble(subject) {
+    document.getElementById('scramble-start').style.display = 'none';
+    document.getElementById('scramble-game').style.display  = 'block';
+    const g = new WordScrambleGame('scramble-game', { subject });
+    g.start(); window._wsGame = g;
+  }
+  function startMemory(subject, pairs) {
+    document.getElementById('memory-start').style.display = 'none';
+    document.getElementById('memory-game').style.display  = 'block';
+    const g = new MemoryMatchGame('memory-game', { subject, pairs });
+    g.start(); window._mmGame = g;
+  }
+  function startEquation() {
+    document.getElementById('eq-start').style.display = 'none';
+    document.getElementById('eq-game').style.display  = 'block';
+    const g = new EquationBuilderGame('eq-game');
+    g.start(); window._ebGame = g;
+  }
+  function startPuzzle() {
+    document.getElementById('puzzle-start').style.display = 'none';
+    document.getElementById('puzzle-game').style.display  = 'block';
+    const g = new MathPuzzleGame('puzzle-game');
+    g.start(); window._mpGame = g;
+  }
+  function startBoss(idx) {
+    document.getElementById('boss-start').style.display = 'none';
+    document.getElementById('boss-game').style.display  = 'block';
+    const g = new BossBattleGame('boss-game', { bossIndex: idx });
+    g.start(); window._bossGame = g;
+  }
+
+  /* Quick launch from overview panel */
+  function quickLaunch(game) {
+    showSection('games');
+    setTimeout(() => {
+      if (game === 'speedmath') startSpeedMath('+','-');
+      if (game === 'ninja')     startNinja();
+      if (game === 'scramble')  startScramble('math');
+    }, 160);
+  }
+
+  /* ── Badges ── */
+  function renderDashBadges() {
+    const el = document.getElementById('dash-badges-grid');
+    if (!el) return;
+    if (typeof ALL_BADGES === 'undefined' || typeof msInitProfile !== 'function') {
+      el.innerHTML = '<p style="color:var(--muted);padding:20px 0;">Badges loading…</p>';
+      return;
+    }
+    const earned = msInitProfile().badges ?? [];
+    el.innerHTML = Object.entries(ALL_BADGES).map(([key,b]) => {
+      const have = earned.includes(key);
+      return `<div class="ms-badge-card ${have?'earned':'locked'}">
+        <div class="ms-badge-card-icon">${b.icon}</div>
+        <div class="ms-badge-card-name">${b.name}</div>
+        <div class="ms-badge-card-desc">${b.desc}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── Leaderboard ── */
+  async function renderDashLeaderboard() {
+    const el = document.getElementById('dash-leaderboard-list');
+    if (!el) return;
+    el.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:12px 0;">Loading…</p>';
+    try {
+      const res  = await fetch('/data/leaderboard.json');
+      const data = await res.json();
+      const p    = msInitProfile();
+      const me   = { name:'You', xp:p.xp, level:p.level, isMe:true };
+      const list = [...(data.players||[]), me]
+        .sort((a,b) => (b.xp??b.score??0) - (a.xp??a.score??0))
+        .slice(0,10);
+      const medals = ['🥇','🥈','🥉'];
+      el.innerHTML = list.map((player,i) => {
+        const score = player.xp ?? player.score ?? 0;
+        const rank  = i+1;
+        return `<div class="ms-lb-row" style="${player.isMe?'border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)':''}">
+          <span class="ms-lb-rank ${rank<=3?'top':''}">${rank<=3?medals[rank-1]:rank}</span>
+          <span class="ms-lb-name">${player.isMe?'⭐ ':''}${player.name??player.student_name??'Player'}</span>
+          <span class="ms-lb-xp">${score.toLocaleString()} XP</span>
+        </div>`;
+      }).join('');
+    } catch {
+      el.innerHTML = '<p style="color:var(--muted);padding:20px 0;">Could not load leaderboard.</p>';
+    }
+  }
+
+  /* ── Mode system ── */
+  function applyMode(mode) {
+    document.body.setAttribute('data-mode', mode);
+    localStorage.setItem('ms_xp_mode', mode);
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode===mode));
+    if (typeof updateParticleColor === 'function') updateParticleColor(mode);
+  }
+  (function restoreMode() { applyMode(localStorage.getItem('ms_xp_mode')||'rpg'); })();
+
+  /* ── Sign out ── */
+  async function signOut() {
+    try { await fetch('/api/logout', { method:'POST', credentials:'include' }); } catch(e) {}
+    location.href = '/login.html';
+  }
+
+  /* ── Sidebar (mobile) ── */
+  function toggleSidebar() {
+    const sb = document.getElementById('sidebar');
+    const ov = document.getElementById('sidebar-overlay');
+    const open = sb.classList.toggle('open');
+    ov.classList.toggle('open', open);
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+  }
+
+  /* ── Scroll reveal ── */
+  function initScrollReveal() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.06 });
+    document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+  }
+  document.addEventListener('DOMContentLoaded', initScrollReveal);
+
+  /* ── Cursor glow ── */
+  (function() {
+    const glow = document.getElementById('cursor-glow');
+    let on = false;
+    document.addEventListener('mousemove', e => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top  = e.clientY + 'px';
+      if (!on) { glow.style.opacity = '1'; on = true; }
+    });
+    document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; on = false; });
+  })();
+
+  /* ── Particle canvas ── */
+  (function() {
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    let pColor = 'rgba(168,85,247,';
+
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function mkP() {
+      return { x:Math.random()*W, y:Math.random()*H,
+               vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5,
+               r:Math.random()*1.5+.5, a:Math.random()*.5+.1 };
+    }
+    for (let i=0;i<60;i++) particles.push(mkP());
+
+    (function loop() {
+      ctx.clearRect(0,0,W,H);
+      particles.forEach(p => {
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0) p.x=W; if(p.x>W) p.x=0;
+        if(p.y<0) p.y=H; if(p.y>H) p.y=0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = pColor + p.a + ')';
+        ctx.fill();
+      });
+      requestAnimationFrame(loop);
+    })();
+
+    window.updateParticleColor = function(mode) {
+      const map = { arcade:'rgba(250,204,21,', rpg:'rgba(168,85,247,', academic:'rgba(34,211,238,', lms:'rgba(52,211,153,' };
+      pColor = map[mode] || 'rgba(168,85,247,';
+    };
+  })();
+
+  /* ── Patch msAddXP to refresh HUD + track daily XP ── */
+  window.addEventListener('load', () => {
+    if (typeof window.msAddXP === 'function' && !window._msXPPatched) {
+      const orig = window.msAddXP;
+      window.msAddXP = function(amount, label) {
+        const r = orig(amount, label);
+        loadLocalProfile();
+        const key = 'ms_xp_' + new Date().toISOString().slice(0,10);
+        localStorage.setItem(key, (parseInt(localStorage.getItem(key)||'0',10) + amount));
+        return r;
+      };
+      window._msXPPatched = true;
+    }
   });
-}, { passive: true });
-
-// ── Search filter ──
-document.querySelector('.search-wrap input').addEventListener('input', function() {
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('.course-item').forEach(el => {
-    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-});
-
-// ── Bar chart animate on load ──
-document.querySelectorAll('.bar').forEach(bar => {
-  const h = bar.style.height;
-  bar.style.height = '0%';
-  setTimeout(() => { bar.style.height = h; }, 200);
-});
-</script>
+  </script>
 </body>
 </html>
