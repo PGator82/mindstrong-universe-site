@@ -7,8 +7,17 @@ error_reporting(E_ALL);
  */
 
 // ── Connect ──────────────────────────────────────────────────────────────────
+// Helper: strip malformed "VARNAME=value" env var values (Railway Raw Editor bug)
+function clean_env(string $val): string {
+    if (strpos($val, '=') !== false && !strpos($val, '.')) {
+        $val = explode('=', $val, 2)[1];
+    }
+    return trim($val);
+}
+
 $db_url = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
-if ($db_url) {
+// Only use URL if it looks like a real resolved URL (no unresolved ${{ }} tokens)
+if ($db_url && strpos($db_url, '${{') === false && strpos($db_url, 'mysql') === 0) {
     $u    = parse_url($db_url);
     $host = $u['host'] ?? 'localhost';
     $port = (int)($u['port'] ?? 3306);
@@ -16,12 +25,15 @@ if ($db_url) {
     $pass = isset($u['pass']) ? urldecode($u['pass']) : '';
     $name = ltrim($u['path'] ?? '/railway', '/');
 } else {
-    $host = getenv('MYSQLHOST') ?: 'localhost';
-    $port = (int)(getenv('MYSQLPORT') ?: 3306);
-    $user = getenv('MYSQLUSER') ?: 'root';
-    $pass = getenv('MYSQLPASSWORD') ?: '';
-    $name = getenv('MYSQLDATABASE') ?: 'railway';
+    $host = clean_env(getenv('MYSQLHOST') ?: '') ?: 'localhost';
+    $port = (int)(clean_env(getenv('MYSQLPORT') ?: '') ?: 3306);
+    $user = clean_env(getenv('MYSQLUSER') ?: '') ?: 'root';
+    $pass = clean_env(getenv('MYSQLPASSWORD') ?: '') ?: '';
+    $name = clean_env(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
 }
+
+// Debug: show what values PHP sees
+echo "<!-- host=$host port=$port user=$user db=$name url=" . htmlspecialchars($db_url) . " -->\n";
 
 $conn = new mysqli($host, $user, $pass, $name, $port);
 $conn_ok = !$conn->connect_error;
