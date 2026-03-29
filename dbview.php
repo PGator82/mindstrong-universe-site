@@ -1,10 +1,8 @@
 <?php
 // ── Auto-connect using Railway DB credentials ──
 function ms_clean_env(string $val): string {
-    // Strip malformed "VARNAME=value" strings caused by Railway Raw Editor bug
-    if (strpos($val, '=') !== false && strpos($val, '.') === false) {
-        $val = explode('=', $val, 2)[1];
-    }
+    if (strpos($val, ' ') !== false) $val = explode(' ', $val, 2)[0];
+    if (strpos($val, '=') !== false && strpos($val, '.') === false) $val = explode('=', $val, 2)[1];
     return trim($val);
 }
 

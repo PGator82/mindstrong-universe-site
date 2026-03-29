@@ -9,9 +9,10 @@ error_reporting(E_ALL);
 // ── Connect ──────────────────────────────────────────────────────────────────
 // Helper: strip malformed "VARNAME=value" env var values (Railway Raw Editor bug)
 function clean_env(string $val): string {
-    if (strpos($val, '=') !== false && !strpos($val, '.')) {
-        $val = explode('=', $val, 2)[1];
-    }
+    // Strip everything after first space (Raw Editor appends next var: "host MYSQLUSER=root")
+    if (strpos($val, ' ') !== false) $val = explode(' ', $val, 2)[0];
+    // Strip "VARNAME=value" format
+    if (strpos($val, '=') !== false && !strpos($val, '.')) $val = explode('=', $val, 2)[1];
     return trim($val);
 }
 
