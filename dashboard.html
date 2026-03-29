@@ -320,6 +320,16 @@
       background:linear-gradient(135deg, var(--accent), var(--accent2));
       color:#fff; box-shadow:0 3px 14px rgba(124,58,237,.4);
     }
+    .subj-btn {
+      padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04); color:#94a3b8; font-size:13px; font-weight:600;
+      cursor:pointer; transition:all .2s; font-family:'Syne',sans-serif;
+    }
+    .subj-btn:hover { background:rgba(255,255,255,.08); color:#f1f5f9; }
+    .subj-btn.is-active {
+      background:linear-gradient(135deg,#7c3aed,#2563eb);
+      border-color:transparent; color:#fff; box-shadow:0 3px 12px rgba(124,58,237,.4);
+    }
     .ms-panel { display:none; }
     .ms-panel.is-active { display:block; }
 
@@ -662,6 +672,17 @@
 
         <!-- ════ GAMES ════ -->
         <div id="sec-games" class="dash-section">
+          <!-- Subject filter -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Subject:</span>
+            <div id="subject-filter" style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="subj-btn is-active" data-subj="all"  onclick="filterSubject('all',this)">📚 All</button>
+              <button class="subj-btn"            data-subj="math"    onclick="filterSubject('math',this)">📐 Math</button>
+              <button class="subj-btn"            data-subj="science" onclick="filterSubject('science',this)">🔬 Science</button>
+              <button class="subj-btn"            data-subj="english" onclick="filterSubject('english',this)">📖 English</button>
+            </div>
+          </div>
+
           <div class="ms-tabs">
             <button class="ms-tab is-active" onclick="showGameTab('arcade',event)">⚡ Arcade</button>
             <button class="ms-tab" onclick="showGameTab('puzzle',event)">🧩 Puzzles</button>
@@ -672,7 +693,7 @@
           <!-- Arcade -->
           <div id="gpanel-arcade" class="ms-panel is-active">
             <p class="ms-section-label">Fast-Paced Arcade Games</p>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">⚡</div>
                 <div class="ms-game-card-info">
@@ -691,7 +712,7 @@
               </div>
               <div id="speed-math-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🥷</div>
                 <div class="ms-game-card-info">
@@ -700,7 +721,7 @@
                 </div>
                 <div class="ms-game-card-meta">
                   <span class="ms-pill ms-pill-xp">5 XP each</span>
-                  <span class="ms-pill ms-pill-subj">Numbers</span>
+                  <span class="ms-pill ms-pill-subj">Math</span>
                 </div>
               </div>
               <div id="ninja-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -709,7 +730,7 @@
               </div>
               <div id="ninja-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math science english">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">📝</div>
                 <div class="ms-game-card-info">
@@ -733,7 +754,7 @@
           <!-- Puzzles -->
           <div id="gpanel-puzzle" class="ms-panel">
             <p class="ms-section-label">Logic &amp; Puzzle Games</p>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧠</div>
                 <div class="ms-game-card-info">
@@ -752,7 +773,7 @@
               </div>
               <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧮</div>
                 <div class="ms-game-card-info">
@@ -769,7 +790,7 @@
               </div>
               <div id="eq-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧩</div>
                 <div class="ms-game-card-info">
@@ -792,7 +813,7 @@
           <!-- Battle -->
           <div id="gpanel-battle" class="ms-panel">
             <p class="ms-section-label">Boss Battle Mode</p>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">⚔️</div>
                 <div class="ms-game-card-info">
@@ -816,7 +837,7 @@
           <!-- Daily -->
           <div id="gpanel-daily" class="ms-panel">
             <p class="ms-section-label">Today's Challenge</p>
-            <div class="ms-game-card">
+            <div class="ms-game-card" data-subject="math science english">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">📅</div>
                 <div class="ms-game-card-info">
@@ -1162,6 +1183,15 @@
     if (name === 'daily' && typeof DailyChallengeGame === 'function') {
       try { new DailyChallengeGame('games-daily-game').start(); } catch(er) {}
     }
+  }
+
+  function filterSubject(subj, btn) {
+    document.querySelectorAll('#subject-filter .subj-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.querySelectorAll('.ms-game-card[data-subject]').forEach(card => {
+      const subjects = card.dataset.subject;
+      card.style.display = (subj === 'all' || subjects.includes(subj)) ? '' : 'none';
+    });
   }
 
   function refreshGameDefaults() {
