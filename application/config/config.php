@@ -17,9 +17,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-$config['base_url'] .= "://".$_SERVER['HTTP_HOST'];
-$config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']),"",$_SERVER['SCRIPT_NAME']);
+// Detect HTTPS correctly behind Railway's reverse proxy (checks X-Forwarded-Proto)
+$_proto = 'http';
+if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+    $_proto = 'https';
+}
+$config['base_url'] = $_proto . '://' . $_SERVER['HTTP_HOST'] . '/';
 
 /*
 |--------------------------------------------------------------------------
