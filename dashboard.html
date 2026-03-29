@@ -486,8 +486,9 @@
 
       <nav class="sidebar-nav">
         <button class="nav-link active" onclick="showSection('overview',this)"><span class="nav-icon">🏠</span>Overview</button>
-        <button class="nav-link" onclick="showSection('learn',this)"><span class="nav-icon">📚</span>Learn</button>
-        <button class="nav-link" onclick="showSection('games',this)"><span class="nav-icon">🎮</span>Games</button>
+        <button class="nav-link" onclick="showSection('math',this)"><span class="nav-icon">📐</span>Math</button>
+        <button class="nav-link" onclick="showSection('science',this)"><span class="nav-icon">🔬</span>Science</button>
+        <button class="nav-link" onclick="showSection('english',this)"><span class="nav-icon">📖</span>English</button>
         <button class="nav-link" onclick="showSection('progress',this)"><span class="nav-icon">📊</span>Progress</button>
         <button class="nav-link" onclick="showSection('badges',this)"><span class="nav-icon">🏅</span>Badges</button>
         <button class="nav-link" onclick="showSection('leaderboard',this)"><span class="nav-icon">🏆</span>Leaderboard</button>
@@ -534,8 +535,9 @@
         <!-- Tab bar -->
         <div class="dash-tabs">
           <button class="dash-tab active"  onclick="showSection('overview',null,this)">🏠 Overview</button>
-          <button class="dash-tab" onclick="showSection('learn',null,this)">📚 Learn</button>
-          <button class="dash-tab" onclick="showSection('games',null,this)">🎮 Games</button>
+          <button class="dash-tab" onclick="showSection('math',null,this)">📐 Math</button>
+          <button class="dash-tab" onclick="showSection('science',null,this)">🔬 Science</button>
+          <button class="dash-tab" onclick="showSection('english',null,this)">📖 English</button>
           <button class="dash-tab" onclick="showSection('progress',null,this)">📊 Progress</button>
           <button class="dash-tab" onclick="showSection('badges',null,this)">🏅 Badges</button>
           <button class="dash-tab" onclick="showSection('leaderboard',null,this)">🏆 Leaderboard</button>
@@ -620,118 +622,80 @@
           </div>
         </div>
 
-        <!-- ════ LEARN ════ -->
-        <div id="sec-learn" class="dash-section">
-          <p class="ms-section-label">Modules</p>
+        <!-- ════ MATH ════ -->
+        <div id="sec-math" class="dash-section">
+          <!-- Math XP stats -->
+          <div class="grid-4 reveal" style="margin-bottom:20px;">
+            <div class="stat-card" style="border-color:rgba(124,58,237,.3)">
+              <div class="stat-icon">⚡</div><div class="stat-val" id="math-xp">0</div><div class="stat-lbl">Math XP</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(124,58,237,.3)">
+              <div class="stat-icon">🎯</div><div class="stat-val" id="math-level">1</div><div class="stat-lbl">Math Level</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(124,58,237,.3)">
+              <div class="stat-icon">📚</div><div class="stat-val" id="math-lessons-done">0/17</div><div class="stat-lbl">Lessons</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(124,58,237,.3)">
+              <div class="stat-icon">🏅</div><div class="stat-val" id="math-badge-count">0</div><div class="stat-lbl">Badges</div>
+            </div>
+          </div>
+
+          <!-- Math Lessons -->
+          <p class="ms-section-label">Lessons</p>
           <div class="grid-3 reveal" style="margin-bottom:26px;">
             <div class="module-card">
               <div class="module-hdr">
                 <div class="module-icon">🧱</div>
-                <div><div class="module-title">Foundations</div><div class="module-sub">6 lessons</div></div>
+                <div><div class="module-title">Foundations</div><div class="module-sub">6 lessons · Number Sense</div></div>
               </div>
               <div class="module-prog-row">
                 <div class="prog-wrap"><div class="prog-bar" id="mod-foundations-bar" style="width:0%"></div></div>
                 <div class="module-prog-pct" id="mod-foundations-pct">0%</div>
               </div>
-              <a class="ms-btn sm primary" href="/school/foundations/index.html">Open Module →</a>
+              <a class="ms-btn sm primary" href="/school/foundations/index.html">Open →</a>
             </div>
             <div class="module-card">
               <div class="module-hdr">
                 <div class="module-icon">📐</div>
-                <div><div class="module-title">Pre-Algebra</div><div class="module-sub">5 lessons</div></div>
+                <div><div class="module-title">Pre-Algebra</div><div class="module-sub">5 lessons · Expressions &amp; Equations</div></div>
               </div>
               <div class="module-prog-row">
                 <div class="prog-wrap"><div class="prog-bar" id="mod-prealgebra-bar" style="width:0%"></div></div>
                 <div class="module-prog-pct" id="mod-prealgebra-pct">0%</div>
               </div>
-              <a class="ms-btn sm primary" href="/school/pre-algebra/">Open Module →</a>
+              <a class="ms-btn sm primary" href="/school/foundations/pre-algebra/">Open →</a>
             </div>
             <div class="module-card">
               <div class="module-hdr">
                 <div class="module-icon">📏</div>
-                <div><div class="module-title">Geometry</div><div class="module-sub">6 lessons</div></div>
+                <div><div class="module-title">Geometry</div><div class="module-sub">6 lessons · Shapes &amp; Space</div></div>
               </div>
               <div class="module-prog-row">
                 <div class="prog-wrap"><div class="prog-bar" id="mod-geometry-bar" style="width:0%"></div></div>
                 <div class="module-prog-pct" id="mod-geometry-pct">0%</div>
               </div>
-              <a class="ms-btn sm primary" href="/school/index.html">Open Module →</a>
+              <a class="ms-btn sm primary" href="/school/foundations/geometry/">Open →</a>
             </div>
           </div>
 
-          <!-- Course subject filter -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Subject:</span>
-            <div id="course-subject-filter" style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button class="subj-btn is-active" data-subj="all"     onclick="filterCourses('all',this)">📚 All</button>
-              <button class="subj-btn"           data-subj="math"    onclick="filterCourses('math',this)">📐 Math</button>
-              <button class="subj-btn"           data-subj="science" onclick="filterCourses('science',this)">🔬 Science</button>
-              <button class="subj-btn"           data-subj="english" onclick="filterCourses('english',this)">📖 English</button>
-            </div>
-          </div>
-
-          <p class="ms-section-label">Your Courses</p>
-          <div class="ms-card reveal" style="margin-bottom:20px;transition-delay:.1s">
-            <div id="courses-loading" style="color:var(--muted);font-size:13px;padding:12px 0;">Loading courses…</div>
-            <table class="course-table" id="courses-table" style="display:none;">
-              <thead><tr><th>Subject</th><th>Teacher</th><th>Progress</th><th>Grade</th></tr></thead>
-              <tbody id="courses-tbody"></tbody>
-            </table>
-          </div>
-
-          <!-- Subject quick-start cards -->
-          <div id="course-subject-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;">
-            <a class="ms-card" data-course-subj="math" href="/school/foundations/index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;">
-              <span style="font-size:28px;">📐</span>
-              <div><div style="font-weight:700;font-size:14px;color:#f1f5f9;">Math</div><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;">Foundations →</div></div>
-            </a>
-            <a class="ms-card" data-course-subj="science" href="/school/foundations-science/index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;">
-              <span style="font-size:28px;">🔬</span>
-              <div><div style="font-weight:700;font-size:14px;color:#f1f5f9;">Science</div><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;">Foundations →</div></div>
-            </a>
-            <a class="ms-card" data-course-subj="english" href="/school/foundations-english/index.html" style="text-decoration:none;display:flex;align-items:center;gap:12px;padding:16px;">
-              <span style="font-size:28px;">📖</span>
-              <div><div style="font-weight:700;font-size:14px;color:#f1f5f9;">English</div><div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;">Foundations →</div></div>
-            </a>
-          </div>
-
-          <a class="ms-btn primary" href="/school/index.html">📚 View All Lessons</a>
-        </div>
-
-        <!-- ════ GAMES ════ -->
-        <div id="sec-games" class="dash-section">
-          <!-- Subject filter -->
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);">Subject:</span>
-            <div id="subject-filter" style="display:flex;gap:6px;flex-wrap:wrap;">
-              <button class="subj-btn is-active" data-subj="all"  onclick="filterSubject('all',this)">📚 All</button>
-              <button class="subj-btn"            data-subj="math"    onclick="filterSubject('math',this)">📐 Math</button>
-              <button class="subj-btn"            data-subj="science" onclick="filterSubject('science',this)">🔬 Science</button>
-              <button class="subj-btn"            data-subj="english" onclick="filterSubject('english',this)">📖 English</button>
-            </div>
-          </div>
-
+          <!-- Math Games -->
+          <p class="ms-section-label">Math Games</p>
           <div class="ms-tabs">
-            <button class="ms-tab is-active" onclick="showGameTab('arcade',event)">⚡ Arcade</button>
-            <button class="ms-tab" onclick="showGameTab('puzzle',event)">🧩 Puzzles</button>
-            <button class="ms-tab" onclick="showGameTab('battle',event)">⚔️ Battle</button>
-            <button class="ms-tab" onclick="showGameTab('daily',event)">📅 Daily</button>
+            <button class="ms-tab is-active" onclick="showMathTab('arcade',event)">⚡ Arcade</button>
+            <button class="ms-tab" onclick="showMathTab('puzzle',event)">🧩 Puzzles</button>
+            <button class="ms-tab" onclick="showMathTab('battle',event)">⚔️ Battle</button>
+            <button class="ms-tab" onclick="showMathTab('daily',event)">📅 Daily</button>
           </div>
 
-          <!-- Arcade -->
-          <div id="gpanel-arcade" class="ms-panel is-active">
-            <p class="ms-section-label">Fast-Paced Arcade Games</p>
-            <div class="ms-game-card" data-subject="math">
+          <div id="math-arcade" class="ms-panel is-active">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">⚡</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Speed Math</div>
-                  <div class="ms-game-card-desc">Answer as many arithmetic problems as possible in 30 seconds. Build combos for bonus XP.</div>
+                  <div class="ms-game-card-desc">Answer arithmetic problems in 30 seconds. Build combos for bonus XP.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">10+ XP each</span>
-                  <span class="ms-pill ms-pill-subj">Math</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">10+ XP each</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
               <div id="speed-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                 <button class="ms-btn primary" onclick="startSpeedMath('+','-')">➕ Easy (+ −)</button>
@@ -740,17 +704,14 @@
               </div>
               <div id="speed-math-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card" data-subject="math">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🥷</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Number Ninja</div>
-                  <div class="ms-game-card-desc">Tap numbers 1–9 in ascending order as fast as you can. New grid every round for 60 seconds.</div>
+                  <div class="ms-game-card-desc">Tap numbers 1–9 in order as fast as you can. 60 seconds per round.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">5 XP each</span>
-                  <span class="ms-pill ms-pill-subj">Math</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">5 XP each</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
               <div id="ninja-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                 <button class="ms-btn primary" onclick="startNinja()">Start Ninja</button>
@@ -758,79 +719,48 @@
               </div>
               <div id="ninja-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card" data-subject="math science english">
-              <div class="ms-game-card-hdr">
-                <div class="ms-game-card-icon">📝</div>
-                <div class="ms-game-card-info">
-                  <div class="ms-game-card-title">Word Scramble</div>
-                  <div class="ms-game-card-desc">Unscramble vocabulary words from math, science, or English. Type your answer and hit Check.</div>
-                </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">25 XP each</span>
-                  <span class="ms-pill ms-pill-subj">All Subjects</span>
-                </div>
-              </div>
-              <div id="scramble-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                <button class="ms-btn primary" onclick="startScramble('math')">📐 Math Words</button>
-                <button class="ms-btn primary" onclick="startScramble('science')">🔬 Science</button>
-                <button class="ms-btn primary" onclick="startScramble('english')">📖 English</button>
-              </div>
-              <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
-            </div>
           </div>
 
-          <!-- Puzzles -->
-          <div id="gpanel-puzzle" class="ms-panel">
-            <p class="ms-section-label">Logic &amp; Puzzle Games</p>
-            <div class="ms-game-card" data-subject="math">
+          <div id="math-puzzle" class="ms-panel">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧠</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Memory Match</div>
-                  <div class="ms-game-card-desc">Flip cards to find matching pairs. Fewer moves = better score. Perfect match unlocks a badge.</div>
+                  <div class="ms-game-card-desc">Flip cards to find matching math pairs. Fewer moves = better score.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">20 XP per pair</span>
-                  <span class="ms-pill ms-pill-subj">Memory</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">50 XP perfect</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
               <div id="memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-                <button class="ms-btn primary" onclick="startMemory('math',6)">📐 Math Symbols</button>
-                <button class="ms-btn primary" onclick="startMemory('emoji',8)">😎 Emoji (Hard)</button>
-                <button class="ms-btn primary" onclick="startMemory('words',6)">💻 Code Words</button>
+                <button class="ms-btn primary" onclick="startMemory('math',8)">8 Pairs (Easy)</button>
+                <button class="ms-btn primary" onclick="startMemory('math',12)">12 Pairs (Hard)</button>
               </div>
               <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card" data-subject="math">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧮</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Equation Builder</div>
-                  <div class="ms-game-card-desc">One number is missing from the equation. Pick the correct value from four choices.</div>
+                  <div class="ms-game-card-desc">Drag tiles to build valid equations. Earn XP for each correct equation.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">30 XP each</span>
-                  <span class="ms-pill ms-pill-subj">Algebra</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">30 XP each</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
-              <div id="eq-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
-                <button class="ms-btn primary" onclick="startEquation()">Start Building</button>
+              <div id="eq-start" class="ms-game-zone">
+                <button class="ms-btn primary" onclick="startEquation()">Build Equations</button>
               </div>
               <div id="eq-game" class="ms-game-zone" style="display:none;"></div>
             </div>
-            <div class="ms-game-card" data-subject="math">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">🧩</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Math Grid Puzzle</div>
-                  <div class="ms-game-card-desc">Fill the 3×3 grid so every row and column hits its target sum. Numbers 1–9, no repeats.</div>
+                  <div class="ms-game-card-desc">Fill a grid so every row, column, and box satisfies the math constraints.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">50 XP each</span>
-                  <span class="ms-pill ms-pill-subj">Logic</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">75 XP solve</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
-              <div id="puzzle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;">
+              <div id="puzzle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                 <button class="ms-btn primary" onclick="startPuzzle()">Start Puzzle</button>
                 <span style="font-size:13px;color:#64748b">Solved: <b id="puzzle-count">0</b></span>
               </div>
@@ -838,20 +768,15 @@
             </div>
           </div>
 
-          <!-- Battle -->
-          <div id="gpanel-battle" class="ms-panel">
-            <p class="ms-section-label">Boss Battle Mode</p>
-            <div class="ms-game-card" data-subject="math">
+          <div id="math-battle" class="ms-panel">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">⚔️</div>
                 <div class="ms-game-card-info">
                   <div class="ms-game-card-title">Boss Battle</div>
-                  <div class="ms-game-card-desc">Face off against increasingly tough math bosses. Each correct answer deals damage. Wrong answers hurt you. Defeat all 3 bosses!</div>
+                  <div class="ms-game-card-desc">Defeat math bosses by answering timed questions. Win to earn rare badges.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">100 XP on win</span>
-                  <span class="ms-pill ms-pill-diff">Hard</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">100 XP on win</span><span class="ms-pill ms-pill-diff">Hard</span></div>
               </div>
               <div id="boss-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
                 <button class="ms-btn primary" onclick="startBoss(0)">👹 Algebra Ogre (Easy)</button>
@@ -862,25 +787,236 @@
             </div>
           </div>
 
-          <!-- Daily -->
-          <div id="gpanel-daily" class="ms-panel">
-            <p class="ms-section-label">Today's Challenge</p>
-            <div class="ms-game-card" data-subject="math science english">
+          <div id="math-daily" class="ms-panel">
+            <div class="ms-game-card">
               <div class="ms-game-card-hdr">
                 <div class="ms-game-card-icon">📅</div>
                 <div class="ms-game-card-info">
-                  <div class="ms-game-card-title">Daily Challenge</div>
-                  <div class="ms-game-card-desc">One special challenge per day. Complete it for a +150 XP bonus and daily streak rewards. Resets at midnight.</div>
+                  <div class="ms-game-card-title">Daily Math Challenge</div>
+                  <div class="ms-game-card-desc">One special math challenge per day. +150 XP bonus + streak reward. Resets at midnight.</div>
                 </div>
-                <div class="ms-game-card-meta">
-                  <span class="ms-pill ms-pill-xp">+150 XP</span>
-                  <span class="ms-pill ms-pill-subj">All Types</span>
-                </div>
+                <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">+150 XP</span><span class="ms-pill ms-pill-subj">Math</span></div>
               </div>
-              <div id="games-daily-game" class="ms-game-zone"></div>
+              <div id="math-daily-game" class="ms-game-zone"></div>
             </div>
           </div>
+
+          <!-- Math Badges -->
+          <p class="ms-section-label" style="margin-top:28px;">Math Badges</p>
+          <div id="math-badges-grid" class="ms-badges-grid reveal"></div>
+          <div style="margin-top:16px;"><a class="ms-btn" href="/school/foundations/index.html">📐 All Math Lessons →</a></div>
         </div>
+
+        <!-- ════ SCIENCE ════ -->
+        <div id="sec-science" class="dash-section">
+          <!-- Science XP stats -->
+          <div class="grid-4 reveal" style="margin-bottom:20px;">
+            <div class="stat-card" style="border-color:rgba(34,211,238,.3)">
+              <div class="stat-icon">⚡</div><div class="stat-val" id="sci-xp">0</div><div class="stat-lbl">Science XP</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(34,211,238,.3)">
+              <div class="stat-icon">🎯</div><div class="stat-val" id="sci-level">1</div><div class="stat-lbl">Sci Level</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(34,211,238,.3)">
+              <div class="stat-icon">🔬</div><div class="stat-val" id="sci-lessons-done">0/6</div><div class="stat-lbl">Lessons</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(34,211,238,.3)">
+              <div class="stat-icon">🏅</div><div class="stat-val" id="sci-badge-count">0</div><div class="stat-lbl">Badges</div>
+            </div>
+          </div>
+
+          <!-- Science Lessons -->
+          <p class="ms-section-label">Lessons</p>
+          <div class="grid-3 reveal" style="margin-bottom:26px;">
+            <div class="module-card" style="border-color:rgba(34,211,238,.15)">
+              <div class="module-hdr">
+                <div class="module-icon">🌱</div>
+                <div><div class="module-title">Life Science</div><div class="module-sub">6 lessons · Cells &amp; Ecosystems</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="background:linear-gradient(90deg,#22d3ee,#3b82f6);width:0%" id="mod-lifesci-bar"></div></div>
+                <div class="module-prog-pct" id="mod-lifesci-pct">0%</div>
+              </div>
+              <a class="ms-btn sm primary" style="background:linear-gradient(135deg,#22d3ee,#3b82f6);border-color:transparent;" href="/school/foundations-science/index.html">Open →</a>
+            </div>
+            <div class="module-card" style="opacity:.55">
+              <div class="module-hdr">
+                <div class="module-icon">🔒</div>
+                <div><div class="module-title">Earth Science</div><div class="module-sub">5 lessons · Locked</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct">0%</div>
+              </div>
+              <button class="ms-btn sm" disabled>Locked</button>
+            </div>
+            <div class="module-card" style="opacity:.55">
+              <div class="module-hdr">
+                <div class="module-icon">🔒</div>
+                <div><div class="module-title">Physical Science</div><div class="module-sub">6 lessons · Locked</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct">0%</div>
+              </div>
+              <button class="ms-btn sm" disabled>Locked</button>
+            </div>
+          </div>
+
+          <!-- Science Games -->
+          <p class="ms-section-label">Science Games</p>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">🧠</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">Science Memory Match</div>
+                <div class="ms-game-card-desc">Match science vocabulary pairs — organisms, ecosystems, elements &amp; more. Fewer moves = more XP.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">50 XP perfect</span><span class="ms-pill ms-pill-subj">Science</span></div>
+            </div>
+            <div id="sci-memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#22d3ee,#3b82f6);border-color:transparent;" onclick="startSciMemory(8)">8 Pairs (Easy)</button>
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#22d3ee,#3b82f6);border-color:transparent;" onclick="startSciMemory(12)">12 Pairs (Hard)</button>
+            </div>
+            <div id="sci-memory-game" class="ms-game-zone" style="display:none;"></div>
+          </div>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">📝</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">Science Word Scramble</div>
+                <div class="ms-game-card-desc">Unscramble science vocabulary — cells, ecosystems, elements, forces and more.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">25 XP each</span><span class="ms-pill ms-pill-subj">Science</span></div>
+            </div>
+            <div id="sci-scramble-start" class="ms-game-zone">
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#22d3ee,#3b82f6);border-color:transparent;" onclick="startSciScramble()">Play Science Scramble</button>
+            </div>
+            <div id="sci-scramble-game" class="ms-game-zone" style="display:none;"></div>
+          </div>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">📅</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">Daily Science Challenge</div>
+                <div class="ms-game-card-desc">One science challenge per day. +150 XP bonus + streak reward. Resets at midnight.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">+150 XP</span><span class="ms-pill ms-pill-subj">Science</span></div>
+            </div>
+            <div id="sci-daily-game" class="ms-game-zone"></div>
+          </div>
+
+          <!-- Science Badges -->
+          <p class="ms-section-label" style="margin-top:28px;">Science Badges</p>
+          <div id="sci-badges-grid" class="ms-badges-grid reveal"></div>
+          <div style="margin-top:16px;"><a class="ms-btn" href="/school/foundations-science/index.html">🔬 All Science Lessons →</a></div>
+        </div>
+
+        <!-- ════ ENGLISH ════ -->
+        <div id="sec-english" class="dash-section">
+          <!-- English XP stats -->
+          <div class="grid-4 reveal" style="margin-bottom:20px;">
+            <div class="stat-card" style="border-color:rgba(167,139,250,.3)">
+              <div class="stat-icon">⚡</div><div class="stat-val" id="eng-xp">0</div><div class="stat-lbl">English XP</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(167,139,250,.3)">
+              <div class="stat-icon">🎯</div><div class="stat-val" id="eng-level">1</div><div class="stat-lbl">Eng Level</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(167,139,250,.3)">
+              <div class="stat-icon">📖</div><div class="stat-val" id="eng-lessons-done">0/6</div><div class="stat-lbl">Lessons</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(167,139,250,.3)">
+              <div class="stat-icon">🏅</div><div class="stat-val" id="eng-badge-count">0</div><div class="stat-lbl">Badges</div>
+            </div>
+          </div>
+
+          <!-- English Lessons -->
+          <p class="ms-section-label">Lessons</p>
+          <div class="grid-3 reveal" style="margin-bottom:26px;">
+            <div class="module-card" style="border-color:rgba(167,139,250,.15)">
+              <div class="module-hdr">
+                <div class="module-icon">📝</div>
+                <div><div class="module-title">Grammar</div><div class="module-sub">6 lessons · Nouns to Sentences</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="background:linear-gradient(90deg,#a78bfa,#7c3aed);width:0%" id="mod-grammar-bar"></div></div>
+                <div class="module-prog-pct" id="mod-grammar-pct">0%</div>
+              </div>
+              <a class="ms-btn sm primary" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);border-color:transparent;" href="/school/foundations-english/index.html">Open →</a>
+            </div>
+            <div class="module-card" style="opacity:.55">
+              <div class="module-hdr">
+                <div class="module-icon">🔒</div>
+                <div><div class="module-title">Reading</div><div class="module-sub">5 lessons · Locked</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct">0%</div>
+              </div>
+              <button class="ms-btn sm" disabled>Locked</button>
+            </div>
+            <div class="module-card" style="opacity:.55">
+              <div class="module-hdr">
+                <div class="module-icon">🔒</div>
+                <div><div class="module-title">Writing</div><div class="module-sub">6 lessons · Locked</div></div>
+              </div>
+              <div class="module-prog-row">
+                <div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div>
+                <div class="module-prog-pct">0%</div>
+              </div>
+              <button class="ms-btn sm" disabled>Locked</button>
+            </div>
+          </div>
+
+          <!-- English Games -->
+          <p class="ms-section-label">English Games</p>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">📝</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">English Word Scramble</div>
+                <div class="ms-game-card-desc">Unscramble grammar and vocabulary words — nouns, verbs, adjectives and more.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">25 XP each</span><span class="ms-pill ms-pill-subj">English</span></div>
+            </div>
+            <div id="eng-scramble-start" class="ms-game-zone">
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);border-color:transparent;" onclick="startEngScramble()">Play English Scramble</button>
+            </div>
+            <div id="eng-scramble-game" class="ms-game-zone" style="display:none;"></div>
+          </div>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">🧠</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">English Memory Match</div>
+                <div class="ms-game-card-desc">Match words to their definitions or synonyms. Build vocabulary the fun way.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">50 XP perfect</span><span class="ms-pill ms-pill-subj">English</span></div>
+            </div>
+            <div id="eng-memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);border-color:transparent;" onclick="startEngMemory(8)">8 Pairs (Easy)</button>
+              <button class="ms-btn primary" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);border-color:transparent;" onclick="startEngMemory(12)">12 Pairs (Hard)</button>
+            </div>
+            <div id="eng-memory-game" class="ms-game-zone" style="display:none;"></div>
+          </div>
+          <div class="ms-game-card">
+            <div class="ms-game-card-hdr">
+              <div class="ms-game-card-icon">📅</div>
+              <div class="ms-game-card-info">
+                <div class="ms-game-card-title">Daily English Challenge</div>
+                <div class="ms-game-card-desc">One English challenge per day — grammar, vocabulary or reading. +150 XP bonus.</div>
+              </div>
+              <div class="ms-game-card-meta"><span class="ms-pill ms-pill-xp">+150 XP</span><span class="ms-pill ms-pill-subj">English</span></div>
+            </div>
+            <div id="eng-daily-game" class="ms-game-zone"></div>
+          </div>
+
+          <!-- English Badges -->
+          <p class="ms-section-label" style="margin-top:28px;">English Badges</p>
+          <div id="eng-badges-grid" class="ms-badges-grid reveal"></div>
+          <div style="margin-top:16px;"><a class="ms-btn" href="/school/foundations-english/index.html">📖 All English Lessons →</a></div>
+        </div>
+
 
         <!-- ════ PROGRESS ════ -->
         <div id="sec-progress" class="dash-section">
@@ -902,6 +1038,7 @@
           <p class="ms-section-label">Module Completion</p>
           <div class="ms-card reveal" style="transition-delay:.16s">
             <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#7c3aed;margin-bottom:-4px;">📐 MATH</div>
               <div>
                 <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
                   <span style="font-size:13px;font-weight:600;">🧱 Foundations</span>
@@ -922,6 +1059,22 @@
                   <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-geometry-pct">0%</span>
                 </div>
                 <div class="prog-wrap" style="height:9px;"><div class="prog-bar" id="prog-geometry-bar" style="width:0%"></div></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#22d3ee;margin-bottom:-4px;margin-top:6px;">🔬 SCIENCE</div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:13px;font-weight:600;">🌱 Life Science</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-lifesci-pct">0%</span>
+                </div>
+                <div class="prog-wrap" style="height:9px;"><div class="prog-bar" style="background:linear-gradient(90deg,#22d3ee,#3b82f6);width:0%" id="prog-lifesci-bar"></div></div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:-4px;margin-top:6px;">📖 ENGLISH</div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+                  <span style="font-size:13px;font-weight:600;">📝 Grammar Foundations</span>
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);" id="prog-grammar-pct">0%</span>
+                </div>
+                <div class="prog-wrap" style="height:9px;"><div class="prog-bar" style="background:linear-gradient(90deg,#a78bfa,#7c3aed);width:0%" id="prog-grammar-bar"></div></div>
               </div>
             </div>
           </div>
@@ -952,28 +1105,28 @@
               <div class="ai-subject">Mathematics</div>
               <div class="ai-tags"><span class="ai-tag">Algebra</span><span class="ai-tag">Geometry</span><span class="ai-tag">Calculus</span></div>
               <div class="ai-actions">
-                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
-                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+                <a class="ai-start-btn" href="javascript:showSection('math')">Start Session</a>
+                <a class="ai-link-btn" href="/school/foundations/index.html">View Lessons</a>
               </div>
             </div>
             <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#22d3ee,#06b6d4);transition-delay:.05s">
               <div class="ai-avatar">🔬</div>
               <div class="ai-name">Dr. Curie</div>
               <div class="ai-subject">Science</div>
-              <div class="ai-tags"><span class="ai-tag">Physics</span><span class="ai-tag">Chemistry</span><span class="ai-tag">Biology</span></div>
+              <div class="ai-tags"><span class="ai-tag">Life Science</span><span class="ai-tag">Earth Science</span><span class="ai-tag">Physics</span></div>
               <div class="ai-actions">
-                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
-                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+                <a class="ai-start-btn" href="javascript:showSection('science')">Start Session</a>
+                <a class="ai-link-btn" href="/school/foundations-science/index.html">View Lessons</a>
               </div>
             </div>
             <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#ec4899,#f43f5e);transition-delay:.1s">
               <div class="ai-avatar">📖</div>
               <div class="ai-name">Prof. Shakespeare</div>
               <div class="ai-subject">English</div>
-              <div class="ai-tags"><span class="ai-tag">Literature</span><span class="ai-tag">Writing</span><span class="ai-tag">Grammar</span></div>
+              <div class="ai-tags"><span class="ai-tag">Grammar</span><span class="ai-tag">Writing</span><span class="ai-tag">Reading</span></div>
               <div class="ai-actions">
-                <a class="ai-start-btn" href="/school/index.html">Start Session</a>
-                <a class="ai-link-btn" href="/school/index.html">View Lessons</a>
+                <a class="ai-start-btn" href="javascript:showSection('english')">Start Session</a>
+                <a class="ai-link-btn" href="/school/foundations-english/index.html">View Lessons</a>
               </div>
             </div>
             <div class="ai-card reveal" style="--ai-grad:linear-gradient(90deg,#f59e0b,#d97706);transition-delay:.15s">
@@ -1127,23 +1280,31 @@
 
   /* ── Module progress ── */
   function initModuleProgress() {
-    const modules = [
-      { key:'foundations', lessons:6,
-        bars:['mod-foundations-bar','prog-foundations-bar'],
-        pcts:['mod-foundations-pct','prog-foundations-pct'] },
-      { key:'pre-algebra',  lessons:5,
-        bars:['mod-prealgebra-bar','prog-prealgebra-bar'],
-        pcts:['mod-prealgebra-pct','prog-prealgebra-pct'] },
-      { key:'geometry',     lessons:6,
-        bars:['mod-geometry-bar','prog-geometry-bar'],
-        pcts:['mod-geometry-pct','prog-geometry-pct'] },
-    ];
-    modules.forEach(m => {
-      const done = parseInt(localStorage.getItem('ms_mod_'+m.key+'_done')||'0',10);
-      const pct  = Math.min(100, Math.round(done / m.lessons * 100));
-      m.bars.forEach(id => { const el=document.getElementById(id); if(el) el.style.width=pct+'%'; });
-      m.pcts.forEach(id => { const el=document.getElementById(id); if(el) el.textContent=pct+'%'; });
+    // Math modules (from localStorage keys used by foundations pages)
+    const m1done = (new Set(JSON.parse(localStorage.getItem('ms_m1_done')||'[]'))).size;
+    const predone = (() => { try { const a=JSON.parse(localStorage.getItem('ms_pre_alg_done')||'[]'); const s=new Set(); ['proportions-1','percents-1','expressions-1','equations-1'].forEach(k=>a.includes(k)&&s.add(k)); if(localStorage.getItem('ms_ratio_rank'))s.add('r'); return s.size; }catch{return 0;} })();
+    const geodone = (new Set(JSON.parse(localStorage.getItem('ms_geo_done')||'[]'))).size;
+
+    [['mod-foundations-bar','mod-foundations-pct','prog-foundations-bar','prog-foundations-pct', m1done, 6],
+     ['mod-prealgebra-bar','mod-prealgebra-pct','prog-prealgebra-bar','prog-prealgebra-pct', predone, 5],
+     ['mod-geometry-bar','mod-geometry-pct','prog-geometry-bar','prog-geometry-pct', geodone, 6]
+    ].forEach(([b1,p1,b2,p2,done,total]) => {
+      const pct = Math.min(100, Math.round(done/total*100));
+      [b1,b2].forEach(id => { const el=document.getElementById(id); if(el) el.style.width=pct+'%'; });
+      [p1,p2].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=pct+'%'; });
     });
+
+    // Science
+    const scidone = (new Set(JSON.parse(localStorage.getItem('ms_sci_m1_done')||'[]'))).size;
+    const scipct = Math.min(100, Math.round(scidone/6*100));
+    ['mod-lifesci-bar','prog-lifesci-bar'].forEach(id => { const el=document.getElementById(id); if(el) el.style.width=scipct+'%'; });
+    ['mod-lifesci-pct','prog-lifesci-pct'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=scipct+'%'; });
+
+    // English
+    const engdone = (new Set(JSON.parse(localStorage.getItem('ms_eng_m1_done')||'[]'))).size;
+    const engpct = Math.min(100, Math.round(engdone/6*100));
+    ['mod-grammar-bar','prog-grammar-bar'].forEach(id => { const el=document.getElementById(id); if(el) el.style.width=engpct+'%'; });
+    ['mod-grammar-pct','prog-grammar-pct'].forEach(id => { const el=document.getElementById(id); if(el) el.textContent=engpct+'%'; });
   }
 
   /* ── XP bar chart ── */
@@ -1183,58 +1344,151 @@
     const sec = document.getElementById('sec-'+name);
     if (sec) sec.classList.add('active');
 
-    // Sync sidebar
     document.querySelectorAll('.nav-link').forEach(l => {
       if ((l.getAttribute('onclick')||'').includes("'"+name+"'")) l.classList.add('active');
     });
-    // Sync top tab bar
     document.querySelectorAll('.dash-tab').forEach(t => {
       if ((t.getAttribute('onclick')||'').includes("'"+name+"'")) t.classList.add('active');
     });
 
     if (name === 'badges')      renderDashBadges();
     if (name === 'leaderboard') renderDashLeaderboard();
-    if (name === 'games')       refreshGameDefaults();
     if (name === 'progress')   { initXPChart(); initModuleProgress(); }
+    if (name === 'math')       { initSubjectSection('math'); refreshGameDefaults(); }
+    if (name === 'science')    { initSubjectSection('science'); initSciGames(); }
+    if (name === 'english')    { initSubjectSection('english'); initEngGames(); }
 
     setTimeout(initScrollReveal, 50);
     closeSidebar();
   }
 
-  /* ── Games sub-tabs ── */
-  function showGameTab(name, e) {
-    document.querySelectorAll('#sec-games .ms-panel').forEach(p => p.classList.remove('is-active'));
-    document.querySelectorAll('#sec-games .ms-tab').forEach(t  => t.classList.remove('is-active'));
-    const panel = document.getElementById('gpanel-'+name);
+  /* ── Math game sub-tabs ── */
+  function showMathTab(name, e) {
+    document.querySelectorAll('#sec-math .ms-panel').forEach(p => p.classList.remove('is-active'));
+    document.querySelectorAll('#sec-math .ms-tab').forEach(t  => t.classList.remove('is-active'));
+    const panel = document.getElementById('math-'+name);
     if (panel) panel.classList.add('is-active');
     if (e && e.target) e.target.classList.add('is-active');
     if (name === 'daily' && typeof DailyChallengeGame === 'function') {
-      try { new DailyChallengeGame('games-daily-game').start(); } catch(er) {}
+      try { new DailyChallengeGame('math-daily-game').start(); } catch(er) {}
     }
   }
 
-  function filterCourses(subj, btn) {
-    document.querySelectorAll('#course-subject-filter .subj-btn').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    // Filter table rows
-    document.querySelectorAll('#courses-tbody tr').forEach(row => {
-      const cell = row.querySelector('td');
-      const text = cell ? cell.textContent.toLowerCase() : '';
-      row.style.display = (subj === 'all' || text.includes(subj)) ? '' : 'none';
-    });
-    // Filter quick-start cards
-    document.querySelectorAll('[data-course-subj]').forEach(card => {
-      card.style.display = (subj === 'all' || card.dataset.courseSubj === subj) ? '' : 'none';
-    });
+  /* Legacy stub for any old references */
+  function showGameTab(name, e) { showMathTab(name, e); }
+
+  /* ── Per-subject XP + badges init ── */
+  const SUBJECT_BADGES = {
+    math: [
+      { key:'math-first',   icon:'🧱', name:'First Steps',     desc:'Complete your first Math lesson',        earned: () => (JSON.parse(localStorage.getItem('ms_m1_done')||'[]')).length >= 1 },
+      { key:'math-m1',      icon:'🔢', name:'Number Sense',    desc:'Complete all 6 Foundations lessons',     earned: () => (new Set(JSON.parse(localStorage.getItem('ms_m1_done')||'[]'))).size >= 6 },
+      { key:'math-speed',   icon:'⚡', name:'Speed Demon',     desc:'Score 10+ in Speed Math',                earned: () => (msGetHighScore('speed_math') >= 10) },
+      { key:'math-ninja',   icon:'🥷', name:'Math Ninja',      desc:'Beat Number Ninja',                      earned: () => (msGetHighScore('number_ninja') >= 1) },
+      { key:'math-boss',    icon:'⚔️', name:'Boss Slayer',     desc:'Win a Boss Battle',                      earned: () => (msInitProfile&&msInitProfile().badges||[]).includes('boss_slayer') },
+      { key:'math-xp1k',   icon:'🏆', name:'Math Legend',     desc:'Earn 1,000+ Math XP',                   earned: () => calcSubjectXP('math') >= 1000 },
+    ],
+    science: [
+      { key:'sci-first',  icon:'🔬', name:'Curious Mind',    desc:'Complete your first Science lesson',     earned: () => (new Set(JSON.parse(localStorage.getItem('ms_sci_m1_done')||'[]'))).size >= 1 },
+      { key:'sci-m1',     icon:'🌱', name:'Biologist',       desc:'Complete all 6 Life Science lessons',    earned: () => (new Set(JSON.parse(localStorage.getItem('ms_sci_m1_done')||'[]'))).size >= 6 },
+      { key:'sci-memory', icon:'🧠', name:'Memory Master',   desc:'Beat Science Memory Match',              earned: () => !!localStorage.getItem('ms_sci_memory_win') },
+      { key:'sci-xp500',  icon:'🏆', name:'Lab Scientist',  desc:'Earn 500+ Science XP',                   earned: () => calcSubjectXP('science') >= 500 },
+    ],
+    english: [
+      { key:'eng-first',  icon:'📖', name:'Wordsmith',       desc:'Complete your first English lesson',     earned: () => (new Set(JSON.parse(localStorage.getItem('ms_eng_m1_done')||'[]'))).size >= 1 },
+      { key:'eng-m1',     icon:'✏️', name:'Grammar Guru',   desc:'Complete all 6 Grammar lessons',         earned: () => (new Set(JSON.parse(localStorage.getItem('ms_eng_m1_done')||'[]'))).size >= 6 },
+      { key:'eng-scr',    icon:'📝', name:'Scramble Pro',   desc:'Beat English Word Scramble',             earned: () => !!localStorage.getItem('ms_eng_scramble_win') },
+      { key:'eng-xp500',  icon:'🏆', name:'English Scholar',desc:'Earn 500+ English XP',                   earned: () => calcSubjectXP('english') >= 500 },
+    ]
+  };
+
+  function calcSubjectXP(subj) {
+    if (subj === 'math') {
+      const m1 = (new Set(JSON.parse(localStorage.getItem('ms_m1_done')||'[]'))).size;
+      const pre = (() => { try { const a=JSON.parse(localStorage.getItem('ms_pre_alg_done')||'[]'); const s=new Set(); ['proportions-1','percents-1','expressions-1','equations-1'].forEach(k=>a.includes(k)&&s.add(k)); if(localStorage.getItem('ms_ratio_rank'))s.add('r'); return s.size; } catch{return 0;} })();
+      const geo = (() => { try { const a=JSON.parse(localStorage.getItem('ms_geo_done')||'[]'); return new Set(a).size; } catch{return 0;} })();
+      const gameXP = (() => { try { const d=JSON.parse(localStorage.getItem('ms_progress')||'{}'); return Object.values(d.lessons||{}).reduce((s,l)=>s+(l.xpEarned||0),0); } catch{return 0;} })();
+      return (m1 + pre + geo) * 100 + gameXP;
+    }
+    if (subj === 'science') {
+      const s = (new Set(JSON.parse(localStorage.getItem('ms_sci_m1_done')||'[]'))).size;
+      return s * 100;
+    }
+    if (subj === 'english') {
+      const s = (new Set(JSON.parse(localStorage.getItem('ms_eng_m1_done')||'[]'))).size;
+      return s * 100;
+    }
+    return 0;
   }
 
-  function filterSubject(subj, btn) {
-    document.querySelectorAll('#subject-filter .subj-btn').forEach(b => b.classList.remove('is-active'));
-    btn.classList.add('is-active');
-    document.querySelectorAll('.ms-game-card[data-subject]').forEach(card => {
-      const subjects = card.dataset.subject;
-      card.style.display = (subj === 'all' || subjects.includes(subj)) ? '' : 'none';
-    });
+  function initSubjectSection(subj) {
+    const xp = calcSubjectXP(subj);
+    const level = Math.max(1, Math.floor(xp / 200) + 1);
+    const badges = SUBJECT_BADGES[subj] || [];
+    const earnedBadges = badges.filter(b => { try { return b.earned(); } catch { return false; } });
+
+    if (subj === 'math') {
+      const m1 = (new Set(JSON.parse(localStorage.getItem('ms_m1_done')||'[]'))).size;
+      const pre = (() => { try { const a=JSON.parse(localStorage.getItem('ms_pre_alg_done')||'[]'); const s=new Set(); ['proportions-1','percents-1','expressions-1','equations-1'].forEach(k=>a.includes(k)&&s.add(k)); if(localStorage.getItem('ms_ratio_rank'))s.add('r'); return s.size; } catch{return 0;} })();
+      const geo = (() => { try { return (new Set(JSON.parse(localStorage.getItem('ms_geo_done')||'[]'))).size; } catch{return 0;} })();
+      const total = m1 + pre + geo;
+      document.getElementById('math-xp').textContent = xp;
+      document.getElementById('math-level').textContent = level;
+      document.getElementById('math-lessons-done').textContent = total + '/17';
+      document.getElementById('math-badge-count').textContent = earnedBadges.length;
+      document.getElementById('mod-foundations-bar').style.width = Math.round((m1/6)*100)+'%';
+      document.getElementById('mod-foundations-pct').textContent = Math.round((m1/6)*100)+'%';
+      document.getElementById('mod-prealgebra-bar').style.width = Math.round((pre/5)*100)+'%';
+      document.getElementById('mod-prealgebra-pct').textContent = Math.round((pre/5)*100)+'%';
+      document.getElementById('mod-geometry-bar').style.width = Math.round((geo/6)*100)+'%';
+      document.getElementById('mod-geometry-pct').textContent = Math.round((geo/6)*100)+'%';
+      renderSubjectBadges('math-badges-grid', badges);
+      refreshGameDefaults();
+    }
+    if (subj === 'science') {
+      const done = (new Set(JSON.parse(localStorage.getItem('ms_sci_m1_done')||'[]'))).size;
+      document.getElementById('sci-xp').textContent = xp;
+      document.getElementById('sci-level').textContent = level;
+      document.getElementById('sci-lessons-done').textContent = done + '/6';
+      document.getElementById('sci-badge-count').textContent = earnedBadges.length;
+      document.getElementById('mod-lifesci-bar').style.width = Math.round((done/6)*100)+'%';
+      document.getElementById('mod-lifesci-pct').textContent = Math.round((done/6)*100)+'%';
+      renderSubjectBadges('sci-badges-grid', badges);
+    }
+    if (subj === 'english') {
+      const done = (new Set(JSON.parse(localStorage.getItem('ms_eng_m1_done')||'[]'))).size;
+      document.getElementById('eng-xp').textContent = xp;
+      document.getElementById('eng-level').textContent = level;
+      document.getElementById('eng-lessons-done').textContent = done + '/6';
+      document.getElementById('eng-badge-count').textContent = earnedBadges.length;
+      document.getElementById('mod-grammar-bar').style.width = Math.round((done/6)*100)+'%';
+      document.getElementById('mod-grammar-pct').textContent = Math.round((done/6)*100)+'%';
+      renderSubjectBadges('eng-badges-grid', badges);
+    }
+  }
+
+  function renderSubjectBadges(gridId, badges) {
+    const el = document.getElementById(gridId);
+    if (!el) return;
+    el.innerHTML = badges.map(b => {
+      const have = (() => { try { return b.earned(); } catch { return false; } })();
+      return `<div class="ms-badge-card ${have ? 'earned' : 'locked'}">
+        <div class="ms-badge-card-icon">${b.icon}</div>
+        <div class="ms-badge-card-name">${b.name}</div>
+        <div class="ms-badge-card-desc">${b.desc}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ── Science/English game inits ── */
+  function initSciGames() {
+    if (typeof DailyChallengeGame === 'function') {
+      try { new DailyChallengeGame('sci-daily-game').start(); } catch(e) {}
+    }
+  }
+  function initEngGames() {
+    if (typeof DailyChallengeGame === 'function') {
+      try { new DailyChallengeGame('eng-daily-game').start(); } catch(e) {}
+    }
   }
 
   function refreshGameDefaults() {
@@ -1292,9 +1546,39 @@
     g.start(); window._bossGame = g;
   }
 
+  /* ── Science / English game launchers ── */
+  function startSciMemory(pairs) {
+    document.getElementById('sci-memory-start').style.display = 'none';
+    document.getElementById('sci-memory-game').style.display  = 'block';
+    if (typeof MemoryMatchGame === 'function') {
+      const g = new MemoryMatchGame('sci-memory-game', { subject: 'science', pairs });
+      g.start();
+      g._onWin = () => { localStorage.setItem('ms_sci_memory_win','1'); initSubjectSection('science'); };
+    }
+  }
+  function startSciScramble() {
+    document.getElementById('sci-scramble-start').style.display = 'none';
+    document.getElementById('sci-scramble-game').style.display  = 'block';
+    if (typeof WordScrambleGame === 'function') new WordScrambleGame('sci-scramble-game', { subject: 'science' }).start();
+  }
+  function startEngScramble() {
+    document.getElementById('eng-scramble-start').style.display = 'none';
+    document.getElementById('eng-scramble-game').style.display  = 'block';
+    if (typeof WordScrambleGame === 'function') {
+      const g = new WordScrambleGame('eng-scramble-game', { subject: 'english' });
+      g.start();
+      localStorage.setItem('ms_eng_scramble_win','1');
+    }
+  }
+  function startEngMemory(pairs) {
+    document.getElementById('eng-memory-start').style.display = 'none';
+    document.getElementById('eng-memory-game').style.display  = 'block';
+    if (typeof MemoryMatchGame === 'function') new MemoryMatchGame('eng-memory-game', { subject: 'english', pairs }).start();
+  }
+
   /* Quick launch from overview panel */
   function quickLaunch(game) {
-    showSection('games');
+    showSection('math');
     setTimeout(() => {
       if (game === 'speedmath') startSpeedMath('+','-');
       if (game === 'ninja')     startNinja();
