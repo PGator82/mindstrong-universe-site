@@ -17,6 +17,13 @@ http://:{$PORT:80} {
         php_server
     }
 
+    # /login (bare) → redirect to the unified modern login page
+    @loginBare {
+        path /login
+        method GET
+    }
+    redir @loginBare /login.html 301
+
     # Serve real .html files directly (home.html, login.html, etc.)
     @staticHtml {
         file

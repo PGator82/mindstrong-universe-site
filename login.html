@@ -352,6 +352,14 @@ body {
         </div>
         <div class="role-check"></div>
       </div>
+      <div class="role-card" data-role="superadmin" onclick="selectRole(this)">
+        <div class="role-icon">👑</div>
+        <div class="role-info">
+          <div class="role-name">Super Admin</div>
+          <div class="role-desc">Platform-level system control</div>
+        </div>
+        <div class="role-check"></div>
+      </div>
     </div>
 
     <div class="panel-stats">
@@ -557,6 +565,16 @@ body {
 </div>
 
 <script>
+// ── Show error from URL param (e.g. redirect back from CI on failed login) ──
+(function() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('error')) {
+    const el = document.getElementById('login-alert');
+    el.textContent = '⚠ Incorrect email or password. Please try again.';
+    el.classList.add('show');
+  }
+})();
+
 // ── Role selector (left panel) ──
 function selectRole(card) {
   document.querySelectorAll('.role-card').forEach(c => c.classList.remove('active'));
@@ -672,21 +690,31 @@ async function handleLogin(e) {
     if (res.ok && data.success) {
       // Redirect based on returned role
       const redirectMap = {
-        student: 'dashboard.html',
-        teacher: 'teacher.html',
-        parent:  'parent.html',
-        admin:   'admin.html',
+        student:    'dashboard.html',
+        teacher:    'teacher.html',
+        parent:     'parent.html',
+        admin:      'admin/dashboard',
+        superadmin: 'superadmin.html',
       };
       window.location.href = data.redirect || redirectMap[data.role] || 'dashboard.html';
     } else {
+      hideLoading(btn);
       document.getElementById('login-alert').classList.add('show');
       document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
     }
   } catch (err) {
-    // Network error or no backend: fall back to demo login
+    // /api/login not available — fall back to CodeIgniter validate_login (school users)
     hideLoading(btn);
-    const redirectDemo = { student: 'dashboard.html', teacher: 'teacher.html', parent: 'parent.html', admin: 'admin.html' };
-    window.location.href = redirectDemo[roleHint] || 'dashboard.html';
+    const ciForm = document.createElement('form');
+    ciForm.method = 'POST';
+    ciForm.action = '/login/validate_login';
+    [['email', email], ['password', pass]].forEach(([name, val]) => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden'; inp.name = name; inp.value = val;
+      ciForm.appendChild(inp);
+    });
+    document.body.appendChild(ciForm);
+    ciForm.submit();
   }
 }
 
