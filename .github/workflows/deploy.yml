@@ -26,11 +26,32 @@ jobs:
         run: |
           TOKEN="${TOKEN_PRIMARY:-$TOKEN_FALLBACK}"
           if [ -z "$TOKEN" ]; then
+            echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets."
             echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets. Use a Railway personal token or project token with deploy access."
             exit 1
           fi
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve Railway service target
+        id: service
+        shell: bash
+        env:
+          SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE }}
+          SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
+        run: |
+          SERVICE="${SERVICE_NAME:-$SERVICE_ID}"
+          if [ -z "$SERVICE" ]; then
+            SERVICE="mindstrong-universe-site"
+            echo "⚠️ RAILWAY_SERVICE/RAILWAY_SERVICE_ID not set. Falling back to '$SERVICE'."
+          fi
+          echo "service=$SERVICE" >> "$GITHUB_OUTPUT"
+          echo "Using Railway service target: $SERVICE"
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
+          RAILWAY_SERVICE_TARGET: ${{ steps.service.outputs.service }}
+        run: railway up --service "$RAILWAY_SERVICE_TARGET" --detach
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
