@@ -1,142 +1,106 @@
 <?php
 $system_name  = $this->db->get_where('settings', array('type' => 'system_name'))->row()->description;
 $header_logo  = $this->frontend_model->get_frontend_general_settings('header_logo');
-?>
-<!DOCTYPE html>
+?><!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="Creativeitem" />
-    <meta name="description" content="<?php echo get_settings('system_name'); ?>" />
-    <meta name="author" content="Creativeitem" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <link name="favicon" type="image/x-icon" href="<?php echo base_url();?>uploads/frontend/<?php echo $header_logo;?>" rel="shortcut icon" />
-    <title>Login | MindStrong Universe</title>
-
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="<?php echo base_url();?>uploads/frontend/<?php echo $header_logo;?>" />
-
-    <!-- font -->
-    <link  rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,500,500i,600,700,800,900|Poppins:200,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900">
-
-
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/login/plugins-css.css'); ?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/login/typography.css'); ?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/login/style.css'); ?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url('assets/login/responsive.css'); ?>" />
-
-
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/neon-forms.css'); ?>">
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/font-icons/entypo/css/entypo.css'); ?>">
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/custom.css'); ?>">
-
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Login · MindStrong Universe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <script src="<?php echo base_url('assets/js/toastr.js'); ?>"></script>
+  <link rel="stylesheet" href="<?php echo base_url('assets/css/custom.css'); ?>">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg0:#070A12;--brand:#7C3AED;--brand2:#22D3EE;--txt:rgba(255,255,255,.92);--muted:rgba(255,255,255,.55);--stroke:rgba(255,255,255,.10);--card:rgba(255,255,255,.05);}
+    html,body{min-height:100vh;background:var(--bg0);color:var(--txt);font-family:'Syne',sans-serif;}
+    body{display:flex;align-items:center;justify-content:center;padding:24px;}
+    .glow{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(700px 600px at 30% 20%,rgba(124,58,237,.12),transparent 70%),radial-gradient(500px 400px at 80% 80%,rgba(34,211,238,.07),transparent 70%);}
+    .card{position:relative;z-index:1;width:100%;max-width:440px;background:rgba(11,16,32,.85);border:1px solid var(--stroke);border-radius:24px;padding:40px 36px;backdrop-filter:blur(16px);box-shadow:0 24px 80px rgba(0,0,0,.5);}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+    .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 18px rgba(124,58,237,.6);}
+    .brand-name{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;}
+    h2{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+    .sub{font-size:13px;color:var(--muted);margin-bottom:28px;}
+    label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    input[type=email],input[type=password]{width:100%;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid var(--stroke);border-radius:10px;color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;margin-bottom:18px;transition:border-color .2s;}
+    input:focus{outline:none;border-color:var(--brand);}
+    .btn{width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,var(--brand),#6d28d9);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;border:none;cursor:pointer;transition:opacity .2s;margin-top:4px;}
+    .btn:hover{opacity:.88;}
+    .links{display:flex;justify-content:space-between;margin-top:20px;font-size:13px;}
+    .links a{color:var(--muted);text-decoration:none;transition:color .2s;}
+    .links a:hover{color:var(--txt);}
+    #forgot_password_area{display:none;}
+  </style>
 </head>
-
 <body>
+<div class="glow"></div>
+<div class="card">
+  <div class="brand">
+    <span class="dot"></span>
+    <span class="brand-name">MindStrong Universe</span>
+  </div>
 
-    <div class="wrapper">
-
-        <section class="gray-bg height-100vh d-flex align-items-center page-section-ptb ">
-            <div class="container">
-                <div class="row no-gutters justify-content-center">
-                    <div class="col-lg-4 col-md-6 login-fancy-bg bg-overlay-black-10" style="background: url(<?php echo base_url();?>assets/login/login_bg.jpg);">
-                        <div class="login-fancy pos-r">
-                            <div class="text-center">
-                                <div style="padding: 55px;" class="d-none d-md-block"></div>
-                                <img src="<?php echo base_url().'uploads/logo.png'; ?>" height="25" />
-                                <h2 class="text-white mb-20"></h2>
-                                <h4 class="text-white mb-20"><?php echo get_settings('system_name');?></h4>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 white-bg">
-                        <div class="login-fancy pb-40 clearfix" id = "login_area">
-                            <h3 class="mb-30"><?php echo get_phrase('login'); ?></h3>
-                            <form action="<?php echo site_url('login/validate_login'); ?>" method="post">
-                                <div class="section-field mb-20">
-                                    <label class="mb-10" for="name"><?php echo get_phrase('email'); ?>* </label>
-                                    <input id="email" class="web form-control" type="email" placeholder="<?php echo get_phrase('email'); ?>" name="email" required>
-                                </div>
-                                <div class="section-field mb-20">
-                                    <label class="mb-10" for="Password"><?php echo get_phrase('password'); ?>* </label>
-                                    <input id="Password" class="Password form-control" type="password" placeholder="<?php echo get_phrase('password'); ?>" name="password" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary"><?php echo get_phrase('login'); ?></button>
-                            </form>
-
-                            <div class="section-field">
-                                <div class="remember-checkbox mb-30">
-                                    <a href="#" class="float-right" id = "forgot_password_button" onclick="toggleView(this)"><?php echo get_phrase('forgot_password'); ?>?</a>
-                                
-                                    <a href="<?php echo base_url();?>" class="float-left">
-                                        <i class="entypo-left-open"></i><?php echo get_phrase('back_to_website'); ?></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="login-fancy pb-40 clearfix" id = "forgot_password_area" style="display: none;">
-                            <h3 class="mb-30"><?php echo get_phrase('forgot_password'); ?></h3>
-                            <form class="" action="<?php echo site_url('login/reset_password');?>" method="post">
-                                <div class="section-field mb-20">
-                                    <label class="mb-10" for="name"><?php echo get_phrase('email'); ?>* </label>
-                                    <input id="forgot_password_email" class="web form-control" type="email" placeholder="<?php echo get_phrase('email'); ?>" name="email" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary"><?php echo get_phrase('send_mail'); ?></button>
-                            </form>
-
-                            <div class="section-field">
-                                <div class="remember-checkbox mb-30">
-                                    <a href="#" class="float-right" id = "login_button" onclick="toggleView(this)"><?php echo get_phrase('back_to_login'); ?>?</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <!-- Login Form -->
+  <div id="login_area">
+    <h2><?php echo get_phrase('login'); ?></h2>
+    <p class="sub">Welcome back. Enter your credentials to continue.</p>
+    <form action="<?php echo site_url('login/validate_login'); ?>" method="post">
+      <?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>
+      <label for="email"><?php echo get_phrase('email'); ?></label>
+      <input id="email" type="email" name="email" placeholder="you@example.com" required/>
+      <label for="Password"><?php echo get_phrase('password'); ?></label>
+      <input id="Password" type="password" name="password" placeholder="••••••••" required/>
+      <button type="submit" class="btn"><?php echo get_phrase('login'); ?></button>
+    </form>
+    <div class="links">
+      <a href="<?php echo base_url(); ?>">&#8592; <?php echo get_phrase('back_to_website'); ?></a>
+      <a href="#" id="forgot_password_button" onclick="toggleView(this)"><?php echo get_phrase('forgot_password'); ?>?</a>
     </div>
+  </div>
 
+  <!-- Forgot Password Form -->
+  <div id="forgot_password_area">
+    <h2><?php echo get_phrase('forgot_password'); ?></h2>
+    <p class="sub">Enter your email and we'll send a new password.</p>
+    <form action="<?php echo site_url('login/reset_password'); ?>" method="post">
+      <?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>
+      <label for="forgot_password_email"><?php echo get_phrase('email'); ?></label>
+      <input id="forgot_password_email" type="email" name="email" placeholder="you@example.com" required/>
+      <button type="submit" class="btn"><?php echo get_phrase('send_mail'); ?></button>
+    </form>
+    <div class="links">
+      <a href="#" id="login_button" onclick="toggleView(this)">&#8592; <?php echo get_phrase('back_to_login'); ?></a>
+    </div>
+  </div>
+</div>
 
-    <!-- jquery -->
-    <script src="<?php echo base_url('assets/login/jquery-3.3.1.min.js'); ?>"></script>
-    <script src="<?php echo base_url('assets/js/toastr.js'); ?>"></script>
-    <script type="text/javascript">
-        function toggleView(elem) {
-            if (elem.id === 'forgot_password_button') {
-                $('#login_area').hide();
-                $('#forgot_password_area').show();
-            }else if (elem.id === 'login_button') {
-                $('#login_area').show();
-                $('#forgot_password_area').hide();
-            }
-        }
-    </script>
-    <!-- SHOW TOASTR NOTIFIVATION -->
-    <?php if ($this->session->flashdata('flash_message') != ""):?>
-    <script type="text/javascript">
-    	toastr.success('<?php echo $this->session->flashdata("flash_message");?>');
-    </script>
-    <?php endif;?>
-    <?php if ($this->session->flashdata('error_message') != ""):?>
-    <script type="text/javascript">
-    	toastr.error('<?php echo $this->session->flashdata("error_message");?>');
-    </script>
-    <?php endif;?>
-    <?php if ($this->session->flashdata('login_error') != ""):?>
-    <script type="text/javascript">
-    	toastr.error('<?php echo $this->session->flashdata("login_error");?>');
-    </script>
-    <?php endif;?>
-    <?php if ($this->session->flashdata('reset_success') != ""):?>
-    <script type="text/javascript">
-    	toastr.success('<?php echo $this->session->flashdata("reset_success");?>');
-    </script>
-    <?php endif;?>
-    <?php if ($this->session->flashdata('reset_error') != ""):?>
-    <script type="text/javascript">
-    	toastr.error('<?php echo $this->session->flashdata("reset_error");?>');
-    </script>
-    <?php endif;?>
+<script src="<?php echo base_url('assets/login/jquery-3.3.1.min.js'); ?>"></script>
+<script>
+function toggleView(elem) {
+  if (elem.id === 'forgot_password_button') {
+    document.getElementById('login_area').style.display = 'none';
+    document.getElementById('forgot_password_area').style.display = 'block';
+  } else if (elem.id === 'login_button') {
+    document.getElementById('login_area').style.display = 'block';
+    document.getElementById('forgot_password_area').style.display = 'none';
+  }
+}
+</script>
+<?php if ($this->session->flashdata('flash_message')): ?>
+<script>toastr.success('<?php echo $this->session->flashdata("flash_message"); ?>');</script>
+<?php endif; ?>
+<?php if ($this->session->flashdata('error_message')): ?>
+<script>toastr.error('<?php echo $this->session->flashdata("error_message"); ?>');</script>
+<?php endif; ?>
+<?php if ($this->session->flashdata('login_error')): ?>
+<script>toastr.error('<?php echo $this->session->flashdata("login_error"); ?>');</script>
+<?php endif; ?>
+<?php if ($this->session->flashdata('reset_success')): ?>
+<script>toastr.success('<?php echo $this->session->flashdata("reset_success"); ?>');</script>
+<?php endif; ?>
+<?php if ($this->session->flashdata('reset_error')): ?>
+<script>toastr.error('<?php echo $this->session->flashdata("reset_error"); ?>');</script>
+<?php endif; ?>
 </body>
 </html>

@@ -90,12 +90,9 @@ class Api extends CI_Controller {
             $this->json(['error' => 'Email and password are required'], 400);
         }
 
-        // sha1 — confirmed from Login.php line 56
-        $hashed = sha1($password);
-
         // Role config: table, id field, session key, redirect — matches Login.php exactly
         $role_map = [
-            'admin'   => ['table' => 'admin',   'id_field' => 'admin_id',   'sess_key' => 'admin_login',   'redirect' => 'admin.html'],
+            'admin'   => ['table' => 'admin',   'id_field' => 'admin_id',   'sess_key' => 'admin_login',   'redirect' => 'admin/dashboard'],
             'teacher' => ['table' => 'teacher',  'id_field' => 'teacher_id', 'sess_key' => 'teacher_login', 'redirect' => 'teacher.html'],
             'student' => ['table' => 'student',  'id_field' => 'student_id', 'sess_key' => 'student_login', 'redirect' => 'dashboard.html'],
             'parent'  => ['table' => 'parent',   'id_field' => 'parent_id',  'sess_key' => 'parent_login',  'redirect' => 'parent.html'],
@@ -107,31 +104,48 @@ class Api extends CI_Controller {
             : $role_map;
 
         foreach ($try_roles as $role_name => $cfg) {
-            $user = $this->db->get_where($cfg['table'], [
-                'email'    => $email,
-                'password' => $hashed,
-            ])->row_array();
+            // Look up by email only, then verify password (supports bcrypt + legacy SHA1)
+            $user = $this->db->get_where($cfg['table'], ['email' => $email])->row_array();
+            if (!$user) continue;
 
-            if ($user) {
-                $uid = $user[$cfg['id_field']];
-                // Set session to match original Login.php pattern exactly
-                $this->session->set_userdata([
-                    $cfg['sess_key']    => '1',
-                    $cfg['id_field']    => $uid,   // e.g. admin_id, student_id
-                    'login_user_id'     => $uid,
-                    'user_id'           => $uid,   // convenience for API methods
-                    'name'              => $user['name'],
-                    'login_user_name'   => $user['name'],
-                    'user_role'         => $role_name,
-                    'login_type'        => $role_name,
-                ]);
-                $this->json([
-                    'success'  => true,
-                    'role'     => $role_name,
-                    'name'     => $user['name'],
-                    'redirect' => $cfg['redirect'],
-                ]);
+            $stored = $user['password'];
+            $matched = false;
+            $new_hash = null;
+
+            if (password_verify($password, $stored)) {
+                // bcrypt match
+                $matched = true;
+            } elseif (sha1($password) === $stored) {
+                // Legacy SHA1 — upgrade to bcrypt
+                $matched  = true;
+                $new_hash = password_hash($password, PASSWORD_BCRYPT);
             }
+
+            if (!$matched) continue;
+
+            // Upgrade legacy hash in DB if needed
+            if ($new_hash) {
+                $this->db->where('email', $email);
+                $this->db->update($cfg['table'], ['password' => $new_hash]);
+            }
+
+            $uid = $user[$cfg['id_field']];
+            $this->session->set_userdata([
+                $cfg['sess_key']    => '1',
+                $cfg['id_field']    => $uid,
+                'login_user_id'     => $uid,
+                'user_id'           => $uid,
+                'name'              => $user['name'],
+                'login_user_name'   => $user['name'],
+                'user_role'         => $role_name,
+                'login_type'        => $role_name,
+            ]);
+            $this->json([
+                'success'  => true,
+                'role'     => $role_name,
+                'name'     => $user['name'],
+                'redirect' => $cfg['redirect'],
+            ]);
         }
 
         $this->json(['error' => 'Invalid email or password'], 401);
