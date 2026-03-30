@@ -312,3 +312,53 @@ a:hover{opacity:.95; text-decoration:none}
 @media (max-width: 860px){
   .ms-card{grid-column: span 12;}
 }
+
+/* ── Mode Bar & Mode Buttons (shared across all lesson pages) ── */
+.ms-modebar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:28px;
+  padding:14px 16px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  align-items:center;
+}
+.ms-modebar-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-right:4px;
+  flex-shrink:0;
+}
+.ms-modeBtn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  padding:6px 14px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+  cursor:pointer;
+  transition:all .2s ease;
+  white-space:nowrap;
+}
+.ms-modeBtn:hover{color:#e8edf5;border-color:rgba(255,255,255,.2);}
+.ms-modeBtn.is-active{
+  color:var(--xp-a);
+  border-color:var(--xp-a);
+  background:rgba(255,255,255,.07);
+  box-shadow:0 0 12px var(--xp-glow,rgba(124,58,237,.18));
+}
+
+/* ── Mobile nav collapse ── */
+@media (max-width: 600px){
+  .ms-nav{ flex-wrap:wrap; gap:8px; padding:10px 14px; }
+  .ms-links{ gap:6px; }
+  .ms-link{ font-size:12px; padding:6px 10px; }
+  .ms-bossInput{ width:120px; }
+  .ms-exitInput{ width:140px; }
+}
