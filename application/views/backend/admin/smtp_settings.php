@@ -8,6 +8,7 @@
       </div>
       <div class="panel-body">
         <form method="post" action="<?php echo site_url('admin/smtp_settings/update'); ?>">
+        <?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>
         <?php foreach($settings as $smtp_settings){ ?>
           <?php if($smtp_settings['type'] == 'protocol'): ?>
             <div class="form-group">
