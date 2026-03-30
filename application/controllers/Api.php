@@ -25,9 +25,24 @@ class Api extends CI_Controller {
         $this->load->library('session');
         $this->load->model('Crud_model');
         header('Content-Type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Origin: *');
+
+        // Explicit CORS allowlist — no wildcard in production
+        $allowed = array_filter([
+            getenv('CORS_ORIGIN') ?: null,
+            'https://mindstrong-universe-school-production.up.railway.app',
+            'https://pgator82.github.io',
+        ]);
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+        if (in_array($origin, $allowed, true)) {
+            header('Access-Control-Allow-Origin: ' . $origin);
+        } elseif ($origin === '') {
+            // Same-origin or server-side request — no CORS header needed
+        } else {
+            header('Access-Control-Allow-Origin: https://mindstrong-universe-school-production.up.railway.app');
+        }
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type');
+        header('Vary: Origin');
 
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             http_response_code(200);

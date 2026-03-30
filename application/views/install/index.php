@@ -8,7 +8,7 @@
 	<meta name="description" content="Neon Admin Panel" />
 	<meta name="author" content="" />
 
-	<title>Installation | Ekattor School Management System Pro</title>
+	<title>Installation | MindStrong Universe</title>
 	<?php include 'styles.php'; ?>
 </head>
 <body class="page-body" data-url="http://neon.dev">
@@ -28,7 +28,7 @@
 			</div>
       <div class="navbar-brand"
         style="margin-top: 13px; margin-left: -22px;">
-        Ekattor School Management System Pro
+        MindStrong Universe
       </div>
       <div class="navbar-brand pull-right"
         style="margin-top: 13px;">

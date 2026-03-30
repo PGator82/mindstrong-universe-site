@@ -24,7 +24,7 @@
         <div class="row">
           <?php foreach ($notices as $row) { ?>
             <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card ekattor-grid-news">
+                <div class="card ms-grid-news">
                     <img class="card-img-top img-fluid" alt="" src="<?php echo base_url(); ?>uploads/frontend/noticeboard/<?php echo $row['image'];?>">
                     <div class="card-body">
                         <h3 class="card-title"><a href="<?php echo site_url('home/notice_details/'.$row['notice_id'].'/'.$row['notice_title']);?></a></h3>

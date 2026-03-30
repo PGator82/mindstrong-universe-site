@@ -346,29 +346,29 @@ nav.navbar {
     margin-bottom: 30px;
 }
 
-.card.ekattor-grid-news {
+.card.ms-grid-news {
     border: 1px solid rgba(0,0,0,.1);
     border-radius: 0;
     margin-bottom: 30px;
 }
 
-.ekattor-grid-news .card-title a {
+.ms-grid-news .card-title a {
     color: #393d40;
 }
-.ekattor-grid-news .card-title a:hover {
+.ms-grid-news .card-title a:hover {
     color: #105997;
 }
 
-.ekattor-grid-news .card-text {
+.ms-grid-news .card-text {
     color: #5d5f61;
     margin-bottom: 0;
 }
 
-.ekattor-grid-news .card-body .btn {
+.ms-grid-news .card-body .btn {
     padding: 0;
     color: #105997;
 }
-.ekattor-grid-news .card-body .btn:hover {
+.ms-grid-news .card-body .btn:hover {
     color: #949ea7;
 }
 
@@ -643,22 +643,22 @@ ol li, ul li {
 
 
 
-.ekattor-grid-teacher {
+.ms-grid-teacher {
     border: 1px solid rgba(0,0,0,.1);
     border-radius: 0;
     margin-bottom: 30px;
     padding: 30px;
 }
 
-.ekattor-grid-teacher .card-img-top {
+.ms-grid-teacher .card-img-top {
     border-radius: 0;
 }
 
-.ekattor-grid-teacher .teacher-image {
+.ms-grid-teacher .teacher-image {
     position: relative;
 }
 
-.ekattor-grid-teacher .teacher-social {
+.ms-grid-teacher .teacher-social {
     position: absolute;
     height: auto;
     width: 100%;
@@ -671,17 +671,17 @@ ol li, ul li {
 	transition: all .2s;
 }
 
-.ekattor-grid-teacher .card-body {
+.ms-grid-teacher .card-body {
     padding: 0;
     padding-top: 20px;
 }
 
-.ekattor-grid-teacher .card-body .card-text {
+.ms-grid-teacher .card-body .card-text {
     margin-bottom: 0;
     color: #575b5f;
 }
 
-.ekattor-grid-teacher .card-body .card-link {
+.ms-grid-teacher .card-body .card-link {
     font-family: 'Lato', sans-serif;
     color: #105997;
 }
@@ -732,12 +732,12 @@ ol li, ul li {
 	-webkit-transition-delay: .3s;
 	transition-delay: .3s;
 }
-.ekattor-grid-teacher:hover .teacher-social ul li {
+.ms-grid-teacher:hover .teacher-social ul li {
 	opacity: 1;
 	-webkit-transform: scale(1);
 	transform: scale(1);
 }
-.ekattor-grid-teacher:hover .teacher-social {
+.ms-grid-teacher:hover .teacher-social {
     background: rgba(16, 89, 151, 0.7)
 }
 .event-header, .event-date {

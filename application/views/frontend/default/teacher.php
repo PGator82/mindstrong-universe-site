@@ -26,7 +26,7 @@
               $links = json_decode($social);
             ?>
             <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="card ekattor-grid-teacher text-center">
+                <div class="card ms-grid-teacher text-center">
                    <div class="teacher-image">
                         <img class="card-img-top img-fluid" alt="" src="<?php echo base_url(); ?>uploads/teacher_image/<?php echo $row['teacher_id'];?>.jpg">
                         <div class="teacher-social">

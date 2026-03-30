@@ -17,6 +17,15 @@ http://:{$PORT:80} {
         php_server
     }
 
+    # Root / → serve home.html (public landing page)
+    @rootExact {
+        path /
+    }
+    handle @rootExact {
+        rewrite * /home.html
+        file_server
+    }
+
     # /login (bare) → redirect to the unified modern login page
     @loginBare {
         path /login

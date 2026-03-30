@@ -3,12 +3,10 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-/*  
- *  @author   : Creativeitem
- *  date    : 14 september, 2017
- *  Ekattor School Management System Pro
- *  http://codecanyon.net/user/Creativeitem
- *  http://support.creativeitem.com
+/*
+ *  MindStrong Universe — Login Controller
+ *  Auth: bcrypt with transparent SHA-1 migration for legacy passwords.
+ *  Brute-force: session-based rate-limit (5 attempts / 15 min per IP).
  */
 
 class Login extends CI_Controller {
@@ -25,211 +23,167 @@ class Login extends CI_Controller {
         $this->output->set_header("Expires: Mon, 26 Jul 2010 05:00:00 GMT");
     }
 
-    //Default function, redirects to logged in user area
-    public function index() {
+    // ── Helpers ──────────────────────────────────────────────────────────────
 
+    /**
+     * Verify a submitted password against a stored hash.
+     * Supports bcrypt (password_hash) and legacy SHA-1.
+     * Returns true on match; also returns $upgraded_hash if the hash was
+     * upgraded to bcrypt (so caller can persist it).
+     */
+    private function _verify_password($submitted, $stored, &$upgraded_hash = null) {
+        $upgraded_hash = null;
+        if (strpos($stored, '$2y$') === 0 || strpos($stored, '$2a$') === 0) {
+            return password_verify($submitted, $stored);
+        }
+        // Legacy SHA-1 path
+        if ($stored === sha1($submitted)) {
+            $upgraded_hash = password_hash($submitted, PASSWORD_BCRYPT);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check and update the rate-limit counter for the current IP.
+     * Returns false if the request should be blocked.
+     */
+    private function _check_rate_limit() {
+        $ip      = $this->input->ip_address();
+        $key     = 'lr_' . md5($ip);
+        $rate    = $this->session->userdata($key) ?: ['c' => 0, 'ts' => time()];
+
+        // Reset window after 15 minutes
+        if (time() - $rate['ts'] > 900) {
+            $rate = ['c' => 0, 'ts' => time()];
+        }
+
+        if ($rate['c'] >= 5) {
+            $wait = ceil((900 - (time() - $rate['ts'])) / 60);
+            $this->session->set_flashdata('login_error',
+                'Too many login attempts. Please wait ' . $wait . ' minute(s) and try again.');
+            redirect(site_url('login'), 'refresh');
+            return false;
+        }
+
+        $rate['c']++;
+        $this->session->set_userdata($key, $rate);
+        return true;
+    }
+
+    private function _clear_rate_limit() {
+        $ip  = $this->input->ip_address();
+        $key = 'lr_' . md5($ip);
+        $this->session->unset_userdata($key);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // Default: redirect already-logged-in users to their dashboard
+    public function index() {
         if ($this->session->userdata('admin_login') == 1)
             redirect(site_url('admin/dashboard'), 'refresh');
-
         if ($this->session->userdata('teacher_login') == 1)
             redirect(site_url('teacher/dashboard'), 'refresh');
-
         if ($this->session->userdata('student_login') == 1)
             redirect(site_url('student/dashboard'), 'refresh');
-
         if ($this->session->userdata('parent_login') == 1)
             redirect(site_url('parents/dashboard'), 'refresh');
-
         if ($this->session->userdata('librarian_login') == 1)
             redirect(site_url('librarian/dashboard'), 'refresh');
-
         if ($this->session->userdata('accountant_login') == 1)
             redirect(site_url('accountant/dashboard'), 'refresh');
 
         $this->load->view('backend/login');
     }
 
-    //Validating login from ajax request
+    // Validate login from form POST (with rate-limit + bcrypt migration)
     function validate_login() {
-      $email = $this->input->post('email');
-      $password = $this->input->post('password');
-      $credential = array('email' => $email, 'password' => sha1($password));
-      // Checking login credential for admin
-      $query = $this->db->get_where('admin', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('admin_login', '1');
-          $this->session->set_userdata('admin_id', $row->admin_id);
-          $this->session->set_userdata('login_user_id', $row->admin_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'admin');
-          redirect(site_url('admin/dashboard'), 'refresh');
-      }
+        if (!$this->_check_rate_limit()) return;
 
-      // Checking login credential for teacher
-      $query = $this->db->get_where('teacher', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('teacher_login', '1');
-          $this->session->set_userdata('teacher_id', $row->teacher_id);
-          $this->session->set_userdata('login_user_id', $row->teacher_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'teacher');
-          redirect(site_url('teacher/dashboard'), 'refresh');
-      }
+        $email    = $this->input->post('email');
+        $password = $this->input->post('password');
 
-      // Checking login credential for student
-      $query = $this->db->get_where('student', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('student_login', '1');
-          $this->session->set_userdata('student_id', $row->student_id);
-          $this->session->set_userdata('login_user_id', $row->student_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'student');
-          redirect(site_url('student/dashboard'), 'refresh');
-      }
+        $roles = [
+            'admin'      => ['session_key' => 'admin_login',      'id_col' => 'admin_id',      'redirect' => 'admin/dashboard'],
+            'teacher'    => ['session_key' => 'teacher_login',    'id_col' => 'teacher_id',    'redirect' => 'teacher/dashboard'],
+            'student'    => ['session_key' => 'student_login',    'id_col' => 'student_id',    'redirect' => 'student/dashboard'],
+            'parent'     => ['session_key' => 'parent_login',     'id_col' => 'parent_id',     'redirect' => 'parents/dashboard'],
+            'librarian'  => ['session_key' => 'librarian_login',  'id_col' => 'librarian_id',  'redirect' => 'librarian/dashboard'],
+            'accountant' => ['session_key' => 'accountant_login', 'id_col' => 'accountant_id', 'redirect' => 'accountant/dashboard'],
+        ];
 
-      // Checking login credential for parent
-      $query = $this->db->get_where('parent', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('parent_login', '1');
-          $this->session->set_userdata('parent_id', $row->parent_id);
-          $this->session->set_userdata('login_user_id', $row->parent_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'parent');
-          redirect(site_url('parents/dashboard'), 'refresh');
-      }
+        foreach ($roles as $table => $cfg) {
+            $query = $this->db->get_where($table, array('email' => $email));
+            if ($query->num_rows() === 0) continue;
 
-      // Checking login credential for librarian
-      $query = $this->db->get_where('librarian', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('librarian_login', '1');
-          $this->session->set_userdata('librarian_id', $row->librarian_id);
-          $this->session->set_userdata('login_user_id', $row->librarian_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'librarian');
-          redirect(site_url('librarian/dashboard'), 'refresh');
-      }
+            $row     = $query->row();
+            $new_hash = null;
+            if (!$this->_verify_password($password, $row->password, $new_hash)) continue;
 
-      // Checking login credential for accountant
-      $query = $this->db->get_where('accountant', $credential);
-      if ($query->num_rows() > 0) {
-          $row = $query->row();
-          $this->session->set_userdata('accountant_login', '1');
-          $this->session->set_userdata('accountant_id', $row->accountant_id);
-          $this->session->set_userdata('login_user_id', $row->accountant_id);
-          $this->session->set_userdata('name', $row->name);
-          $this->session->set_userdata('login_type', 'accountant');
-          redirect(site_url('accountant/dashboard'), 'refresh');
-      }
+            // Upgrade legacy SHA-1 hash to bcrypt in-place
+            if ($new_hash !== null) {
+                $this->db->where('email', $email);
+                $this->db->update($table, array('password' => $new_hash));
+            }
 
-      $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
-      redirect(site_url('login'), 'refresh');
+            $this->_clear_rate_limit();
+            $this->session->set_userdata($cfg['session_key'], '1');
+            $this->session->set_userdata($cfg['id_col'], $row->{$cfg['id_col']});
+            $this->session->set_userdata('login_user_id', $row->{$cfg['id_col']});
+            $this->session->set_userdata('name', $row->name);
+            $this->session->set_userdata('login_type', $table);
+            redirect(site_url($cfg['redirect']), 'refresh');
+            return;
+        }
+
+        // No matching credential found
+        $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
+        redirect(site_url('login'), 'refresh');
     }
 
-    /*     * *DEFAULT NOR FOUND PAGE**** */
-
+    // 404 page
     function four_zero_four() {
         $this->load->view('four_zero_four');
     }
 
-    // PASSWORD RESET BY EMAIL
-    function forgot_password()
-    {
-        redirect(site_url('login'), 'refresh');
-        //$this->load->view('backend/forgot_password');
+    // Show forgot-password form (re-uses the toggle panel on the login view)
+    function forgot_password() {
+        $this->load->view('backend/login');
     }
 
-    function reset_password()
-    {
+    // Handle password-reset POST: find email across all roles, generate new password, email it
+    function reset_password() {
         $email = $this->input->post('email');
-        $reset_account_type     = '';
-        //resetting user password here
-        $new_password           =   substr( md5( rand(100000000,20000000000) ) , 0,7);
 
-        // Checking credential for admin
-        $query = $this->db->get_where('admin' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'admin';
-            $this->db->where('email' , $email);
-            $this->db->update('admin' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
+        $tables = ['admin', 'student', 'teacher', 'parent', 'librarian', 'accountant'];
+
+        foreach ($tables as $table) {
+            $query = $this->db->get_where($table, array('email' => $email));
+            if ($query->num_rows() === 0) continue;
+
+            // Generate a secure random password (8 chars)
+            $new_password = substr(bin2hex(random_bytes(6)), 0, 8);
+            $new_hash     = password_hash($new_password, PASSWORD_BCRYPT);
+
+            $this->db->where('email', $email);
+            $this->db->update($table, array('password' => $new_hash));
+
+            $this->load->model('email_model');
+            $this->email_model->password_reset_email($new_password, $table, $email);
+
+            $this->session->set_flashdata('reset_success',
+                get_phrase('please_check_your_email_for_new_password'));
+            redirect(site_url('login'), 'refresh');
+            return;
         }
-        // Checking credential for student
-        $query = $this->db->get_where('student' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'student';
-            $this->db->where('email' , $email);
-            $this->db->update('student' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
-        }
-        // Checking credential for teacher
-        $query = $this->db->get_where('teacher' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'teacher';
-            $this->db->where('email' , $email);
-            $this->db->update('teacher' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
-        }
-        // Checking credential for parent
-        $query = $this->db->get_where('parent' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'parent';
-            $this->db->where('email' , $email);
-            $this->db->update('parent' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
-        }
-        $this->session->set_flashdata('reset_error', get_phrase('password_reset_was_failed'));
-        redirect(site_url('login/forgot_password'), 'refresh');
-        // Checking credential for librarian
-        $query = $this->db->get_where('librarian' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'librarian';
-            $this->db->where('email' , $email);
-            $this->db->update('librarian' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
-        }
-        // Checking credential for accountant
-        $query = $this->db->get_where('accountant' , array('email' => $email));
-        if ($query->num_rows() > 0)
-        {
-            $reset_account_type     =   'accountant';
-            $this->db->where('email' , $email);
-            $this->db->update('accountant' , array('password' => sha1($new_password)));
-            // send new password to user email
-            $this->email_model->password_reset_email($new_password , $reset_account_type , $email);
-            $this->session->set_flashdata('reset_success', get_phrase('please_check_your_email_for_new_password'));
-            redirect(site_url('login/forgot_password'), 'refresh');
-        }
-        $this->session->set_flashdata('reset_error', get_phrase('password_reset_was_failed'));
-        redirect(site_url('login/forgot_password'), 'refresh');
+
+        $this->session->set_flashdata('reset_error',
+            get_phrase('password_reset_was_failed'));
+        redirect(site_url('login'), 'refresh');
     }
 
-    /*     * *****LOGOUT FUNCTION ****** */
-
+    // Logout
     function logout() {
         $this->session->sess_destroy();
         $this->session->set_flashdata('logout_notification', 'logged_out');

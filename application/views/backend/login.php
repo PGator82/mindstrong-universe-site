@@ -12,7 +12,7 @@ $header_logo  = $this->frontend_model->get_frontend_general_settings('header_log
     <meta name="author" content="Creativeitem" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <link name="favicon" type="image/x-icon" href="<?php echo base_url();?>uploads/frontend/<?php echo $header_logo;?>" rel="shortcut icon" />
-    <title>Ekattor login | <?php echo get_settings('system_name'); ?></title>
+    <title>Login | MindStrong Universe</title>
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="<?php echo base_url();?>uploads/frontend/<?php echo $header_logo;?>" />
@@ -114,19 +114,29 @@ $header_logo  = $this->frontend_model->get_frontend_general_settings('header_log
     </script>
     <!-- SHOW TOASTR NOTIFIVATION -->
     <?php if ($this->session->flashdata('flash_message') != ""):?>
-
     <script type="text/javascript">
     	toastr.success('<?php echo $this->session->flashdata("flash_message");?>');
     </script>
-
     <?php endif;?>
-
     <?php if ($this->session->flashdata('error_message') != ""):?>
-
     <script type="text/javascript">
     	toastr.error('<?php echo $this->session->flashdata("error_message");?>');
     </script>
-
+    <?php endif;?>
+    <?php if ($this->session->flashdata('login_error') != ""):?>
+    <script type="text/javascript">
+    	toastr.error('<?php echo $this->session->flashdata("login_error");?>');
+    </script>
+    <?php endif;?>
+    <?php if ($this->session->flashdata('reset_success') != ""):?>
+    <script type="text/javascript">
+    	toastr.success('<?php echo $this->session->flashdata("reset_success");?>');
+    </script>
+    <?php endif;?>
+    <?php if ($this->session->flashdata('reset_error') != ""):?>
+    <script type="text/javascript">
+    	toastr.error('<?php echo $this->session->flashdata("reset_error");?>');
+    </script>
     <?php endif;?>
 </body>
 </html>

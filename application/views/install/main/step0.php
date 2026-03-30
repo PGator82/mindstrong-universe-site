@@ -6,7 +6,7 @@
 			<!-- panel body -->
 			<div class="panel-body" style="font-size: 14px;">
         <p style="font-size: 14px;">
-          Welcome to Ekattor School Management System Pro Installation. You will need to know the following items before
+          Welcome to MindStrong Universe Installation. You will need to know the following items before
           proceeding.
         </p>
         <ol>

@@ -62,7 +62,7 @@ $links = json_decode($social);
         <!-- Logo -->
         <a class="d-inline-flex align-items-center mb-2" href="<?php echo base_url();?>">
           <img src="<?php echo base_url();?>uploads/frontend/<?php echo $header_logo;?>" style="height:45px; width:45px;" />
-          <span class="brand brand-primary">Chenab College</span>
+          <span class="brand brand-primary">MindStrong Universe</span>
         </a>
         <!-- End Logo -->
 
