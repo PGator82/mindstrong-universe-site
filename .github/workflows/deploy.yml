@@ -26,19 +26,10 @@ jobs:
         run: |
           TOKEN="${TOKEN_PRIMARY:-$TOKEN_FALLBACK}"
           if [ -z "$TOKEN" ]; then
-            echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets."
+            echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets. Use a Railway personal token or project token with deploy access."
             exit 1
           fi
           echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
-
-      - name: Validate Railway token
-        env:
-          RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
-        run: |
-          railway whoami || {
-            echo "❌ Invalid RAILWAY_TOKEN. Regenerate token in Railway and update GitHub secret."
-            exit 1
-          }
 
       - name: Deploy to Railway
         env:
