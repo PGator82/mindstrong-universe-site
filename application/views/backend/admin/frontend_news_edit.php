@@ -3,7 +3,8 @@
   <i class="entypo-left-thin"></i> &nbsp; <?php echo get_phrase('news_list'); ?>
 </a>
 <form class="form-horizontal form-groups" id="jq-submit" method="post"
-  action="<?php echo site_url('admin/frontend_news/add_news');?>"
+  action="<?php echo site_url('admin/frontend_news/add_news');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
     enctype="multipart/form-data"
   style="margin-top: 20px;">
   <div class="form-group">

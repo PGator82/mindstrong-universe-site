@@ -62,7 +62,8 @@
 </div>
 <hr>
 
-<form class="" action="<?php echo site_url('student/submit_online_exam/'.$online_exam_id); ?>" method="post" enctype="multipart/form-data" id = "answer_script">
+<form class="" action="<?php echo site_url('student/submit_online_exam/'.$online_exam_id); ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post" enctype="multipart/form-data" id = "answer_script">
 	<?php $count = 1; foreach ($questions as $question):?>
 	<div class="row">
 		<div class="col-md-11">

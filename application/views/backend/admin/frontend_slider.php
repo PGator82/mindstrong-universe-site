@@ -19,7 +19,8 @@
     <div class="row">
       <div class="col-md-10 col-md-offset-1">
         <form class="form-horizontal form-groups" method="post"
-          action="<?php echo site_url('admin/frontend_settings/update_slider_images');?>"
+          action="<?php echo site_url('admin/frontend_settings/update_slider_images');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
             enctype="multipart/form-data">
           <?php for ($i=0; $i<3; $i++): ?>
           <strong><?php echo get_phrase('slider_image').' - ' . ($i+1); ?></strong>

@@ -1,4 +1,5 @@
-<form class="" action="<?php echo site_url('admin/group_message/create_group') ?>" method="post">
+<form class="" action="<?php echo site_url('admin/group_message/create_group') ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post">
   <div class="form-group">
     <label for="field-1" class="col-sm-3 control-label"><?php echo get_phrase('group_name');?></label>
 

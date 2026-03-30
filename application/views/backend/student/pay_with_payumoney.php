@@ -96,7 +96,8 @@ if(empty($posted['hash']) && sizeof($posted) > 0) {
         </div>
         <div class="panel-body form-horizontal form-groups-bordered">
           <h3><?php echo get_phrase('mandatory_parameters'); ?></h3>
-          <form class = "form-horizontal form-groups-bordered" action="<?php echo $action; ?>" method="post" name="payuForm">
+          <form class = "form-horizontal form-groups-bordered" action="<?php echo $action; ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post" name="payuForm">
               <input type="hidden" name="key" value="<?php echo $MERCHANT_KEY ?>" />
               <input type="hidden" name="hash" value="<?php echo $hash ?>"/>
               <input type="hidden" name="txnid" value="<?php echo $txnid ?>" />

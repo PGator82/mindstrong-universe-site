@@ -16,7 +16,8 @@
            </tr>
        </thead>
 		<tbody>
-        	<form method="post" action="<?php echo site_url('admin/attendance_selector');?>" class="form">
+        	<form method="post" action="<?php echo site_url('admin/attendance_selector');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" class="form">
             	<tr class="gradeA">
                     <td>
                     	<select name="date" class="form-control selectboxit">
@@ -199,7 +200,8 @@
 
 <!-- STUDENT's attendance submission form here -->
 <form method="post" 
-    action="<?php echo site_url('admin/manage_attendance/'.$date.'/'.$month.'/'.$year.'/'.$class_id.'/'.$section_id.'/'.$session);?>">
+    action="<?php echo site_url('admin/manage_attendance/'.$date.'/'.$month.'/'.$year.'/'.$class_id.'/'.$section_id.'/'.$session);?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>">
     <div class="col-sm-offset-3 col-md-6">
         <table  class="table table-bordered">
     		<thead>

@@ -3,7 +3,8 @@
   foreach ($info as $row):
 ?>
 <form class="form-horizontal form-groups" method="post"
-  action="<?php echo site_url('admin/frontend_events/edit_event/'.$row['frontend_events_id']);?>"
+  action="<?php echo site_url('admin/frontend_events/edit_event/'.$row['frontend_events_id']);?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
   style="margin-top: 20px;">
   <div class="form-group">
     <label class="col-sm-3 control-label"><?php echo get_phrase('title'); ?></label>

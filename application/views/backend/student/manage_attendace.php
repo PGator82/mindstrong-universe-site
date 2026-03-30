@@ -1,4 +1,5 @@
-<form class="" action="<?php echo base_url() . 'index.php/student/attendance_report_selector/'; ?>" method="post">
+<form class="" action="<?php echo base_url() . 'index.php/student/attendance_report_selector/'; ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post">
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title"><?php echo get_phrase('attendance_of') ?></h3>

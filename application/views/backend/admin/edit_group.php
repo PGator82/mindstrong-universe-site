@@ -2,7 +2,8 @@
   $group_info = $this->db->get_where('group_message_thread', array('group_message_thread_code' => $param2))->row_array();
   $group_members = json_decode($group_info['members']);
 ?>
-<form class="" action="<?php echo site_url('admin/group_message/edit_group/'.$param2); ?>" method="post">
+<form class="" action="<?php echo site_url('admin/group_message/edit_group/'.$param2); ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post">
   <div class="form-group">
     <label for="field-1" class="col-sm-3 control-label"><?php echo get_phrase('group_name');?></label>
 

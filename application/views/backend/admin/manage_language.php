@@ -99,7 +99,8 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="panel">
                                     <div class="panel-body">
-                                        <form class="" action="<?php echo site_url('admin/manage_language/add_phrase') ?>" method="post">
+                                        <form class="" action="<?php echo site_url('admin/manage_language/add_phrase') ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post">
                                             <div class="form-group">
                                                   <label for="simpleinput"><?php echo get_phrase('add_new_phrase'); ?></label>
                                                   <input type="text" id="phrase" name="phrase" class="form-control" placeholder="" required>
@@ -120,7 +121,8 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="panel">
                                     <div class="panel-body">
-                                        <form class="" action="<?php echo site_url('admin/manage_language/add_language'); ?>" method="post">
+                                        <form class="" action="<?php echo site_url('admin/manage_language/add_language'); ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post">
                                             <div class="form-group">
                                                   <label for="language"><?php echo get_phrase('add_new_language'); ?></label>
                                                   <input type="text" id="language" name="language" class="form-control" placeholder="" required>

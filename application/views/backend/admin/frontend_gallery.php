@@ -72,7 +72,8 @@
 	</div>
 	<div class="tab-pane" id="tab2">
     <form class="form-horizontal form-groups" method="post"
-			action="<?php echo site_url('admin/frontend_gallery/add_gallery');?>"
+			action="<?php echo site_url('admin/frontend_gallery/add_gallery');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
       style="margin-top: 20px;" enctype="multipart/form-data">
       <div class="form-group">
 				<label class="col-sm-3 control-label"><?php echo get_phrase('title'); ?></label>

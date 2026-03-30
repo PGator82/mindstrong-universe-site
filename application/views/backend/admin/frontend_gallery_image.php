@@ -13,7 +13,8 @@
   <div class="tab-pane active" id="tab1" style="margin-top: 20px;">
     <div class="row">
       <form class="form-horizontal form-groups" method="post" enctype="multipart/form-data"
-        action="<?php echo site_url('admin/frontend_gallery/upload_images/'.$gallery_id);?>">
+        action="<?php echo site_url('admin/frontend_gallery/upload_images/'.$gallery_id);?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>">
         <div class="form-group">
           <label class="col-sm-3 control-label"><?php echo get_phrase('select_images'); ?></label>
           <div class="col-sm-5">

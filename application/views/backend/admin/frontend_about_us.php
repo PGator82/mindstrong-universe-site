@@ -11,7 +11,8 @@
     <div class="row">
       <div class="col-md-10 col-md-offset-1">
         <form class="form-horizontal form-groups" method="post" id="jq-submit"
-          action="<?php echo site_url('admin/frontend_settings/update_about_us');?>"
+          action="<?php echo site_url('admin/frontend_settings/update_about_us');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
             enctype="multipart/form-data">
           <div class="form-group">
              <textarea class="form-control wysihtml5" data-stylesheet-url="assets/css/wysihtml5-color.css"

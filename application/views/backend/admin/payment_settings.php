@@ -26,7 +26,8 @@
                                 $paypal_settings = get_settings('paypal');
                                 $paypal = json_decode($paypal_settings);
                             ?>
-                                <form action="<?php echo site_url('admin/payment_settings/update_paypal_keys');?>"
+                                <form action="<?php echo site_url('admin/payment_settings/update_paypal_keys');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
                                     class="form-horizontal form-groups" method="post">
 
                                     <div class="form-group">
@@ -95,7 +96,8 @@
                                 $stripe_settings = get_settings('stripe_keys');
                                 $stripe = json_decode($stripe_settings);
                             ?>
-                            <form action="<?php echo site_url('admin/payment_settings/update_stripe_keys');?>"
+                            <form action="<?php echo site_url('admin/payment_settings/update_stripe_keys');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
                                 class="form-horizontal form-groups" method="post">
 
                                     <div class="form-group">
@@ -180,7 +182,8 @@
                             </div>
 
                            <div class="tab-pane" id="tab3">
-                             <form action="<?php echo site_url('admin/payment_settings/update_payumoney_keys');?>"
+                             <form action="<?php echo site_url('admin/payment_settings/update_payumoney_keys');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
                                  class="form-horizontal form-groups" method="post">
                                <div class="form-group">
                                    <label  class="col-sm-3 control-label"><?php echo get_phrase('payumoney_merchant_key');?></label>

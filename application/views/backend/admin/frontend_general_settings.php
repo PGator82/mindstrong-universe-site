@@ -12,7 +12,8 @@
     <div class="row">
       <div class="col-md-12">
         <form class="form-horizontal form-groups" method="post"
-          action="<?php echo site_url('admin/frontend_settings/update_general_settings');?>"
+          action="<?php echo site_url('admin/frontend_settings/update_general_settings');?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>"
             enctype="multipart/form-data">
           <div class="form-group">
             <label class="col-sm-3 control-label"><?php echo get_phrase('school_title'); ?></label>

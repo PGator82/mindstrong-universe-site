@@ -16,7 +16,8 @@ foreach ($single_study_material_info as $row) {
 
                 <div class="panel-body">
 
-                    <form role="form" class="form-horizontal form-groups-bordered" action="<?php echo site_url('admin/study_material/update/'.$row['document_id']); ?>" method="post" enctype="multipart/form-data">
+                    <form role="form" class="form-horizontal form-groups-bordered" action="<?php echo site_url('admin/study_material/update/'.$row['document_id']); ?>
+<?php echo form_hidden($this->security->get_csrf_token_name(), $this->security->get_csrf_hash()); ?>" method="post" enctype="multipart/form-data">
 
                         <div class="form-group">
                             <label for="field-1" class="col-sm-3 control-label"><?php echo get_phrase('date'); ?></label>
