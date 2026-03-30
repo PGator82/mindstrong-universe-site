@@ -17,9 +17,23 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
+      - name: Resolve Railway token
+        id: token
+        shell: bash
+        env:
+          TOKEN_PRIMARY: ${{ secrets.RAILWAY_TOKEN }}
+          TOKEN_FALLBACK: ${{ secrets.RAILWAY_API_TOKEN }}
+        run: |
+          TOKEN="${TOKEN_PRIMARY:-$TOKEN_FALLBACK}"
+          if [ -z "$TOKEN" ]; then
+            echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets. Use a Railway personal token or project token with deploy access."
+            exit 1
+          fi
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to Railway
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
         run: railway up --service mindstrong-universe-site --detach
 
       - name: Deployment summary

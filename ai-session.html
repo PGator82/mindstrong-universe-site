@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI Session • MindStrong Universe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#05050f;--bg2:#0b0b1f;--card:#0f0f2a;--border:rgba(255,255,255,.08);--text:#f0f0ff;--muted:#8f92b5;--grad:linear-gradient(135deg,#7c3aed,#2563eb)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Syne',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+    .brand{font-family:'Orbitron',sans-serif;font-size:14px;color:#a78bfa;text-decoration:none}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;text-decoration:none;border:1px solid var(--border);color:var(--text);background:rgba(255,255,255,.04);font-size:.86rem}
+    .btn.primary{background:var(--grad);border:none}
+    .hero{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:14px}
+    .hero h1{font-size:1.2rem;margin-bottom:4px}
+    .hero p{color:var(--muted);font-size:.9rem}
+    .chat{background:var(--card);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;height:62vh;min-height:420px}
+    .messages{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+    .msg{max-width:78%;padding:10px 12px;border-radius:12px;font-size:.9rem;line-height:1.45}
+    .msg.bot{background:rgba(124,58,237,.16);border:1px solid rgba(124,58,237,.3)}
+    .msg.user{background:rgba(37,99,235,.16);border:1px solid rgba(37,99,235,.3);align-self:flex-end}
+    .composer{display:flex;gap:10px;padding:12px;border-top:1px solid var(--border)}
+    .composer input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:11px 12px;outline:none}
+    .meta{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="/home.html">● MindStrong Universe</a>
+      <div style="display:flex;gap:8px">
+        <a class="btn" href="/home.html#teachers">← Back to AI Educators</a>
+        <a class="btn primary" href="/login.html">Sign In</a>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1 id="sessionTitle">AI Session</h1>
+      <p id="sessionSub">Personalized support tailored to your goals.</p>
+      <div class="meta" id="sessionMeta"></div>
+    </section>
+
+    <section class="chat">
+      <div class="messages" id="messages"></div>
+      <form class="composer" id="composer">
+        <input id="prompt" type="text" placeholder="Ask your AI teacher anything…" required />
+        <button class="btn primary" type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    const TEACHERS = {
+      nova: { name: 'Nova', subject: 'Mathematics', tone: 'step-by-step and visual', welcome: 'Hey! I\'m Nova 🧮. Share a math problem and I\'ll break it down into simple steps.' },
+      aria: { name: 'Aria', subject: 'Science', tone: 'curious and experiment-driven', welcome: 'Hi, I\'m Aria 🔬. Let\'s explore science with clear explanations and mini experiments.' },
+      sage: { name: 'Sage', subject: 'English & Literature', tone: 'clear and supportive', welcome: 'Hello, I\'m Sage 📖. I can help with writing, grammar, and comprehension.' },
+      zeno: { name: 'Zeno', subject: 'Computer Science', tone: 'hands-on and practical', welcome: 'Hey there, I\'m Zeno 💻. Let\'s build code that works and understand why it works.' },
+      clio: { name: 'Clio', subject: 'History & Social Studies', tone: 'story-first and contextual', welcome: 'Welcome! I\'m Clio 🌍. I\'ll connect historical events so they actually make sense.' },
+      lyra: { name: 'Lyra', subject: 'Arts & Music', tone: 'creative and encouraging', welcome: 'Hi! I\'m Lyra 🎵. Let\'s unlock your creativity with guided practice.' }
+    };
+
+    const params = new URLSearchParams(location.search);
+    const teacherKey = (params.get('teacher') || 'nova').toLowerCase();
+    const teacher = TEACHERS[teacherKey] || TEACHERS.nova;
+    const sessionId = `ms_${teacherKey}_${Date.now().toString(36)}`;
+
+    const title = document.getElementById('sessionTitle');
+    const sub = document.getElementById('sessionSub');
+    const meta = document.getElementById('sessionMeta');
+    const messages = document.getElementById('messages');
+    const composer = document.getElementById('composer');
+    const prompt = document.getElementById('prompt');
+
+    title.textContent = `${teacher.name} • ${teacher.subject} Session`;
+    sub.textContent = `Your AI educator adapts to your pace and goals.`;
+    meta.textContent = `Session ID: ${sessionId} • Teacher: ${teacher.name} • Style: ${teacher.tone}`;
+
+    localStorage.setItem('ms_active_ai_session', JSON.stringify({ sessionId, teacher: teacherKey, startedAt: new Date().toISOString() }));
+
+    function addMessage(type, text) {
+      const div = document.createElement('div');
+      div.className = `msg ${type}`;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function aiReply(input) {
+      const starters = {
+        nova: 'Great question. Let\'s solve it step by step:',
+        aria: 'Awesome curiosity. Here\'s the science behind it:',
+        sage: 'Nice prompt. Here\'s a clearer version and why it works:',
+        zeno: 'Perfect coding challenge. Let\'s structure the solution:',
+        clio: 'Great historical question. Here\'s the timeline context:',
+        lyra: 'Love this creative direction. Try this approach:'
+      };
+      return `${starters[teacherKey] || starters.nova} ${input}`;
+    }
+
+    addMessage('bot', teacher.welcome);
+
+    composer.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = prompt.value.trim();
+      if (!text) return;
+      addMessage('user', text);
+      prompt.value = '';
+      setTimeout(() => addMessage('bot', aiReply(text)), 320);
+    });
+  </script>
+</body>
+</html>
