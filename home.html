@@ -84,7 +84,7 @@ section{padding:100px 6%;}
 .teacher-skills{display:flex;flex-wrap:wrap;gap:6px;}
 .skill-tag{padding:3px 10px;background:rgba(255,255,255,.06);border-radius:99px;font-size:.72rem;color:var(--muted);}
 .teacher-actions{display:flex;gap:10px;margin-top:18px;}
-.t-btn{flex:1;padding:9px;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:.2s;}
+.t-btn{flex:1;display:flex;align-items:center;justify-content:center;padding:9px;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;border:none;transition:.2s;text-decoration:none;}
 .t-btn.primary{background:var(--grad);color:#fff;}
 .t-btn.ghost{background:rgba(255,255,255,.06);color:var(--text);}
 .t-btn:hover{opacity:.85;}
@@ -227,7 +227,7 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
     </h1>
     <p class="hero-sub">Experience the future of education with AI teachers that adapt to your learning style, pace, and goals — available 24/7, in every subject.</p>
     <div class="hero-btns">
-      <a href="#courses" class="btn-primary">Start Learning Free</a>
+      <a href="/school.html" class="btn-primary">Start Learning Free</a>
       <a href="./login.html" class="btn-outline" style="border-color:rgba(124,58,237,.5);color:#a78bfa;">🔐 Login to Portal</a>
       <a href="#teachers" class="btn-outline">Meet AI Teachers</a>
     </div>
@@ -262,8 +262,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">Geometry</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=nova&subject=math">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=nova&subject=math&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -280,8 +280,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">Lab Simulations</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=aria&subject=science">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=aria&subject=science&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -298,8 +298,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">Essay Help</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=sage&subject=english">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=sage&subject=english&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -316,8 +316,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">AI/ML</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=zeno&subject=computer-science">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=zeno&subject=computer-science&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -334,8 +334,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">Economics</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=clio&subject=history">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=clio&subject=history&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -352,8 +352,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <span class="skill-tag">Composition</span>
       </div>
       <div class="teacher-actions">
-        <button class="t-btn primary">Start Session</button>
-        <button class="t-btn ghost">View Profile</button>
+        <a class="t-btn primary" href="/ai-session.html?teacher=lyra&subject=arts-music">Start Session</a>
+        <a class="t-btn ghost" href="/ai-session.html?teacher=lyra&subject=arts-music&view=profile">View Profile</a>
       </div>
     </div>
 
@@ -561,7 +561,7 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
     <h2>Ready to Transform<br><span class="grad-text">How You Learn?</span></h2>
     <p>Join 50,000+ students already learning smarter with AI teachers. It's free to get started.</p>
     <div class="cta-btns">
-      <a href="#courses" class="btn-primary">Start Learning Free Today</a>
+      <a href="/school.html" class="btn-primary">Start Learning Free Today</a>
       <a href="#teachers" class="btn-outline">Meet the AI Teachers</a>
     </div>
   </div>
@@ -577,8 +577,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
     <div class="footer-col">
       <h4>Platform</h4>
       <ul>
-        <li><a href="#">AI Teachers</a></li>
-        <li><a href="#">Courses</a></li>
+        <li><a href="#teachers">AI Teachers</a></li>
+        <li><a href="#courses">Courses</a></li>
         <li><a href="#">Live Classes</a></li>
         <li><a href="#">Exams & Quizzes</a></li>
         <li><a href="#">Progress Reports</a></li>
@@ -587,11 +587,11 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
     <div class="footer-col">
       <h4>School</h4>
       <ul>
-        <li><a href="#">For Students</a></li>
-        <li><a href="#">For Parents</a></li>
-        <li><a href="#">For Teachers</a></li>
-        <li><a href="#">Admissions</a></li>
-        <li><a href="#">Portal Login</a></li>
+        <li><a href="/school.html">For Students</a></li>
+        <li><a href="/login.html?role=parent">For Parents</a></li>
+        <li><a href="/login.html?role=teacher">For Teachers</a></li>
+        <li><a href="/contact.html">Admissions</a></li>
+        <li><a href="/login.html">Portal Login</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -600,8 +600,8 @@ footer{background:var(--bg2);padding:64px 6% 32px;border-top:1px solid var(--bor
         <li><a href="#">About Us</a></li>
         <li><a href="#">Blog</a></li>
         <li><a href="#">Careers</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+        <li><a href="/privacy.html">Privacy Policy</a></li>
       </ul>
     </div>
   </div>
@@ -686,16 +686,6 @@ function toggleMenu() {
   links.style.padding = '20px 6%';
   links.style.borderBottom = '1px solid rgba(255,255,255,.07)';
 }
-
-// ── Teacher button interactions ──
-document.querySelectorAll('.t-btn.primary').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const card = btn.closest('.teacher-card');
-    const name = card.querySelector('.teacher-name').textContent;
-    btn.textContent = 'Session Starting...';
-    setTimeout(() => { btn.textContent = 'Start Session'; }, 2000);
-  });
-});
 
 // ── Smooth nav active state ──
 window.addEventListener('scroll', () => {
