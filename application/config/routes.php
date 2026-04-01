@@ -56,6 +56,8 @@ $route['translate_uri_dashes'] = FALSE;
 // ── API Routes ──
 $route['api/login']                = 'api/login';
 $route['api/logout']               = 'api/logout';
+$route['api/progress']             = 'api/progress';
+$route['api/progress/save']        = 'api/progress_save';
 
 $route['api/student/stats']        = 'api/student_stats';
 $route['api/student/courses']      = 'api/student_courses';

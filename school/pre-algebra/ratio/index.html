@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ratios â€¢ Pre-Algebra Mastery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="../../ms-tracker.js" defer></script>
+  <link rel="stylesheet" href="../../../assets/css/theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="arcade"]{--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.15);}
+    body[data-mode="rpg"]{--xp-a:#a855f7;--xp-b:#7c3aed;--xp-glow:rgba(168,85,247,.16);}
+    body[data-mode="academic"]{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="lms"]{--xp-a:#34d399;--xp-b:#059669;--xp-glow:rgba(52,211,153,.14);}
+    .page-fx{position:fixed;inset:0;pointer-events:none;background:radial-gradient(700px 450px at 18% 0%,var(--xp-glow),transparent 60%),radial-gradient(500px 320px at 88% 88%,rgba(124,58,237,.07),transparent 60%);}
+    .wrap{max-width:880px;margin:0 auto;padding:32px 16px;position:relative;z-index:1;}
+    .modebar,.card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);border-radius:16px;}
+    .modebar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 16px;margin-bottom:24px;}
+    .modebar-label,.section-label,.meta{font-family:'JetBrains Mono',monospace;}
+    .modebar-label,.meta{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#6b7a99);}
+    .mode-btn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 13px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);cursor:pointer;}
+    .mode-btn.is-active{color:var(--xp-a);border-color:var(--xp-a);background:rgba(255,255,255,.07);box-shadow:0 0 10px var(--xp-glow);}
+    .hero{margin-bottom:24px;}
+    .kicker{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;padding:4px 12px;border-radius:999px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:10px;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+    .btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#e8edf5;text-decoration:none;display:inline-block;}
+    .btn.primary{background:linear-gradient(135deg,var(--xp-b),var(--xp-a));border-color:transparent;color:#06080e;box-shadow:0 4px 18px var(--xp-glow);}
+    .chip{display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);font-size:12px;}
+    .chip.done{border-color:var(--xp-a);color:var(--xp-a);background:rgba(255,255,255,.07);}
+    .card{padding:24px;margin-bottom:18px;}
+    .card h2{margin-bottom:10px;}
+    .card p{font-size:14px;line-height:1.8;color:#c8d3e8;}
+    .section-label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--xp-a);opacity:.8;display:block;margin-bottom:8px;}
+    .hack-box{background:rgba(34,211,238,.07);border-left:4px solid var(--xp-a);padding:16px;border-radius:12px;font-weight:600;line-height:1.7;}
+    body[data-mode="arcade"] .hack-box{background:rgba(250,204,21,.07);}
+    body[data-mode="rpg"] .hack-box{background:rgba(168,85,247,.07);}
+    body[data-mode="lms"] .hack-box{background:rgba(52,211,153,.07);}
+    .skill-list{margin:0;padding-left:18px;color:#c8d3e8;line-height:1.8;}
+    .foot{font-size:12px;color:var(--muted,#6b7a99);text-align:center;margin-top:20px;}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="page-fx"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Pre-Algebra</a>
+      <a class="ms-link is-active" href="./index.html">Ratios</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <section class="hero">
+    <span class="kicker" id="modeKicker">Pre-Algebra â€¢ Balance of Comparison</span>
+    <h1 class="ms-h1">Ratios</h1>
+    <p class="ms-sub">Compare quantities with confidence.</p>
+    <div class="actions">
+      <a class="btn primary" id="launchBtn" href="../../foundations/ratio/">Open Foundations Ratio Lesson</a>
+      <a class="btn" href="../index.html">&larr; Back to Pre-Algebra</a>
+    </div>
+    <div style="margin-top:10px;"><span class="chip" id="statusChip">Status: Ready to start</span></div>
+  </section>
+
+  <div class="modebar">
+    <span class="modebar-label">Mode:</span>
+    <button class="mode-btn" data-mode="arcade">Arcade</button>
+    <button class="mode-btn" data-mode="rpg">RPG</button>
+    <button class="mode-btn is-active" data-mode="academic">Academic</button>
+    <button class="mode-btn" data-mode="lms">LMS</button>
+  </div>
+
+  <section class="card">
+    <span class="section-label">Hook</span>
+    <h2>Why This Matters</h2>
+    <p>A ratio is a compact way to describe how two quantities relate. Once you can read that relationship clearly, scaling and comparison stop feeling random.</p>
+  </section>
+
+  <section class="card">
+    <span class="section-label">Key Concept</span>
+    <div class="hack-box">A ratio compares two quantities in the same situation. The order matters, and the meaning comes from the context, not just the numbers.</div>
+  </section>
+
+  <section class="card">
+    <span class="section-label">Skill Check</span>
+    <h2>What You Will Practice</h2>
+    <ul class="skill-list">
+      <li>Read ratios in words and symbols.</li>
+      <li>Match ratios to visual groupings.</li>
+      <li>Decide when two comparisons are or are not equivalent.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <span class="section-label">Activity Status</span>
+    <h2>Lesson Launch</h2>
+    <p>This page gives the learner a clean pre-algebra entry point, then launches into the full Foundations activity when they are ready. Progress status is read from the shared tracker so completion stays aligned across the app.</p>
+    <p class="meta" id="progressMeta">Checking progress...</p>
+  </section>
+
+  <p class="foot">MindStrong Universe â€¢ Pre-Algebra â€¢ Ratios</p>
+</main>
+
+<script>
+const LESSON_KEY = "geo-ratios";
+const KICKERS = {
+  arcade: "Arcade â€¢ Balance of Comparison",
+  rpg: "Quest â€¢ Balance of Comparison",
+  academic: "Pre-Algebra â€¢ Balance of Comparison",
+  lms: "Course Mode â€¢ Balance of Comparison"
+};
+
+function updateStatus() {
+  const chip = document.getElementById("statusChip");
+  const meta = document.getElementById("progressMeta");
+  const launch = document.getElementById("launchBtn");
+  const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
+  const done = !!prog.completedAt;
+  if (chip) {
+    chip.textContent = done ? "Status: Completed" : (prog.practiceScore ? "Status: In progress" : "Status: Ready to start");
+    chip.className = "chip" + (done ? " done" : "");
+  }
+  if (meta) {
+    meta.textContent = done
+      ? "Completion synced. Reopen the lesson any time for review."
+      : (prog.practiceScore ? "You have started this lesson. Continue where you left off." : "No completion yet. Launch the lesson to begin.");
+  }
+  if (launch) {
+    launch.textContent = done ? "Review Foundations Lesson" : "Open Foundations Ratio Lesson";
+  }
+}
+
+function applyMode(mode) {
+  document.body.setAttribute("data-mode", mode);
+  const kicker = document.getElementById("modeKicker");
+  if (kicker) kicker.textContent = KICKERS[mode] || KICKERS.academic;
+  document.querySelectorAll(".mode-btn").forEach((btn) => btn.classList.toggle("is-active", btn.dataset.mode === mode));
+  try { localStorage.setItem("ms_xp_mode", mode); } catch {}
+}
+
+document.querySelectorAll(".mode-btn").forEach((btn) => btn.addEventListener("click", () => applyMode(btn.dataset.mode)));
+try {
+  const saved = localStorage.getItem("ms_xp_mode");
+  applyMode(saved && KICKERS[saved] ? saved : "academic");
+} catch {
+  applyMode("academic");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  updateStatus();
+});
+</script>
+</body>
+</html>

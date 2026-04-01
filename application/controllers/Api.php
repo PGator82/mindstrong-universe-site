@@ -70,6 +70,159 @@ class Api extends CI_Controller {
         return ($val !== FALSE && $val !== null) ? trim($val) : '';
     }
 
+    private function getJsonInput() {
+        $raw = trim((string)$this->input->raw_input_stream);
+        if ($raw === '') return [];
+        $data = json_decode($raw, true);
+        return is_array($data) ? $data : [];
+    }
+
+    private function currentProgressOwner($token = '') {
+        $roles = [
+            'student' => 'student_id',
+            'teacher' => 'teacher_id',
+            'parent'  => 'parent_id',
+            'admin'   => 'admin_id',
+        ];
+
+        foreach ($roles as $role => $field) {
+            if ($this->session->userdata($role . '_login') == '1') {
+                $user_id = (int)($this->session->userdata($field) ?: $this->session->userdata('user_id'));
+                return [
+                    'owner_key' => $role . ':' . $user_id,
+                    'role' => $role,
+                    'user_id' => $user_id,
+                    'token' => null,
+                ];
+            }
+        }
+
+        $token = preg_replace('/[^a-zA-Z0-9_-]/', '', (string)$token);
+        if ($token === '') {
+            $token = substr(bin2hex(random_bytes(18)), 0, 36);
+        }
+
+        return [
+            'owner_key' => 'token:' . $token,
+            'role' => 'guest',
+            'user_id' => null,
+            'token' => $token,
+        ];
+    }
+
+    private function ensureProgressTable() {
+        static $ensured = false;
+        if ($ensured) return;
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_progress_state (
+            progress_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            owner_key VARCHAR(80) NOT NULL,
+            user_role VARCHAR(20) NOT NULL DEFAULT 'guest',
+            user_id INT NULL,
+            progress_token VARCHAR(64) NULL,
+            progress_json LONGTEXT NOT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (progress_id),
+            UNIQUE KEY uniq_owner_key (owner_key),
+            KEY idx_user_id (user_id),
+            KEY idx_progress_token (progress_token)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $ensured = true;
+    }
+
+    private function freshProgressState() {
+        return [
+            'version' => 2,
+            'xp' => 0,
+            'streak' => [
+                'current' => 0,
+                'best' => 0,
+                'lastDate' => null,
+            ],
+            'lessons' => new stdClass(),
+        ];
+    }
+
+    private function normalizeProgressState($state) {
+        $fresh = $this->freshProgressState();
+        if (!is_array($state)) return $fresh;
+
+        $streak = isset($state['streak']) && is_array($state['streak']) ? $state['streak'] : [];
+        $lessons = isset($state['lessons']) && is_array($state['lessons']) ? $state['lessons'] : [];
+        $normalized_lessons = [];
+
+        foreach ($lessons as $key => $lesson) {
+            if (!is_array($lesson)) continue;
+            $lesson_key = substr((string)($lesson['key'] ?? $key), 0, 120);
+            if ($lesson_key === '') continue;
+            $normalized_lessons[$lesson_key] = [
+                'key' => $lesson_key,
+                'module' => substr((string)($lesson['module'] ?? 'unknown'), 0, 120),
+                'lessonNum' => isset($lesson['lessonNum']) && is_numeric($lesson['lessonNum']) ? (int)$lesson['lessonNum'] : 0,
+                'title' => substr((string)($lesson['title'] ?? $lesson_key), 0, 255),
+                'firstSeen' => isset($lesson['firstSeen']) && is_numeric($lesson['firstSeen']) ? (int)$lesson['firstSeen'] : round(microtime(true) * 1000),
+                'completedAt' => isset($lesson['completedAt']) && is_numeric($lesson['completedAt']) ? (int)$lesson['completedAt'] : null,
+                'practiceScore' => isset($lesson['practiceScore']) && is_numeric($lesson['practiceScore']) ? (int)$lesson['practiceScore'] : 0,
+                'practiceTotal' => isset($lesson['practiceTotal']) && is_numeric($lesson['practiceTotal']) ? max(1, (int)$lesson['practiceTotal']) : 3,
+                'practiceAttempts' => isset($lesson['practiceAttempts']) && is_numeric($lesson['practiceAttempts']) ? (int)$lesson['practiceAttempts'] : 0,
+                'exitAttempts' => isset($lesson['exitAttempts']) && is_numeric($lesson['exitAttempts']) ? (int)$lesson['exitAttempts'] : 0,
+                'bossAttempts' => isset($lesson['bossAttempts']) && is_numeric($lesson['bossAttempts']) ? (int)$lesson['bossAttempts'] : 0,
+                'bossWon' => !empty($lesson['bossWon']),
+                'bossBestTime' => isset($lesson['bossBestTime']) && is_numeric($lesson['bossBestTime']) ? (int)$lesson['bossBestTime'] : null,
+                'bossWonAt' => isset($lesson['bossWonAt']) && is_numeric($lesson['bossWonAt']) ? (int)$lesson['bossWonAt'] : null,
+                'xpEarned' => isset($lesson['xpEarned']) && is_numeric($lesson['xpEarned']) ? (int)$lesson['xpEarned'] : 0,
+            ];
+        }
+
+        return [
+            'version' => 2,
+            'xp' => isset($state['xp']) && is_numeric($state['xp']) ? (int)$state['xp'] : 0,
+            'streak' => [
+                'current' => isset($streak['current']) && is_numeric($streak['current']) ? (int)$streak['current'] : 0,
+                'best' => isset($streak['best']) && is_numeric($streak['best']) ? (int)$streak['best'] : 0,
+                'lastDate' => isset($streak['lastDate']) ? (string)$streak['lastDate'] : null,
+            ],
+            'lessons' => $normalized_lessons,
+        ];
+    }
+
+    private function readProgressRow($owner_key) {
+        $this->ensureProgressTable();
+        return $this->db->get_where('ms_progress_state', ['owner_key' => $owner_key])->row_array();
+    }
+
+    private function saveProgressRow($owner, $state) {
+        $this->ensureProgressTable();
+        $normalized = $this->normalizeProgressState($state);
+        $encoded = json_encode($normalized);
+        if (!$encoded) {
+            $this->json(['error' => 'Could not encode progress state'], 400);
+        }
+        if (strlen($encoded) > 500000) {
+            $this->json(['error' => 'Progress payload too large'], 413);
+        }
+
+        $payload = [
+            'owner_key' => $owner['owner_key'],
+            'user_role' => $owner['role'],
+            'user_id' => $owner['user_id'],
+            'progress_token' => $owner['token'],
+            'progress_json' => $encoded,
+        ];
+
+        $existing = $this->readProgressRow($owner['owner_key']);
+        if ($existing) {
+            $this->db->where('owner_key', $owner['owner_key']);
+            $this->db->update('ms_progress_state', $payload);
+        } else {
+            $this->db->insert('ms_progress_state', $payload);
+        }
+
+        return $normalized;
+    }
+
     // ─── Auth ─────────────────────────────────────────────────────────────────
 
     /**
@@ -160,6 +313,63 @@ class Api extends CI_Controller {
     }
 
     // ─── Student ──────────────────────────────────────────────────────────────
+
+    /**
+     * GET /api/progress?token=<optional>
+     */
+    public function progress() {
+        $token = $this->input->get('token', TRUE) ?: '';
+        $owner = $this->currentProgressOwner($token);
+        $row = $this->readProgressRow($owner['owner_key']);
+        $state = $row ? json_decode($row['progress_json'], true) : $this->freshProgressState();
+        $this->json([
+            'success' => true,
+            'owner' => [
+                'key' => $owner['owner_key'],
+                'role' => $owner['role'],
+                'token' => $owner['token'],
+            ],
+            'progress' => $this->normalizeProgressState($state),
+        ]);
+    }
+
+    /**
+     * POST /api/progress/save
+     * Body: JSON { token?: string, progress: {...} }
+     */
+    public function progress_save() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $body = $this->getJsonInput();
+        $token = isset($body['token']) ? (string)$body['token'] : $this->getPosted('token');
+        $progress = isset($body['progress']) && is_array($body['progress']) ? $body['progress'] : [];
+
+        if (!$progress) {
+            $posted = $this->getPosted('progress');
+            if ($posted) {
+                $decoded = json_decode($posted, true);
+                if (is_array($decoded)) $progress = $decoded;
+            }
+        }
+
+        if (!$progress) {
+            $this->json(['error' => 'Progress payload is required'], 400);
+        }
+
+        $owner = $this->currentProgressOwner($token);
+        $saved = $this->saveProgressRow($owner, $progress);
+        $this->json([
+            'success' => true,
+            'owner' => [
+                'key' => $owner['owner_key'],
+                'role' => $owner['role'],
+                'token' => $owner['token'],
+            ],
+            'progress' => $saved,
+        ]);
+    }
 
     /**
      * GET /api/student/stats

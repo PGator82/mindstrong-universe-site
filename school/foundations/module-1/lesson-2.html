@@ -17,6 +17,15 @@
     .ms-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.08);color:#ef4444;}
     .ms-opt:disabled{opacity:.5;cursor:default;pointer-events:none;}
     .ms-feedback{margin-top:10px;font-size:13px;font-family:'JetBrains Mono',monospace;min-height:20px;}
+    .ms-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+    .ms-chip{display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);font-size:12px;transition:all .3s ease;}
+    .ms-chip.done{border-color:var(--xp-a);color:var(--xp-a);background:rgba(255,255,255,.07);}
+    .ms-glowDone{border-color:var(--xp-a)!important;box-shadow:0 0 0 3px rgba(34,211,238,.15),0 0 22px rgba(34,211,238,.15)!important;}
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--xp-a);opacity:.75;margin-bottom:6px;display:block;}
+    .hack-box{background:rgba(34,211,238,.07);border-left:4px solid var(--xp-a);padding:16px;border-radius:12px;font-weight:600;line-height:1.7;}
+    body[data-mode="arcade"] .hack-box{background:rgba(250,204,21,.07);}
+    body[data-mode="rpg"] .hack-box{background:rgba(168,85,247,.07);}
+    body[data-mode="lms"] .hack-box{background:rgba(52,211,153,.07);}
     .ms-conceptCard{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;
       border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:12px;}
     .ms-conceptIcon{font-size:26px;flex-shrink:0;}
@@ -108,6 +117,13 @@
     <span class="ms-kicker" id="modeKicker">🧠 Number Sense · Lesson 2 of 6</span>
     <h1 class="ms-h1">Place Value Is a Volume Knob</h1>
     <p class="ms-sub">×10 louder • ÷10 quieter</p>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete</button>
+      <a class="ms-btn" href="../../index.html">&larr; Back to Foundations</a>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: In progress</span>
+    </div>
   </section>
 
   <!-- MODE BAR -->
@@ -127,6 +143,13 @@
   <!-- CONCEPTS -->
   <section class="ms-reveal">
     <h2 class="ms-h2">📚 Core Concepts</h2>
+    <span class="section-label">Key Concept</span>
+    <div class="hack-box" style="margin-bottom:18px;">Each place to the left makes a number ten times larger, and each place to the right makes it ten times smaller. The digit stays the same while its value changes.</div>
+    <span class="section-label">Interactive Status</span>
+    <div class="ms-card" style="padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:18px;">
+      <h2 class="ms-h2" style="margin-bottom:10px;">Activity Status</h2>
+      <p style="font-size:14px;line-height:1.8;color:#c8d3e8;">This lesson uses practice checks, an exit check, and the boss round instead of a Desmos graph. The layout now matches the richer Foundations lesson shell while keeping the existing math mastery flow.</p>
+    </div>
     
     <div class="ms-conceptCard ms-reveal">
       <div class="ms-conceptIcon">🔊</div>
@@ -232,6 +255,8 @@
    LESSON CONFIG
 ═══════════════════════════════════════════════ */
 const LESSON_KEY = "m1-l2";
+const KEY = "ms_m1_done";
+const LESSON_ID = 2;
 const CORRECT = [0, 0, 0]; // correct option index per practice question
 const EXIT_ANS = 6000;
 const BOSS_POOL = [
@@ -252,7 +277,26 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.MSTracker) {
     MSTracker.init(LESSON_KEY, {module:"Number Sense", lessonNum:2, title:"Place Value Is a Volume Knob", practiceTotal:3});
   }
+  const completeBtn = document.getElementById("completeBtn");
+  if (completeBtn) {
+    completeBtn.addEventListener("click", () => {
+      if (lessonIsComplete()) {
+        syncCompletionUI();
+        return;
+      }
+      if (!_exitPassed) {
+        syncCompletionUI("Status: Pass the exit check first");
+        const exitSection = document.getElementById("exitSection");
+        if (exitSection) exitSection.scrollIntoView({behavior:"smooth", block:"center"});
+        const exitInput = document.getElementById("exitInput");
+        if (exitInput) exitInput.focus();
+        return;
+      }
+      markComplete();
+    });
+  }
   restoreIfDone();
+  syncCompletionUI();
 });
 
 /* ═══════════════════════════════════════════════
@@ -444,74 +488,89 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ═══════════════════════════════════════════════
    COMPLETE
 ═══════════════════════════════════════════════ */
-function markComplete() {
-  let xp = 0;
-  if (window.MSTracker) xp = MSTracker.complete(LESSON_KEY);
-  showXPToast(xp);
-  updateScorecard();
+function getArr() {
+  try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+}
 
-  // Score summary
+function lessonIsComplete() {
+  try {
+    const prog = window.MSTracker ? MSTracker.getProgress(LESSON_KEY) : null;
+    if (prog && prog.completedAt) return true;
+  } catch {}
+  return getArr().includes(LESSON_ID);
+}
+
+function renderCompletionSummary(xpOverride = null) {
   const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
-  const pScore = prog.practiceScore || _practiceCorrect;
+  const pScore = prog.practiceScore || _practiceCorrect || 3;
   const pips = Array.from({length:3}, (_,i) =>
     `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 3px;
      background:${i < pScore ? 'var(--xp-a)' : 'rgba(255,255,255,.1)'};border:1px solid rgba(255,255,255,.2);"></span>`
   ).join('');
   const bossTag = (prog.bossWon || _bossWon)
-    ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:12px;">⚔️ Boss Defeated</span>`
+    ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:12px;">Boss Defeated</span>`
     : '';
-  const xpTag = xp > 0 ? `<span style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
-    padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;">${xp} XP</span>` : '';
-
+  const xpEarned = xpOverride !== null ? xpOverride : (prog.xpEarned || 0);
+  const xpTag = xpEarned > 0 ? `<span style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
+    padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;">${xpEarned} XP</span>` : '';
   const summary = document.getElementById("completeSummary");
   if (summary) summary.innerHTML = `<div style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
     <span>Practice: ${pips}</span>${bossTag}${xpTag}</div>`;
-
-  document.getElementById("completeCard").classList.add("is-visible");
-  document.getElementById("completeCard").scrollIntoView({behavior:"smooth", block:"center"});
-
-  // Legacy localStorage
-  try {
-    const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
-    if (!done.includes(2)) { done.push(2); localStorage.setItem("ms_m1_done", JSON.stringify(done)); }
-  } catch {}
 }
 
-/* ═══════════════════════════════════════════════
-   RESTORE ON REVISIT
-═══════════════════════════════════════════════ */
-function restoreIfDone() {
-  let isDone = false;
-  try {
-    const prog = window.MSTracker ? MSTracker.getProgress(LESSON_KEY) : null;
-    if (prog && prog.completedAt) isDone = true;
-    if (!isDone) {
-      const done = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
-      if (done.includes(2)) isDone = true;
-    }
-  } catch {}
-
-  if (isDone) {
-    updateScorecard();
-    document.getElementById("completeCard").classList.add("is-visible");
-    // Inject summary
-    const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {};
-    const pScore = prog.practiceScore || 3;
-    const pips = Array.from({length:3}, (_,i) =>
-      `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 3px;
-       background:${i < pScore ? 'var(--xp-a)' : 'rgba(255,255,255,.1)'};border:1px solid rgba(255,255,255,.2);"></span>`
-    ).join('');
-    const xpEarned = prog.xpEarned || 0;
-    const xpTag = xpEarned > 0 ? `<span style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:900;
-      padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;">${xpEarned} XP</span>` : '';
-    const bossTag = prog.bossWon
-      ? `<span style="color:#4ade80;font-family:'JetBrains Mono',monospace;font-size:12px;">⚔️ Boss Defeated</span>` : '';
-    const summary = document.getElementById("completeSummary");
-    if (summary) summary.innerHTML = `<div style="display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;">
-      <span>Practice: ${pips}</span>${bossTag}${xpTag}</div>`;
+function syncCompletionUI(message) {
+  const isDone = lessonIsComplete();
+  const btn = document.getElementById("completeBtn");
+  const chip = document.getElementById("statusChip");
+  if (btn) {
+    btn.disabled = isDone;
+    btn.textContent = isDone ? "Completed" : "Mark Complete";
+    btn.classList.toggle("ms-glowDone", isDone);
+  }
+  if (chip) {
+    chip.textContent = message || (isDone ? "Status: Completed" : "Status: In progress");
+    chip.className = "ms-chip" + (isDone ? " done" : "");
   }
 }
 
+function writeLegacyComplete() {
+  try {
+    const done = getArr();
+    if (!done.includes(LESSON_ID)) {
+      done.push(LESSON_ID);
+      localStorage.setItem(KEY, JSON.stringify(done));
+    }
+  } catch {}
+}
+
+function markComplete() {
+  if (lessonIsComplete()) {
+    renderCompletionSummary();
+    document.getElementById("completeCard").classList.add("is-visible");
+    syncCompletionUI();
+    return;
+  }
+
+  let xp = 0;
+  if (window.MSTracker) xp = MSTracker.complete(LESSON_KEY);
+  showXPToast(xp);
+  updateScorecard();
+  writeLegacyComplete();
+  renderCompletionSummary(xp);
+
+  document.getElementById("completeCard").classList.add("is-visible");
+  document.getElementById("completeCard").scrollIntoView({behavior:"smooth", block:"center"});
+  syncCompletionUI();
+}
+function restoreIfDone() {
+  if (!lessonIsComplete()) return;
+
+  _exitPassed = true;
+  updateScorecard();
+  renderCompletionSummary();
+  document.getElementById("completeCard").classList.add("is-visible");
+  syncCompletionUI();
+}
 /* ═══════════════════════════════════════════════
    MODE
 ═══════════════════════════════════════════════ */
