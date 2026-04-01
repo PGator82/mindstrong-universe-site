@@ -68,10 +68,21 @@ $route['api/parent/child']         = 'api/parent_child';
 $route['api/parent/grades']        = 'api/parent_grades';
 $route['api/parent/attendance']    = 'api/parent_attendance';
 $route['api/parent/fees']          = 'api/parent_fees';
+$route['api/parent/fees/pay']      = 'api/parent_fees_pay';
+$route['api/parent/schedule']      = 'api/parent_schedule';
+$route['api/parent/teachers']      = 'api/parent_teachers';
+$route['api/parent/messages']      = 'api/parent_messages';
+$route['api/parent/messages/send'] = 'api/parent_messages_send';
 
 $route['api/teacher/stats']        = 'api/teacher_stats';
 $route['api/teacher/students']     = 'api/teacher_students';
+$route['api/teacher/classes']      = 'api/teacher_classes';
+$route['api/teacher/schedule']     = 'api/teacher_schedule';
+$route['api/teacher/assignments']  = 'api/teacher_assignments';
+$route['api/teacher/assignments/create'] = 'api/teacher_assignments_create';
+$route['api/teacher/attendance']   = 'api/teacher_attendance_save';
 
 $route['api/admin/stats']          = 'api/admin_stats';
 $route['api/admin/users']          = 'api/admin_users';
+$route['api/admin/users/create']   = 'api/admin_users_create';
 $route['api/admin/activity']       = 'api/admin_activity';

@@ -341,7 +341,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div class="card-header">
           <span class="card-title">User Management</span>
           <div style="display:flex;gap:8px;align-items:center;">
-            <select style="padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
+            <select id="user-role-filter" onchange="loadAdminUsers()" style="padding:6px 10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.78rem;outline:none;">
               <option>All Roles</option><option>Admin</option><option>Teacher</option><option>Student</option><option>Parent</option>
             </select>
             <button class="btn btn-gold btn-sm" onclick="openModal('add-user-modal')">+ Add</button>
@@ -350,7 +350,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
         <div class="table-wrap">
           <table>
             <thead><tr><th>Name</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
+            <tbody id="users-table-body">
               <tr>
                 <td><div class="user-cell"><div class="u-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">🛡️</div><div><div class="u-name">Dr. E. Boateng</div><div class="u-email">admin@mindstrong.edu</div></div></div></td>
                 <td><span class="role-badge rb-admin">Admin</span></td>
@@ -397,7 +397,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
           </table>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;font-size:.78rem;color:var(--muted);">
-          <span>Showing 6 of 1,342 users</span>
+          <span id="users-summary">Showing 6 of 1,342 users</span>
           <div style="display:flex;gap:6px;">
             <button class="btn btn-ghost btn-sm">← Prev</button>
             <button class="btn btn-ghost btn-sm">Next →</button>
@@ -409,6 +409,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <div style="display:flex;flex-direction:column;gap:20px;">
         <div class="card">
           <div class="card-header"><span class="card-title">Recent Activity</span><span class="card-link">All</span></div>
+          <div id="activity-feed">
           <div class="activity-item">
             <div class="act-ico" style="background:rgba(16,185,129,.15)">✅</div>
             <div><div class="act-text"><b>Sarah Kim</b> completed Python Course</div><div class="act-time">2 min ago</div></div>
@@ -428,6 +429,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="activity-item">
             <div class="act-ico" style="background:rgba(6,182,212,.15)">🤖</div>
             <div><div class="act-text"><b>Nova AI</b> processed 340 sessions</div><div class="act-time">3 hrs ago</div></div>
+          </div>
           </div>
         </div>
 
@@ -473,22 +475,22 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <button class="close-btn" onclick="closeModal('add-user-modal')">✕</button>
     </div>
     <div class="form-row-2">
-      <div class="form-field"><label>First Name</label><input type="text" placeholder="First name"></div>
-      <div class="form-field"><label>Last Name</label><input type="text" placeholder="Last name"></div>
+      <div class="form-field"><label>First Name</label><input type="text" id="admin-first-name" placeholder="First name"></div>
+      <div class="form-field"><label>Last Name</label><input type="text" id="admin-last-name" placeholder="Last name"></div>
     </div>
-    <div class="form-field"><label>Email</label><input type="email" placeholder="email@mindstrong.edu"></div>
+    <div class="form-field"><label>Email</label><input type="email" id="admin-email" placeholder="email@mindstrong.edu"></div>
     <div class="form-field"><label>Role</label>
-      <select><option>Student</option><option>Teacher</option><option>Parent</option><option>Admin</option></select>
+      <select id="admin-role"><option>Student</option><option>Teacher</option><option>Parent</option><option>Admin</option></select>
     </div>
     <div class="form-row-2">
       <div class="form-field"><label>Grade / Class</label>
-        <select><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+        <select id="admin-class-id"><option value="">Not assigned</option><option value="1">Grade 9</option><option value="2">Grade 10</option><option value="3">Grade 11</option><option value="4">Grade 12</option></select>
       </div>
       <div class="form-field"><label>Section</label>
-        <select><option>A</option><option>B</option><option>C</option></select>
+        <select id="admin-section-id"><option value="">None</option><option value="1">A</option><option value="2">B</option><option value="3">C</option></select>
       </div>
     </div>
-    <div class="form-field"><label>Temporary Password</label><input type="password" placeholder="Set temporary password"></div>
+    <div class="form-field"><label>Temporary Password</label><input type="password" id="admin-password" placeholder="Set temporary password"></div>
     <div style="display:flex;gap:10px;margin-top:6px;">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal('add-user-modal')">Cancel</button>
       <button class="btn btn-gold" style="flex:2" onclick="closeModal('add-user-modal');showToast('✅ User added successfully!','var(--green)')">Create User</button>
@@ -576,6 +578,112 @@ async function loadData() {
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
+</script>
+<script>
+function adminRoleBadge(role) {
+  const key = String(role || '').toLowerCase();
+  const map = {
+    admin: 'rb-admin',
+    teacher: 'rb-teacher',
+    student: 'rb-student',
+    parent: 'rb-parent'
+  };
+  return map[key] || 'rb-student';
+}
+
+async function loadAdminUsers() {
+  const filter = document.getElementById('user-role-filter');
+  const role = (filter?.value || 'Student').toLowerCase();
+  const normalizedRole = role === 'all roles' ? 'student' : role;
+  try {
+    const res = await fetch(`/api/admin/users?role=${encodeURIComponent(normalizedRole)}&limit=10`, { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const tbody = document.getElementById('users-table-body');
+    tbody.innerHTML = (data.users || []).map(user => {
+      const joined = user.creation_timestamp ? new Date(Number(user.creation_timestamp) * 1000).toLocaleDateString() : 'Current';
+      const badgeLabel = normalizedRole.charAt(0).toUpperCase() + normalizedRole.slice(1);
+      return `<tr><td><div class="user-cell"><div class="u-avatar" style="background:var(--grad)">${badgeLabel === 'Admin' ? '🛡️' : badgeLabel === 'Teacher' ? '👩‍🏫' : badgeLabel === 'Parent' ? '👪' : '🎓'}</div><div><div class="u-name">${user.name || ''}</div><div class="u-email">${user.email || ''}</div></div></div></td><td><span class="role-badge ${adminRoleBadge(normalizedRole)}">${badgeLabel}</span></td><td>${joined}</td><td><span class="status-active">● Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>`;
+    }).join('');
+    document.getElementById('users-summary').textContent = `Showing ${(data.users || []).length} of ${data.total || 0} users`;
+  } catch (e) {}
+}
+
+async function createAdminUser() {
+  const payload = {
+    first_name: document.getElementById('admin-first-name').value.trim(),
+    last_name: document.getElementById('admin-last-name').value.trim(),
+    email: document.getElementById('admin-email').value.trim(),
+    role: document.getElementById('admin-role').value.toLowerCase(),
+    class_id: document.getElementById('admin-class-id').value,
+    section_id: document.getElementById('admin-section-id').value,
+    password: document.getElementById('admin-password').value
+  };
+  const btn = document.getElementById('admin-user-submit');
+  if (!payload.first_name || !payload.last_name || !payload.email || !payload.password) {
+    showToast('Complete all required user fields.', 'var(--red)');
+    return;
+  }
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+  }
+  try {
+    const res = await fetch('/api/admin/users/create', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not create user');
+    closeModal('add-user-modal');
+    showToast('User added successfully!', 'var(--green)');
+    ['admin-first-name','admin-last-name','admin-email','admin-password'].forEach(id => document.getElementById(id).value = '');
+    await loadAdminUsers();
+  } catch (e) {
+    showToast(e.message || 'Could not create user', 'var(--red)');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Create User';
+    }
+  }
+}
+
+async function loadAdminPortal() {
+  const createButton = Array.from(document.querySelectorAll('#add-user-modal .btn.btn-gold')).pop();
+  if (createButton) {
+    createButton.id = 'admin-user-submit';
+    createButton.setAttribute('onclick', 'createAdminUser()');
+  }
+  try {
+    const res = await fetch('/api/admin/stats', { credentials: 'include' });
+    if (res.status === 401) { window.location.href = 'login.html'; return; }
+    if (res.ok) {
+      const data = await res.json();
+      const nums = document.querySelectorAll('.stat-num');
+      if (nums[0]) nums[0].textContent = (data.total_users || 0).toLocaleString();
+      if (nums[1]) nums[1].textContent = '$' + Math.round(data.revenue || 0).toLocaleString();
+      if (nums[2]) nums[2].textContent = (data.att_rate || 0) + '%';
+      if (nums[3]) nums[3].textContent = (data.total_students || 0).toLocaleString();
+    }
+  } catch (e) {}
+
+  try {
+    const res = await fetch('/api/admin/activity', { credentials: 'include' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.activity && data.activity.length) {
+        document.getElementById('activity-feed').innerHTML = data.activity.map(item => `<div class="activity-item"><div class="act-ico" style="background:rgba(255,255,255,.08)">${item.icon || '•'}</div><div><div class="act-text">${item.message}</div><div class="act-time">${item.time || 'Recently'}</div></div></div>`).join('');
+      }
+    }
+  } catch (e) {}
+
+  await loadAdminUsers();
+}
+
+document.addEventListener('DOMContentLoaded', loadAdminPortal);
 </script>
 </body>
 </html>

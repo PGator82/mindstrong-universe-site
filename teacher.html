@@ -261,7 +261,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <span class="card-title">My Classes</span>
           <a class="card-link" href="#">Manage</a>
         </div>
-        <div class="class-grid">
+        <div class="class-grid" id="class-grid">
           <div class="class-card c1 selected" onclick="selectClass(this)">
             <span class="class-count">28</span>
             <div class="class-emoji">🧮</div>
@@ -291,6 +291,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
       <div class="card">
         <div class="card-header"><span class="card-title">Today's Schedule</span></div>
+        <div id="teacher-schedule">
         <div class="sched-item">
           <div class="sched-time">8:00 AM</div>
           <div class="sched-dot" style="background:#10b981"></div>
@@ -320,6 +321,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="sched-dot" style="background:#2563eb"></div>
           <div class="sched-info"><div class="sched-name">Parent Meeting</div><div class="sched-sub">Online</div></div>
           <span class="badge badge-soon">Soon</span>
+        </div>
         </div>
       </div>
     </div>
@@ -443,21 +445,21 @@ tr:hover td{background:rgba(255,255,255,.02);}
       <h2 style="font-size:1.1rem;font-weight:800;">New Assignment</h2>
       <button onclick="closeModal('assign-modal')" style="background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;">✕</button>
     </div>
-    <div class="form-field"><label>Title</label><input type="text" placeholder="e.g. Algebra Problem Set Ch.8"></div>
+    <div class="form-field"><label>Title</label><input type="text" id="assign-title" placeholder="e.g. Algebra Problem Set Ch.8"></div>
     <div class="form-field"><label>Class</label>
-      <select><option>Advanced Algebra — Gr 10A</option><option>Geometry — Gr 9B</option><option>Calculus — Gr 11A</option><option>Statistics — Gr 12C</option></select>
+      <select id="assign-class"><option value="">Select class</option></select>
     </div>
     <div class="form-row-2">
-      <div class="form-field"><label>Due Date</label><input type="date"></div>
-      <div class="form-field"><label>Max Score</label><input type="number" placeholder="100"></div>
+      <div class="form-field"><label>Due Date</label><input type="date" id="assign-due"></div>
+      <div class="form-field"><label>Max Score</label><input type="number" id="assign-score" placeholder="100"></div>
     </div>
-    <div class="form-field"><label>Description</label><textarea placeholder="Describe the assignment..."></textarea></div>
+    <div class="form-field"><label>Description</label><textarea id="assign-description" placeholder="Describe the assignment..."></textarea></div>
     <div class="form-field"><label>Type</label>
-      <select><option>Homework</option><option>Quiz</option><option>Test</option><option>Project</option><option>Lab</option></select>
+      <select id="assign-type"><option>Homework</option><option>Quiz</option><option>Test</option><option>Project</option><option>Lab</option></select>
     </div>
     <div style="display:flex;gap:10px;margin-top:6px;">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal('assign-modal')">Cancel</button>
-      <button class="btn btn-primary" style="flex:2" onclick="closeModal('assign-modal');showToast('Assignment created!')">Create Assignment</button>
+      <button class="btn btn-primary" id="assign-submit" style="flex:2" onclick="submitAssignment()">Create Assignment</button>
     </div>
   </div>
 </div>
@@ -472,7 +474,7 @@ tr:hover td{background:rgba(255,255,255,.02);}
     <div id="att-list"></div>
     <div style="display:flex;gap:10px;margin-top:16px;">
       <button class="btn btn-ghost" style="flex:1" onclick="closeModal('attendance-modal')">Cancel</button>
-      <button class="btn btn-primary" style="flex:2" onclick="closeModal('attendance-modal');showToast('Attendance saved!')">Save Attendance</button>
+      <button class="btn btn-primary" style="flex:2" onclick="saveAttendance()">Save Attendance</button>
     </div>
   </div>
 </div>
@@ -569,7 +571,189 @@ async function loadData() {
 
 document.addEventListener('DOMContentLoaded', loadData);
 
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}
+</script>
+<script>
+const teacherState = {
+  classes: [],
+  assignments: [],
+  students: [],
+  currentClassId: null
+};
+
+function buildAttendanceList(students){
+  const attList = document.getElementById('att-list');
+  attList.innerHTML = '';
+  students.forEach(student => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);';
+    row.innerHTML = `<span style="font-size:.88rem;font-weight:600">${student.name}</span>
+    <div style="display:flex;gap:8px;" data-student-id="${student.id}">
+      <button onclick="setAtt(this,'P')" class="btn btn-primary btn-sm att-opt" data-v="P">P</button>
+      <button onclick="setAtt(this,'L')" class="btn btn-ghost btn-sm att-opt" data-v="L">L</button>
+      <button onclick="setAtt(this,'A')" class="btn btn-ghost btn-sm att-opt" data-v="A" style="color:var(--red)">A</button>
+    </div>`;
+    attList.appendChild(row);
+  });
+}
+
+function selectClass(classId){
+  teacherState.currentClassId = Number(classId);
+  document.querySelectorAll('.class-card').forEach(card => {
+    card.classList.toggle('selected', Number(card.dataset.classId) === teacherState.currentClassId);
+  });
+  const select = document.getElementById('assign-class');
+  if (select) select.value = String(teacherState.currentClassId || '');
+  loadTeacherStudents(teacherState.currentClassId);
+}
+
+function renderTeacherClasses(classes){
+  if (!classes.length) return;
+  const grid = document.getElementById('class-grid');
+  const select = document.getElementById('assign-class');
+  grid.innerHTML = classes.map((cls, index) => `<div class="class-card c${(index % 4) + 1} ${index === 0 ? 'selected' : ''}" data-class-id="${cls.class_id}" onclick="selectClass(${cls.class_id})"><span class="class-count">${cls.student_count}</span><div class="class-emoji">${['🧮','📐','∫','📊'][index % 4]}</div><div class="class-name">${cls.subject}</div><div class="class-meta">${cls.class_name}</div></div>`).join('');
+  select.innerHTML = '<option value="">Select class</option>' + classes.map(cls => `<option value="${cls.class_id}">${cls.subject} - ${cls.class_name}</option>`).join('');
+  teacherState.currentClassId = Number(classes[0].class_id);
+  select.value = String(teacherState.currentClassId);
+}
+
+function renderTeacherSchedule(items){
+  if (!items.length) return;
+  const wrap = document.getElementById('teacher-schedule');
+  wrap.innerHTML = items.slice(0, 5).map((item, index) => `<div class="sched-item"><div class="sched-time">${item.time || ''}</div><div class="sched-dot" style="background:${index === 0 ? '#10b981' : '#7c3aed'}${index === 0 ? ';animation:pulse 1s infinite' : ''}"></div><div class="sched-info"><div class="sched-name">${item.subject} · ${item.class_name}</div><div class="sched-sub">${item.room || 'Room TBD'}${item.day ? ' · ' + item.day : ''}</div></div><span class="badge ${index === 0 ? 'badge-live' : 'badge-soon'}">${index === 0 ? 'Next' : 'Planned'}</span></div>`).join('');
+}
+
+function renderTeacherStudents(students){
+  if (!students.length) return;
+  teacherState.students = students;
+  const tbody = document.getElementById('student-table');
+  tbody.innerHTML = students.map(student => {
+    const avg = Number(student.average || 0);
+    const grade = avg >= 90 ? 'A' : avg >= 80 ? 'B' : avg >= 70 ? 'C' : 'D';
+    const gradeClass = avg >= 90 ? 'ga' : avg >= 80 ? 'gb' : avg >= 70 ? 'gc' : 'gd';
+    const status = avg >= 80 ? 'Active' : avg >= 65 ? 'At Risk' : 'Struggling';
+    const statusColor = avg >= 80 ? 'var(--green)' : avg >= 65 ? 'var(--yellow)' : 'var(--red)';
+    return `<tr><td><div class="student-cell"><div class="s-avatar">🎓</div><div><div class="s-name">${student.name}</div><div class="s-id">#${student.id}</div></div></div></td><td><span class="grade-pill ${gradeClass}">${grade}</span></td><td>${avg}%</td><td><div class="att-bar"><div class="att-fill" style="width:${Math.max(avg,45)}%;background:${avg >= 80 ? 'var(--green)' : avg >= 65 ? 'var(--yellow)' : 'var(--red)'}"></div></div></td><td><span class="status-dot" style="background:${statusColor}"></span>${status}</td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>`;
+  }).join('');
+  buildAttendanceList(students);
+}
+
+async function loadTeacherStudents(classId){
+  try {
+    const res = await fetch(classId ? `/api/teacher/students?class_id=${classId}` : '/api/teacher/students', { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    renderTeacherStudents(data.students || []);
+  } catch (e) {}
+}
+
+async function submitAssignment(){
+  const payload = {
+    class_id: Number(document.getElementById('assign-class').value || teacherState.currentClassId || 0),
+    title: document.getElementById('assign-title').value.trim(),
+    due_date: document.getElementById('assign-due').value,
+    max_score: document.getElementById('assign-score').value,
+    description: document.getElementById('assign-description').value.trim(),
+    type: document.getElementById('assign-type').value
+  };
+  if (!payload.class_id || !payload.title) {
+    showToast('Class and title are required.');
+    return;
+  }
+  const btn = document.getElementById('assign-submit');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+  try {
+    const res = await fetch('/api/teacher/assignments/create', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not create assignment');
+    closeModal('assign-modal');
+    showToast('Assignment created and published.');
+    ['assign-title','assign-due','assign-score','assign-description'].forEach(id => document.getElementById(id).value = '');
+    await loadTeacherPortal();
+  } catch (e) {
+    showToast(e.message || 'Could not create assignment.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Assignment';
+  }
+}
+
+async function saveAttendance(){
+  const records = Array.from(document.querySelectorAll('#att-list [data-student-id]')).map(row => {
+    const active = row.querySelector('.btn-primary');
+    return {
+      student_id: Number(row.dataset.studentId),
+      status: active ? active.dataset.v : 'P'
+    };
+  });
+  try {
+    const res = await fetch('/api/teacher/attendance', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ class_id: teacherState.currentClassId, records })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not save attendance');
+    closeModal('attendance-modal');
+    showToast(`Attendance saved for ${data.saved || records.length} students.`);
+  } catch (e) {
+    showToast(e.message || 'Could not save attendance.');
+  }
+}
+
+async function loadTeacherPortal(){
+  try {
+    const [statsRes, classesRes, scheduleRes, assignmentsRes] = await Promise.all([
+      fetch('/api/teacher/stats', { credentials: 'include' }),
+      fetch('/api/teacher/classes', { credentials: 'include' }),
+      fetch('/api/teacher/schedule', { credentials: 'include' }),
+      fetch('/api/teacher/assignments', { credentials: 'include' })
+    ]);
+
+    if (statsRes.status === 401 || classesRes.status === 401) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    if (statsRes.ok) {
+      const data = await statsRes.json();
+      const nums = document.querySelectorAll('.stat-num');
+      if (nums[0] && data.student_count !== undefined) nums[0].textContent = data.student_count;
+      if (nums[1] && data.class_count !== undefined) nums[1].textContent = data.class_count;
+      if (nums[2] && data.avg_score !== undefined) nums[2].textContent = data.avg_score + '%';
+      const greetEl = document.querySelector('.greeting h1 .pink-text, .greeting h1 .grad-text');
+      if (greetEl && data.name) greetEl.textContent = data.name.split(' ')[0];
+    }
+
+    if (classesRes.ok) {
+      const classData = await classesRes.json();
+      teacherState.classes = classData.classes || [];
+      renderTeacherClasses(teacherState.classes);
+    }
+
+    if (scheduleRes.ok) {
+      const scheduleData = await scheduleRes.json();
+      renderTeacherSchedule(scheduleData.schedule || []);
+    }
+
+    if (assignmentsRes.ok) {
+      const assignmentData = await assignmentsRes.json();
+      teacherState.assignments = assignmentData.assignments || [];
+      const nums = document.querySelectorAll('.stat-num');
+      if (nums[3]) nums[3].textContent = teacherState.assignments.length;
+    }
+
+    await loadTeacherStudents(teacherState.currentClassId);
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', loadTeacherPortal);
 </script>
 <style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}</style>
 </body>

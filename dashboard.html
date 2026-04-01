@@ -1243,7 +1243,8 @@
     try {
       const res = await fetch('/api/student/courses', { credentials: 'include' });
       if (!res.ok) throw new Error();
-      const courses = await res.json();
+      const payload = await res.json();
+      const courses = Array.isArray(payload) ? payload : (payload.courses || []);
       renderCourseTable(courses, 'courses-table',      'courses-tbody',      'courses-loading');
       renderCourseTable(courses, 'prog-courses-table', 'prog-courses-tbody', 'prog-courses-loading');
     } catch(e) {

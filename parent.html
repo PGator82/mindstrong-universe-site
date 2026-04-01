@@ -830,5 +830,193 @@ async function loadData() {
 
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
+<script>
+const parentState = {
+  children: [],
+  activeChildId: null,
+  teachers: [],
+  activeTeacherId: null
+};
+
+function gradeClassName(avg) {
+  if (avg >= 90) return 'grade-a';
+  if (avg >= 80) return 'grade-b';
+  if (avg >= 70) return 'grade-c';
+  return 'grade-d';
+}
+
+function selectChild(elOrId, idx) {
+  const childId = typeof elOrId === 'number' ? elOrId : Number(elOrId?.dataset?.childId || 0);
+  parentState.activeChildId = childId || (parentState.children[idx] ? parentState.children[idx].id : null);
+  document.querySelectorAll('.child-chip').forEach(c => c.classList.toggle('active', Number(c.dataset.childId) === parentState.activeChildId));
+  refreshParentChildData();
+}
+
+function renderChildSelector() {
+  const container = document.getElementById('child-selector');
+  if (!parentState.children.length) return;
+  container.innerHTML = parentState.children.map((child, index) => `<div class="child-chip ${index === 0 ? 'active' : ''}" data-child-id="${child.id}" onclick="selectChild(this, ${index})"><div class="ch-avatar" style="background:${index % 2 === 0 ? 'rgba(6,182,212,.2)' : 'rgba(124,58,237,.2)'}">${index % 2 === 0 ? '👦' : '👧'}</div><span>${child.name}</span><span style="font-size:.7rem;color:var(--muted)">${child.grade}</span></div>`).join('');
+  parentState.activeChildId = parentState.children[0].id;
+}
+
+function renderGrades(grades) {
+  const tbody = document.getElementById('grades-tbody');
+  tbody.innerHTML = grades.map(g => `<tr><td><div style="font-weight:700">${g.subject}</div><div class="teacher-tag">${g.teacher}</div></td><td>${g.last_score}%<div class="score-bar-wrap"><div class="score-bar-fill" style="width:${g.last_score}%"></div></div></td><td>${g.average}%</td><td><span class="grade-pill ${gradeClassName(g.average)}">${g.grade}</span></td></tr>`).join('');
+  const avg = grades.length ? Math.round(grades.reduce((sum, g) => sum + Number(g.average || 0), 0) / grades.length) : 0;
+  document.getElementById('stat-gpa').textContent = (avg / 25).toFixed(1);
+  document.getElementById('gpa-change').textContent = grades.length ? `${avg}% avg` : 'No grades';
+}
+
+function renderFees(fees) {
+  const list = document.getElementById('fee-list');
+  list.innerHTML = fees.map(fee => {
+    const statusClass = fee.status === 'paid' ? 'status-paid' : fee.status === 'overdue' ? 'status-overdue' : 'status-pending';
+    const button = fee.status === 'paid'
+      ? '<button class="pay-btn" disabled>Paid</button>'
+      : `<button class="pay-btn" onclick="payFee(${fee.invoice_id})">Pay Now</button>`;
+    return `<div class="fee-item"><div class="fee-icon" style="background:${fee.status === 'paid' ? 'rgba(16,185,129,.15)' : fee.status === 'overdue' ? 'rgba(239,68,68,.15)' : 'rgba(245,158,11,.15)'}">📋</div><div class="fee-info"><div class="fee-name">${fee.name}</div><div class="fee-date">${fee.status === 'paid' ? 'Paid' : fee.due_date ? 'Due ' + fee.due_date : 'Pending'}</div></div><div class="fee-amount">$${Math.round(Number(fee.amount || 0))}</div><span class="fee-status ${statusClass}">${fee.status.charAt(0).toUpperCase() + fee.status.slice(1)}</span>${button}</div>`;
+  }).join('');
+  const unpaidFees = fees.filter(f => f.status !== 'paid');
+  const unpaidTotal = unpaidFees.reduce((sum, fee) => sum + Number(fee.amount || 0), 0);
+  document.getElementById('stat-fees').textContent = '$' + unpaidTotal.toFixed(0);
+  document.getElementById('unpaid-badge').textContent = unpaidFees.length;
+}
+
+function renderSchedule(schedule) {
+  const grid = document.getElementById('schedule-grid');
+  if (!schedule.length) return;
+  grid.innerHTML = schedule.slice(0, 6).map((item, index) => `<div class="schedule-item" style="border:1px solid var(--border);border-radius:12px;padding:14px;border-bottom:none;"><div class="sched-time" style="width:auto;text-align:left">${item.time || ''}</div><div class="sched-dot" style="background:${index === 0 ? '#10b981' : '#2563eb'}"></div><div class="sched-info"><div class="sched-name">${item.subject}</div><div class="sched-teacher">${item.teacher}${item.room ? ' · ' + item.room : ''}${item.day ? ' · ' + item.day : ''}</div></div><span class="sched-badge ${index === 0 ? 'live-now' : 'upcoming'}">${index === 0 ? 'Today' : 'Planned'}</span></div>`).join('');
+}
+
+function renderTeachers(teachers) {
+  const list = document.querySelector('.teacher-list');
+  if (!teachers.length) return;
+  parentState.teachers = teachers;
+  parentState.activeTeacherId = teachers[0].teacher_id;
+  list.innerHTML = teachers.map((teacher, index) => `<div class="t-chip ${index === 0 ? 'active' : ''}" data-teacher-id="${teacher.teacher_id}" onclick="selectTeacher(this, ${teacher.teacher_id})"><span>👩‍🏫</span><span class="t-dot"></span>${teacher.name.split(' ')[0]}</div>`).join('');
+  document.getElementById('active-teacher-label').textContent = `${teachers[0].name} · ${teachers[0].subject}`;
+}
+
+function selectTeacher(el, teacherId) {
+  parentState.activeTeacherId = Number(teacherId);
+  document.querySelectorAll('.t-chip').forEach(c => c.classList.toggle('active', Number(c.dataset.teacherId) === parentState.activeTeacherId));
+  const teacher = parentState.teachers.find(t => Number(t.teacher_id) === parentState.activeTeacherId);
+  if (teacher) document.getElementById('active-teacher-label').textContent = `${teacher.name} · ${teacher.subject}`;
+  loadMessages();
+}
+
+async function loadMessages() {
+  if (!parentState.activeChildId || !parentState.activeTeacherId) return;
+  try {
+    const res = await fetch(`/api/parent/messages?student_id=${parentState.activeChildId}&teacher_id=${parentState.activeTeacherId}`, { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    const area = document.getElementById('chat-area');
+    if (!data.messages || !data.messages.length) {
+      const teacher = parentState.teachers.find(t => Number(t.teacher_id) === parentState.activeTeacherId);
+      area.innerHTML = `<div class="msg ai"><div class="msg-avatar">👩‍🏫</div><div class="msg-bubble">Hello! I'm ${teacher ? teacher.name : 'the teacher'}. Send a message any time.</div></div>`;
+      return;
+    }
+    area.innerHTML = data.messages.map(msg => `<div class="msg ${msg.sender_role === 'parent' ? 'user' : 'ai'}"><div class="msg-avatar">${msg.sender_role === 'parent' ? '👪' : '👩‍🏫'}</div><div class="msg-bubble">${msg.message_text}</div></div>`).join('');
+    area.scrollTop = area.scrollHeight;
+  } catch (e) {}
+}
+
+async function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || !parentState.activeChildId || !parentState.activeTeacherId) return;
+  try {
+    const res = await fetch('/api/parent/messages/send', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        student_id: parentState.activeChildId,
+        teacher_id: parentState.activeTeacherId,
+        message_text: text
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not send message');
+    input.value = '';
+    await loadMessages();
+    const cur = Number(document.getElementById('stat-msgs').textContent || 0);
+    document.getElementById('stat-msgs').textContent = String(cur + 1);
+    document.getElementById('msg-badge').textContent = String(cur + 1);
+  } catch (e) {}
+}
+
+async function payFee(invoiceId) {
+  try {
+    const res = await fetch('/api/parent/fees/pay', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invoice_id: invoiceId })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not pay fee');
+    await refreshParentChildData();
+  } catch (e) {}
+}
+
+async function refreshParentChildData() {
+  if (!parentState.activeChildId) return;
+  const studentId = parentState.activeChildId;
+  try {
+    const [gradesRes, feesRes, attendanceRes, scheduleRes, teachersRes] = await Promise.all([
+      fetch(`/api/parent/grades?student_id=${studentId}`, { credentials: 'include' }),
+      fetch(`/api/parent/fees?student_id=${studentId}`, { credentials: 'include' }),
+      fetch(`/api/parent/attendance?student_id=${studentId}`, { credentials: 'include' }),
+      fetch(`/api/parent/schedule?student_id=${studentId}`, { credentials: 'include' }),
+      fetch(`/api/parent/teachers?student_id=${studentId}`, { credentials: 'include' })
+    ]);
+
+    if (gradesRes.ok) {
+      const data = await gradesRes.json();
+      renderGrades(data.grades || []);
+    }
+    if (feesRes.ok) {
+      const data = await feesRes.json();
+      renderFees(data.fees || []);
+    }
+    if (attendanceRes.ok) {
+      const data = await attendanceRes.json();
+      renderCalendar(data.records || []);
+      document.getElementById('stat-att').textContent = (data.rate || 0) + '%';
+      document.getElementById('att-change').textContent = `${data.rate || 0}% present`;
+    }
+    if (scheduleRes.ok) {
+      const data = await scheduleRes.json();
+      renderSchedule(data.schedule || []);
+    }
+    if (teachersRes.ok) {
+      const data = await teachersRes.json();
+      renderTeachers(data.teachers || []);
+      await loadMessages();
+    }
+  } catch (e) {}
+}
+
+async function loadParentPortal() {
+  try {
+    const res = await fetch('/api/parent/child', { credentials: 'include' });
+    if (res.status === 401) { window.location.href = 'login.html'; return; }
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.parent_name) document.getElementById('parent-name').textContent = data.parent_name;
+    if (data.greeting_name) document.getElementById('greeting-name').textContent = data.greeting_name;
+    if (data.children && data.children.length) {
+      parentState.children = data.children;
+      document.getElementById('children-count').textContent = `${data.children.length} children enrolled`;
+      renderChildSelector();
+      await refreshParentChildData();
+    }
+  } catch (e) {}
+}
+
+document.addEventListener('DOMContentLoaded', loadParentPortal);
+</script>
 </body>
 </html>
