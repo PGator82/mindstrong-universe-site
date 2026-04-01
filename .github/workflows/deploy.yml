@@ -64,7 +64,9 @@ jobs:
             /school/foundations/progress-dashboard.html \
             /school/foundations/module-1/lesson-1.html \
             /school/foundations/pre-algebra/index.html \
-            /school/foundations/geometry/index.html
+            /school/foundations/geometry/index.html \
+            /school/foundations/linear/index.html \
+            /school/foundations/functions/index.html
           do
             code=$(curl -sS -o /dev/null -w "%{http_code}" "$APP_URL$path")
             echo "$path -> $code"

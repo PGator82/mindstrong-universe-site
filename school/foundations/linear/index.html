@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Linear Equations & Slope - Coming Soon</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../assets/css/theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#60a5fa;--xp-b:#22d3ee;--xp-glow:rgba(96,165,250,.16);}
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),radial-gradient(500px 400px at 85% 85%,rgba(34,211,238,.08),transparent 60%);}
+    .ms-wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:24px 18px 60px;}
+    .coming-card{padding:28px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);box-shadow:0 16px 60px rgba(0,0,0,.18);}
+    .hub-chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:12px;}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:24px 0;}
+    .feature-card{padding:18px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);}
+    .feature-card h3{font-family:'Orbitron',sans-serif;font-size:14px;margin:0 0 8px;}
+    .feature-card p{margin:0;color:#8a96b0;font-size:13px;line-height:1.5;}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="#">Linear</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap">
+  <section class="coming-card ms-reveal">
+    <div class="hub-chip">Module 8 Expansion</div>
+    <h1 class="ms-h1">Linear Equations &amp; Slope</h1>
+    <p class="ms-sub">This module is planned next and will cover slope, graphing lines, and writing equations from patterns and points.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <h3>What Is Slope?</h3>
+        <p>Build intuition for rise over run before formal graph work begins.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Graphing Lines</h3>
+        <p>Move from points and tables to full coordinate-plane line graphs.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Systems by Graphing</h3>
+        <p>Use intersections to understand where two linear relationships meet.</p>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <a class="ms-btn" href="../index.html">← Foundations Hub</a>
+      <a class="ms-btn" href="../algebra/index.html">Continue with Live Module →</a>
+    </div>
+  </section>
+</main>
+
+<script>
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('is-in');}),{threshold:.08});
+document.querySelectorAll('.ms-reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
