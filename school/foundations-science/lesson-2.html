@@ -20,6 +20,15 @@
     .ms-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.08);color:#ef4444;}
     .ms-opt:disabled{opacity:.5;cursor:default;pointer-events:none;}
     .ms-feedback{margin-top:10px;font-size:13px;font-family:'JetBrains Mono',monospace;min-height:20px;}
+    .ms-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+    .ms-chip{display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);font-size:12px;transition:all .3s ease;}
+    .ms-chip.done{border-color:var(--xp-a);color:var(--xp-a);background:rgba(255,255,255,.07);}
+    .ms-glowDone{border-color:var(--xp-a)!important;box-shadow:0 0 0 3px var(--xp-glow),0 0 22px var(--xp-glow)!important;}
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--xp-a);opacity:.75;margin-bottom:6px;display:block;}
+    .hack-box{background:rgba(34,211,238,.07);border-left:4px solid var(--xp-a);padding:16px;border-radius:12px;font-weight:600;line-height:1.7;}
+    body[data-mode="arcade"] .hack-box{background:rgba(250,204,21,.07);}
+    body[data-mode="rpg"] .hack-box{background:rgba(168,85,247,.07);}
+    body[data-mode="lms"] .hack-box{background:rgba(52,211,153,.07);}
     .ms-conceptCard{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:12px;}
     .ms-conceptIcon{font-size:26px;flex-shrink:0;}
     .ms-conceptTitle{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--xp-a);margin-bottom:4px;}
@@ -76,6 +85,13 @@
     <span class="ms-kicker" id="modeKicker">🔬 Life Science · Lesson 2 of 6</span>
     <h1 class="ms-h1">Living vs. Non-Living Things</h1>
     <p class="ms-sub">What Makes Something Alive?</p>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a class="ms-btn" href="./index.html">← Back to Foundations Science</a>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
   </section>
   <div class="ms-modebar ms-reveal">
     <span class="ms-modebar-label">Mode:</span>
@@ -89,6 +105,20 @@
   </div>
   <section class="ms-reveal">
     <h2 class="ms-h2">📚 Core Concepts</h2>
+    <span class="section-label">Hook</span>
+    <div class="ms-card" style="padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:18px;">
+      <h2 class="ms-h2" style="margin-bottom:10px;">The Living Test</h2>
+      <p style="font-size:14px;line-height:1.8;color:#c8d3e8;">A flame moves. A river changes shape. A crystal grows. None of those things are alive. To tell the difference, we need a stronger test than motion or change alone.</p>
+    </div>
+    <span class="section-label">Key Concept</span>
+    <div class="hack-box" style="margin-bottom:18px;">
+      Living things are identified by a <strong>pattern of traits</strong>, not by just one behavior. If something grows, uses energy, responds to its environment, and is made of cells, that is strong evidence of life.
+    </div>
+    <span class="section-label">Interactive Status</span>
+    <div class="ms-card" style="padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:18px;">
+      <h2 class="ms-h2" style="margin-bottom:10px;">Activity Status</h2>
+      <p style="font-size:14px;line-height:1.8;color:#c8d3e8;">This science lesson uses concept cards, practice, and the boss round instead of a Desmos graph. The lesson flow now matches the Foundations structure even when no graphing tool is needed.</p>
+    </div>
     <div class="ms-conceptCard ms-reveal">
       <div class="ms-conceptIcon">🌱</div>
       <div><div class="ms-conceptTitle">Characteristics of Life</div><div class="ms-conceptDesc">All living things: grow, reproduce, respond to stimuli, use energy, are made of cells, maintain homeostasis (internal balance), and can evolve over generations.</div></div>
@@ -178,6 +208,8 @@
 </main>
 <script>
 const LESSON_KEY = "sci-m1-l2";
+const KEY = "ms_sci_m1_done";
+const LESSON_ID = "lesson-2";
 const CORRECT = [2, 1, 3];
 const EXIT_ANS = 7;
 const BOSS_POOL = [
@@ -190,10 +222,25 @@ const BOSS_POOL = [
   {q:"Do all living things reproduce? (1=yes, 0=no)", ans:1},
   {q:"Do non-living things need energy? (1=yes, 0=no)", ans:0}
 ];
+function getArr(){ try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } }
+function renderComplete(){
+  const btn = document.getElementById("completeBtn");
+  const chip = document.getElementById("statusChip");
+  const done = getArr().includes(LESSON_ID);
+  if(chip){
+    chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed";
+    chip.classList.toggle("done", done);
+  }
+  if(btn){
+    btn.textContent = done ? "Completed ✓" : "Mark Complete ✓";
+    btn.classList.toggle("ms-glowDone", done);
+  }
+}
 document.addEventListener("DOMContentLoaded", () => { if (window.MSTracker) MSTracker.init(LESSON_KEY, {module:"Life Science", lessonNum:2, title:"Living vs. Non-Living Things", practiceTotal:3}); restoreIfDone(); });
 let _practiceCorrect = 0, _exitPassed = false, _bossWon = false;
 function updateScorecard() { const prog = window.MSTracker ? (MSTracker.getProgress(LESSON_KEY) || {}) : {}; const score = prog.practiceScore || _practiceCorrect; for (let i = 0; i < 3; i++) { const el = document.getElementById("lsp" + i); if (el) el.classList.toggle("on", i < score); } const bossEl = document.getElementById("ls-boss"); if (bossEl && (prog.bossWon || _bossWon)) { bossEl.textContent = "⚔️ Boss Defeated"; bossEl.classList.add("win"); } const exitEl = document.getElementById("ls-exit"); if (exitEl && (prog.completedAt || _exitPassed)) { exitEl.textContent = "🚪 Exit ✓"; exitEl.classList.add("pass"); } }
 function showXPToast(xp) { const el = document.getElementById("ls-xp"); if (el) { el.textContent = "+" + xp + " XP"; el.classList.add("show"); } }
+function syncCompletionUI() { try { const done = JSON.parse(localStorage.getItem("ms_sci_m1_done") || "[]").includes("lesson-2"); const btn = document.getElementById("completeBtn"); const chip = document.getElementById("statusChip"); if (btn) { btn.textContent = done ? "Completed ✓" : "Mark Complete ✓"; btn.classList.toggle("ms-glowDone", done); } if (chip) { chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed"; chip.classList.toggle("done", done); } } catch {} }
 const _practiceAnswered = new Set();
 function checkP(qNum, chosen) { if (_practiceAnswered.has(qNum)) return; _practiceAnswered.add(qNum); const correct = CORRECT[qNum - 1]; const isRight = chosen === correct; const fb = document.getElementById("fb" + qNum); for (let i = 0; i < 4; i++) { const btn = document.getElementById("opt-" + qNum + "-" + i); if (btn) { btn.disabled = true; if (i === correct) btn.classList.add("correct"); else if (i === chosen && !isRight) btn.classList.add("wrong"); } } if (isRight) { _practiceCorrect++; fb.innerHTML = "✅ Correct!"; fb.style.color = "var(--xp-a)"; if (window.MSTracker) MSTracker.practice(LESSON_KEY, true); } else { fb.innerHTML = "❌ Not quite — correct answer highlighted."; fb.style.color = "#ef4444"; if (window.MSTracker) MSTracker.practice(LESSON_KEY, false); } updateScorecard(); }
 function checkExit() { const val = parseInt(document.getElementById("exitInput").value); const fb = document.getElementById("exitFb"); const btn = document.getElementById("exitBtn"); if (isNaN(val)) { fb.innerHTML = "Enter a number."; fb.style.color = "#ef4444"; return; } if (val === EXIT_ANS) { fb.innerHTML = "✅ Correct! Exit check passed."; fb.style.color = "var(--xp-a)"; btn.disabled = true; _exitPassed = true; if (window.MSTracker) MSTracker.exit(LESSON_KEY, true); updateScorecard(); markComplete(); } else { fb.innerHTML = "❌ Not quite. Try again."; fb.style.color = "#ef4444"; if (window.MSTracker) MSTracker.exit(LESSON_KEY, false); } }
@@ -210,7 +257,14 @@ function restoreIfDone() { let isDone = false; try { const prog = window.MSTrack
 const KICKERS = {arcade:"🕹️ Arcade · Science L2", rpg:"🔬 Quest · Life Science", academic:"🧠 Life Science · Lesson 2 of 6", lms:"🏫 Life Science · Lesson 2"};
 function applyMode(m) { document.body.setAttribute("data-mode", m); const k = document.getElementById("modeKicker"); if (k) k.textContent = KICKERS[m] || KICKERS.academic; document.querySelectorAll(".ms-modeBtn").forEach(b => b.classList.toggle("is-active", b.dataset.mode === m)); try { localStorage.setItem("ms_xp_mode", m); } catch {} }
 document.querySelectorAll(".ms-modeBtn").forEach(b => b.addEventListener("click", () => applyMode(b.dataset.mode)));
+const _baseMarkComplete = markComplete;
+markComplete = function(){ _baseMarkComplete(); syncCompletionUI(); };
+const _baseRestoreIfDone = restoreIfDone;
+restoreIfDone = function(){ _baseRestoreIfDone(); syncCompletionUI(); };
+const completeBtn = document.getElementById("completeBtn");
+if (completeBtn) completeBtn.addEventListener("click", () => markComplete());
 try { const s = localStorage.getItem("ms_xp_mode"); applyMode(s && KICKERS[s] ? s : "academic"); } catch { applyMode("academic"); }
+syncCompletionUI();
 (function() { const els = document.querySelectorAll(".ms-reveal"); const io = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { x.target.classList.add("is-in"); io.unobserve(x.target); } }); }, {threshold:.08}); els.forEach(el => io.observe(el)); })();
 try { localStorage.setItem("ms_last_lesson_url", window.location.href); } catch {}
 </script>
