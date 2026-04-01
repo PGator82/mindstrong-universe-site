@@ -216,7 +216,7 @@
     <div class="ms-modeKicker" id="modeKicker">🧠 Academic Mastery Mode</div>
     <span class="ms-kicker">🧱 Foundations • Middle School</span>
     <h1 class="ms-h1" id="heroTitle">Math Foundations</h1>
-    <p class="ms-sub" id="heroSub">Complete middle school math. 9 modules. Built for mastery.</p>
+    <p class="ms-sub" id="heroSub">Complete the live middle school math sequence. 7 modules are live now, with 2 expansion modules coming soon.</p>
   </section>
 
   <!-- MODE SWITCHER -->
@@ -234,7 +234,7 @@
     <div class="ms-rankAvatar" id="rankAvatar">🧠</div>
     <div class="ms-rankBody">
       <div class="ms-rankName" id="rankTitle">Novice</div>
-      <div class="ms-rankMeta" id="rankMeta">0 / 57 lessons · Start your first lesson</div>
+      <div class="ms-rankMeta" id="rankMeta">0 / 41 lessons · Start your first lesson</div>
       <div class="ms-rankBarWrap"><div class="ms-rankBarFill" id="rankBar" style="width:0%"></div></div>
     </div>
     <div class="ms-rankStats">
@@ -249,7 +249,7 @@
     <div class="op-row">
       <span class="op-title">Total Course Progress</span>
       <div style="display:flex;align-items:center;gap:12px;">
-        <span class="op-count"><span id="totalDone">0</span> <span style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;">/ 57 lessons</span></span>
+        <span class="op-count"><span id="totalDone">0</span> <span id="totalLessonsLabel" style="font-size:12px;color:var(--muted,#6b7a99);font-family:'JetBrains Mono',monospace;">/ 41 lessons</span></span>
         <span id="totalXPWrap" style="display:none;font-family:'Orbitron',sans-serif;font-size:13px;font-weight:900;padding:4px 10px;border-radius:8px;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;"></span>
       </div>
     </div>
@@ -287,7 +287,7 @@
   <div class="ms-courseDone ms-reveal" id="courseDone">
     <div class="cd-icon">🏆</div>
     <h2 id="cdTitle">Math Foundations Complete!</h2>
-    <p id="cdMsg">All 9 modules. 57 lessons. You built a complete middle school math foundation.</p>
+    <p id="cdMsg">All live Foundations modules complete. You built the current middle school math foundation, and the final 2 expansion modules are still on the way.</p>
   </div>
 
   <!-- ═══════════════════════════════════
@@ -578,7 +578,7 @@
     </details>
   </div>
 
-  <footer class="ms-footer">© MindStrong Universe • Foundations — 9 Modules • 57 Lessons</footer>
+  <footer class="ms-footer">© MindStrong Universe • Foundations — 7 Live Modules • 41 Lessons</footer>
 </main>
 
 <script>
@@ -717,7 +717,7 @@ const MODULES = [
     isLessonDone: function(n){ return this.doneReader().has(n); },
     hub: "./algebra/",
   },
-  { id:8, key:"m8", label:"Linear Equations & Slope", total:6,
+  { id:8, key:"m8", label:"Linear Equations & Slope", total:6, available:false,
     lessons:[
       {n:1,title:"What Is Slope?",             href:"./linear/slope/",        icon:"📐",trackerKey:"lin-slope"},
       {n:2,title:"Slope-Intercept Form",       href:"./linear/slope-int/",    icon:"🔢",trackerKey:"lin-slopeint"},
@@ -735,7 +735,7 @@ const MODULES = [
     isLessonDone: function(n){ return this.doneReader().has(n); },
     hub: "./linear/",
   },
-  { id:9, key:"m9", label:"Functions & Graphs", total:6,
+  { id:9, key:"m9", label:"Functions & Graphs", total:6, available:false,
     lessons:[
       {n:1,title:"What Is a Function?",   href:"./functions/intro/",         icon:"🔁",trackerKey:"func-intro"},
       {n:2,title:"Domain & Range",        href:"./functions/domain/",        icon:"📦",trackerKey:"func-domain"},
@@ -755,7 +755,9 @@ const MODULES = [
   },
 ];
 
-const TOTAL_LESSONS = 57;
+const LIVE_MODULES = MODULES.filter(mod => mod.available !== false);
+const LIVE_MODULE_COUNT = LIVE_MODULES.length;
+const TOTAL_LESSONS = LIVE_MODULES.reduce((sum, mod) => sum + mod.total, 0);
 
 /* ═══════════════════════════════════════════════════════
    READ UNLOCK STATE (teacher-controlled)
@@ -817,6 +819,7 @@ MODULES.forEach(mod => {
 ═══════════════════════════════════════════════════════ */
 function renderModules(){
   MODULES.forEach(mod => {
+    const isAvailable = mod.available !== false;
     const isUnlocked = unlockedModules.has(mod.id);
     const doneSet    = modDoneSets[mod.id];
     const doneCount  = doneSet.size;
@@ -834,7 +837,11 @@ function renderModules(){
 
     // Module num badge
     modnum.classList.remove("locked-mod","unlocked","complete");
-    if(!isUnlocked){
+    if(!isAvailable){
+      modnum.classList.add("locked-mod");
+      wrap.classList.add("is-locked");
+      if(tag) tag.textContent = "Coming Soon";
+    } else if(!isUnlocked){
       modnum.classList.add("locked-mod");
       wrap.classList.add("is-locked");
       if(tag) tag.textContent = "Locked";
@@ -859,6 +866,11 @@ function renderModules(){
       const badge  = document.getElementById("b-"+mod.id+"-"+l.n);
       const action = document.getElementById("act-"+mod.id+"-"+l.n);
       if(!badge || !action) return;
+
+      if(!isAvailable){
+        action.innerHTML = `<span class="ms-btn locked-btn">Coming Soon</span>`;
+        return;
+      }
 
       if(!isUnlocked){
         // stay locked
@@ -897,6 +909,7 @@ function renderModules(){
 ═══════════════════════════════════════════════════════ */
 document.getElementById("totalDone").textContent  = totalDone;
 document.getElementById("totalBar").style.width   = Math.round((totalDone/TOTAL_LESSONS)*100)+"%";
+document.getElementById("totalLessonsLabel").textContent = `/ ${TOTAL_LESSONS} lessons`;
 
 
 /* ═══════════════════════════════════════════════════════
@@ -927,9 +940,12 @@ function renderRankCard(){
   document.getElementById("rankAvatar").textContent = RANK_AVATARS[mode] || "🧠";
   document.getElementById("rankTitle").textContent  = lvl.name;
   document.getElementById("rankMeta").textContent   =
-    done > 0 ? `${done} / 57 lessons complete · ${lvl.max === Infinity ? "Max Rank" : `${xp} / ${lvl.max} XP to next rank`}`
-             : "0 / 57 lessons · Complete your first lesson to earn XP";
+    done > 0 ? `${done} / ${TOTAL_LESSONS} lessons complete · ${lvl.max === Infinity ? "Max Rank" : `${xp} / ${lvl.max} XP to next rank`}`
+             : `0 / ${TOTAL_LESSONS} lessons · Complete your first lesson to earn XP`;
   document.getElementById("rankBar").style.width    = pct + "%";
+  document.getElementById("rankMeta").textContent   =
+    done > 0 ? `${done} / ${TOTAL_LESSONS} lessons complete · ${lvl.max === Infinity ? "Max Rank" : `${xp} / ${lvl.max} XP to next rank`}`
+             : `0 / ${TOTAL_LESSONS} lessons · Complete your first lesson to earn XP`;
   document.getElementById("rsXP").textContent       = xp.toLocaleString();
   document.getElementById("rsBoss").textContent     = bosses;
   document.getElementById("rsStreak").textContent   = streak;
@@ -953,6 +969,7 @@ if(totalDone >= TOTAL_LESSONS){
 ═══════════════════════════════════════════════════════ */
 function buildNextLesson(){
   for(const mod of MODULES){
+    if(mod.available === false) continue;
     if(!unlockedModules.has(mod.id)) continue;
     const doneSet = modDoneSets[mod.id];
     const next = mod.lessons.find(l => !doneSet.has(l.n));
@@ -974,7 +991,12 @@ buildNextLesson();
 function refreshUnlockBtns(){
   for(let i=2;i<=9;i++){
     const btn = document.getElementById("unlock-"+i);
-    if(btn) btn.classList.toggle("is-unlocked", unlockedModules.has(i));
+    if(!btn) continue;
+    const mod = MODULES.find(m => m.id === i);
+    const isAvailable = mod ? mod.available !== false : true;
+    btn.disabled = !isAvailable;
+    btn.classList.toggle("is-unlocked", isAvailable && unlockedModules.has(i));
+    if(!isAvailable) btn.textContent = "Coming Soon";
   }
 }
 
@@ -1006,7 +1028,7 @@ const MODES = {
   arcade:{
     kicker:"🕹️ Arcade Competitive Mode",
     heroTitle:"Foundations Blitz",
-    heroSub:"9 modules. 57 speed lessons. Beat every boss.",
+    heroSub:"7 live modules. 41 speed lessons. Two expansion modules are still in development.",
     lessonMode:"⚡ Speed round",
     lockedTag:"Locked", doneTag:"Cleared", activeTag:"Active",
     nextLabel:"Next Round",
@@ -1015,7 +1037,7 @@ const MODES = {
   rpg:{
     kicker:"🎮 RPG Progression Mode",
     heroTitle:"Foundations Quest",
-    heroSub:"9 quest chains. 57 missions. Build the Math Wizard.",
+    heroSub:"7 live quest chains. 41 missions are ready now, with 2 more expansions coming soon.",
     lessonMode:"🗺️ Quest",
     lockedTag:"Locked", doneTag:"Complete", activeTag:"In Progress",
     nextLabel:"Next Quest",
@@ -1024,7 +1046,7 @@ const MODES = {
   academic:{
     kicker:"🧠 Academic Mastery Mode",
     heroTitle:"Math Foundations",
-    heroSub:"Complete middle school math. 9 modules. Built for mastery.",
+    heroSub:"Complete the live middle school math sequence. 7 modules are ready now, with 2 expansion modules coming soon.",
     lessonMode:"📖 Mastery lesson",
     lockedTag:"Locked", doneTag:"Complete", activeTag:"In Progress",
     nextLabel:"Continue",
@@ -1033,7 +1055,7 @@ const MODES = {
   lms:{
     kicker:"🏫 Full LMS Mode",
     heroTitle:"Foundations Course",
-    heroSub:"Teacher-assigned modules. Tracked progress. 57 lessons.",
+    heroSub:"Teacher-assigned live modules. 41 lessons are ready now, with 2 expansion modules coming soon.",
     lessonMode:"📋 Assignment",
     lockedTag:"Not Assigned", doneTag:"Submitted", activeTag:"In Progress",
     nextLabel:"Next Assignment",
@@ -1058,11 +1080,13 @@ function applyMode(mode){
   // Re-render module tags with mode labels
   MODULES.forEach(mod => {
     const tag  = document.getElementById("tag-"+mod.id);
+    const isAvailable = mod.available !== false;
     const isUnlocked = unlockedModules.has(mod.id);
     const doneSet = modDoneSets[mod.id];
     const allDone = doneSet.size >= mod.total;
     if(tag){
-      if(!isUnlocked) tag.textContent = cfg.lockedTag;
+      if(!isAvailable) tag.textContent = "Coming Soon";
+      else if(!isUnlocked) tag.textContent = cfg.lockedTag;
       else if(allDone) tag.textContent = cfg.doneTag;
       else if(doneSet.size > 0) tag.textContent = cfg.activeTag;
       else tag.textContent = cfg.lockedTag === "Not Assigned" ? "Assigned" : "Unlocked";
@@ -1071,7 +1095,7 @@ function applyMode(mode){
     // Lesson mode labels
     mod.lessons.forEach(l => {
       const lm = document.getElementById("lm-"+mod.id+"-"+l.n);
-      if(lm) lm.textContent = isUnlocked ? cfg.lessonMode : "";
+      if(lm) lm.textContent = isAvailable && isUnlocked ? cfg.lessonMode : "";
     });
   });
 

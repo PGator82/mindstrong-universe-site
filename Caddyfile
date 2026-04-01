@@ -33,21 +33,14 @@ http://:{$PORT:80} {
     }
     redir @loginBare /login.html 301
 
-    # Serve real .html files directly (home.html, login.html, etc.)
-    @staticHtml {
-        file
-        path *.html
+    # Serve real static files and directory indexes directly
+    @staticContent {
+        file {
+            try_files {path} {path}/index.html
+        }
     }
-    handle @staticHtml {
-        file_server
-    }
-
-    # Serve real static assets directly
-    @assets {
-        file
-        path *.css *.js *.png *.jpg *.gif *.svg *.ico *.woff *.woff2
-    }
-    handle @assets {
+    handle @staticContent {
+        rewrite * {file_match.relative}
         file_server
     }
 

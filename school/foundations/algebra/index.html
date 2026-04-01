@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Algebra — Module Hub • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../assets/css/theme.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.18);}
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),radial-gradient(500px 400px at 85% 85%,rgba(124,58,237,.07),transparent 60%);}
+    .ms-wrap{position:relative;z-index:1;}
+    .hub-chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:12px;}
+    .lesson-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:24px;}
+    .lesson-link-card{padding:22px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);text-decoration:none;display:block;transition:all .25s;}
+    .lesson-link-card:hover{border-color:var(--xp-a);background:rgba(250,204,21,.04);transform:translateY(-2px);}
+    .llc-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--xp-a);margin-bottom:6px;}
+    .llc-title{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:#e8edf5;margin-bottom:6px;}
+    .llc-sub{font-size:13px;color:#8a96b0;line-height:1.5;}
+    .llc-arrow{font-size:18px;color:var(--xp-a);margin-top:10px;display:block;}
+    .progress-bar-wrap{background:rgba(255,255,255,.06);border-radius:6px;height:6px;margin-top:20px;overflow:hidden;}
+    .progress-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--xp-b),var(--xp-a));width:0%;transition:width .6s;}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../index.html">Home</a>
+      <a class="ms-link" href="../../index.html">School</a>
+      <a class="ms-link" href="../index.html">Foundations</a>
+      <a class="ms-link is-active" href="#">Algebra</a>
+    </nav>
+  </div>
+</header>
+<main class="ms-wrap" style="max-width:800px;margin:0 auto;padding:24px 18px 60px;">
+  <section class="ms-reveal" style="margin-bottom:32px;">
+    <div class="hub-chip">🔣 Module 7</div>
+    <h1 class="ms-h1">Algebra</h1>
+    <p class="ms-sub">Unlock the power of unknowns — learn to write, solve, and apply equations and inequalities to crack real-world puzzles.</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="modProgress"></div></div>
+    <p style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#6b7a99;margin-top:6px;" id="progressLabel">0 / 6 lessons complete</p>
+  </section>
+  <div class="lesson-grid">
+    <a class="lesson-link-card ms-reveal" href="./variables/">
+      <div class="llc-num">Lesson 7.1</div>
+      <div class="llc-title">Variables &amp; Expressions</div>
+      <div class="llc-sub">What variables are, how to write expressions, and evaluating for a given value.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+    <a class="lesson-link-card ms-reveal" href="./multistep/">
+      <div class="llc-num">Lesson 7.2</div>
+      <div class="llc-title">Multi-Step Equations</div>
+      <div class="llc-sub">Solve equations using inverse operations across multiple steps.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+    <a class="lesson-link-card ms-reveal" href="./inequalities/">
+      <div class="llc-num">Lesson 7.3</div>
+      <div class="llc-title">Inequalities</div>
+      <div class="llc-sub">Work with &lt;, &gt;, ≤, ≥ and graph solution sets on a number line.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+    <a class="lesson-link-card ms-reveal" href="./patterns/">
+      <div class="llc-num">Lesson 7.4</div>
+      <div class="llc-title">Patterns &amp; Sequences</div>
+      <div class="llc-sub">Identify arithmetic and geometric sequences and find missing terms.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+    <a class="lesson-link-card ms-reveal" href="./word-probs/">
+      <div class="llc-num">Lesson 7.5</div>
+      <div class="llc-title">Algebraic Word Problems</div>
+      <div class="llc-sub">Translate real-world scenarios into equations and solve them.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+    <a class="lesson-link-card ms-reveal" href="./systems/">
+      <div class="llc-num">Lesson 7.6</div>
+      <div class="llc-title">Systems of Equations</div>
+      <div class="llc-sub">Use the substitution method to solve two equations with two unknowns.</div>
+      <span class="llc-arrow">→</span>
+    </a>
+  </div>
+</main>
+<script>
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('is-in');}),{threshold:.1});
+document.querySelectorAll('.ms-reveal').forEach(el=>obs.observe(el));
+const done=JSON.parse(localStorage.getItem('ms_alg_done')||'[]');
+const pct=Math.round((done.length/6)*100);
+document.getElementById('modProgress').style.width=pct+'%';
+document.getElementById('progressLabel').textContent=done.length+' / 6 lessons complete';
+</script>
+</body>
+</html>

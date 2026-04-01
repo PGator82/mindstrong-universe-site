@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Measures of Central Tendency • MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../../../../assets/css/theme.css"/>
+  <script src="../../../ms-tracker.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body{font-family:'Syne',sans-serif;}
+    :root{--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.18);}
+    body[data-mode="arcade"]  {--xp-a:#facc15;--xp-b:#f97316;--xp-glow:rgba(250,204,21,.18);}
+    body[data-mode="rpg"]     {--xp-a:#a855f7;--xp-b:#7c3aed;--xp-glow:rgba(168,85,247,.16);}
+    body[data-mode="academic"]{--xp-a:#22d3ee;--xp-b:#3b82f6;--xp-glow:rgba(34,211,238,.15);}
+    body[data-mode="lms"]     {--xp-a:#34d399;--xp-b:#059669;--xp-glow:rgba(52,211,153,.14);}
+    .ms-pageFX{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(700px 500px at 20% 0%,var(--xp-glow),transparent 60%),radial-gradient(500px 400px at 85% 85%,rgba(124,58,237,.07),transparent 60%);transition:background .6s;}
+    .ms-wrap{position:relative;z-index:1;}
+    .lesson-chip{display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid var(--xp-a);color:var(--xp-a);margin-bottom:12px;}
+    .lesson-card{margin-bottom:20px;padding:24px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);}
+    .lesson-card h2{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;margin-bottom:10px;}
+    .lesson-card p{font-size:14px;line-height:1.7;color:#c8d3e8;margin-bottom:10px;}
+    .concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0;}
+    .concept-card{padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);}
+    .concept-card .cc-icon{font-size:28px;margin-bottom:8px;}
+    .concept-card .cc-title{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--xp-a);margin-bottom:6px;}
+    .concept-card .cc-desc{font-size:13px;color:#c8d3e8;line-height:1.6;}
+    .hack-box{padding:18px 20px;border-radius:14px;border:2px solid var(--xp-a);background:rgba(255,255,255,.04);box-shadow:0 0 20px var(--xp-glow);margin:16px 0;}
+    .hack-box .hack-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--xp-a);margin-bottom:8px;}
+    .hack-box .hack-text{font-size:15px;font-weight:700;line-height:1.6;}
+    .practice-item{padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);margin-bottom:12px;}
+    .practice-item .q{font-size:15px;font-weight:700;margin-bottom:10px;}
+    .mc-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+    .mc-opt{font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:#e8edf5;cursor:pointer;transition:all .2s;}
+    .mc-opt:hover{border-color:var(--xp-a);color:var(--xp-a);}
+    .mc-opt.correct{border-color:#4ade80;color:#4ade80;background:rgba(74,222,128,.08);}
+    .mc-opt.wrong{border-color:#f87171;color:#f87171;background:rgba(248,113,113,.08);}
+    .feedback{font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:8px;min-height:18px;}
+    .feedback.correct{color:#4ade80;} .feedback.wrong{color:#f87171;}
+    .ms-exitBox{padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);margin-bottom:16px;}
+    .ms-input{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;width:80px;padding:8px 12px;border-radius:10px;text-align:center;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8edf5;outline:none;}
+    .ms-input:focus{border-color:var(--xp-a);}
+    .ms-check-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--xp-b),var(--xp-a));color:#06080e;cursor:pointer;}
+    .boss-arena{padding:24px;border-radius:18px;border:2px solid var(--xp-a);background:rgba(255,255,255,.03);box-shadow:0 0 30px var(--xp-glow);}
+    .boss-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+    .boss-title{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--xp-a);}
+    .boss-timer{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--xp-a);min-width:44px;text-align:right;}
+    .boss-timer.danger{color:#f87171;animation:timerPulse .6s ease-in-out infinite;}
+    @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .boss-pips{display:flex;gap:8px;margin-bottom:16px;}
+    .pip{width:16px;height:16px;border-radius:50%;background:var(--xp-a);box-shadow:0 0 8px var(--xp-a);transition:all .3s;}
+    .pip.hit{background:rgba(255,255,255,.1);box-shadow:none;}
+    .boss-q{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;text-align:center;margin:20px 0;}
+    .boss-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;}
+    .boss-result{text-align:center;padding:20px;font-size:14px;line-height:1.65;display:none;}
+    .boss-result.show{display:block;}
+    .complete-card{text-align:center;padding:28px 20px;border-radius:18px;border:2px solid var(--xp-a);background:rgba(255,255,255,.04);box-shadow:0 0 30px var(--xp-glow);display:none;}
+    .complete-card.show{display:block;}
+    .complete-icon{font-size:48px;margin-bottom:12px;}
+    .complete-card h2{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;margin-bottom:8px;}
+    .complete-card p{font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;}
+    .ms-btn{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:#e8edf5;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+    .ms-btn.primary{background:linear-gradient(135deg,var(--xp-b),var(--xp-a));border-color:transparent;color:#06080e;}
+    .ms-liveScore{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;border-radius:14px;margin-bottom:4px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);position:sticky;top:8px;z-index:100;}
+    .ms-liveScore-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted,#6b7a99);text-transform:uppercase;letter-spacing:.12em;}
+    .ms-liveScore-items{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .ms-lsItem{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);font-family:'JetBrains Mono',monospace;font-size:10px;color:#c8d0e7;white-space:nowrap;transition:all .3s;}
+    .ms-lsItem.done{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.3);color:var(--xp-a);}
+    .ms-lsItem.won{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:#4ade80;}
+    .ls-pip{display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);transition:background .3s;}
+    .ls-pip.hit{background:var(--xp-a);}
+    .ms-lsXP{margin-left:auto;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--xp-a);}
+    .ms-reveal{opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;}
+    .ms-reveal.is-in{opacity:1;transform:none;}
+    @media(prefers-reduced-motion:reduce){.ms-reveal{opacity:1;transform:none;transition:none;}}
+  </style>
+</head>
+<body data-mode="academic">
+<div class="ms-pageFX"></div>
+<header class="ms-top">
+  <div class="ms-nav">
+    <div class="ms-brand"><span class="ms-dot"></span><span>MindStrong Universe</span></div>
+    <nav class="ms-links">
+      <a class="ms-link" href="../../../../index.html">Home</a>
+      <a class="ms-link" href="../../../index.html">School</a>
+      <a class="ms-link" href="../../index.html">Foundations</a>
+      <a class="ms-link" href="../index.html">Data &amp; Statistics</a>
+      <a class="ms-link is-active" href="#">Central Tendency</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ms-wrap" style="max-width:760px;margin:0 auto;padding:24px 18px 60px;">
+
+  <div class="ms-liveScore ms-reveal" id="liveScore">
+    <span class="ms-liveScore-label">Score</span>
+    <div class="ms-liveScore-items">
+      <div class="ms-lsItem" id="ls-practice">
+        <span class="ls-pip" id="lsp-0"></span><span class="ls-pip" id="lsp-1"></span><span class="ls-pip" id="lsp-2"></span>
+        <span style="margin-left:3px;">Practice</span>
+      </div>
+      <div class="ms-lsItem" id="ls-exit"><span class="ls-pip" id="lse-0"></span><span style="margin-left:3px;">Exit</span></div>
+      <div class="ms-lsItem" id="ls-boss">
+        <span class="ls-pip" id="lsb-0"></span><span class="ls-pip" id="lsb-1"></span><span class="ls-pip" id="lsb-2"></span><span class="ls-pip" id="lsb-3"></span><span class="ls-pip" id="lsb-4"></span>
+        <span style="margin-left:3px;">Boss</span>
+      </div>
+    </div>
+    <span class="ms-lsXP" id="lsXP">0 XP</span>
+  </div>
+
+  <div class="ms-modebar ms-reveal" style="margin-bottom:20px;">
+    <button class="ms-modeBtn" onclick="setMode('arcade')">🕹 Arcade</button>
+    <button class="ms-modeBtn" onclick="setMode('rpg')">⚔️ RPG</button>
+    <button class="ms-modeBtn is-active" onclick="setMode('academic')">🎓 Academic</button>
+    <button class="ms-modeBtn" onclick="setMode('lms')">📋 LMS</button>
+  </div>
+
+  <section class="lesson-card ms-reveal">
+    <div class="lesson-chip">📊 Module 6 · Lesson 1</div>
+    <h2>The Three Anchors of Data</h2>
+    <p>Imagine your class just got test scores back: 70, 85, 90, 90, 95. How do you summarize those five numbers with just one? That single-number summary is called a <strong>measure of central tendency</strong> — it tells you where the "center" of your data lives.</p>
+    <p>There are three classic measures: the <strong>mean</strong> (the arithmetic average), the <strong>median</strong> (the middle value when sorted), and the <strong>mode</strong> (the value that appears most often). Each tells a slightly different story, and knowing which to use is a superpower in data analysis.</p>
+  </section>
+
+  <section class="lesson-card ms-reveal">
+    <h2>The Hack</h2>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="cc-icon">➕</div>
+        <div class="cc-title">Mean</div>
+        <div class="cc-desc">Add all values, then divide by how many there are. Best for evenly spread data with no extreme outliers.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">🎯</div>
+        <div class="cc-title">Median</div>
+        <div class="cc-desc">Sort the list, find the middle value. If two middle values exist, average them. Resistant to outliers.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">🔁</div>
+        <div class="cc-title">Mode</div>
+        <div class="cc-desc">The value that appears most frequently. A data set can have one mode, multiple modes, or no mode at all.</div>
+      </div>
+    </div>
+    <div class="hack-box">
+      <div class="hack-label">⚡ The Rule</div>
+      <div class="hack-text">Mean = (sum of all values) ÷ (count of values) · Median = middle value after sorting · Mode = most frequent value</div>
+    </div>
+  </section>
+
+  <section class="lesson-card ms-reveal">
+    <h2>Practice</h2>
+
+    <div class="practice-item">
+      <div class="q">Q1: What is the mean of [4, 6, 8, 10, 12]?</div>
+      <div class="mc-options">
+        <button class="mc-opt" onclick="pick(this,false,'p1')">A) 7</button>
+        <button class="mc-opt" onclick="pick(this,true,'p1')">B) 8</button>
+        <button class="mc-opt" onclick="pick(this,false,'p1')">C) 9</button>
+        <button class="mc-opt" onclick="pick(this,false,'p1')">D) 10</button>
+      </div>
+      <div class="feedback" id="fb-p1"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">Q2: What is the median of [3, 7, 9, 15, 21]?</div>
+      <div class="mc-options">
+        <button class="mc-opt" onclick="pick(this,true,'p2')">A) 9</button>
+        <button class="mc-opt" onclick="pick(this,false,'p2')">B) 7</button>
+        <button class="mc-opt" onclick="pick(this,false,'p2')">C) 11</button>
+        <button class="mc-opt" onclick="pick(this,false,'p2')">D) 15</button>
+      </div>
+      <div class="feedback" id="fb-p2"></div>
+    </div>
+
+    <div class="practice-item">
+      <div class="q">Q3: What is the mode of [5, 3, 5, 8, 5, 3, 1]?</div>
+      <div class="mc-options">
+        <button class="mc-opt" onclick="pick(this,false,'p3')">A) 3</button>
+        <button class="mc-opt" onclick="pick(this,false,'p3')">B) 8</button>
+        <button class="mc-opt" onclick="pick(this,true,'p3')">C) 5</button>
+        <button class="mc-opt" onclick="pick(this,false,'p3')">D) 1</button>
+      </div>
+      <div class="feedback" id="fb-p3"></div>
+    </div>
+  </section>
+
+  <section class="lesson-card ms-reveal" id="exitSection">
+    <h2>Exit Check</h2>
+    <div class="ms-exitBox">
+      <p style="font-size:14px;margin-bottom:12px;">What is the mean of [3, 5, 7, 9, 11]?</p>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input class="ms-input ms-exitInput" id="exitAns" type="number" placeholder="?"/>
+        <button class="ms-check-btn" onclick="checkExit()">Check</button>
+      </div>
+      <div class="feedback" id="exitFB"></div>
+    </div>
+  </section>
+
+  <section class="lesson-card ms-reveal" id="bossSection">
+    <div class="boss-arena">
+      <div class="boss-header">
+        <div>
+          <div class="boss-title">⚔️ Boss Fight</div>
+          <div style="font-size:12px;color:#6b7a99;margin-top:2px;">5 questions · beat the clock</div>
+        </div>
+        <div class="boss-timer" id="bossTimer">20</div>
+      </div>
+      <div class="boss-pips" id="bossPips">
+        <div class="pip" id="bp-0"></div><div class="pip" id="bp-1"></div><div class="pip" id="bp-2"></div>
+        <div class="pip" id="bp-3"></div><div class="pip" id="bp-4"></div>
+      </div>
+      <div class="boss-q" id="bossQ">Ready to fight?</div>
+      <div class="boss-row">
+        <input class="ms-input ms-bossInput" id="bossAns" type="number" placeholder="?" style="width:100px;"/>
+        <button class="ms-check-btn" onclick="submitBoss()">Strike</button>
+        <button class="ms-btn" onclick="startBoss()" id="bossStartBtn">Start</button>
+      </div>
+      <div class="boss-result" id="bossResult"></div>
+    </div>
+  </section>
+
+  <div class="complete-card ms-reveal" id="completeCard">
+    <div class="complete-icon">🏆</div>
+    <h2>Lesson Complete!</h2>
+    <p>You crushed Central Tendency. Keep the momentum going.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a class="ms-btn" href="../index.html">← Back to Module</a>
+      <a class="ms-btn primary" href="../spread/">Next Lesson →</a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function setMode(m){
+  document.body.dataset.mode=m;
+  document.querySelectorAll('.ms-modeBtn').forEach(b=>b.classList.remove('is-active'));
+  event.currentTarget.classList.add('is-active');
+  MSTracker.practice('data-central','mode',m,true);
+}
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('is-in');}),{threshold:.1});
+document.querySelectorAll('.ms-reveal').forEach(el=>obs.observe(el));
+let xp=0,practiceDone=new Set(),exitDone=false,bossScore=0;
+function addXP(n){xp+=n;document.getElementById('lsXP').textContent=xp+' XP';}
+function pip(id){const el=document.getElementById(id);if(el)el.classList.add('hit');}
+function markItem(id){const el=document.getElementById(id);if(el){el.classList.add('done');}}
+function markWon(id){const el=document.getElementById(id);if(el){el.classList.remove('done');el.classList.add('won');}}
+const practiceCorrect={p1:false,p2:false,p3:false};
+function pick(btn,correct,qid){
+  const opts=btn.parentElement.querySelectorAll('.mc-opt');
+  opts.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb-'+qid);
+  if(correct){
+    btn.classList.add('correct');
+    fb.textContent='✓ Correct!';fb.className='feedback correct';
+    if(!practiceCorrect[qid]){practiceCorrect[qid]=true;addXP(10);pip('lsp-'+Object.keys(practiceCorrect).indexOf(qid));}
+    if(Object.values(practiceCorrect).every(Boolean))markItem('ls-practice');
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent='✗ Not quite — try again later.';fb.className='feedback wrong';
+  }
+  MSTracker.practice('data-central','mc-'+qid,correct,correct);
+}
+function checkExit(){
+  const val=parseInt(document.getElementById('exitAns').value,10);
+  const fb=document.getElementById('exitFB');
+  if(val===7){
+    fb.textContent='✓ Correct! Exit unlocked.';fb.className='feedback correct';
+    pip('lse-0');markItem('ls-exit');
+    if(!exitDone){exitDone=true;addXP(20);MSTracker.exit('data-central',true);}
+  } else {
+    fb.textContent='✗ Try again.';fb.className='feedback wrong';
+    MSTracker.exit('data-central',false);
+  }
+}
+const BOSS_POOL=[
+  {q:'Mean of [2, 4, 6, 8, 10] = ?',a:6},
+  {q:'Median of [1, 3, 5, 7, 9] = ?',a:5},
+  {q:'Mode of [2, 2, 3, 4, 2] = ?',a:2},
+  {q:'Mean of [10, 20, 30] = ?',a:20},
+  {q:'Median of [4, 4, 6, 8, 10] = ?',a:6},
+  {q:'Mode of [1, 1, 2, 3, 3, 3] = ?',a:3},
+  {q:'Mean of [5, 5, 5, 5] = ?',a:5},
+  {q:'Median of [2, 8] = ?',a:5},
+];
+let bossQs=[],bossIdx=0,bossTimer=null,bossTime=20,bossHits=0;
+function startBoss(){
+  bossQs=[...BOSS_POOL].sort(()=>Math.random()-.5).slice(0,5);
+  bossIdx=0;bossHits=0;bossTime=20;
+  document.getElementById('bossStartBtn').style.display='none';
+  document.getElementById('bossResult').classList.remove('show');
+  document.querySelectorAll('.pip').forEach(p=>p.classList.remove('hit'));
+  showBossQ();
+  clearInterval(bossTimer);
+  bossTimer=setInterval(()=>{
+    bossTime--;
+    const el=document.getElementById('bossTimer');
+    el.textContent=bossTime;
+    if(bossTime<=5)el.classList.add('danger');
+    if(bossTime<=0){clearInterval(bossTimer);endBoss();}
+  },1000);
+  MSTracker.boss('data-central','start',null,null);
+}
+function showBossQ(){
+  if(bossIdx>=5){clearInterval(bossTimer);endBoss();return;}
+  document.getElementById('bossQ').textContent=bossQs[bossIdx].q;
+  document.getElementById('bossAns').value='';
+  document.getElementById('bossAns').focus();
+}
+function submitBoss(){
+  if(bossIdx>=5)return;
+  const val=parseInt(document.getElementById('bossAns').value,10);
+  const correct=val===bossQs[bossIdx].a;
+  MSTracker.boss('data-central','answer',bossQs[bossIdx].q,correct);
+  if(correct){
+    bossHits++;
+    document.getElementById('bp-'+(bossHits-1)).classList.add('hit');
+    addXP(15);bossTime=Math.min(bossTime+3,20);
+  }
+  bossIdx++;showBossQ();
+}
+function endBoss(){
+  clearInterval(bossTimer);
+  const el=document.getElementById('bossResult');
+  bossScore=bossHits;
+  if(bossHits>=3){
+    el.innerHTML='<span style="color:#4ade80;font-weight:700;">⚔️ Boss Defeated! '+bossHits+'/5 correct.</span><br>Outstanding work!';
+    markWon('ls-boss');
+    const done=JSON.parse(localStorage.getItem('ms_data_done')||'[]');
+    if(!done.includes('central-1')){done.push('central-1');localStorage.setItem('ms_data_done',JSON.stringify(done));}
+    setTimeout(()=>{
+      document.getElementById('completeCard').classList.add('show');
+      MSTracker.complete('data-central',xp);
+    },800);
+  } else {
+    el.innerHTML='<span style="color:#f87171;font-weight:700;">Boss survived. '+bossHits+'/5 — Try again!</span>';
+    document.getElementById('bossStartBtn').style.display='';
+    document.getElementById('bossStartBtn').textContent='Retry';
+  }
+  el.classList.add('show');
+  MSTracker.boss('data-central','end',bossHits>=3?'win':'loss',bossHits);
+}
+document.getElementById('bossAns').addEventListener('keydown',e=>{if(e.key==='Enter')submitBoss();});
+MSTracker.init('data-central','Measures of Central Tendency');
+</script>
+</body>
+</html>

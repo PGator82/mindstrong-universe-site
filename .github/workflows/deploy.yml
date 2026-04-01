@@ -52,10 +52,24 @@ jobs:
           RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
           RAILWAY_SERVICE_TARGET: ${{ steps.service.outputs.service }}
         run: railway up --service "$RAILWAY_SERVICE_TARGET" --detach
-      - name: Deploy to Railway
+
+      - name: Verify deployed routes
         env:
-          RAILWAY_TOKEN: ${{ steps.token.outputs.token }}
-        run: railway up --service mindstrong-universe-site --detach
+          APP_URL: https://mindstrong-universe-school-production.up.railway.app
+        run: |
+          set -euo pipefail
+          for path in \
+            / \
+            /school/foundations/index.html \
+            /school/foundations/progress-dashboard.html \
+            /school/foundations/module-1/lesson-1.html \
+            /school/foundations/pre-algebra/index.html \
+            /school/foundations/geometry/index.html
+          do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "$APP_URL$path")
+            echo "$path -> $code"
+            test "$code" = "200"
+          done
 
       - name: Deployment summary
         run: |
