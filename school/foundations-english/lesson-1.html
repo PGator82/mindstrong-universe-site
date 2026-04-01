@@ -20,6 +20,15 @@
     .ms-opt.wrong{border-color:#ef4444;background:rgba(239,68,68,.08);color:#ef4444;}
     .ms-opt:disabled{opacity:.5;cursor:default;pointer-events:none;}
     .ms-feedback{margin-top:10px;font-size:13px;font-family:'JetBrains Mono',monospace;min-height:20px;}
+    .ms-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+    .ms-chip{display:inline-flex;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--muted,#6b7a99);font-size:12px;transition:all .3s ease;}
+    .ms-chip.done{border-color:var(--xp-a);color:var(--xp-a);background:rgba(255,255,255,.07);}
+    .ms-glowDone{border-color:var(--xp-a)!important;box-shadow:0 0 0 3px var(--xp-glow),0 0 22px var(--xp-glow)!important;}
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--xp-a);opacity:.75;margin-bottom:6px;display:block;}
+    .hack-box{background:rgba(167,139,250,.08);border-left:4px solid var(--xp-a);padding:16px;border-radius:12px;font-weight:600;line-height:1.7;}
+    body[data-mode="arcade"] .hack-box{background:rgba(250,204,21,.07);}
+    body[data-mode="rpg"] .hack-box{background:rgba(168,85,247,.07);}
+    body[data-mode="lms"] .hack-box{background:rgba(52,211,153,.07);}
     .ms-conceptCard{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:12px;}
     .ms-conceptIcon{font-size:26px;flex-shrink:0;}
     .ms-conceptTitle{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--xp-a);margin-bottom:4px;}
@@ -80,6 +89,13 @@
     <span class="ms-kicker" id="modeKicker">📖 Grammar · Lesson 1 of 6</span>
     <h1 class="ms-h1">Nouns &amp; Pronouns</h1>
     <p class="ms-sub">People, Places, Things &amp; the Words That Replace Them</p>
+    <div class="ms-actions">
+      <button id="completeBtn" class="ms-btn primary">Mark Complete ✓</button>
+      <a class="ms-btn" href="./index.html">← Back to Foundations English</a>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="ms-chip" id="statusChip">Status: Not completed</span>
+    </div>
   </section>
 
   <div class="ms-modebar ms-reveal">
@@ -96,6 +112,20 @@
 
   <section class="ms-reveal">
     <h2 class="ms-h2">📚 Core Concepts</h2>
+    <span class="section-label">Hook</span>
+    <div class="ms-card" style="padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:18px;">
+      <h2 class="ms-h2" style="margin-bottom:10px;">The Naming Power of Language</h2>
+      <p style="font-size:14px;line-height:1.8;color:#c8d3e8;">Every sentence begins by naming someone or something. Pronouns step in so language stays smooth instead of repetitive.</p>
+    </div>
+    <span class="section-label">Key Concept</span>
+    <div class="hack-box" style="margin-bottom:18px;">
+      Nouns name people, places, things, and ideas. Pronouns replace nouns so writing and speech stay clear and efficient.
+    </div>
+    <span class="section-label">Interactive Status</span>
+    <div class="ms-card" style="padding:20px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);margin-bottom:18px;">
+      <h2 class="ms-h2" style="margin-bottom:10px;">Activity Status</h2>
+      <p style="font-size:14px;line-height:1.8;color:#c8d3e8;">This lesson uses concept cards, practice, and the boss round instead of a Desmos graph. The flow now matches the Foundations lesson structure across subjects.</p>
+    </div>
     <div class="ms-conceptCard ms-reveal">
       <div class="ms-conceptIcon">🏷️</div>
       <div><div class="ms-conceptTitle">What Is a Noun?</div><div class="ms-conceptDesc">A noun names a <strong>person</strong> (teacher, Maria), <strong>place</strong> (school, Chicago), <strong>thing</strong> (dog, book), or <strong>idea</strong> (freedom, happiness).</div></div>
@@ -191,6 +221,8 @@
 
 <script>
 const LESSON_KEY = "eng-m1-l1";
+const KEY = "ms_eng_m1_done";
+const LESSON_ID = "lesson-1";
 const CORRECT = [1, 2, 3];
 const EXIT_ANS = 2;
 const BOSS_POOL = [
@@ -203,6 +235,8 @@ const BOSS_POOL = [
   {q:"Count pronouns: 'We saw it coming'", ans:2},
   {q:"Count nouns: 'The king ruled a great kingdom'", ans:2}
 ];
+function getArr(){ try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } }
+function renderComplete(){ const btn = document.getElementById("completeBtn"); const chip = document.getElementById("statusChip"); const done = getArr().includes(LESSON_ID); if (chip) { chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed"; chip.classList.toggle("done", done); } if (btn) { btn.textContent = done ? "Completed ✓" : "Mark Complete ✓"; btn.classList.toggle("ms-glowDone", done); } }
 
 document.addEventListener("DOMContentLoaded", () => {
   if (window.MSTracker) MSTracker.init(LESSON_KEY, {module:"Grammar Foundations", lessonNum:1, title:"Nouns & Pronouns", practiceTotal:3});
@@ -221,6 +255,7 @@ function updateScorecard() {
   if (exitEl && (prog.completedAt || _exitPassed)) { exitEl.textContent = "🚪 Exit ✓"; exitEl.classList.add("pass"); }
 }
 function showXPToast(xp) { const el = document.getElementById("ls-xp"); if (el) { el.textContent = "+" + xp + " XP"; el.classList.add("show"); } }
+function syncCompletionUI() { try { const done = JSON.parse(localStorage.getItem("ms_eng_m1_done") || "[]").includes("lesson-1"); const btn = document.getElementById("completeBtn"); const chip = document.getElementById("statusChip"); if (btn) { btn.textContent = done ? "Completed ✓" : "Mark Complete ✓"; btn.classList.toggle("ms-glowDone", done); } if (chip) { chip.textContent = done ? "Status: Completed ✓" : "Status: Not completed"; chip.classList.toggle("done", done); } } catch {} }
 
 const _practiceAnswered = new Set();
 function checkP(qNum, chosen) {
@@ -309,7 +344,14 @@ function restoreIfDone() {
 const KICKERS = {arcade:"🕹️ Arcade · English L1", rpg:"📖 Quest · Nouns & Pronouns", academic:"🧠 Grammar · Lesson 1 of 6", lms:"🏫 Grammar · Lesson 1"};
 function applyMode(m) { document.body.setAttribute("data-mode", m); const k = document.getElementById("modeKicker"); if (k) k.textContent = KICKERS[m] || KICKERS.rpg; document.querySelectorAll(".ms-modeBtn").forEach(b => b.classList.toggle("is-active", b.dataset.mode === m)); try { localStorage.setItem("ms_xp_mode", m); } catch {} }
 document.querySelectorAll(".ms-modeBtn").forEach(b => b.addEventListener("click", () => applyMode(b.dataset.mode)));
+const _baseMarkComplete = markComplete;
+markComplete = function(){ _baseMarkComplete(); syncCompletionUI(); };
+const _baseRestoreIfDone = restoreIfDone;
+restoreIfDone = function(){ _baseRestoreIfDone(); syncCompletionUI(); };
+const completeBtn = document.getElementById("completeBtn");
+if (completeBtn) completeBtn.addEventListener("click", () => markComplete());
 try { const s = localStorage.getItem("ms_xp_mode"); applyMode(s && KICKERS[s] ? s : "rpg"); } catch { applyMode("rpg"); }
+syncCompletionUI();
 
 (function() { const els = document.querySelectorAll(".ms-reveal"); const io = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { x.target.classList.add("is-in"); io.unobserve(x.target); } }); }, {threshold:.08}); els.forEach(el => io.observe(el)); })();
 try { localStorage.setItem("ms_last_lesson_url", window.location.href); } catch {}
