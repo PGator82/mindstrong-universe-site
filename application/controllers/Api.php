@@ -408,9 +408,9 @@ class Api extends CI_Controller {
     }
 
     private function inferCurriculumCourseKey($relative_path) {
-        if (strpos($relative_path, '/foundations-science/') === 0) return 'foundations_science';
-        if (strpos($relative_path, '/foundations-english/') === 0) return 'foundations_english';
-        if (strpos($relative_path, '/pre-algebra/') === 0) return 'pre_algebra';
+        if (strpos($relative_path, '/school/foundations-science/') === 0) return 'foundations_science';
+        if (strpos($relative_path, '/school/foundations-english/') === 0) return 'foundations_english';
+        if (strpos($relative_path, '/school/pre-algebra/') === 0) return 'pre_algebra';
         return 'foundations_math';
     }
 
@@ -470,6 +470,7 @@ class Api extends CI_Controller {
         if (!is_dir($school_path)) return [];
 
         $descriptors = [];
+        $seen = [];
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($school_path, FilesystemIterator::SKIP_DOTS)
         );
@@ -481,6 +482,7 @@ class Api extends CI_Controller {
             $relative_path = str_replace('\\', '/', $relative_path);
             if (preg_match('#^/school/(index\.html|games\.html|math-league\.html)$#', $relative_path)) continue;
             if (preg_match('#/progress-dashboard\.html$#', $relative_path)) continue;
+            if (strpos($relative_path, '/school/pre-algebra/') === 0) continue;
             if (preg_match('#^/school/(foundations|foundations-science|foundations-english)/index\.html$#', $relative_path)) continue;
 
             $course_key = $this->inferCurriculumCourseKey($relative_path);
@@ -503,6 +505,7 @@ class Api extends CI_Controller {
                 'lesson_type' => 'lesson',
                 'estimated_minutes' => 20,
             ];
+            $seen[$relative_path] = true;
         }
 
         usort($descriptors, function ($a, $b) {
@@ -518,6 +521,7 @@ class Api extends CI_Controller {
 
         $descriptors = $this->builtCurriculumDescriptors();
         $course_ids = [];
+        $managed_course_ids = [];
         foreach ($descriptors as $descriptor) {
             $course_meta = $this->curriculumCourseLabel($descriptor['course_key']);
             if (!isset($course_ids[$descriptor['course_key']])) {
@@ -531,8 +535,16 @@ class Api extends CI_Controller {
                         'status' => 'active',
                     ]);
                     $course = $this->db->get_where('ms_courses', ['course_id' => $this->db->insert_id()])->row_array();
+                } else {
+                    $this->db->where('course_id', $course['course_id'])->update('ms_courses', [
+                        'title' => $course_meta['title'],
+                        'description' => $course_meta['description'],
+                        'subject_area' => $course_meta['subject'],
+                        'status' => 'active',
+                    ]);
                 }
                 $course_ids[$descriptor['course_key']] = (int)$course['course_id'];
+                $managed_course_ids[] = (int)$course['course_id'];
             }
 
             $lesson_slug = trim($descriptor['course_key'] . '-' . $this->slugify($descriptor['lesson_url']), '-');
@@ -549,17 +561,40 @@ class Api extends CI_Controller {
                     'status' => 'active',
                 ]);
                 $lesson = $this->db->get_where('ms_lessons', ['lesson_id' => $this->db->insert_id()])->row_array();
+            } else {
+                $this->db->where('lesson_id', $lesson['lesson_id'])->update('ms_lessons', [
+                    'title' => $descriptor['title'],
+                    'subject_area' => $descriptor['subject_area'],
+                    'description' => $descriptor['module_title'] ?: $course_meta['description'],
+                    'lesson_url' => $descriptor['lesson_url'],
+                    'lesson_type' => $descriptor['lesson_type'],
+                    'estimated_minutes' => $descriptor['estimated_minutes'],
+                    'status' => 'active',
+                ]);
+            }
+
+            $target_course_id = $course_ids[$descriptor['course_key']];
+            $all_links = $this->db->get_where('ms_course_lessons', ['lesson_id' => $lesson['lesson_id']])->result_array();
+            foreach ($all_links as $link) {
+                if (in_array((int)$link['course_id'], $managed_course_ids, true) && (int)$link['course_id'] !== $target_course_id) {
+                    $this->db->where('course_lesson_id', $link['course_lesson_id'])->delete('ms_course_lessons');
+                }
             }
 
             $existing_link = $this->db->get_where('ms_course_lessons', [
-                'course_id' => $course_ids[$descriptor['course_key']],
+                'course_id' => $target_course_id,
                 'lesson_id' => $lesson['lesson_id'],
             ])->row_array();
 
-            if (!$existing_link) {
-                $position = (int)$this->db->where('course_id', $course_ids[$descriptor['course_key']])->count_all_results('ms_course_lessons') + 1;
+            if ($existing_link) {
+                $this->db->where('course_lesson_id', $existing_link['course_lesson_id'])->update('ms_course_lessons', [
+                    'module_title' => $descriptor['module_title'] ?: null,
+                    'is_required' => 1,
+                ]);
+            } else {
+                $position = (int)$this->db->where('course_id', $target_course_id)->count_all_results('ms_course_lessons') + 1;
                 $this->db->insert('ms_course_lessons', [
-                    'course_id' => $course_ids[$descriptor['course_key']],
+                    'course_id' => $target_course_id,
                     'lesson_id' => (int)$lesson['lesson_id'],
                     'module_title' => $descriptor['module_title'] ?: null,
                     'position' => $position,
