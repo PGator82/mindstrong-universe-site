@@ -44,9 +44,7 @@ class Student extends CI_Controller
     {
         if ($this->session->userdata('student_login') != 1)
             redirect(base_url(), 'refresh');
-        $page_data['page_name']  = 'dashboard';
-        $page_data['page_title'] = get_phrase('student_dashboard');
-        $this->load->view('backend/index', $page_data);
+        redirect(base_url('dashboard.html'), 'refresh');
     }
 
 
