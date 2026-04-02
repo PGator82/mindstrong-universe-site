@@ -381,13 +381,23 @@ class Api extends CI_Controller {
     }
 
     private function courseLessons($course_id) {
+        $course = $this->firstRow('ms_courses', ['course_id' => $course_id]);
+        $course_slug = $course['slug'] ?? '';
         $rows = $this->db->order_by('position', 'ASC')
             ->get_where('ms_course_lessons', ['course_id' => $course_id])
             ->result_array();
         $items = [];
+        $seen_urls = [];
         foreach ($rows as $row) {
             $lesson = $this->firstRow('ms_lessons', ['lesson_id' => $row['lesson_id']]);
             if (!$lesson) continue;
+            $lesson_url = $lesson['lesson_url'] ?? '';
+            if ($lesson_url && strpos($lesson_url, '/school/') === 0) {
+                $canonical_course = $this->inferCurriculumCourseKey($lesson_url);
+                if ($course_slug && $canonical_course !== $course_slug) continue;
+                if (isset($seen_urls[$lesson_url])) continue;
+                $seen_urls[$lesson_url] = true;
+            }
             $item = $this->lessonPayload($lesson);
             $item['module_title'] = $row['module_title'] ?? '';
             $item['position'] = (int)$row['position'];
