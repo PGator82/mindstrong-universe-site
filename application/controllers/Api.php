@@ -397,8 +397,183 @@ class Api extends CI_Controller {
         return $items;
     }
 
+    private function curriculumCourseLabel($key) {
+        $labels = [
+            'foundations_math' => ['title' => 'Foundations Math', 'subject' => 'Mathematics', 'description' => 'Built lessons from the live Foundations math sequence.'],
+            'foundations_science' => ['title' => 'Foundations Science', 'subject' => 'Science', 'description' => 'Built lessons from the live Foundations science sequence.'],
+            'foundations_english' => ['title' => 'Foundations English', 'subject' => 'English', 'description' => 'Built lessons from the live Foundations English sequence.'],
+            'pre_algebra' => ['title' => 'Pre-Algebra', 'subject' => 'Mathematics', 'description' => 'Built lessons from the pre-algebra path.'],
+        ];
+        return $labels[$key] ?? ['title' => 'MindStrong Course', 'subject' => 'General', 'description' => 'Built curriculum lessons.'];
+    }
+
+    private function inferCurriculumCourseKey($relative_path) {
+        if (strpos($relative_path, '/foundations-science/') === 0) return 'foundations_science';
+        if (strpos($relative_path, '/foundations-english/') === 0) return 'foundations_english';
+        if (strpos($relative_path, '/pre-algebra/') === 0) return 'pre_algebra';
+        return 'foundations_math';
+    }
+
+    private function titleFromCurriculumPath($relative_path) {
+        $relative_path = trim(str_replace('\\', '/', $relative_path), '/');
+        $relative_path = preg_replace('#^school/#', '', $relative_path);
+        $parts = explode('/', $relative_path);
+        if (count($parts) >= 2 && preg_match('/^lesson-(\d+)$/', basename($parts[count($parts) - 1], '.html'), $match)) {
+            $group = $parts[count($parts) - 2];
+            $group = str_replace(['foundations-science', 'foundations-english'], ['science', 'english'], $group);
+            $group_title = ucwords(str_replace(['-', '_'], ' ', $group));
+            return trim($group_title . ' Lesson ' . $match[1]);
+        }
+
+        $base = basename($relative_path, '.html');
+        if ($base === 'index' && count($parts) > 1) {
+            $base = $parts[count($parts) - 2];
+        }
+
+        $map = [
+            'module-1' => 'Number Sense',
+            'pre-algebra' => 'Pre-Algebra',
+            'geometry' => 'Geometry Foundations',
+            'fractions' => 'Fractions and Operations',
+            'integers' => 'Integers and Negatives',
+            'data' => 'Data and Statistics',
+            'algebra' => 'Intro to Algebra',
+            'linear' => 'Linear Equations and Slope',
+            'functions' => 'Functions and Graphs',
+            'foundations-science' => 'Foundations Science',
+            'foundations-english' => 'Foundations English',
+            'ratio' => 'Ratios',
+            'proportions' => 'Proportions',
+            'percents' => 'Percents',
+            'expressions' => 'Expressions',
+            'equations' => 'Equations',
+            'angles' => 'Angles',
+            'area' => 'Area',
+            'circles' => 'Circles',
+            'coordinate' => 'Coordinate Geometry',
+            'polygons' => 'Polygons',
+            'triangles' => 'Triangles',
+            'central' => 'Central Tendency',
+            'spread' => 'Spread and Variability',
+            'meaning' => 'Meaning of Fractions',
+            'equivalent' => 'Equivalent Fractions',
+            'convert' => 'Converting Fractions',
+            'add-sub' => 'Add and Subtract Fractions',
+            'multiply' => 'Multiply Fractions',
+            'divide' => 'Divide Fractions',
+        ];
+        return $map[$base] ?? ucwords(str_replace(['-', '_'], ' ', $base));
+    }
+
+    private function builtCurriculumDescriptors() {
+        $school_path = rtrim(str_replace('\\', '/', FCPATH), '/') . '/school';
+        if (!is_dir($school_path)) return [];
+
+        $descriptors = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($school_path, FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || strtolower($file->getExtension()) !== 'html') continue;
+            $full_path = str_replace('\\', '/', $file->getPathname());
+            $relative_path = str_replace(str_replace('\\', '/', rtrim(FCPATH, '\\/')), '', $full_path);
+            $relative_path = str_replace('\\', '/', $relative_path);
+            if (preg_match('#^/school/(index\.html|games\.html|math-league\.html)$#', $relative_path)) continue;
+            if (preg_match('#/progress-dashboard\.html$#', $relative_path)) continue;
+            if (preg_match('#^/school/(foundations|foundations-science|foundations-english)/index\.html$#', $relative_path)) continue;
+
+            $course_key = $this->inferCurriculumCourseKey($relative_path);
+            $title = $this->titleFromCurriculumPath($relative_path);
+            $module_title = '';
+            if (preg_match('#/school/foundations/([^/]+)/#', $relative_path, $match)) {
+                $module_title = $this->titleFromCurriculumPath('/school/foundations/' . $match[1] . '/index.html');
+            } elseif (preg_match('#^/school/(foundations-science|foundations-english)/#', $relative_path, $match)) {
+                $module_title = $this->curriculumCourseLabel($course_key)['title'];
+            } elseif (preg_match('#^/school/pre-algebra/([^/]+)/#', $relative_path, $match)) {
+                $module_title = $this->titleFromCurriculumPath('/school/pre-algebra/' . $match[1] . '/index.html');
+            }
+
+            $descriptors[] = [
+                'course_key' => $course_key,
+                'title' => $title,
+                'module_title' => $module_title,
+                'lesson_url' => $relative_path,
+                'subject_area' => $this->curriculumCourseLabel($course_key)['subject'],
+                'lesson_type' => 'lesson',
+                'estimated_minutes' => 20,
+            ];
+        }
+
+        usort($descriptors, function ($a, $b) {
+            return strcmp($a['lesson_url'], $b['lesson_url']);
+        });
+        return $descriptors;
+    }
+
+    private function ensureBuiltCurriculumCatalog() {
+        static $seeded = false;
+        if ($seeded) return;
+        $this->ensureWorkflowTables();
+
+        $descriptors = $this->builtCurriculumDescriptors();
+        $course_ids = [];
+        foreach ($descriptors as $descriptor) {
+            $course_meta = $this->curriculumCourseLabel($descriptor['course_key']);
+            if (!isset($course_ids[$descriptor['course_key']])) {
+                $course = $this->db->get_where('ms_courses', ['slug' => $descriptor['course_key']])->row_array();
+                if (!$course) {
+                    $this->db->insert('ms_courses', [
+                        'title' => $course_meta['title'],
+                        'slug' => $descriptor['course_key'],
+                        'description' => $course_meta['description'],
+                        'subject_area' => $course_meta['subject'],
+                        'status' => 'active',
+                    ]);
+                    $course = $this->db->get_where('ms_courses', ['course_id' => $this->db->insert_id()])->row_array();
+                }
+                $course_ids[$descriptor['course_key']] = (int)$course['course_id'];
+            }
+
+            $lesson_slug = trim($descriptor['course_key'] . '-' . $this->slugify($descriptor['lesson_url']), '-');
+            $lesson = $this->db->get_where('ms_lessons', ['slug' => $lesson_slug])->row_array();
+            if (!$lesson) {
+                $this->db->insert('ms_lessons', [
+                    'title' => $descriptor['title'],
+                    'slug' => $lesson_slug,
+                    'lesson_type' => $descriptor['lesson_type'],
+                    'subject_area' => $descriptor['subject_area'],
+                    'description' => $descriptor['module_title'] ?: $course_meta['description'],
+                    'lesson_url' => $descriptor['lesson_url'],
+                    'estimated_minutes' => $descriptor['estimated_minutes'],
+                    'status' => 'active',
+                ]);
+                $lesson = $this->db->get_where('ms_lessons', ['lesson_id' => $this->db->insert_id()])->row_array();
+            }
+
+            $existing_link = $this->db->get_where('ms_course_lessons', [
+                'course_id' => $course_ids[$descriptor['course_key']],
+                'lesson_id' => $lesson['lesson_id'],
+            ])->row_array();
+
+            if (!$existing_link) {
+                $position = (int)$this->db->where('course_id', $course_ids[$descriptor['course_key']])->count_all_results('ms_course_lessons') + 1;
+                $this->db->insert('ms_course_lessons', [
+                    'course_id' => $course_ids[$descriptor['course_key']],
+                    'lesson_id' => (int)$lesson['lesson_id'],
+                    'module_title' => $descriptor['module_title'] ?: null,
+                    'position' => $position,
+                    'is_required' => 1,
+                ]);
+            }
+        }
+
+        $seeded = true;
+    }
+
     private function studentCourseBundle($student_id) {
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
         $rows = $this->db->order_by('assigned_at', 'DESC')
             ->get_where('ms_student_courses', ['student_id' => $student_id, 'status' => 'active'])
             ->result_array();
@@ -1836,6 +2011,7 @@ class Api extends CI_Controller {
     public function admin_courses() {
         $this->requireSession('admin_login');
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
 
         $rows = $this->db->order_by('updated_at', 'DESC')->get('ms_courses')->result_array();
         $courses = [];
@@ -1901,6 +2077,7 @@ class Api extends CI_Controller {
     public function admin_lessons() {
         $this->requireSession('admin_login');
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
 
         $rows = $this->db->order_by('updated_at', 'DESC')->get('ms_lessons')->result_array();
         $lessons = array_map([$this, 'lessonPayload'], $rows);
@@ -2075,31 +2252,32 @@ class Api extends CI_Controller {
     public function teacher_course_catalog() {
         $this->requireSession('teacher_login');
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
 
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
 
-        $rows = $this->db->order_by('teacher_course_id', 'DESC')
-            ->get_where('ms_teacher_courses', ['teacher_id' => $teacher_id])
-            ->result_array();
-
         $catalog = [];
-        foreach ($rows as $row) {
-            $course = $this->firstRow('ms_courses', ['course_id' => $row['course_id']]);
-            if (!$course) continue;
+        $courses = $this->db->order_by('title', 'ASC')->get_where('ms_courses', ['status' => 'active'])->result_array();
+        foreach ($courses as $course) {
             $item = $this->coursePayload($course);
-            $class = !empty($row['class_id']) ? $this->firstRow('class', ['class_id' => $row['class_id']]) : null;
-            $section = !empty($row['section_id']) ? $this->firstRow('section', ['section_id' => $row['section_id']]) : null;
-            $item['class_id'] = $row['class_id'] ? (int)$row['class_id'] : null;
-            $item['section_id'] = $row['section_id'] ? (int)$row['section_id'] : null;
+            $assignment = $this->db->order_by('teacher_course_id', 'DESC')->get_where('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course['course_id'],
+            ])->row_array();
+            $class = !empty($assignment['class_id']) ? $this->firstRow('class', ['class_id' => $assignment['class_id']]) : null;
+            $section = !empty($assignment['section_id']) ? $this->firstRow('section', ['section_id' => $assignment['section_id']]) : null;
+            $item['class_id'] = !empty($assignment['class_id']) ? (int)$assignment['class_id'] : null;
+            $item['section_id'] = !empty($assignment['section_id']) ? (int)$assignment['section_id'] : null;
             $item['class_name'] = $class['name'] ?? '';
             $item['section_name'] = $section['name'] ?? '';
-            $item['lessons'] = $this->courseLessons($row['course_id']);
+            $item['lessons'] = $this->courseLessons($course['course_id']);
             $item['student_count'] = (int)$this->db->where([
-                'course_id' => $row['course_id'],
+                'course_id' => $course['course_id'],
                 'teacher_id' => $teacher_id,
                 'status' => 'active',
             ])->count_all_results('ms_student_courses');
+            $item['is_assigned_teacher'] = !empty($assignment);
             $catalog[] = $item;
         }
 
@@ -2116,6 +2294,7 @@ class Api extends CI_Controller {
 
         $this->requireSession('teacher_login');
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
 
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
@@ -2133,9 +2312,17 @@ class Api extends CI_Controller {
             'teacher_id' => $teacher_id,
             'course_id' => $course_id,
         ])->row_array();
-
         if (!$assignment) {
-            $this->json(['error' => 'You are not assigned to that course'], 403);
+            $this->db->insert('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course_id,
+                'class_id' => $class_id ?: null,
+                'section_id' => $section_id ?: null,
+            ]);
+            $assignment = $this->db->get_where('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course_id,
+            ])->row_array();
         }
 
         $this->assignStudentCourse(
@@ -2164,6 +2351,7 @@ class Api extends CI_Controller {
 
         $this->requireSession('teacher_login');
         $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
 
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
@@ -2181,7 +2369,10 @@ class Api extends CI_Controller {
             'course_id' => $course_id,
         ])->row_array();
         if (!$assignment) {
-            $this->json(['error' => 'You are not assigned to that course'], 403);
+            $this->db->insert('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course_id,
+            ]);
         }
 
         $existing = $this->firstRow('ms_student_lesson_assignments', [

@@ -445,13 +445,13 @@ tr:hover td{background:rgba(255,255,255,.02);}
           <div class="form-field"><label>Course</label><select id="teacher-course-select"><option value="">Select course</option></select></div>
           <div class="form-row-2">
             <div class="form-field"><label>Student</label><select id="teacher-course-student"><option value="">Select student</option></select></div>
-            <div class="form-field"><label>Lesson</label><select id="teacher-lesson-select"><option value="">Select lesson</option></select></div>
+            <div class="form-field"><label>Built Lesson</label><select id="teacher-lesson-select"><option value="">Select lesson</option></select></div>
           </div>
           <div style="display:flex;gap:10px;flex-wrap:wrap;">
             <button class="btn btn-primary btn-sm" onclick="assignTeacherCourseToStudent()">Assign Course</button>
-            <button class="btn btn-ghost btn-sm" onclick="assignTeacherLessonToStudent()">Assign Lesson</button>
+            <button class="btn btn-ghost btn-sm" onclick="assignTeacherLessonToStudent()">Assign Built Lesson</button>
           </div>
-          <div style="font-size:.78rem;color:var(--muted);">Students, parents, and the student dashboard will all read from these same assignments.</div>
+          <div style="font-size:.78rem;color:var(--muted);">Choose from the Foundations lessons already built in MindStrong. Students, parents, and the student dashboard all read the same assignment records.</div>
         </div>
       </div>
 
@@ -687,7 +687,7 @@ function renderTeacherCourseCatalog(courses) {
   if (!wrap) return;
   document.getElementById('teacher-course-summary').textContent = `${courses.length} active courses`;
   if (!courses.length) {
-    wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">No shared courses assigned yet. Ask admin to assign a course first.</div>';
+    wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">No curriculum courses loaded yet.</div>';
     populateTeacherFlowControls();
     return;
   }
