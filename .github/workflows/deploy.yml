@@ -25,6 +25,7 @@ jobs:
           TOKEN_FALLBACK: ${{ secrets.RAILWAY_API_TOKEN }}
         run: |
           TOKEN="${TOKEN_PRIMARY:-$TOKEN_FALLBACK}"
+          TOKEN="$(printf '%s' "$TOKEN" | tr -d '\r' | xargs)"
           if [ -z "$TOKEN" ]; then
             echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets."
             echo "❌ Missing Railway token. Set RAILWAY_TOKEN (or RAILWAY_API_TOKEN) in repository secrets. Use a Railway personal token or project token with deploy access."
@@ -40,6 +41,7 @@ jobs:
           SERVICE_ID: ${{ secrets.RAILWAY_SERVICE_ID }}
         run: |
           SERVICE="${SERVICE_NAME:-$SERVICE_ID}"
+          SERVICE="$(printf '%s' "$SERVICE" | tr -d '\r' | xargs)"
           if [ -z "$SERVICE" ]; then
             SERVICE="mindstrong-universe-site"
             echo "⚠️ RAILWAY_SERVICE/RAILWAY_SERVICE_ID not set. Falling back to '$SERVICE'."
