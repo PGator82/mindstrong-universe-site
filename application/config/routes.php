@@ -61,10 +61,12 @@ $route['api/progress/save']        = 'api/progress_save';
 
 $route['api/student/stats']        = 'api/student_stats';
 $route['api/student/courses']      = 'api/student_courses';
+$route['api/student/learning']     = 'api/student_learning';
 $route['api/student/assignments']  = 'api/student_assignments';
 $route['api/student/schedule']     = 'api/student_schedule';
 
 $route['api/parent/child']         = 'api/parent_child';
+$route['api/parent/courses']       = 'api/parent_courses';
 $route['api/parent/grades']        = 'api/parent_grades';
 $route['api/parent/attendance']    = 'api/parent_attendance';
 $route['api/parent/fees']          = 'api/parent_fees';
@@ -78,11 +80,21 @@ $route['api/teacher/stats']        = 'api/teacher_stats';
 $route['api/teacher/students']     = 'api/teacher_students';
 $route['api/teacher/classes']      = 'api/teacher_classes';
 $route['api/teacher/schedule']     = 'api/teacher_schedule';
+$route['api/teacher/course-catalog'] = 'api/teacher_course_catalog';
 $route['api/teacher/assignments']  = 'api/teacher_assignments';
 $route['api/teacher/assignments/create'] = 'api/teacher_assignments_create';
+$route['api/teacher/student-courses/create'] = 'api/teacher_student_courses_create';
+$route['api/teacher/student-lessons/create'] = 'api/teacher_student_lessons_create';
 $route['api/teacher/attendance']   = 'api/teacher_attendance_save';
 
 $route['api/admin/stats']          = 'api/admin_stats';
 $route['api/admin/users']          = 'api/admin_users';
 $route['api/admin/users/create']   = 'api/admin_users_create';
+$route['api/admin/courses']        = 'api/admin_courses';
+$route['api/admin/courses/create'] = 'api/admin_courses_create';
+$route['api/admin/lessons']        = 'api/admin_lessons';
+$route['api/admin/lessons/create'] = 'api/admin_lessons_create';
+$route['api/admin/course-lessons/create'] = 'api/admin_course_lessons_create';
+$route['api/admin/teacher-courses/create'] = 'api/admin_teacher_courses_create';
+$route['api/admin/student-courses/create'] = 'api/admin_student_courses_create';
 $route['api/admin/activity']       = 'api/admin_activity';

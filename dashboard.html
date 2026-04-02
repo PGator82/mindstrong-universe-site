@@ -1181,6 +1181,7 @@
     } catch(e) { /* offline, fall through */ }
     loadLocalProfile();
     loadCourses();
+    loadStudentLearning();
     initModuleProgress();
     initXPChart();
     initDailyChallenge();
@@ -1239,6 +1240,49 @@
   }
 
   /* ── Courses from API ── */
+  function ensureLearningFlowCard() {
+    let list = document.getElementById('student-learning-list');
+    let loading = document.getElementById('student-learning-loading');
+    if (list && loading) return { list, loading };
+    const activityCard = document.getElementById('activity-feed')?.closest('.ms-card');
+    if (!activityCard) return { list: null, loading: null };
+    const card = document.createElement('div');
+    card.className = 'ms-card reveal';
+    card.style.marginBottom = '20px';
+    card.innerHTML = '<div class="ms-card-title" style="margin-bottom:12px;">My Learning Flow</div><div id="student-learning-loading" style="color:var(--muted);font-size:13px;padding:6px 0 12px;">Loading assigned courses...</div><div id="student-learning-list" style="display:grid;gap:12px;"></div>';
+    activityCard.parentNode.insertBefore(card, activityCard);
+    return {
+      list: document.getElementById('student-learning-list'),
+      loading: document.getElementById('student-learning-loading')
+    };
+  }
+
+  function renderStudentLearning(courses) {
+    const refs = ensureLearningFlowCard();
+    if (!refs.list || !refs.loading) return;
+    refs.loading.style.display = 'none';
+    if (!courses.length) {
+      refs.list.innerHTML = '<div style="color:var(--muted);font-size:13px;">No assigned courses yet. Once a teacher or admin assigns a course, it will show up here.</div>';
+      return;
+    }
+    refs.list.innerHTML = courses.map(course => `<div style="padding:16px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.03);"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;"><div><div style="font-size:16px;font-weight:700;color:#f1f5f9;">${course.title}</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">${course.teacher_name || 'MindStrong'}${course.class_name ? ' · Grade ' + course.class_name : ''}</div></div><div style="text-align:right;"><div style="font-size:20px;font-weight:800;color:var(--gold);">${course.progress_percent || 0}%</div><div style="font-size:11px;color:var(--muted);">complete</div></div></div><div style="margin-top:10px;height:8px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;"><div style="height:100%;width:${course.progress_percent || 0}%;background:linear-gradient(90deg,#7c3aed,#2563eb);"></div></div><div style="display:grid;gap:8px;margin-top:12px;">${(course.lessons || []).slice(0,4).map(lesson => `<div style="padding:12px;border-radius:12px;background:rgba(255,255,255,.03);display:flex;justify-content:space-between;gap:12px;align-items:center;"><div><div style="font-weight:700;font-size:13px;">${lesson.title}</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">${lesson.lesson_type} · ${lesson.estimated_minutes || 20} min</div></div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:11px;color:${lesson.progress_status === 'completed' ? '#22c55e' : lesson.progress_status === 'in_progress' ? '#f59e0b' : '#94a3b8'};">${lesson.progress_status === 'completed' ? 'Completed' : lesson.progress_status === 'in_progress' ? 'In progress' : 'Assigned'}</span><a class="ms-btn sm primary" href="${lesson.lesson_url || '#'}">Open</a>${lesson.game_url ? `<a class="ms-btn sm" href="${lesson.game_url}">Game</a>` : ''}</div></div>`).join('')}</div></div>`).join('');
+  }
+
+  async function loadStudentLearning() {
+    const refs = ensureLearningFlowCard();
+    if (!refs.list || !refs.loading) return;
+    refs.loading.style.display = 'block';
+    refs.loading.textContent = 'Loading assigned courses...';
+    try {
+      const res = await fetch('/api/student/learning', { credentials: 'include' });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      renderStudentLearning(data.courses || []);
+    } catch(e) {
+      refs.loading.textContent = 'No assigned courses available yet.';
+    }
+  }
+
   async function loadCourses() {
     try {
       const res = await fetch('/api/student/courses', { credentials: 'include' });

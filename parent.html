@@ -299,6 +299,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       </div>
     </div>
 
+    <div class="card" style="margin-bottom:20px;" id="parent-learning-card">
+      <div class="card-header">
+        <span class="card-title">Child Learning Flow</span>
+        <span class="card-link" id="parent-learning-summary">0 assigned courses</span>
+      </div>
+      <div id="parent-course-progress" style="display:grid;gap:12px;"></div>
+    </div>
+
     <!-- Row 1: Grades + Attendance -->
     <div class="grid-2" id="grades">
 
@@ -882,6 +890,17 @@ function renderFees(fees) {
   document.getElementById('unpaid-badge').textContent = unpaidFees.length;
 }
 
+function renderParentCourses(courses) {
+  const wrap = document.getElementById('parent-course-progress');
+  if (!wrap) return;
+  document.getElementById('parent-learning-summary').textContent = `${courses.length} assigned courses`;
+  if (!courses.length) {
+    wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">No shared course assignments are visible for this child yet.</div>';
+    return;
+  }
+  wrap.innerHTML = courses.map(course => `<div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;"><div><div style="font-weight:800;">${course.title}</div><div style="font-size:.76rem;color:var(--muted);margin-top:4px;">${course.teacher_name || 'Teacher pending'}${course.class_name ? ' · Grade ' + course.class_name : ''}</div></div><div style="text-align:right;"><div style="font-weight:800;color:var(--cyan);">${course.progress_percent || 0}%</div><div style="font-size:.72rem;color:var(--muted);">progress</div></div></div><div style="margin-top:10px;height:8px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;"><div style="height:100%;width:${course.progress_percent || 0}%;background:linear-gradient(90deg,#06b6d4,#2563eb);"></div></div><div style="display:grid;gap:8px;margin-top:12px;">${(course.lessons || []).slice(0,5).map(lesson => `<div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:.78rem;"><div><div style="font-weight:700;">${lesson.title}</div><div style="color:var(--muted);margin-top:2px;">${lesson.lesson_type} · ${lesson.lesson_url}</div></div><div style="font-size:.74rem;color:${lesson.progress_status === 'completed' ? 'var(--green)' : lesson.progress_status === 'in_progress' ? 'var(--yellow)' : 'var(--muted)'};">${lesson.progress_status === 'completed' ? 'Completed' : lesson.progress_status === 'in_progress' ? 'In Progress' : 'Assigned'}</div></div>`).join('')}</div></div>`).join('');
+}
+
 function renderSchedule(schedule) {
   const grid = document.getElementById('schedule-grid');
   if (!schedule.length) return;
@@ -965,12 +984,13 @@ async function refreshParentChildData() {
   if (!parentState.activeChildId) return;
   const studentId = parentState.activeChildId;
   try {
-    const [gradesRes, feesRes, attendanceRes, scheduleRes, teachersRes] = await Promise.all([
+    const [gradesRes, feesRes, attendanceRes, scheduleRes, teachersRes, coursesRes] = await Promise.all([
       fetch(`/api/parent/grades?student_id=${studentId}`, { credentials: 'include' }),
       fetch(`/api/parent/fees?student_id=${studentId}`, { credentials: 'include' }),
       fetch(`/api/parent/attendance?student_id=${studentId}`, { credentials: 'include' }),
       fetch(`/api/parent/schedule?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/teachers?student_id=${studentId}`, { credentials: 'include' })
+      fetch(`/api/parent/teachers?student_id=${studentId}`, { credentials: 'include' }),
+      fetch(`/api/parent/courses?student_id=${studentId}`, { credentials: 'include' })
     ]);
 
     if (gradesRes.ok) {
@@ -995,6 +1015,10 @@ async function refreshParentChildData() {
       const data = await teachersRes.json();
       renderTeachers(data.teachers || []);
       await loadMessages();
+    }
+    if (coursesRes.ok) {
+      const data = await coursesRes.json();
+      renderParentCourses(data.courses || []);
     }
   } catch (e) {}
 }

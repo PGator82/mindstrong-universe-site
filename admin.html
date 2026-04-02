@@ -464,6 +464,75 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <div class="grid-3-1" id="sec-learning-ops" style="margin-top:20px;">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Learning Operations</span>
+          <span class="card-link">Shared admin, teacher, student, and parent flow</span>
+        </div>
+        <div style="display:grid;gap:18px;">
+          <div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Create Course</div>
+            <div class="form-row-2">
+              <div class="form-field"><label>Title</label><input id="course-title" type="text" placeholder="Foundations Math"></div>
+              <div class="form-field"><label>Subject Area</label><input id="course-subject" type="text" placeholder="Mathematics"></div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-field"><label>Class</label><input id="course-class-id" type="number" placeholder="Optional class id"></div>
+              <div class="form-field"><label>Section</label><input id="course-section-id" type="number" placeholder="Optional section id"></div>
+            </div>
+            <div class="form-field"><label>Description</label><textarea id="course-description" placeholder="Short course summary"></textarea></div>
+            <button class="btn btn-gold btn-sm" onclick="createCourse()">Create Course</button>
+          </div>
+
+          <div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Create Lesson</div>
+            <div class="form-row-2">
+              <div class="form-field"><label>Title</label><input id="lesson-title" type="text" placeholder="Foundations Unit 1"></div>
+              <div class="form-field"><label>Type</label><select id="lesson-type"><option value="lesson">Lesson</option><option value="game">Game</option><option value="assessment">Assessment</option></select></div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-field"><label>Subject Area</label><input id="lesson-subject" type="text" placeholder="Mathematics"></div>
+              <div class="form-field"><label>Minutes</label><input id="lesson-minutes" type="number" value="20"></div>
+            </div>
+            <div class="form-field"><label>Lesson URL</label><input id="lesson-url" type="text" placeholder="/school/foundations/index.html"></div>
+            <div class="form-field"><label>Game URL</label><input id="lesson-game-url" type="text" placeholder="/school/games.html"></div>
+            <div class="form-field"><label>Description</label><textarea id="lesson-description" placeholder="What students should do in this lesson"></textarea></div>
+            <button class="btn btn-gold btn-sm" onclick="createLesson()">Create Lesson</button>
+          </div>
+
+          <div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);">
+            <div style="font-size:.82rem;font-weight:700;margin-bottom:12px;">Deliver Learning</div>
+            <div class="form-field"><label>Course</label><select id="ops-course-select"><option value="">Select course</option></select></div>
+            <div class="form-field"><label>Lesson</label><select id="ops-lesson-select"><option value="">Select lesson</option></select></div>
+            <div class="form-field"><label>Module Title</label><input id="ops-module-title" type="text" placeholder="Module 1"></div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+              <button class="btn btn-ghost btn-sm" onclick="attachLessonToCourse()">Attach Lesson To Course</button>
+            </div>
+            <div class="form-row-2">
+              <div class="form-field"><label>Teacher</label><select id="ops-teacher-select"><option value="">Select teacher</option></select></div>
+              <div class="form-field"><label>Student</label><select id="ops-student-select"><option value="">Select student</option></select></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn btn-ghost btn-sm" onclick="assignTeacherCourse()">Assign Teacher To Course</button>
+              <button class="btn btn-gold btn-sm" onclick="assignStudentCourse()">Assign Course To Student</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Course Catalog</span><span class="card-link" id="course-catalog-summary">0 live courses</span></div>
+          <div id="admin-course-catalog" style="display:grid;gap:12px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">Lesson Library</span><span class="card-link" id="lesson-library-summary">0 lessons</span></div>
+          <div id="admin-lesson-library" style="display:grid;gap:10px;"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -591,6 +660,13 @@ function adminRoleBadge(role) {
   return map[key] || 'rb-student';
 }
 
+const adminLearningState = {
+  courses: [],
+  lessons: [],
+  teachers: [],
+  students: []
+};
+
 async function loadAdminUsers() {
   const filter = document.getElementById('user-role-filter');
   const role = (filter?.value || 'Student').toLowerCase();
@@ -651,6 +727,171 @@ async function createAdminUser() {
   }
 }
 
+function populateLearningSelects() {
+  const courseSelect = document.getElementById('ops-course-select');
+  const lessonSelect = document.getElementById('ops-lesson-select');
+  const teacherSelect = document.getElementById('ops-teacher-select');
+  const studentSelect = document.getElementById('ops-student-select');
+  if (courseSelect) {
+    courseSelect.innerHTML = '<option value="">Select course</option>' + adminLearningState.courses.map(course => `<option value="${course.course_id}">${course.title}</option>`).join('');
+  }
+  if (lessonSelect) {
+    lessonSelect.innerHTML = '<option value="">Select lesson</option>' + adminLearningState.lessons.map(lesson => `<option value="${lesson.lesson_id}">${lesson.title}</option>`).join('');
+  }
+  if (teacherSelect) {
+    teacherSelect.innerHTML = '<option value="">Select teacher</option>' + adminLearningState.teachers.map(teacher => `<option value="${teacher.teacher_id || teacher.user_id}">${teacher.name}</option>`).join('');
+  }
+  if (studentSelect) {
+    studentSelect.innerHTML = '<option value="">Select student</option>' + adminLearningState.students.map(student => `<option value="${student.student_id || student.user_id}">${student.name}</option>`).join('');
+  }
+}
+
+function renderAdminCourseCatalog() {
+  const wrap = document.getElementById('admin-course-catalog');
+  if (!wrap) return;
+  document.getElementById('course-catalog-summary').textContent = `${adminLearningState.courses.length} live courses`;
+  if (!adminLearningState.courses.length) {
+    wrap.innerHTML = '<div style="color:var(--muted);font-size:.82rem;">No shared courses yet. Create the first one here.</div>';
+    return;
+  }
+  wrap.innerHTML = adminLearningState.courses.map(course => `<div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;"><div><div style="font-weight:800;">${course.title}</div><div style="font-size:.76rem;color:var(--muted);margin-top:4px;">${course.subject_area || 'General'}${course.class_name ? ' · Grade ' + course.class_name : ''}${course.section_name ? ' · Section ' + course.section_name : ''}</div></div><div style="font-size:.74rem;color:var(--gold);">${course.student_count || 0} students</div></div><div style="font-size:.8rem;color:var(--muted);margin-top:8px;">${course.description || 'No description yet.'}</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:.76rem;color:var(--muted);"><span>${course.lesson_count || 0} lessons</span><span>${course.teacher_count || 0} teachers</span></div><div style="display:grid;gap:8px;margin-top:12px;">${(course.lessons || []).slice(0,4).map(lesson => `<div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.78rem;"><div style="font-weight:700;">${lesson.title}</div><div style="color:var(--muted);margin-top:2px;">${lesson.module_title || lesson.lesson_type || 'Lesson'} · ${lesson.lesson_url}</div></div>`).join('') || '<div style="font-size:.78rem;color:var(--muted);">No lessons attached yet.</div>'}</div></div>`).join('');
+}
+
+function renderAdminLessonLibrary() {
+  const wrap = document.getElementById('admin-lesson-library');
+  if (!wrap) return;
+  document.getElementById('lesson-library-summary').textContent = `${adminLearningState.lessons.length} lessons`;
+  if (!adminLearningState.lessons.length) {
+    wrap.innerHTML = '<div style="color:var(--muted);font-size:.82rem;">No lesson library entries yet.</div>';
+    return;
+  }
+  wrap.innerHTML = adminLearningState.lessons.map(lesson => `<div style="padding:12px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.02);"><div style="display:flex;justify-content:space-between;gap:10px;"><div><div style="font-weight:700;">${lesson.title}</div><div style="font-size:.76rem;color:var(--muted);margin-top:2px;">${lesson.subject_area || 'General'} · ${lesson.lesson_type}</div></div><div style="font-size:.74rem;color:var(--muted);">${lesson.estimated_minutes || 20} min</div></div><div style="font-size:.76rem;color:var(--muted);margin-top:8px;">${lesson.lesson_url}</div>${lesson.game_url ? `<div style="font-size:.74rem;color:var(--gold);margin-top:4px;">Game: ${lesson.game_url}</div>` : ''}</div>`).join('');
+}
+
+async function loadLearningOps() {
+  try {
+    const [coursesRes, lessonsRes, teachersRes, studentsRes] = await Promise.all([
+      fetch('/api/admin/courses', { credentials: 'include' }),
+      fetch('/api/admin/lessons', { credentials: 'include' }),
+      fetch('/api/admin/users?role=teacher&limit=100', { credentials: 'include' }),
+      fetch('/api/admin/users?role=student&limit=100', { credentials: 'include' })
+    ]);
+    if (coursesRes.ok) {
+      const data = await coursesRes.json();
+      adminLearningState.courses = data.courses || [];
+    }
+    if (lessonsRes.ok) {
+      const data = await lessonsRes.json();
+      adminLearningState.lessons = data.lessons || [];
+    }
+    if (teachersRes.ok) {
+      const data = await teachersRes.json();
+      adminLearningState.teachers = data.users || [];
+    }
+    if (studentsRes.ok) {
+      const data = await studentsRes.json();
+      adminLearningState.students = data.users || [];
+    }
+    populateLearningSelects();
+    renderAdminCourseCatalog();
+    renderAdminLessonLibrary();
+  } catch (e) {}
+}
+
+async function postJSON(url, payload) {
+  const res = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+async function createCourse() {
+  try {
+    await postJSON('/api/admin/courses/create', {
+      title: document.getElementById('course-title').value.trim(),
+      subject_area: document.getElementById('course-subject').value.trim(),
+      class_id: document.getElementById('course-class-id').value,
+      section_id: document.getElementById('course-section-id').value,
+      description: document.getElementById('course-description').value.trim()
+    });
+    ['course-title','course-subject','course-class-id','course-section-id','course-description'].forEach(id => document.getElementById(id).value = '');
+    showToast('Course created.', 'var(--green)');
+    await loadLearningOps();
+  } catch (e) {
+    showToast(e.message || 'Could not create course', 'var(--red)');
+  }
+}
+
+async function createLesson() {
+  try {
+    await postJSON('/api/admin/lessons/create', {
+      title: document.getElementById('lesson-title').value.trim(),
+      lesson_type: document.getElementById('lesson-type').value,
+      subject_area: document.getElementById('lesson-subject').value.trim(),
+      estimated_minutes: document.getElementById('lesson-minutes').value,
+      lesson_url: document.getElementById('lesson-url').value.trim(),
+      game_url: document.getElementById('lesson-game-url').value.trim(),
+      description: document.getElementById('lesson-description').value.trim()
+    });
+    ['lesson-title','lesson-subject','lesson-minutes','lesson-url','lesson-game-url','lesson-description'].forEach((id, idx) => {
+      const el = document.getElementById(id);
+      el.value = idx === 2 ? '20' : '';
+    });
+    document.getElementById('lesson-type').value = 'lesson';
+    showToast('Lesson created.', 'var(--green)');
+    await loadLearningOps();
+  } catch (e) {
+    showToast(e.message || 'Could not create lesson', 'var(--red)');
+  }
+}
+
+async function attachLessonToCourse() {
+  try {
+    await postJSON('/api/admin/course-lessons/create', {
+      course_id: document.getElementById('ops-course-select').value,
+      lesson_id: document.getElementById('ops-lesson-select').value,
+      module_title: document.getElementById('ops-module-title').value.trim()
+    });
+    document.getElementById('ops-module-title').value = '';
+    showToast('Lesson attached to course.', 'var(--green)');
+    await loadLearningOps();
+  } catch (e) {
+    showToast(e.message || 'Could not attach lesson', 'var(--red)');
+  }
+}
+
+async function assignTeacherCourse() {
+  try {
+    await postJSON('/api/admin/teacher-courses/create', {
+      course_id: document.getElementById('ops-course-select').value,
+      teacher_id: document.getElementById('ops-teacher-select').value
+    });
+    showToast('Teacher assigned to course.', 'var(--green)');
+    await loadLearningOps();
+  } catch (e) {
+    showToast(e.message || 'Could not assign teacher', 'var(--red)');
+  }
+}
+
+async function assignStudentCourse() {
+  try {
+    await postJSON('/api/admin/student-courses/create', {
+      course_id: document.getElementById('ops-course-select').value,
+      teacher_id: document.getElementById('ops-teacher-select').value,
+      student_id: document.getElementById('ops-student-select').value
+    });
+    showToast('Course assigned to student.', 'var(--green)');
+    await loadLearningOps();
+  } catch (e) {
+    showToast(e.message || 'Could not assign student', 'var(--red)');
+  }
+}
+
 async function loadAdminPortal() {
   const createButton = Array.from(document.querySelectorAll('#add-user-modal .btn.btn-gold')).pop();
   if (createButton) {
@@ -681,6 +922,7 @@ async function loadAdminPortal() {
   } catch (e) {}
 
   await loadAdminUsers();
+  await loadLearningOps();
 }
 
 document.addEventListener('DOMContentLoaded', loadAdminPortal);

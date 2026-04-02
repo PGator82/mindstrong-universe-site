@@ -435,6 +435,32 @@ tr:hover td{background:rgba(255,255,255,.02);}
       </div>
     </div>
 
+    <div class="grid-3-1" style="margin-top:20px;" id="sec-learning-flow">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Course Delivery</span>
+          <span class="card-link">Assign shared courses and lessons to students</span>
+        </div>
+        <div style="display:grid;gap:14px;">
+          <div class="form-field"><label>Course</label><select id="teacher-course-select"><option value="">Select course</option></select></div>
+          <div class="form-row-2">
+            <div class="form-field"><label>Student</label><select id="teacher-course-student"><option value="">Select student</option></select></div>
+            <div class="form-field"><label>Lesson</label><select id="teacher-lesson-select"><option value="">Select lesson</option></select></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="assignTeacherCourseToStudent()">Assign Course</button>
+            <button class="btn btn-ghost btn-sm" onclick="assignTeacherLessonToStudent()">Assign Lesson</button>
+          </div>
+          <div style="font-size:.78rem;color:var(--muted);">Students, parents, and the student dashboard will all read from these same assignments.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">My Learning Catalog</span><span class="card-link" id="teacher-course-summary">0 active courses</span></div>
+        <div id="teacher-course-catalog" style="display:grid;gap:12px;"></div>
+      </div>
+    </div>
+
   </div><!-- /page -->
 </div><!-- /main -->
 
@@ -577,7 +603,8 @@ const teacherState = {
   classes: [],
   assignments: [],
   students: [],
-  currentClassId: null
+  currentClassId: null,
+  courseCatalog: []
 };
 
 function buildAttendanceList(students){
@@ -635,6 +662,37 @@ function renderTeacherStudents(students){
     return `<tr><td><div class="student-cell"><div class="s-avatar">🎓</div><div><div class="s-name">${student.name}</div><div class="s-id">#${student.id}</div></div></div></td><td><span class="grade-pill ${gradeClass}">${grade}</span></td><td>${avg}%</td><td><div class="att-bar"><div class="att-fill" style="width:${Math.max(avg,45)}%;background:${avg >= 80 ? 'var(--green)' : avg >= 65 ? 'var(--yellow)' : 'var(--red)'}"></div></div></td><td><span class="status-dot" style="background:${statusColor}"></span>${status}</td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>`;
   }).join('');
   buildAttendanceList(students);
+  populateTeacherFlowControls();
+}
+
+function populateTeacherFlowControls() {
+  const studentSelect = document.getElementById('teacher-course-student');
+  const courseSelect = document.getElementById('teacher-course-select');
+  const lessonSelect = document.getElementById('teacher-lesson-select');
+  if (studentSelect) {
+    studentSelect.innerHTML = '<option value="">Select student</option>' + teacherState.students.map(student => `<option value="${student.id}">${student.name}</option>`).join('');
+  }
+  if (courseSelect) {
+    courseSelect.innerHTML = '<option value="">Select course</option>' + teacherState.courseCatalog.map(course => `<option value="${course.course_id}">${course.title}</option>`).join('');
+  }
+  if (lessonSelect) {
+    const selectedCourseId = Number(courseSelect?.value || teacherState.courseCatalog[0]?.course_id || 0);
+    const course = teacherState.courseCatalog.find(item => Number(item.course_id) === selectedCourseId) || teacherState.courseCatalog[0];
+    lessonSelect.innerHTML = '<option value="">Select lesson</option>' + (course?.lessons || []).map(lesson => `<option value="${lesson.lesson_id}">${lesson.title}</option>`).join('');
+  }
+}
+
+function renderTeacherCourseCatalog(courses) {
+  const wrap = document.getElementById('teacher-course-catalog');
+  if (!wrap) return;
+  document.getElementById('teacher-course-summary').textContent = `${courses.length} active courses`;
+  if (!courses.length) {
+    wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">No shared courses assigned yet. Ask admin to assign a course first.</div>';
+    populateTeacherFlowControls();
+    return;
+  }
+  wrap.innerHTML = courses.map(course => `<div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;"><div><div style="font-weight:800;">${course.title}</div><div style="font-size:.76rem;color:var(--muted);margin-top:4px;">${course.subject_area || 'General'}${course.class_name ? ' · Grade ' + course.class_name : ''}${course.section_name ? ' · Section ' + course.section_name : ''}</div></div><div style="font-size:.74rem;color:var(--gold);">${course.student_count || 0} students</div></div><div style="display:grid;gap:8px;margin-top:12px;">${(course.lessons || []).map(lesson => `<div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.78rem;"><div style="font-weight:700;">${lesson.title}</div><div style="color:var(--muted);margin-top:2px;">${lesson.lesson_type} · ${lesson.lesson_url}</div></div>`).join('') || '<div style="font-size:.78rem;color:var(--muted);">No lessons attached yet.</div>'}</div></div>`).join('');
+  populateTeacherFlowControls();
 }
 
 async function loadTeacherStudents(classId){
@@ -644,6 +702,56 @@ async function loadTeacherStudents(classId){
     const data = await res.json();
     renderTeacherStudents(data.students || []);
   } catch (e) {}
+}
+
+async function loadTeacherCourseCatalog() {
+  try {
+    const res = await fetch('/api/teacher/course-catalog', { credentials: 'include' });
+    if (!res.ok) return;
+    const data = await res.json();
+    teacherState.courseCatalog = data.courses || [];
+    renderTeacherCourseCatalog(teacherState.courseCatalog);
+  } catch (e) {}
+}
+
+async function assignTeacherCourseToStudent() {
+  try {
+    const res = await fetch('/api/teacher/student-courses/create', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        course_id: document.getElementById('teacher-course-select').value,
+        student_id: document.getElementById('teacher-course-student').value,
+        class_id: teacherState.currentClassId || ''
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not assign course');
+    showToast('Course assigned to student.');
+  } catch (e) {
+    showToast(e.message || 'Could not assign course.');
+  }
+}
+
+async function assignTeacherLessonToStudent() {
+  try {
+    const res = await fetch('/api/teacher/student-lessons/create', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        course_id: document.getElementById('teacher-course-select').value,
+        student_id: document.getElementById('teacher-course-student').value,
+        lesson_id: document.getElementById('teacher-lesson-select').value
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not assign lesson');
+    showToast('Lesson assigned to student.');
+  } catch (e) {
+    showToast(e.message || 'Could not assign lesson.');
+  }
 }
 
 async function submitAssignment(){
@@ -750,10 +858,16 @@ async function loadTeacherPortal(){
     }
 
     await loadTeacherStudents(teacherState.currentClassId);
+    await loadTeacherCourseCatalog();
   } catch (e) {}
 }
 
 document.addEventListener('DOMContentLoaded', loadTeacherPortal);
+document.addEventListener('change', event => {
+  if (event.target && event.target.id === 'teacher-course-select') {
+    populateTeacherFlowControls();
+  }
+});
 </script>
 <style>@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}</style>
 </body>

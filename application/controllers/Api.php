@@ -167,6 +167,110 @@ class Api extends CI_Controller {
             KEY idx_thread (parent_id, student_id, teacher_id, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_courses (
+            course_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            title VARCHAR(191) NOT NULL,
+            slug VARCHAR(191) NOT NULL,
+            description TEXT NULL,
+            subject_area VARCHAR(80) NOT NULL DEFAULT 'General',
+            class_id INT NULL,
+            section_id INT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'active',
+            created_by_admin_id INT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (course_id),
+            UNIQUE KEY uniq_slug (slug),
+            KEY idx_class_section (class_id, section_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_lessons (
+            lesson_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            title VARCHAR(191) NOT NULL,
+            slug VARCHAR(191) NOT NULL,
+            lesson_type VARCHAR(30) NOT NULL DEFAULT 'lesson',
+            subject_area VARCHAR(80) NOT NULL DEFAULT 'General',
+            description TEXT NULL,
+            lesson_url VARCHAR(255) NOT NULL,
+            game_url VARCHAR(255) NULL,
+            estimated_minutes INT NOT NULL DEFAULT 20,
+            status VARCHAR(30) NOT NULL DEFAULT 'active',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (lesson_id),
+            UNIQUE KEY uniq_lesson_slug (slug)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_course_lessons (
+            course_lesson_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            course_id INT NOT NULL,
+            lesson_id INT NOT NULL,
+            module_title VARCHAR(191) NULL,
+            position INT NOT NULL DEFAULT 1,
+            is_required TINYINT(1) NOT NULL DEFAULT 1,
+            PRIMARY KEY (course_lesson_id),
+            UNIQUE KEY uniq_course_lesson (course_id, lesson_id),
+            KEY idx_course_position (course_id, position)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_teacher_courses (
+            teacher_course_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            teacher_id INT NOT NULL,
+            course_id INT NOT NULL,
+            class_id INT NULL,
+            section_id INT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (teacher_course_id),
+            UNIQUE KEY uniq_teacher_course (teacher_id, course_id, class_id, section_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_student_courses (
+            student_course_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            student_id INT NOT NULL,
+            course_id INT NOT NULL,
+            assigned_by_role VARCHAR(20) NOT NULL DEFAULT 'admin',
+            assigned_by_id INT NULL,
+            teacher_id INT NULL,
+            class_id INT NULL,
+            section_id INT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'active',
+            assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (student_course_id),
+            UNIQUE KEY uniq_student_course (student_id, course_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_student_lesson_assignments (
+            student_lesson_assignment_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            student_id INT NOT NULL,
+            course_id INT NOT NULL,
+            lesson_id INT NOT NULL,
+            teacher_id INT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'assigned',
+            due_date DATE NULL,
+            assigned_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (student_lesson_assignment_id),
+            UNIQUE KEY uniq_student_lesson (student_id, course_id, lesson_id),
+            KEY idx_student_status (student_id, status)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_lesson_progress (
+            lesson_progress_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+            student_id INT NOT NULL,
+            course_id INT NOT NULL,
+            lesson_id INT NOT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'not_started',
+            completion_percent INT NOT NULL DEFAULT 0,
+            score DECIMAL(5,2) NULL,
+            xp_earned INT NOT NULL DEFAULT 0,
+            last_activity_at TIMESTAMP NULL DEFAULT NULL,
+            completed_at TIMESTAMP NULL DEFAULT NULL,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (lesson_progress_id),
+            UNIQUE KEY uniq_progress (student_id, course_id, lesson_id),
+            KEY idx_student_course (student_id, course_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
         $ensured = true;
     }
 
@@ -227,6 +331,186 @@ class Api extends CI_Controller {
             'parent' => '👪',
         ];
         return $map[$role] ?? '👤';
+    }
+
+    private function slugify($text) {
+        $text = strtolower(trim((string)$text));
+        $text = preg_replace('/[^a-z0-9]+/', '-', $text);
+        $text = trim((string)$text, '-');
+        return $text ?: 'item-' . substr(bin2hex(random_bytes(4)), 0, 8);
+    }
+
+    private function ensureUniqueSlug($table, $slug_field, $base_slug) {
+        $slug = $base_slug;
+        $suffix = 2;
+        while ($this->db->get_where($table, [$slug_field => $slug])->row_array()) {
+            $slug = $base_slug . '-' . $suffix;
+            $suffix++;
+        }
+        return $slug;
+    }
+
+    private function coursePayload($course) {
+        if (!$course) return null;
+        return [
+            'course_id' => (int)$course['course_id'],
+            'title' => $course['title'],
+            'slug' => $course['slug'],
+            'description' => $course['description'] ?? '',
+            'subject_area' => $course['subject_area'] ?? 'General',
+            'class_id' => isset($course['class_id']) ? (int)$course['class_id'] : null,
+            'section_id' => isset($course['section_id']) ? (int)$course['section_id'] : null,
+            'status' => $course['status'] ?? 'active',
+        ];
+    }
+
+    private function lessonPayload($lesson) {
+        if (!$lesson) return null;
+        return [
+            'lesson_id' => (int)$lesson['lesson_id'],
+            'title' => $lesson['title'],
+            'slug' => $lesson['slug'],
+            'lesson_type' => $lesson['lesson_type'],
+            'subject_area' => $lesson['subject_area'] ?? 'General',
+            'description' => $lesson['description'] ?? '',
+            'lesson_url' => $lesson['lesson_url'],
+            'game_url' => $lesson['game_url'] ?? '',
+            'estimated_minutes' => (int)($lesson['estimated_minutes'] ?? 20),
+            'status' => $lesson['status'] ?? 'active',
+        ];
+    }
+
+    private function courseLessons($course_id) {
+        $rows = $this->db->order_by('position', 'ASC')
+            ->get_where('ms_course_lessons', ['course_id' => $course_id])
+            ->result_array();
+        $items = [];
+        foreach ($rows as $row) {
+            $lesson = $this->firstRow('ms_lessons', ['lesson_id' => $row['lesson_id']]);
+            if (!$lesson) continue;
+            $item = $this->lessonPayload($lesson);
+            $item['module_title'] = $row['module_title'] ?? '';
+            $item['position'] = (int)$row['position'];
+            $item['is_required'] = !empty($row['is_required']);
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    private function studentCourseBundle($student_id) {
+        $this->ensureWorkflowTables();
+        $rows = $this->db->order_by('assigned_at', 'DESC')
+            ->get_where('ms_student_courses', ['student_id' => $student_id, 'status' => 'active'])
+            ->result_array();
+        $courses = [];
+        foreach ($rows as $row) {
+            $course = $this->firstRow('ms_courses', ['course_id' => $row['course_id']]);
+            if (!$course) continue;
+            $lessons = $this->courseLessons($row['course_id']);
+            $progress_rows = $this->db->get_where('ms_lesson_progress', [
+                'student_id' => $student_id,
+                'course_id' => $row['course_id'],
+            ])->result_array();
+            $progress_map = [];
+            foreach ($progress_rows as $progress_row) {
+                $progress_map[(int)$progress_row['lesson_id']] = $progress_row;
+            }
+            $lesson_items = [];
+            $completed = 0;
+            foreach ($lessons as $lesson) {
+                $progress = $progress_map[$lesson['lesson_id']] ?? null;
+                $status = $progress['status'] ?? 'assigned';
+                if ($status === 'completed') $completed++;
+                $lesson['progress_status'] = $status;
+                $lesson['completion_percent'] = isset($progress['completion_percent']) ? (int)$progress['completion_percent'] : 0;
+                $lesson['score'] = isset($progress['score']) ? (float)$progress['score'] : null;
+                $lesson_items[] = $lesson;
+            }
+            $bundle = $this->coursePayload($course);
+            $bundle['teacher_id'] = isset($row['teacher_id']) ? (int)$row['teacher_id'] : null;
+            $teacher = !empty($row['teacher_id']) ? $this->firstRow('teacher', ['teacher_id' => $row['teacher_id']]) : null;
+            $class = !empty($row['class_id']) ? $this->firstRow('class', ['class_id' => $row['class_id']]) : null;
+            $section = !empty($row['section_id']) ? $this->firstRow('section', ['section_id' => $row['section_id']]) : null;
+            $bundle['student_course_id'] = (int)$row['student_course_id'];
+            $bundle['teacher_name'] = $teacher['name'] ?? '';
+            $bundle['class_name'] = $class['name'] ?? '';
+            $bundle['section_name'] = $section['name'] ?? '';
+            $bundle['lesson_count'] = count($lesson_items);
+            $bundle['completed_lessons'] = $completed;
+            $bundle['progress_percent'] = $lesson_items ? (int)round($completed / count($lesson_items) * 100) : 0;
+            $bundle['lessons'] = $lesson_items;
+            $courses[] = $bundle;
+        }
+        return $courses;
+    }
+
+    private function assignStudentCourse($student_id, $course_id, $assigned_by_role, $assigned_by_id, $teacher_id = null, $class_id = null, $section_id = null) {
+        $this->ensureWorkflowTables();
+
+        $existing = $this->firstRow('ms_student_courses', [
+            'student_id' => $student_id,
+            'course_id' => $course_id,
+        ]);
+
+        $payload = [
+            'student_id' => (int)$student_id,
+            'course_id' => (int)$course_id,
+            'assigned_by_role' => $assigned_by_role,
+            'assigned_by_id' => $assigned_by_id ?: null,
+            'teacher_id' => $teacher_id ?: null,
+            'class_id' => $class_id ?: null,
+            'section_id' => $section_id ?: null,
+            'status' => 'active',
+        ];
+
+        if ($existing) {
+            $this->db->where('student_course_id', $existing['student_course_id'])->update('ms_student_courses', $payload);
+            $student_course_id = (int)$existing['student_course_id'];
+        } else {
+            $this->db->insert('ms_student_courses', $payload);
+            $student_course_id = (int)$this->db->insert_id();
+        }
+
+        $lessons = $this->db->order_by('position', 'ASC')
+            ->get_where('ms_course_lessons', ['course_id' => $course_id])
+            ->result_array();
+
+        foreach ($lessons as $lesson) {
+            $assignment = $this->firstRow('ms_student_lesson_assignments', [
+                'student_id' => $student_id,
+                'course_id' => $course_id,
+                'lesson_id' => $lesson['lesson_id'],
+            ]);
+
+            if (!$assignment) {
+                $this->db->insert('ms_student_lesson_assignments', [
+                    'student_id' => (int)$student_id,
+                    'course_id' => (int)$course_id,
+                    'lesson_id' => (int)$lesson['lesson_id'],
+                    'teacher_id' => $teacher_id ?: null,
+                    'status' => 'assigned',
+                ]);
+            }
+
+            $progress = $this->firstRow('ms_lesson_progress', [
+                'student_id' => $student_id,
+                'course_id' => $course_id,
+                'lesson_id' => $lesson['lesson_id'],
+            ]);
+
+            if (!$progress) {
+                $this->db->insert('ms_lesson_progress', [
+                    'student_id' => (int)$student_id,
+                    'course_id' => (int)$course_id,
+                    'lesson_id' => (int)$lesson['lesson_id'],
+                    'status' => 'not_started',
+                    'completion_percent' => 0,
+                    'xp_earned' => 0,
+                ]);
+            }
+        }
+
+        return $student_course_id;
     }
 
     private function freshProgressState() {
@@ -518,8 +802,22 @@ class Api extends CI_Controller {
      */
     public function student_courses() {
         $this->requireSession('student_login');
+        $this->ensureWorkflowTables();
         $student_id = $this->session->userdata('student_id')
                    ?: $this->session->userdata('user_id');
+
+        $shared_courses = $this->studentCourseBundle($student_id);
+        if ($shared_courses) {
+            $courses = [];
+            foreach ($shared_courses as $course) {
+                $courses[] = [
+                    'subject' => $course['title'],
+                    'teacher' => $course['teacher_name'] ?? 'MindStrong',
+                    'progress' => (int)($course['progress_percent'] ?? 0),
+                ];
+            }
+            $this->json(['courses' => $courses]);
+        }
 
         $enroll   = $this->db->get_where('enroll', ['student_id' => $student_id])->row_array();
         $class_id = $enroll ? $enroll['class_id'] : null;
@@ -1530,6 +1828,444 @@ class Api extends CI_Controller {
         }
 
         $this->json(['activity' => array_slice($activity, 0, 10)]);
+    }
+
+    /**
+     * GET /api/admin/courses
+     */
+    public function admin_courses() {
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $rows = $this->db->order_by('updated_at', 'DESC')->get('ms_courses')->result_array();
+        $courses = [];
+        foreach ($rows as $row) {
+            $course = $this->coursePayload($row);
+            $class = !empty($row['class_id']) ? $this->firstRow('class', ['class_id' => $row['class_id']]) : null;
+            $section = !empty($row['section_id']) ? $this->firstRow('section', ['section_id' => $row['section_id']]) : null;
+            $course['class_name'] = $class['name'] ?? '';
+            $course['section_name'] = $section['name'] ?? '';
+            $course['lesson_count'] = (int)$this->db->where('course_id', $row['course_id'])->count_all_results('ms_course_lessons');
+            $course['teacher_count'] = (int)$this->db->where('course_id', $row['course_id'])->count_all_results('ms_teacher_courses');
+            $course['student_count'] = (int)$this->db->where('course_id', $row['course_id'])->count_all_results('ms_student_courses');
+            $course['lessons'] = $this->courseLessons($row['course_id']);
+            $courses[] = $course;
+        }
+
+        $this->json(['courses' => $courses]);
+    }
+
+    /**
+     * POST /api/admin/courses/create
+     */
+    public function admin_courses_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $body = $this->getJsonInput();
+        $title = trim((string)($body['title'] ?? $this->getPosted('title')));
+        $description = trim((string)($body['description'] ?? $this->getPosted('description')));
+        $subject_area = trim((string)($body['subject_area'] ?? $this->getPosted('subject_area') ?: 'General'));
+        $class_id = (int)($body['class_id'] ?? $this->getPosted('class_id'));
+        $section_id = (int)($body['section_id'] ?? $this->getPosted('section_id'));
+
+        if ($title === '') {
+            $this->json(['error' => 'Course title is required'], 400);
+        }
+
+        $slug = $this->ensureUniqueSlug('ms_courses', 'slug', $this->slugify($title));
+        $this->db->insert('ms_courses', [
+            'title' => $title,
+            'slug' => $slug,
+            'description' => $description,
+            'subject_area' => $subject_area,
+            'class_id' => $class_id ?: null,
+            'section_id' => $section_id ?: null,
+            'status' => 'active',
+        ]);
+
+        $course = $this->firstRow('ms_courses', ['course_id' => $this->db->insert_id()]);
+        $this->json([
+            'success' => true,
+            'course' => $this->coursePayload($course),
+        ]);
+    }
+
+    /**
+     * GET /api/admin/lessons
+     */
+    public function admin_lessons() {
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $rows = $this->db->order_by('updated_at', 'DESC')->get('ms_lessons')->result_array();
+        $lessons = array_map([$this, 'lessonPayload'], $rows);
+        $this->json(['lessons' => $lessons]);
+    }
+
+    /**
+     * POST /api/admin/lessons/create
+     */
+    public function admin_lessons_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $body = $this->getJsonInput();
+        $title = trim((string)($body['title'] ?? $this->getPosted('title')));
+        $lesson_url = trim((string)($body['lesson_url'] ?? $this->getPosted('lesson_url')));
+        $game_url = trim((string)($body['game_url'] ?? $this->getPosted('game_url')));
+        $lesson_type = trim((string)($body['lesson_type'] ?? $this->getPosted('lesson_type') ?: 'lesson'));
+        $subject_area = trim((string)($body['subject_area'] ?? $this->getPosted('subject_area') ?: 'General'));
+        $description = trim((string)($body['description'] ?? $this->getPosted('description')));
+        $estimated_minutes = max(5, (int)($body['estimated_minutes'] ?? $this->getPosted('estimated_minutes') ?: 20));
+
+        if ($title === '' || $lesson_url === '') {
+            $this->json(['error' => 'Lesson title and lesson URL are required'], 400);
+        }
+
+        $slug = $this->ensureUniqueSlug('ms_lessons', 'slug', $this->slugify($title));
+        $this->db->insert('ms_lessons', [
+            'title' => $title,
+            'slug' => $slug,
+            'lesson_type' => $lesson_type,
+            'subject_area' => $subject_area,
+            'description' => $description,
+            'lesson_url' => $lesson_url,
+            'game_url' => $game_url ?: null,
+            'estimated_minutes' => $estimated_minutes,
+            'status' => 'active',
+        ]);
+
+        $lesson = $this->firstRow('ms_lessons', ['lesson_id' => $this->db->insert_id()]);
+        $this->json([
+            'success' => true,
+            'lesson' => $this->lessonPayload($lesson),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/course-lessons/create
+     */
+    public function admin_course_lessons_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $body = $this->getJsonInput();
+        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $lesson_id = (int)($body['lesson_id'] ?? $this->getPosted('lesson_id'));
+        $module_title = trim((string)($body['module_title'] ?? $this->getPosted('module_title')));
+        $position = max(1, (int)($body['position'] ?? $this->getPosted('position') ?: 1));
+        $is_required = isset($body['is_required']) ? (int)!empty($body['is_required']) : (int)!empty($this->getPosted('is_required'));
+
+        if (!$course_id || !$lesson_id) {
+            $this->json(['error' => 'Course and lesson are required'], 400);
+        }
+
+        $existing = $this->firstRow('ms_course_lessons', [
+            'course_id' => $course_id,
+            'lesson_id' => $lesson_id,
+        ]);
+
+        $payload = [
+            'course_id' => $course_id,
+            'lesson_id' => $lesson_id,
+            'module_title' => $module_title ?: null,
+            'position' => $position,
+            'is_required' => $is_required ? 1 : 0,
+        ];
+
+        if ($existing) {
+            $this->db->where('course_lesson_id', $existing['course_lesson_id'])->update('ms_course_lessons', $payload);
+        } else {
+            $this->db->insert('ms_course_lessons', $payload);
+        }
+
+        $this->json([
+            'success' => true,
+            'lessons' => $this->courseLessons($course_id),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/teacher-courses/create
+     */
+    public function admin_teacher_courses_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $body = $this->getJsonInput();
+        $teacher_id = (int)($body['teacher_id'] ?? $this->getPosted('teacher_id'));
+        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $class_id = (int)($body['class_id'] ?? $this->getPosted('class_id'));
+        $section_id = (int)($body['section_id'] ?? $this->getPosted('section_id'));
+
+        if (!$teacher_id || !$course_id) {
+            $this->json(['error' => 'Teacher and course are required'], 400);
+        }
+
+        $existing = $this->firstRow('ms_teacher_courses', [
+            'teacher_id' => $teacher_id,
+            'course_id' => $course_id,
+            'class_id' => $class_id ?: null,
+            'section_id' => $section_id ?: null,
+        ]);
+
+        if (!$existing) {
+            $this->db->insert('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course_id,
+                'class_id' => $class_id ?: null,
+                'section_id' => $section_id ?: null,
+            ]);
+        }
+
+        $this->json(['success' => true]);
+    }
+
+    /**
+     * POST /api/admin/student-courses/create
+     */
+    public function admin_student_courses_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('admin_login');
+        $this->ensureWorkflowTables();
+
+        $body = $this->getJsonInput();
+        $student_id = (int)($body['student_id'] ?? $this->getPosted('student_id'));
+        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $teacher_id = (int)($body['teacher_id'] ?? $this->getPosted('teacher_id'));
+        $class_id = (int)($body['class_id'] ?? $this->getPosted('class_id'));
+        $section_id = (int)($body['section_id'] ?? $this->getPosted('section_id'));
+
+        if (!$student_id || !$course_id) {
+            $this->json(['error' => 'Student and course are required'], 400);
+        }
+
+        $admin_id = $this->session->userdata('admin_id') ?: $this->session->userdata('user_id');
+        $this->assignStudentCourse($student_id, $course_id, 'admin', $admin_id, $teacher_id ?: null, $class_id ?: null, $section_id ?: null);
+
+        $this->json([
+            'success' => true,
+            'courses' => $this->studentCourseBundle($student_id),
+        ]);
+    }
+
+    /**
+     * GET /api/teacher/course-catalog
+     */
+    public function teacher_course_catalog() {
+        $this->requireSession('teacher_login');
+        $this->ensureWorkflowTables();
+
+        $teacher_id = $this->session->userdata('teacher_id')
+                   ?: $this->session->userdata('user_id');
+
+        $rows = $this->db->order_by('teacher_course_id', 'DESC')
+            ->get_where('ms_teacher_courses', ['teacher_id' => $teacher_id])
+            ->result_array();
+
+        $catalog = [];
+        foreach ($rows as $row) {
+            $course = $this->firstRow('ms_courses', ['course_id' => $row['course_id']]);
+            if (!$course) continue;
+            $item = $this->coursePayload($course);
+            $class = !empty($row['class_id']) ? $this->firstRow('class', ['class_id' => $row['class_id']]) : null;
+            $section = !empty($row['section_id']) ? $this->firstRow('section', ['section_id' => $row['section_id']]) : null;
+            $item['class_id'] = $row['class_id'] ? (int)$row['class_id'] : null;
+            $item['section_id'] = $row['section_id'] ? (int)$row['section_id'] : null;
+            $item['class_name'] = $class['name'] ?? '';
+            $item['section_name'] = $section['name'] ?? '';
+            $item['lessons'] = $this->courseLessons($row['course_id']);
+            $item['student_count'] = (int)$this->db->where([
+                'course_id' => $row['course_id'],
+                'teacher_id' => $teacher_id,
+                'status' => 'active',
+            ])->count_all_results('ms_student_courses');
+            $catalog[] = $item;
+        }
+
+        $this->json(['courses' => $catalog]);
+    }
+
+    /**
+     * POST /api/teacher/student-courses/create
+     */
+    public function teacher_student_courses_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('teacher_login');
+        $this->ensureWorkflowTables();
+
+        $teacher_id = $this->session->userdata('teacher_id')
+                   ?: $this->session->userdata('user_id');
+        $body = $this->getJsonInput();
+        $student_id = (int)($body['student_id'] ?? $this->getPosted('student_id'));
+        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $class_id = (int)($body['class_id'] ?? $this->getPosted('class_id'));
+        $section_id = (int)($body['section_id'] ?? $this->getPosted('section_id'));
+
+        if (!$student_id || !$course_id) {
+            $this->json(['error' => 'Student and course are required'], 400);
+        }
+
+        $assignment = $this->db->get_where('ms_teacher_courses', [
+            'teacher_id' => $teacher_id,
+            'course_id' => $course_id,
+        ])->row_array();
+
+        if (!$assignment) {
+            $this->json(['error' => 'You are not assigned to that course'], 403);
+        }
+
+        $this->assignStudentCourse(
+            $student_id,
+            $course_id,
+            'teacher',
+            $teacher_id,
+            $teacher_id,
+            $class_id ?: ($assignment['class_id'] ?? null),
+            $section_id ?: ($assignment['section_id'] ?? null)
+        );
+
+        $this->json([
+            'success' => true,
+            'courses' => $this->studentCourseBundle($student_id),
+        ]);
+    }
+
+    /**
+     * POST /api/teacher/student-lessons/create
+     */
+    public function teacher_student_lessons_create() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+
+        $this->requireSession('teacher_login');
+        $this->ensureWorkflowTables();
+
+        $teacher_id = $this->session->userdata('teacher_id')
+                   ?: $this->session->userdata('user_id');
+        $body = $this->getJsonInput();
+        $student_id = (int)($body['student_id'] ?? $this->getPosted('student_id'));
+        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $lesson_id = (int)($body['lesson_id'] ?? $this->getPosted('lesson_id'));
+
+        if (!$student_id || !$course_id || !$lesson_id) {
+            $this->json(['error' => 'Student, course, and lesson are required'], 400);
+        }
+
+        $assignment = $this->db->get_where('ms_teacher_courses', [
+            'teacher_id' => $teacher_id,
+            'course_id' => $course_id,
+        ])->row_array();
+        if (!$assignment) {
+            $this->json(['error' => 'You are not assigned to that course'], 403);
+        }
+
+        $existing = $this->firstRow('ms_student_lesson_assignments', [
+            'student_id' => $student_id,
+            'course_id' => $course_id,
+            'lesson_id' => $lesson_id,
+        ]);
+
+        if ($existing) {
+            $this->db->where('student_lesson_assignment_id', $existing['student_lesson_assignment_id'])->update('ms_student_lesson_assignments', [
+                'teacher_id' => $teacher_id,
+                'status' => 'assigned',
+            ]);
+        } else {
+            $this->db->insert('ms_student_lesson_assignments', [
+                'student_id' => $student_id,
+                'course_id' => $course_id,
+                'lesson_id' => $lesson_id,
+                'teacher_id' => $teacher_id,
+                'status' => 'assigned',
+            ]);
+        }
+
+        $progress = $this->firstRow('ms_lesson_progress', [
+            'student_id' => $student_id,
+            'course_id' => $course_id,
+            'lesson_id' => $lesson_id,
+        ]);
+        if (!$progress) {
+            $this->db->insert('ms_lesson_progress', [
+                'student_id' => $student_id,
+                'course_id' => $course_id,
+                'lesson_id' => $lesson_id,
+                'status' => 'not_started',
+                'completion_percent' => 0,
+                'xp_earned' => 0,
+            ]);
+        }
+
+        $this->json(['success' => true]);
+    }
+
+    /**
+     * GET /api/student/learning
+     */
+    public function student_learning() {
+        $this->requireSession('student_login');
+        $this->ensureWorkflowTables();
+
+        $student_id = $this->session->userdata('student_id')
+                   ?: $this->session->userdata('user_id');
+
+        $this->json(['courses' => $this->studentCourseBundle($student_id)]);
+    }
+
+    /**
+     * GET /api/parent/courses
+     */
+    public function parent_courses() {
+        $this->requireSession('parent_login');
+        $this->ensureWorkflowTables();
+
+        $parent_id  = $this->session->userdata('parent_id')
+                   ?: $this->session->userdata('user_id');
+        $student_id = (int)($this->input->get('student_id', TRUE) ?: 0);
+
+        if (!$student_id) {
+            $child = $this->db->get_where('student', ['parent_id' => $parent_id])->row_array();
+            $student_id = $child ? (int)$child['student_id'] : 0;
+        }
+
+        if (!$student_id) {
+            $this->json(['courses' => []]);
+        }
+
+        $child = $this->firstRow('student', ['student_id' => $student_id, 'parent_id' => $parent_id]);
+        if (!$child) {
+            $this->json(['error' => 'Student not found'], 404);
+        }
+
+        $this->json([
+            'student_id' => $student_id,
+            'courses' => $this->studentCourseBundle($student_id),
+        ]);
     }
 
 }
