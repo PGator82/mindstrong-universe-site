@@ -57,8 +57,14 @@ $route['admin/dashboard']      = 'portal/admin';
 $route['admin/(:any)']         = 'portal/admin';
 $route['admin/(:any)/(:any)']  = 'portal/admin';
 $route['teacher/dashboard']    = 'portal/teacher';
+$route['teacher/(:any)']       = 'portal/teacher';
+$route['teacher/(:any)/(:any)'] = 'portal/teacher';
 $route['student/dashboard']    = 'portal/student';
+$route['student/(:any)']       = 'portal/student';
+$route['student/(:any)/(:any)'] = 'portal/student';
 $route['parents/dashboard']    = 'portal/parent';
+$route['parents/(:any)']       = 'portal/parent';
+$route['parents/(:any)/(:any)'] = 'portal/parent';
 
 // ── API Routes ──
 $route['api/login']                = 'api/login';
