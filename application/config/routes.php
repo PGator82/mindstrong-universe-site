@@ -54,6 +54,8 @@ $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
 $route['admin/dashboard']      = 'portal/admin';
+$route['admin/(:any)']         = 'portal/admin';
+$route['admin/(:any)/(:any)']  = 'portal/admin';
 $route['teacher/dashboard']    = 'portal/teacher';
 $route['student/dashboard']    = 'portal/student';
 $route['parents/dashboard']    = 'portal/parent';

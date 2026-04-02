@@ -199,25 +199,25 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <nav style="flex:1;overflow-y:auto;padding-bottom:12px;">
     <div class="nav-section">Overview</div>
     <a class="nav-item active" href="/admin/dashboard"><span class="ico">🏠</span> Dashboard</a>
-    <a class="nav-item" href="/admin/reports"><span class="ico">📊</span> Analytics</a>
-    <a class="nav-item" href="/admin/reports"><span class="ico">📈</span> Reports</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">📊</span> Analytics</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">📈</span> Reports</a>
     <div class="nav-section">People</div>
-    <a class="nav-item" href="/admin/student_information"><span class="ico">🎓</span> Students</a>
-    <a class="nav-item" href="/admin/teacher"><span class="ico">👩‍🏫</span> Teachers</a>
-    <a class="nav-item" href="/admin/parent"><span class="ico">👪</span> Parents</a>
+    <a class="nav-item" href="/admin.html#users-table-body"><span class="ico">🎓</span> Students</a>
+    <a class="nav-item" href="/admin.html#users-table-body"><span class="ico">👩‍🏫</span> Teachers</a>
+    <a class="nav-item" href="/admin.html#users-table-body"><span class="ico">👪</span> Parents</a>
     <a class="nav-item" href="/admin/admin"><span class="ico">👥</span> Staff / Admins</a>
     <div class="nav-section">Academic</div>
-    <a class="nav-item" href="/admin/classes"><span class="ico">📚</span> Classes &amp; Sections</a>
-    <a class="nav-item" href="/admin/subject"><span class="ico">📋</span> Subjects</a>
-    <a class="nav-item" href="/admin/timetable"><span class="ico">🗓️</span> Timetable</a>
-    <a class="nav-item" href="/admin/exam"><span class="ico">🏆</span> Exams &amp; Results</a>
+    <a class="nav-item" href="/admin.html#sec-learning-ops"><span class="ico">📚</span> Classes &amp; Sections</a>
+    <a class="nav-item" href="/admin.html#sec-learning-ops"><span class="ico">📋</span> Subjects</a>
+    <a class="nav-item" href="/admin.html#sec-learning-ops"><span class="ico">🗓️</span> Timetable</a>
+    <a class="nav-item" href="/admin.html#sec-learning-ops"><span class="ico">🏆</span> Exams &amp; Results</a>
     <div class="nav-section">Finance</div>
-    <a class="nav-item" href="/admin/fees_invoice"><span class="ico">💰</span> Fees &amp; Invoices</a>
-    <a class="nav-item" href="/admin/fees_payment"><span class="ico">💳</span> Payments</a>
-    <a class="nav-item" href="/admin/expenses"><span class="ico">📉</span> Expenses</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">💰</span> Fees &amp; Invoices</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">💳</span> Payments</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">📉</span> Expenses</a>
     <div class="nav-section">System</div>
-    <a class="nav-item" href="/admin/setting"><span class="ico">⚙️</span> Settings</a>
-    <a class="nav-item" href="/admin/notice"><span class="ico">📢</span> Announcements</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">⚙️</span> Settings</a>
+    <a class="nav-item" href="/admin.html#activity-feed"><span class="ico">📢</span> Announcements</a>
     <a class="nav-item" href="/dbview.php"><span class="ico">🗄️</span> Database Admin</a>
     <a class="nav-item" href="/login/logout"><span class="ico">🚪</span> Sign Out</a>
   </nav>
@@ -249,14 +249,14 @@ tr:hover td{background:rgba(255,255,255,.02);}
 
     <!-- Quick Actions -->
     <div class="quick-actions">
-      <a class="qa-btn" href="/admin/student_add"><div class="qa-icon">🎓</div><div class="qa-label">Add Student</div></a>
-      <a class="qa-btn" href="/admin/teacher/add"><div class="qa-icon">👩‍🏫</div><div class="qa-label">Add Teacher</div></a>
-      <a class="qa-btn" href="/admin/notice"><div class="qa-icon">📢</div><div class="qa-label">Announcement</div></a>
-      <a class="qa-btn" href="/admin/fees_invoice"><div class="qa-icon">💰</div><div class="qa-label">View Invoices</div></a>
-      <a class="qa-btn" href="/admin/exam"><div class="qa-icon">🏆</div><div class="qa-label">Exams</div></a>
-      <a class="qa-btn" href="/admin/classes"><div class="qa-icon">📚</div><div class="qa-label">Classes</div></a>
+      <a class="qa-btn" href="#" onclick="openAddUserModal('student');return false;"><div class="qa-icon">🎓</div><div class="qa-label">Add Student</div></a>
+      <a class="qa-btn" href="#" onclick="openAddUserModal('teacher');return false;"><div class="qa-icon">👩‍🏫</div><div class="qa-label">Add Teacher</div></a>
+      <a class="qa-btn" href="/admin.html#activity-feed"><div class="qa-icon">📢</div><div class="qa-label">Announcement</div></a>
+      <a class="qa-btn" href="/admin.html#activity-feed"><div class="qa-icon">💰</div><div class="qa-label">View Invoices</div></a>
+      <a class="qa-btn" href="/admin.html#sec-learning-ops"><div class="qa-icon">🏆</div><div class="qa-label">Exams</div></a>
+      <a class="qa-btn" href="/admin.html#sec-learning-ops"><div class="qa-icon">📚</div><div class="qa-label">Classes</div></a>
       <a class="qa-btn" href="/dbview.php"><div class="qa-icon">🗄️</div><div class="qa-label">Database</div></a>
-      <a class="qa-btn" href="/admin/reports"><div class="qa-icon">📊</div><div class="qa-label">Reports</div></a>
+      <a class="qa-btn" href="/admin.html#activity-feed"><div class="qa-icon">📊</div><div class="qa-label">Reports</div></a>
     </div>
 
     <!-- Stats -->
@@ -585,6 +585,15 @@ document.addEventListener('click',e=>{const p=document.getElementById('notif-pan
 function openModal(id){const m=document.getElementById(id);m.style.display='flex';}
 function closeModal(id){document.getElementById(id).style.display='none';}
 document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id);});});
+
+function openAddUserModal(role){
+  const roleSelect = document.getElementById('admin-role');
+  if (roleSelect && role) {
+    const normalized = String(role).toLowerCase();
+    roleSelect.value = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  }
+  openModal('add-user-modal');
+}
 
 function showToast(msg,color='var(--green)'){
   const t=document.getElementById('toast');
