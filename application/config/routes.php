@@ -53,6 +53,11 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+$route['admin/dashboard']      = 'portal/admin';
+$route['teacher/dashboard']    = 'portal/teacher';
+$route['student/dashboard']    = 'portal/student';
+$route['parents/dashboard']    = 'portal/parent';
+
 // ── API Routes ──
 $route['api/login']                = 'api/login';
 $route['api/logout']               = 'api/logout';
