@@ -271,6 +271,13 @@ class Api extends CI_Controller {
             KEY idx_student_course (student_id, course_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+        $this->db->query("CREATE TABLE IF NOT EXISTS ms_runtime_state (
+            state_key VARCHAR(120) NOT NULL,
+            state_value VARCHAR(191) NOT NULL,
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (state_key)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
         $ensured = true;
     }
 
@@ -420,6 +427,7 @@ class Api extends CI_Controller {
     private function inferCurriculumCourseKey($relative_path) {
         if (strpos($relative_path, '/school/foundations-science/') === 0) return 'foundations_science';
         if (strpos($relative_path, '/school/foundations-english/') === 0) return 'foundations_english';
+        if (strpos($relative_path, '/school/foundations/pre-algebra/') === 0) return 'pre_algebra';
         if (strpos($relative_path, '/school/pre-algebra/') === 0) return 'pre_algebra';
         return 'foundations_math';
     }
@@ -475,52 +483,101 @@ class Api extends CI_Controller {
         return $map[$base] ?? ucwords(str_replace(['-', '_'], ' ', $base));
     }
 
+    private function curriculumSyncVersion() {
+        return '2026-04-03-foundations-manifest-v1';
+    }
+
+    private function curriculumDescriptor($course_key, $lesson_url, $module_title = '') {
+        return [
+            'course_key' => $course_key,
+            'title' => $this->titleFromCurriculumPath($lesson_url),
+            'module_title' => $module_title,
+            'lesson_url' => $lesson_url,
+            'subject_area' => $this->curriculumCourseLabel($course_key)['subject'],
+            'lesson_type' => 'lesson',
+            'estimated_minutes' => 20,
+        ];
+    }
+
     private function builtCurriculumDescriptors() {
-        $school_path = rtrim(str_replace('\\', '/', FCPATH), '/') . '/school';
-        if (!is_dir($school_path)) return [];
-
         $descriptors = [];
-        $seen = [];
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($school_path, FilesystemIterator::SKIP_DOTS)
-        );
 
-        foreach ($iterator as $file) {
-            if (!$file->isFile() || strtolower($file->getExtension()) !== 'html') continue;
-            $full_path = str_replace('\\', '/', $file->getPathname());
-            $relative_path = str_replace(str_replace('\\', '/', rtrim(FCPATH, '\\/')), '', $full_path);
-            $relative_path = str_replace('\\', '/', $relative_path);
-            if (preg_match('#^/school/(index\.html|games\.html|math-league\.html)$#', $relative_path)) continue;
-            if (preg_match('#/progress-dashboard\.html$#', $relative_path)) continue;
-            if (strpos($relative_path, '/school/pre-algebra/') === 0) continue;
-            if (preg_match('#^/school/(foundations|foundations-science|foundations-english)/index\.html$#', $relative_path)) continue;
-
-            $course_key = $this->inferCurriculumCourseKey($relative_path);
-            $title = $this->titleFromCurriculumPath($relative_path);
-            $module_title = '';
-            if (preg_match('#/school/foundations/([^/]+)/#', $relative_path, $match)) {
-                $module_title = $this->titleFromCurriculumPath('/school/foundations/' . $match[1] . '/index.html');
-            } elseif (preg_match('#^/school/(foundations-science|foundations-english)/#', $relative_path, $match)) {
-                $module_title = $this->curriculumCourseLabel($course_key)['title'];
-            } elseif (preg_match('#^/school/pre-algebra/([^/]+)/#', $relative_path, $match)) {
-                $module_title = $this->titleFromCurriculumPath('/school/pre-algebra/' . $match[1] . '/index.html');
-            }
-
-            $descriptors[] = [
-                'course_key' => $course_key,
-                'title' => $title,
-                'module_title' => $module_title,
-                'lesson_url' => $relative_path,
-                'subject_area' => $this->curriculumCourseLabel($course_key)['subject'],
-                'lesson_type' => 'lesson',
-                'estimated_minutes' => 20,
-            ];
-            $seen[$relative_path] = true;
+        for ($i = 1; $i <= 6; $i++) {
+            $descriptors[] = $this->curriculumDescriptor(
+                'foundations_math',
+                '/school/foundations/module-1/lesson-' . $i . '.html',
+                'Number Sense'
+            );
         }
 
-        usort($descriptors, function ($a, $b) {
-            return strcmp($a['lesson_url'], $b['lesson_url']);
-        });
+        $math_modules = ['algebra', 'functions', 'integers', 'linear', 'ratio'];
+        foreach ($math_modules as $module) {
+            $descriptors[] = $this->curriculumDescriptor(
+                'foundations_math',
+                '/school/foundations/' . $module . '/index.html',
+                $this->titleFromCurriculumPath('/school/foundations/' . $module . '/index.html')
+            );
+        }
+
+        $fraction_paths = [
+            '/school/foundations/fractions/index.html',
+            '/school/foundations/fractions/meaning/index.html',
+            '/school/foundations/fractions/equivalent/index.html',
+            '/school/foundations/fractions/convert/index.html',
+            '/school/foundations/fractions/add-sub/index.html',
+            '/school/foundations/fractions/multiply/index.html',
+            '/school/foundations/fractions/divide/index.html',
+        ];
+        foreach ($fraction_paths as $path) {
+            $descriptors[] = $this->curriculumDescriptor('foundations_math', $path, 'Fractions and Operations');
+        }
+
+        $geometry_paths = [
+            '/school/foundations/geometry/index.html',
+            '/school/foundations/geometry/angles/index.html',
+            '/school/foundations/geometry/area/index.html',
+            '/school/foundations/geometry/circles/index.html',
+            '/school/foundations/geometry/coordinate/index.html',
+            '/school/foundations/geometry/polygons/index.html',
+            '/school/foundations/geometry/triangles/index.html',
+        ];
+        foreach ($geometry_paths as $path) {
+            $descriptors[] = $this->curriculumDescriptor('foundations_math', $path, 'Geometry Foundations');
+        }
+
+        $data_paths = [
+            '/school/foundations/data/index.html',
+            '/school/foundations/data/central/index.html',
+            '/school/foundations/data/spread/index.html',
+        ];
+        foreach ($data_paths as $path) {
+            $descriptors[] = $this->curriculumDescriptor('foundations_math', $path, 'Data and Statistics');
+        }
+
+        $pre_algebra_paths = [
+            '/school/foundations/pre-algebra/index.html',
+            '/school/foundations/pre-algebra/equations/index.html',
+            '/school/foundations/pre-algebra/expressions/index.html',
+            '/school/foundations/pre-algebra/percents/index.html',
+            '/school/foundations/pre-algebra/proportions/index.html',
+        ];
+        foreach ($pre_algebra_paths as $path) {
+            $descriptors[] = $this->curriculumDescriptor('pre_algebra', $path, 'Pre-Algebra');
+        }
+
+        for ($i = 1; $i <= 6; $i++) {
+            $descriptors[] = $this->curriculumDescriptor(
+                'foundations_science',
+                '/school/foundations-science/lesson-' . $i . '.html',
+                'Foundations Science'
+            );
+            $descriptors[] = $this->curriculumDescriptor(
+                'foundations_english',
+                '/school/foundations-english/lesson-' . $i . '.html',
+                'Foundations English'
+            );
+        }
+
         return $descriptors;
     }
 
@@ -528,6 +585,13 @@ class Api extends CI_Controller {
         static $seeded = false;
         if ($seeded) return;
         $this->ensureWorkflowTables();
+
+        $sync_version = $this->curriculumSyncVersion();
+        $state = $this->firstRow('ms_runtime_state', ['state_key' => 'curriculum_catalog_version']);
+        if ($state && ($state['state_value'] ?? '') === $sync_version) {
+            $seeded = true;
+            return;
+        }
 
         $descriptors = $this->builtCurriculumDescriptors();
         $course_ids = [];
@@ -612,6 +676,11 @@ class Api extends CI_Controller {
                 ]);
             }
         }
+
+        $this->db->replace('ms_runtime_state', [
+            'state_key' => 'curriculum_catalog_version',
+            'state_value' => $sync_version,
+        ]);
 
         $seeded = true;
     }
