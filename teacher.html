@@ -705,13 +705,19 @@ async function loadTeacherStudents(classId){
 }
 
 async function loadTeacherCourseCatalog() {
+  const wrap = document.getElementById('teacher-course-catalog');
   try {
-    const res = await fetch('/api/teacher/course-catalog', { credentials: 'include' });
+    const res = await fetch('/api/teacher/curriculum-catalog', { credentials: 'include' });
     if (!res.ok) return;
     const data = await res.json();
     teacherState.courseCatalog = data.courses || [];
     renderTeacherCourseCatalog(teacherState.courseCatalog);
-  } catch (e) {}
+  } catch (e) {
+    teacherState.courseCatalog = [];
+    if (wrap) {
+      wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">Curriculum catalog could not load yet. Refresh once and try again.</div>';
+    }
+  }
 }
 
 async function assignTeacherCourseToStudent() {

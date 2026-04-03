@@ -2330,6 +2330,41 @@ class Api extends CI_Controller {
     }
 
     /**
+     * GET /api/teacher/curriculum-catalog
+     */
+    public function teacher_curriculum_catalog() {
+        $this->requireSession('teacher_login');
+        $this->ensureWorkflowTables();
+        $this->ensureBuiltCurriculumCatalog();
+
+        $teacher_id = $this->session->userdata('teacher_id')
+                   ?: $this->session->userdata('user_id');
+
+        $slugs = ['foundations_math', 'foundations_science', 'foundations_english', 'pre_algebra'];
+        $catalog = [];
+        foreach ($slugs as $slug) {
+            $course = $this->db->get_where('ms_courses', ['slug' => $slug, 'status' => 'active'])->row_array();
+            if (!$course) continue;
+            $item = $this->coursePayload($course);
+            $assignment = $this->db->order_by('teacher_course_id', 'DESC')->get_where('ms_teacher_courses', [
+                'teacher_id' => $teacher_id,
+                'course_id' => $course['course_id'],
+            ])->row_array();
+            $item['class_id'] = !empty($assignment['class_id']) ? (int)$assignment['class_id'] : null;
+            $item['section_id'] = !empty($assignment['section_id']) ? (int)$assignment['section_id'] : null;
+            $item['lessons'] = $this->courseLessons($course['course_id']);
+            $item['student_count'] = (int)$this->db->where([
+                'course_id' => $course['course_id'],
+                'teacher_id' => $teacher_id,
+                'status' => 'active',
+            ])->count_all_results('ms_student_courses');
+            $catalog[] = $item;
+        }
+
+        $this->json(['courses' => $catalog]);
+    }
+
+    /**
      * POST /api/teacher/student-courses/create
      */
     public function teacher_student_courses_create() {
