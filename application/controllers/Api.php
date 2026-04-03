@@ -487,6 +487,29 @@ class Api extends CI_Controller {
         return '2026-04-03-foundations-manifest-v1';
     }
 
+    private function canonicalCurriculumSlugs() {
+        return ['foundations_math', 'foundations_science', 'foundations_english', 'pre_algebra'];
+    }
+
+    private function canonicalCurriculumReady() {
+        foreach ($this->canonicalCurriculumSlugs() as $slug) {
+            $course = $this->db->get_where('ms_courses', [
+                'slug' => $slug,
+                'status' => 'active',
+            ])->row_array();
+            if (!$course) {
+                return false;
+            }
+
+            $lesson_count = (int)$this->db->where('course_id', $course['course_id'])->count_all_results('ms_course_lessons');
+            if ($lesson_count < 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private function curriculumDescriptor($course_key, $lesson_url, $module_title = '') {
         return [
             'course_key' => $course_key,
@@ -588,7 +611,7 @@ class Api extends CI_Controller {
 
         $sync_version = $this->curriculumSyncVersion();
         $state = $this->firstRow('ms_runtime_state', ['state_key' => 'curriculum_catalog_version']);
-        if ($state && ($state['state_value'] ?? '') === $sync_version) {
+        if ($state && ($state['state_value'] ?? '') === $sync_version && $this->canonicalCurriculumReady()) {
             $seeded = true;
             return;
         }
