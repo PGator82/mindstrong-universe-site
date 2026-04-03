@@ -522,6 +522,92 @@ class Api extends CI_Controller {
         ];
     }
 
+    private function descriptorsForCourseKey($course_key) {
+        return array_values(array_filter($this->builtCurriculumDescriptors(), function ($descriptor) use ($course_key) {
+            return ($descriptor['course_key'] ?? '') === $course_key;
+        }));
+    }
+
+    private function ensureCanonicalCourse($course_key) {
+        $course_meta = $this->curriculumCourseLabel($course_key);
+        $course = $this->db->get_where('ms_courses', ['slug' => $course_key])->row_array();
+        if (!$course) {
+            $this->db->insert('ms_courses', [
+                'title' => $course_meta['title'],
+                'slug' => $course_key,
+                'description' => $course_meta['description'],
+                'subject_area' => $course_meta['subject'],
+                'status' => 'active',
+            ]);
+            $course = $this->db->get_where('ms_courses', ['course_id' => $this->db->insert_id()])->row_array();
+        } else {
+            $this->db->where('course_id', $course['course_id'])->update('ms_courses', [
+                'title' => $course_meta['title'],
+                'description' => $course_meta['description'],
+                'subject_area' => $course_meta['subject'],
+                'status' => 'active',
+            ]);
+            $course = $this->db->get_where('ms_courses', ['course_id' => $course['course_id']])->row_array();
+        }
+
+        return $course;
+    }
+
+    private function ensureCanonicalCourseLessons($course_key) {
+        $course = $this->ensureCanonicalCourse($course_key);
+        if (!$course) return null;
+
+        $descriptors = $this->descriptorsForCourseKey($course_key);
+        foreach ($descriptors as $index => $descriptor) {
+            $lesson_slug = trim($descriptor['course_key'] . '-' . $this->slugify($descriptor['lesson_url']), '-');
+            $lesson = $this->db->get_where('ms_lessons', ['slug' => $lesson_slug])->row_array();
+            if (!$lesson) {
+                $this->db->insert('ms_lessons', [
+                    'title' => $descriptor['title'],
+                    'slug' => $lesson_slug,
+                    'lesson_type' => $descriptor['lesson_type'],
+                    'subject_area' => $descriptor['subject_area'],
+                    'description' => $descriptor['module_title'] ?: ($course['description'] ?? ''),
+                    'lesson_url' => $descriptor['lesson_url'],
+                    'estimated_minutes' => $descriptor['estimated_minutes'],
+                    'status' => 'active',
+                ]);
+                $lesson = $this->db->get_where('ms_lessons', ['lesson_id' => $this->db->insert_id()])->row_array();
+            } else {
+                $this->db->where('lesson_id', $lesson['lesson_id'])->update('ms_lessons', [
+                    'title' => $descriptor['title'],
+                    'subject_area' => $descriptor['subject_area'],
+                    'description' => $descriptor['module_title'] ?: ($course['description'] ?? ''),
+                    'lesson_url' => $descriptor['lesson_url'],
+                    'lesson_type' => $descriptor['lesson_type'],
+                    'estimated_minutes' => $descriptor['estimated_minutes'],
+                    'status' => 'active',
+                ]);
+            }
+
+            $link = $this->db->get_where('ms_course_lessons', [
+                'course_id' => $course['course_id'],
+                'lesson_id' => $lesson['lesson_id'],
+            ])->row_array();
+
+            $payload = [
+                'module_title' => $descriptor['module_title'] ?: null,
+                'position' => $index + 1,
+                'is_required' => 1,
+            ];
+
+            if ($link) {
+                $this->db->where('course_lesson_id', $link['course_lesson_id'])->update('ms_course_lessons', $payload);
+            } else {
+                $payload['course_id'] = (int)$course['course_id'];
+                $payload['lesson_id'] = (int)$lesson['lesson_id'];
+                $this->db->insert('ms_course_lessons', $payload);
+            }
+        }
+
+        return $this->db->get_where('ms_courses', ['course_id' => $course['course_id']])->row_array();
+    }
+
     private function builtCurriculumDescriptors() {
         $descriptors = [];
 
@@ -2432,10 +2518,10 @@ class Api extends CI_Controller {
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
 
-        $slugs = ['foundations_math', 'foundations_science', 'foundations_english', 'pre_algebra'];
+        $slugs = $this->canonicalCurriculumSlugs();
         $catalog = [];
         foreach ($slugs as $slug) {
-            $course = $this->db->get_where('ms_courses', ['slug' => $slug, 'status' => 'active'])->row_array();
+            $course = $this->ensureCanonicalCourseLessons($slug);
             if (!$course) continue;
             $item = $this->coursePayload($course);
             $assignment = $this->db->order_by('teacher_course_id', 'DESC')->get_where('ms_teacher_courses', [
@@ -2445,6 +2531,25 @@ class Api extends CI_Controller {
             $item['class_id'] = !empty($assignment['class_id']) ? (int)$assignment['class_id'] : null;
             $item['section_id'] = !empty($assignment['section_id']) ? (int)$assignment['section_id'] : null;
             $item['lessons'] = $this->courseLessons($course['course_id']);
+            if (!$item['lessons']) {
+                $item['lessons'] = array_map(function ($descriptor) {
+                    return [
+                        'lesson_id' => 0,
+                        'title' => $descriptor['title'],
+                        'slug' => $this->slugify($descriptor['lesson_url']),
+                        'lesson_type' => $descriptor['lesson_type'],
+                        'subject_area' => $descriptor['subject_area'],
+                        'description' => $descriptor['module_title'],
+                        'lesson_url' => $descriptor['lesson_url'],
+                        'game_url' => '',
+                        'estimated_minutes' => (int)$descriptor['estimated_minutes'],
+                        'status' => 'active',
+                        'module_title' => $descriptor['module_title'],
+                        'position' => 0,
+                        'is_required' => true,
+                    ];
+                }, $this->descriptorsForCourseKey($slug));
+            }
             $item['student_count'] = (int)$this->db->where([
                 'course_id' => $course['course_id'],
                 'teacher_id' => $teacher_id,
