@@ -836,7 +836,7 @@ function renderTeacherCourseCatalog(courses) {
   }
   wrap.innerHTML = courses.map((course, index) => {
     const courseKey = String(course.course_key || course.slug || course.course_id || index);
-    const isCollapsed = teacherState.collapsedCourses[courseKey] !== undefined ? teacherState.collapsedCourses[courseKey] : index !== 0;
+    const isCollapsed = teacherState.collapsedCourses[courseKey] !== undefined ? teacherState.collapsedCourses[courseKey] : false;
     teacherState.collapsedCourses[courseKey] = isCollapsed;
     return `<div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);">
       <button type="button" onclick="toggleTeacherCourseCatalog('${courseKey.replace(/'/g, "\\'")}')" style="width:100%;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:none;border:none;color:inherit;cursor:pointer;text-align:left;padding:0;">
