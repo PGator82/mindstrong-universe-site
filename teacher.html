@@ -604,7 +604,8 @@ const teacherState = {
   assignments: [],
   students: [],
   currentClassId: null,
-  courseCatalog: []
+  courseCatalog: [],
+  collapsedCourses: {}
 };
 
 function builtTeacherCatalog() {
@@ -830,6 +831,43 @@ async function loadTeacherStudents(classId){
     const data = await res.json();
     renderTeacherStudents(data.students || []);
   } catch (e) {}
+}
+
+function toggleTeacherCourseCatalog(courseKey) {
+  teacherState.collapsedCourses[courseKey] = !teacherState.collapsedCourses[courseKey];
+  renderTeacherCourseCatalog(teacherState.courseCatalog);
+}
+
+function renderTeacherCourseCatalog(courses) {
+  const wrap = document.getElementById('teacher-course-catalog');
+  if (!wrap) return;
+  document.getElementById('teacher-course-summary').textContent = `${courses.length} active courses`;
+  if (!courses.length) {
+    wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">No curriculum courses loaded yet.</div>';
+    populateTeacherFlowControls();
+    return;
+  }
+  wrap.innerHTML = courses.map((course, index) => {
+    const courseKey = String(course.course_key || course.slug || course.course_id || index);
+    const isCollapsed = teacherState.collapsedCourses[courseKey] !== undefined ? teacherState.collapsedCourses[courseKey] : index !== 0;
+    teacherState.collapsedCourses[courseKey] = isCollapsed;
+    return `<div style="padding:14px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.02);">
+      <button type="button" onclick="toggleTeacherCourseCatalog('${courseKey.replace(/'/g, "\\'")}')" style="width:100%;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:none;border:none;color:inherit;cursor:pointer;text-align:left;padding:0;">
+        <div>
+          <div style="font-weight:800;">${course.title}</div>
+          <div style="font-size:.76rem;color:var(--muted);margin-top:4px;">${course.subject_area || 'General'}${course.class_name ? ' · Grade ' + course.class_name : ''}${course.section_name ? ' · Section ' + course.section_name : ''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+          <div style="font-size:.74rem;color:var(--gold);">${course.student_count || 0} students</div>
+          <div style="font-size:.9rem;color:var(--muted);">${isCollapsed ? '▸' : '▾'}</div>
+        </div>
+      </button>
+      <div style="display:${isCollapsed ? 'none' : 'grid'};gap:8px;margin-top:12px;">
+        ${(course.lessons || []).map(lesson => `<div style="padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.03);font-size:.78rem;"><div style="font-weight:700;">${lesson.title}</div><div style="color:var(--muted);margin-top:2px;">${lesson.lesson_type} · ${lesson.lesson_url}</div></div>`).join('') || '<div style="font-size:.78rem;color:var(--muted);">No lessons attached yet.</div>'}
+      </div>
+    </div>`;
+  }).join('');
+  populateTeacherFlowControls();
 }
 
 async function loadTeacherCourseCatalog() {
