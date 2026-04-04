@@ -34,6 +34,14 @@ http://:{$PORT:80} {
     redir @loginBare /login.html 301
 
     # API requests should always hit CodeIgniter, never static-file fallback.
+    @teacherCurriculum {
+        path /api/teacher/curriculum-catalog
+    }
+    handle @teacherCurriculum {
+        rewrite * /api/teacher/curriculum-catalog.php
+        php_server
+    }
+
     @apiRoutes {
         path /api/*
     }
