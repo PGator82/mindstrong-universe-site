@@ -607,6 +607,134 @@ const teacherState = {
   courseCatalog: []
 };
 
+function builtTeacherCatalog() {
+  const makeLessons = (courseKey, paths) => paths.map((path, index) => ({
+    lesson_id: 0,
+    lesson_url: path,
+    title: path
+      .replace('/school/', '')
+      .replace(/\/index\.html$/, '')
+      .replace(/\.html$/, '')
+      .split('/')
+      .filter(Boolean)
+      .map((part, partIndex, arr) => {
+        if (/^lesson-\d+$/.test(part)) return `Lesson ${part.split('-')[1]}`;
+        if (part === 'module-1') return 'Module 1';
+        if (part === 'foundations-science') return 'Foundations Science';
+        if (part === 'foundations-english') return 'Foundations English';
+        if (part === 'pre-algebra') return 'Pre-Algebra';
+        return part.replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+      })
+      .slice(-2)
+      .join(' '),
+    lesson_type: 'lesson',
+    subject_area: courseKey === 'foundations_science' ? 'Science' : courseKey === 'foundations_english' ? 'English' : 'Mathematics',
+    description: '',
+    game_url: '',
+    estimated_minutes: 20,
+    status: 'active',
+    module_title: '',
+    position: index + 1,
+    is_required: true
+  }));
+
+  return [
+    {
+      course_id: 0,
+      course_key: 'foundations_math',
+      slug: 'foundations_math',
+      title: 'Foundations Math',
+      description: 'Built lessons from the live Foundations math sequence.',
+      subject_area: 'Mathematics',
+      status: 'active',
+      student_count: 0,
+      lessons: makeLessons('foundations_math', [
+        '/school/foundations/module-1/lesson-1.html',
+        '/school/foundations/module-1/lesson-2.html',
+        '/school/foundations/module-1/lesson-3.html',
+        '/school/foundations/module-1/lesson-4.html',
+        '/school/foundations/module-1/lesson-5.html',
+        '/school/foundations/module-1/lesson-6.html',
+        '/school/foundations/algebra/index.html',
+        '/school/foundations/fractions/index.html',
+        '/school/foundations/fractions/meaning/index.html',
+        '/school/foundations/fractions/equivalent/index.html',
+        '/school/foundations/fractions/convert/index.html',
+        '/school/foundations/fractions/add-sub/index.html',
+        '/school/foundations/fractions/multiply/index.html',
+        '/school/foundations/fractions/divide/index.html',
+        '/school/foundations/functions/index.html',
+        '/school/foundations/geometry/index.html',
+        '/school/foundations/geometry/angles/index.html',
+        '/school/foundations/geometry/area/index.html',
+        '/school/foundations/geometry/circles/index.html',
+        '/school/foundations/geometry/coordinate/index.html',
+        '/school/foundations/geometry/polygons/index.html',
+        '/school/foundations/geometry/triangles/index.html',
+        '/school/foundations/integers/index.html',
+        '/school/foundations/linear/index.html',
+        '/school/foundations/ratio/index.html',
+        '/school/foundations/data/index.html',
+        '/school/foundations/data/central/index.html',
+        '/school/foundations/data/spread/index.html'
+      ])
+    },
+    {
+      course_id: 0,
+      course_key: 'pre_algebra',
+      slug: 'pre_algebra',
+      title: 'Pre-Algebra',
+      description: 'Built lessons from the pre-algebra path.',
+      subject_area: 'Mathematics',
+      status: 'active',
+      student_count: 0,
+      lessons: makeLessons('pre_algebra', [
+        '/school/foundations/pre-algebra/index.html',
+        '/school/foundations/pre-algebra/equations/index.html',
+        '/school/foundations/pre-algebra/expressions/index.html',
+        '/school/foundations/pre-algebra/percents/index.html',
+        '/school/foundations/pre-algebra/proportions/index.html'
+      ])
+    },
+    {
+      course_id: 0,
+      course_key: 'foundations_science',
+      slug: 'foundations_science',
+      title: 'Foundations Science',
+      description: 'Built lessons from the live Foundations science sequence.',
+      subject_area: 'Science',
+      status: 'active',
+      student_count: 0,
+      lessons: makeLessons('foundations_science', [
+        '/school/foundations-science/lesson-1.html',
+        '/school/foundations-science/lesson-2.html',
+        '/school/foundations-science/lesson-3.html',
+        '/school/foundations-science/lesson-4.html',
+        '/school/foundations-science/lesson-5.html',
+        '/school/foundations-science/lesson-6.html'
+      ])
+    },
+    {
+      course_id: 0,
+      course_key: 'foundations_english',
+      slug: 'foundations_english',
+      title: 'Foundations English',
+      description: 'Built lessons from the live Foundations English sequence.',
+      subject_area: 'English',
+      status: 'active',
+      student_count: 0,
+      lessons: makeLessons('foundations_english', [
+        '/school/foundations-english/lesson-1.html',
+        '/school/foundations-english/lesson-2.html',
+        '/school/foundations-english/lesson-3.html',
+        '/school/foundations-english/lesson-4.html',
+        '/school/foundations-english/lesson-5.html',
+        '/school/foundations-english/lesson-6.html'
+      ])
+    }
+  ];
+}
+
 function buildAttendanceList(students){
   const attList = document.getElementById('att-list');
   attList.innerHTML = '';
@@ -706,16 +834,19 @@ async function loadTeacherStudents(classId){
 
 async function loadTeacherCourseCatalog() {
   const wrap = document.getElementById('teacher-course-catalog');
+  const fallbackCatalog = builtTeacherCatalog();
+  teacherState.courseCatalog = fallbackCatalog;
+  renderTeacherCourseCatalog(teacherState.courseCatalog);
   try {
     const res = await fetch('/api/teacher/curriculum-catalog', { credentials: 'include' });
     if (!res.ok) return;
     const data = await res.json();
-    teacherState.courseCatalog = data.courses || [];
+    teacherState.courseCatalog = (data.courses && data.courses.length) ? data.courses : fallbackCatalog;
     renderTeacherCourseCatalog(teacherState.courseCatalog);
   } catch (e) {
-    teacherState.courseCatalog = [];
+    teacherState.courseCatalog = fallbackCatalog;
     if (wrap) {
-      wrap.innerHTML = '<div style="font-size:.82rem;color:var(--muted);">Curriculum catalog could not load yet. Refresh once and try again.</div>';
+      renderTeacherCourseCatalog(teacherState.courseCatalog);
     }
   }
 }
