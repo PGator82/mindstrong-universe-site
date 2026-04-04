@@ -49,6 +49,13 @@ if ($_db_url && strpos($_db_url, '${{') === false && strpos($_db_url, '@') !== f
 
 $_hosts = _db_candidates($_host);
 $_host = $_hosts[0] ?? 'localhost';
+if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+    if (strpos($_host, '.proxy.rlwy.net') !== false || strpos($_host, 'rlwy.net') !== false) {
+        $_host = 'mysql';
+        $_port = 3306;
+        $_hosts = _db_candidates($_host);
+    }
+}
 $_failover = [];
 foreach (array_slice($_hosts, 1) as $_fallback_host) {
     $_failover[] = array(

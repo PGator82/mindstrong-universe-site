@@ -5,7 +5,6 @@ class School extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->database();
         $this->load->library('session');
         header('Content-Type: application/json; charset=UTF-8');
 
@@ -27,6 +26,15 @@ class School extends CI_Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             http_response_code(200);
             exit;
+        }
+    }
+
+    private function ensureDatabase() {
+        if (!isset($this->db)) {
+            @ini_set('mysql.connect_timeout', '5');
+            @ini_set('default_socket_timeout', '5');
+            @set_time_limit(8);
+            $this->load->database();
         }
     }
 
@@ -74,6 +82,7 @@ class School extends CI_Controller {
     }
 
     public function student_stats() {
+        $this->ensureDatabase();
         $this->requireSession('student_login');
         $student_id = $this->session->userdata('student_id')
                    ?: $this->session->userdata('user_id');
@@ -112,6 +121,7 @@ class School extends CI_Controller {
     }
 
     public function student_courses() {
+        $this->ensureDatabase();
         $this->requireSession('student_login');
         $student_id = $this->session->userdata('student_id')
                    ?: $this->session->userdata('user_id');
@@ -150,6 +160,7 @@ class School extends CI_Controller {
     }
 
     public function student_schedule() {
+        $this->ensureDatabase();
         $this->requireSession('student_login');
         $student_id = $this->session->userdata('student_id')
                    ?: $this->session->userdata('user_id');
@@ -186,6 +197,7 @@ class School extends CI_Controller {
     }
 
     public function parent_child() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id = $this->session->userdata('parent_id')
                   ?: $this->session->userdata('user_id');
@@ -214,6 +226,7 @@ class School extends CI_Controller {
     }
 
     public function parent_grades() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id  = $this->session->userdata('parent_id')
                    ?: $this->session->userdata('user_id');
@@ -271,6 +284,7 @@ class School extends CI_Controller {
     }
 
     public function parent_attendance() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id  = $this->session->userdata('parent_id')
                    ?: $this->session->userdata('user_id');
@@ -304,6 +318,7 @@ class School extends CI_Controller {
     }
 
     public function parent_fees() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id  = $this->session->userdata('parent_id')
                    ?: $this->session->userdata('user_id');
@@ -339,6 +354,7 @@ class School extends CI_Controller {
     }
 
     public function parent_schedule() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id  = $this->session->userdata('parent_id')
                    ?: $this->session->userdata('user_id');
@@ -384,6 +400,7 @@ class School extends CI_Controller {
     }
 
     public function parent_fees_pay() {
+        $this->ensureDatabase();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->json(['error' => 'Method not allowed'], 405);
         }
@@ -423,6 +440,7 @@ class School extends CI_Controller {
     }
 
     public function parent_teachers() {
+        $this->ensureDatabase();
         $this->requireSession('parent_login');
         $parent_id  = $this->session->userdata('parent_id')
                    ?: $this->session->userdata('user_id');
@@ -462,6 +480,7 @@ class School extends CI_Controller {
     }
 
     public function teacher_stats() {
+        $this->ensureDatabase();
         $this->requireSession('teacher_login');
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
@@ -495,6 +514,7 @@ class School extends CI_Controller {
     }
 
     public function teacher_students() {
+        $this->ensureDatabase();
         $this->requireSession('teacher_login');
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
@@ -530,6 +550,7 @@ class School extends CI_Controller {
     }
 
     public function teacher_classes() {
+        $this->ensureDatabase();
         $this->requireSession('teacher_login');
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
@@ -556,6 +577,7 @@ class School extends CI_Controller {
     }
 
     public function teacher_schedule() {
+        $this->ensureDatabase();
         $this->requireSession('teacher_login');
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
