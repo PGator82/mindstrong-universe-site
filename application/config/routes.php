@@ -67,8 +67,9 @@ $route['parents/(:any)']       = 'portal/parent';
 $route['parents/(:any)/(:any)'] = 'portal/parent';
 
 // ── API Routes ──
-$route['api/login']                = 'api/login';
-$route['api/logout']               = 'api/logout';
+$route['api/login']                = 'auth/login';
+$route['api/logout']               = 'auth/logout';
+$route['login/validate_login']     = 'auth/validate_login';
 $route['api/progress']             = 'api/progress';
 $route['api/progress/save']        = 'api/progress_save';
 

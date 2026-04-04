@@ -710,7 +710,8 @@ async function handleLogin(e) {
     const ciForm = document.createElement('form');
     ciForm.method = 'POST';
     ciForm.action = '/login/validate_login';
-    [['email', email], ['password', pass]].forEach(([name, val]) => {
+    [['email', email], ['password', pass], ['role', roleHint]].forEach(([name, val]) => {
+      if (!val) return;
       const inp = document.createElement('input');
       inp.type = 'hidden'; inp.name = name; inp.value = val;
       ciForm.appendChild(inp);
