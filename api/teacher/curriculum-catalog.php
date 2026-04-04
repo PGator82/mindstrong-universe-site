@@ -1,14 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=UTF-8');
 
-session_start();
-
-if (!isset($_SESSION['teacher_login']) || (string)$_SESSION['teacher_login'] !== '1') {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
-}
-
 function course_meta($key) {
     $labels = [
         'foundations_math' => ['title' => 'Foundations Math', 'subject' => 'Mathematics', 'description' => 'Built lessons from the live Foundations math sequence.'],
