@@ -673,12 +673,12 @@ function populateTeacherFlowControls() {
     studentSelect.innerHTML = '<option value="">Select student</option>' + teacherState.students.map(student => `<option value="${student.id}">${student.name}</option>`).join('');
   }
   if (courseSelect) {
-    courseSelect.innerHTML = '<option value="">Select course</option>' + teacherState.courseCatalog.map(course => `<option value="${course.course_id}">${course.title}</option>`).join('');
+    courseSelect.innerHTML = '<option value="">Select course</option>' + teacherState.courseCatalog.map(course => `<option value="${course.course_key || course.slug || course.course_id}" data-course-id="${course.course_id || 0}">${course.title}</option>`).join('');
   }
   if (lessonSelect) {
-    const selectedCourseId = Number(courseSelect?.value || teacherState.courseCatalog[0]?.course_id || 0);
-    const course = teacherState.courseCatalog.find(item => Number(item.course_id) === selectedCourseId) || teacherState.courseCatalog[0];
-    lessonSelect.innerHTML = '<option value="">Select lesson</option>' + (course?.lessons || []).map(lesson => `<option value="${lesson.lesson_id}">${lesson.title}</option>`).join('');
+    const selectedCourseKey = String(courseSelect?.value || teacherState.courseCatalog[0]?.course_key || teacherState.courseCatalog[0]?.slug || '');
+    const course = teacherState.courseCatalog.find(item => String(item.course_key || item.slug || item.course_id) === selectedCourseKey) || teacherState.courseCatalog[0];
+    lessonSelect.innerHTML = '<option value="">Select lesson</option>' + (course?.lessons || []).map(lesson => `<option value="${lesson.lesson_url}" data-lesson-id="${lesson.lesson_id || 0}">${lesson.title}</option>`).join('');
   }
 }
 
@@ -722,12 +722,15 @@ async function loadTeacherCourseCatalog() {
 
 async function assignTeacherCourseToStudent() {
   try {
+    const courseSelect = document.getElementById('teacher-course-select');
+    const selectedCourse = teacherState.courseCatalog.find(course => String(course.course_key || course.slug || course.course_id) === String(courseSelect.value));
     const res = await fetch('/api/teacher/student-courses/create', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        course_id: document.getElementById('teacher-course-select').value,
+        course_id: selectedCourse?.course_id || 0,
+        course_key: selectedCourse?.course_key || selectedCourse?.slug || courseSelect.value,
         student_id: document.getElementById('teacher-course-student').value,
         class_id: teacherState.currentClassId || ''
       })
@@ -742,14 +745,20 @@ async function assignTeacherCourseToStudent() {
 
 async function assignTeacherLessonToStudent() {
   try {
+    const courseSelect = document.getElementById('teacher-course-select');
+    const lessonSelect = document.getElementById('teacher-lesson-select');
+    const selectedCourse = teacherState.courseCatalog.find(course => String(course.course_key || course.slug || course.course_id) === String(courseSelect.value));
+    const selectedLesson = (selectedCourse?.lessons || []).find(lesson => String(lesson.lesson_url) === String(lessonSelect.value));
     const res = await fetch('/api/teacher/student-lessons/create', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        course_id: document.getElementById('teacher-course-select').value,
+        course_id: selectedCourse?.course_id || 0,
+        course_key: selectedCourse?.course_key || selectedCourse?.slug || courseSelect.value,
         student_id: document.getElementById('teacher-course-student').value,
-        lesson_id: document.getElementById('teacher-lesson-select').value
+        lesson_id: selectedLesson?.lesson_id || 0,
+        lesson_url: selectedLesson?.lesson_url || lessonSelect.value
       })
     });
     const data = await res.json();

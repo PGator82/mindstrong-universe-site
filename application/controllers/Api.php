@@ -608,6 +608,71 @@ class Api extends CI_Controller {
         return $this->db->get_where('ms_courses', ['course_id' => $course['course_id']])->row_array();
     }
 
+    private function canonicalCatalogPayload() {
+        $descriptors = $this->builtCurriculumDescriptors();
+        $grouped = [];
+        foreach ($this->canonicalCurriculumSlugs() as $slug) {
+            $meta = $this->curriculumCourseLabel($slug);
+            $grouped[$slug] = [
+                'course_key' => $slug,
+                'title' => $meta['title'],
+                'slug' => $slug,
+                'description' => $meta['description'],
+                'subject_area' => $meta['subject'],
+                'status' => 'active',
+                'lessons' => [],
+            ];
+        }
+
+        foreach ($descriptors as $index => $descriptor) {
+            $slug = $descriptor['course_key'];
+            if (!isset($grouped[$slug])) continue;
+            $grouped[$slug]['lessons'][] = [
+                'lesson_id' => 0,
+                'lesson_key' => $descriptor['lesson_url'],
+                'title' => $descriptor['title'],
+                'slug' => $this->slugify($descriptor['lesson_url']),
+                'lesson_type' => $descriptor['lesson_type'],
+                'subject_area' => $descriptor['subject_area'],
+                'description' => $descriptor['module_title'],
+                'lesson_url' => $descriptor['lesson_url'],
+                'game_url' => '',
+                'estimated_minutes' => (int)$descriptor['estimated_minutes'],
+                'status' => 'active',
+                'module_title' => $descriptor['module_title'],
+                'position' => $index + 1,
+                'is_required' => true,
+            ];
+        }
+
+        return array_values($grouped);
+    }
+
+    private function resolveCanonicalCourseId($course_id, $course_key = '') {
+        if ($course_id > 0) {
+            return $course_id;
+        }
+        if ($course_key === '') {
+            return 0;
+        }
+        $course = $this->ensureCanonicalCourseLessons($course_key);
+        return $course ? (int)$course['course_id'] : 0;
+    }
+
+    private function resolveCanonicalLessonId($course_key, $lesson_id, $lesson_url = '') {
+        if ($lesson_id > 0) {
+            return $lesson_id;
+        }
+        if ($course_key === '' || $lesson_url === '') {
+            return 0;
+        }
+
+        $this->ensureCanonicalCourseLessons($course_key);
+        $lesson_slug = trim($course_key . '-' . $this->slugify($lesson_url), '-');
+        $lesson = $this->db->get_where('ms_lessons', ['slug' => $lesson_slug])->row_array();
+        return $lesson ? (int)$lesson['lesson_id'] : 0;
+    }
+
     private function builtCurriculumDescriptors() {
         $descriptors = [];
 
@@ -2513,49 +2578,69 @@ class Api extends CI_Controller {
     public function teacher_curriculum_catalog() {
         $this->requireSession('teacher_login');
         $this->ensureWorkflowTables();
-        $this->ensureBuiltCurriculumCatalog();
 
         $teacher_id = $this->session->userdata('teacher_id')
                    ?: $this->session->userdata('user_id');
 
-        $slugs = $this->canonicalCurriculumSlugs();
-        $catalog = [];
-        foreach ($slugs as $slug) {
-            $course = $this->ensureCanonicalCourseLessons($slug);
-            if (!$course) continue;
-            $item = $this->coursePayload($course);
-            $assignment = $this->db->order_by('teacher_course_id', 'DESC')->get_where('ms_teacher_courses', [
-                'teacher_id' => $teacher_id,
-                'course_id' => $course['course_id'],
-            ])->row_array();
-            $item['class_id'] = !empty($assignment['class_id']) ? (int)$assignment['class_id'] : null;
-            $item['section_id'] = !empty($assignment['section_id']) ? (int)$assignment['section_id'] : null;
-            $item['lessons'] = $this->courseLessons($course['course_id']);
-            if (!$item['lessons']) {
-                $item['lessons'] = array_map(function ($descriptor) {
-                    return [
-                        'lesson_id' => 0,
-                        'title' => $descriptor['title'],
-                        'slug' => $this->slugify($descriptor['lesson_url']),
-                        'lesson_type' => $descriptor['lesson_type'],
-                        'subject_area' => $descriptor['subject_area'],
-                        'description' => $descriptor['module_title'],
-                        'lesson_url' => $descriptor['lesson_url'],
-                        'game_url' => '',
-                        'estimated_minutes' => (int)$descriptor['estimated_minutes'],
-                        'status' => 'active',
-                        'module_title' => $descriptor['module_title'],
-                        'position' => 0,
-                        'is_required' => true,
-                    ];
-                }, $this->descriptorsForCourseKey($slug));
+        $catalog = $this->canonicalCatalogPayload();
+        $course_rows = $this->db->where_in('slug', $this->canonicalCurriculumSlugs())
+            ->get('ms_courses')
+            ->result_array();
+        $course_map = [];
+        foreach ($course_rows as $course_row) {
+            $course_map[$course_row['slug']] = $course_row;
+        }
+
+        $assignment_rows = $this->db->get_where('ms_teacher_courses', ['teacher_id' => $teacher_id])->result_array();
+        $assignment_map = [];
+        foreach ($assignment_rows as $assignment_row) {
+            $assignment_map[(int)$assignment_row['course_id']] = $assignment_row;
+        }
+
+        $student_counts = [];
+        $student_count_rows = $this->db->select('course_id, COUNT(*) AS total')
+            ->where('teacher_id', $teacher_id)
+            ->where('status', 'active')
+            ->group_by('course_id')
+            ->get('ms_student_courses')
+            ->result_array();
+        foreach ($student_count_rows as $row) {
+            $student_counts[(int)$row['course_id']] = (int)$row['total'];
+        }
+
+        $lesson_urls = [];
+        foreach ($catalog as $course_item) {
+            foreach ($course_item['lessons'] as $lesson_item) {
+                $lesson_urls[] = $lesson_item['lesson_url'];
             }
-            $item['student_count'] = (int)$this->db->where([
-                'course_id' => $course['course_id'],
-                'teacher_id' => $teacher_id,
-                'status' => 'active',
-            ])->count_all_results('ms_student_courses');
-            $catalog[] = $item;
+        }
+        $lesson_map = [];
+        if ($lesson_urls) {
+            $lesson_rows = $this->db->where_in('lesson_url', array_values(array_unique($lesson_urls)))
+                ->get('ms_lessons')
+                ->result_array();
+            foreach ($lesson_rows as $lesson_row) {
+                $lesson_map[$lesson_row['lesson_url']] = $lesson_row;
+            }
+        }
+
+        $catalog = [];
+        foreach ($this->canonicalCatalogPayload() as $manifest_course) {
+            $course_row = $course_map[$manifest_course['course_key']] ?? null;
+            $course_id = $course_row ? (int)$course_row['course_id'] : 0;
+            $assignment = $course_id ? ($assignment_map[$course_id] ?? null) : null;
+            $manifest_course['course_id'] = $course_id;
+            $manifest_course['class_id'] = !empty($assignment['class_id']) ? (int)$assignment['class_id'] : null;
+            $manifest_course['section_id'] = !empty($assignment['section_id']) ? (int)$assignment['section_id'] : null;
+            $manifest_course['student_count'] = $course_id ? ($student_counts[$course_id] ?? 0) : 0;
+            $manifest_course['lessons'] = array_map(function ($lesson_item) use ($lesson_map) {
+                $lesson_row = $lesson_map[$lesson_item['lesson_url']] ?? null;
+                if ($lesson_row) {
+                    $lesson_item['lesson_id'] = (int)$lesson_row['lesson_id'];
+                }
+                return $lesson_item;
+            }, $manifest_course['lessons']);
+            $catalog[] = $manifest_course;
         }
 
         $this->json(['courses' => $catalog]);
@@ -2577,7 +2662,8 @@ class Api extends CI_Controller {
                    ?: $this->session->userdata('user_id');
         $body = $this->getJsonInput();
         $student_id = (int)($body['student_id'] ?? $this->getPosted('student_id'));
-        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
+        $course_key = trim((string)($body['course_key'] ?? $this->getPosted('course_key')));
+        $course_id = $this->resolveCanonicalCourseId((int)($body['course_id'] ?? $this->getPosted('course_id')), $course_key);
         $class_id = (int)($body['class_id'] ?? $this->getPosted('class_id'));
         $section_id = (int)($body['section_id'] ?? $this->getPosted('section_id'));
 
@@ -2634,8 +2720,10 @@ class Api extends CI_Controller {
                    ?: $this->session->userdata('user_id');
         $body = $this->getJsonInput();
         $student_id = (int)($body['student_id'] ?? $this->getPosted('student_id'));
-        $course_id = (int)($body['course_id'] ?? $this->getPosted('course_id'));
-        $lesson_id = (int)($body['lesson_id'] ?? $this->getPosted('lesson_id'));
+        $course_key = trim((string)($body['course_key'] ?? $this->getPosted('course_key')));
+        $course_id = $this->resolveCanonicalCourseId((int)($body['course_id'] ?? $this->getPosted('course_id')), $course_key);
+        $lesson_url = trim((string)($body['lesson_url'] ?? $this->getPosted('lesson_url')));
+        $lesson_id = $this->resolveCanonicalLessonId($course_key, (int)($body['lesson_id'] ?? $this->getPosted('lesson_id')), $lesson_url);
 
         if (!$student_id || !$course_id || !$lesson_id) {
             $this->json(['error' => 'Student, course, and lesson are required'], 400);
