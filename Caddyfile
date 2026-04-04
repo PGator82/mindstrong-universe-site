@@ -33,6 +33,15 @@ http://:{$PORT:80} {
     }
     redir @loginBare /login.html 301
 
+    # API requests should always hit CodeIgniter, never static-file fallback.
+    @apiRoutes {
+        path /api/*
+    }
+    handle @apiRoutes {
+        rewrite * /index.php
+        php_server
+    }
+
     # Serve real static files and directory indexes directly
     @staticContent {
         file {
