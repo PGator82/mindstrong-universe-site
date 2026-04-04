@@ -996,6 +996,7 @@ async function saveAttendance(){
 }
 
 async function loadTeacherPortal(){
+  loadTeacherCourseCatalog();
   try {
     const [statsRes, classesRes, scheduleRes, assignmentsRes] = await Promise.all([
       fetch('/api/teacher/stats', { credentials: 'include' }),
@@ -1036,9 +1037,7 @@ async function loadTeacherPortal(){
       const nums = document.querySelectorAll('.stat-num');
       if (nums[3]) nums[3].textContent = teacherState.assignments.length;
     }
-
     await loadTeacherStudents(teacherState.currentClassId);
-    await loadTeacherCourseCatalog();
   } catch (e) {}
 }
 
