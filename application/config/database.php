@@ -8,6 +8,24 @@ function _db_clean($val) {
     return trim($val);
 }
 
+function _db_candidates($preferred_host) {
+    $candidates = [];
+    $push = function ($host) use (&$candidates) {
+        $host = _db_clean((string)$host);
+        if ($host === '' || in_array($host, $candidates, true)) return;
+        $candidates[] = $host;
+    };
+
+    $push($preferred_host);
+    $push(getenv('MYSQLHOST'));
+    $push('mysql');
+    $push('mysql.railway.internal');
+    $push('127.0.0.1');
+    $push('localhost');
+
+    return $candidates;
+}
+
 $active_group = 'default';
 $query_builder = TRUE;
 
@@ -29,6 +47,38 @@ if ($_db_url && strpos($_db_url, '${{') === false && strpos($_db_url, '@') !== f
     $_name = _db_clean(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
 }
 
+$_hosts = _db_candidates($_host);
+$_host = $_hosts[0] ?? 'localhost';
+$_failover = [];
+foreach (array_slice($_hosts, 1) as $_fallback_host) {
+    $_failover[] = array(
+        'dsn'          => '',
+        'hostname'     => $_fallback_host,
+        'port'         => $_port,
+        'username'     => $_user,
+        'password'     => $_pass,
+        'database'     => $_name,
+        'dbdriver'     => 'mysqli',
+        'dbprefix'     => '',
+        'pconnect'     => FALSE,
+        'db_debug'     => (ENVIRONMENT !== 'production'),
+        'cache_on'     => FALSE,
+        'cachedir'     => '',
+        'char_set'     => 'utf8mb4',
+        'dbcollat'     => 'utf8mb4_unicode_ci',
+        'swap_pre'     => '',
+        'encrypt'      => FALSE,
+        'compress'     => FALSE,
+        'stricton'     => FALSE,
+        'save_queries' => (ENVIRONMENT !== 'production'),
+    );
+}
+
+if (!headers_sent()) {
+    @ini_set('mysql.connect_timeout', '5');
+    @ini_set('default_socket_timeout', '5');
+}
+
 $db['default'] = array(
     'dsn'          => '',
     'hostname'     => $_host,
@@ -48,6 +98,6 @@ $db['default'] = array(
     'encrypt'      => FALSE,
     'compress'     => FALSE,
     'stricton'     => FALSE,
-    'failover'     => array(),
+    'failover'     => $_failover,
     'save_queries' => (ENVIRONMENT !== 'production'),
 );
