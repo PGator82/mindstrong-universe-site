@@ -854,21 +854,24 @@ async function loadTeacherCourseCatalog() {
 async function assignTeacherCourseToStudent() {
   try {
     const courseSelect = document.getElementById('teacher-course-select');
+    const studentSelect = document.getElementById('teacher-course-student');
     const selectedCourse = teacherState.courseCatalog.find(course => String(course.course_key || course.slug || course.course_id) === String(courseSelect.value));
-    const res = await fetch('/api/teacher/student-courses/create', {
+    const res = await fetch('/api/teacher/assign-manifest.php', {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        course_id: selectedCourse?.course_id || 0,
         course_key: selectedCourse?.course_key || selectedCourse?.slug || courseSelect.value,
-        student_id: document.getElementById('teacher-course-student').value,
-        class_id: teacherState.currentClassId || ''
+        course_title: selectedCourse?.title || 'Foundations Course',
+        student_id: studentSelect.value,
+        student_name: studentSelect.options[studentSelect.selectedIndex]?.text || '',
+        teacher_name: document.querySelector('.user-name')?.textContent?.trim() || 'Teacher',
+        class_id: teacherState.currentClassId || '',
+        assignment_type: 'course'
       })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not assign course');
-    showToast('Course assigned to student.');
+    showToast('Course assigned and saved.');
   } catch (e) {
     showToast(e.message || 'Could not assign course.');
   }
@@ -878,23 +881,28 @@ async function assignTeacherLessonToStudent() {
   try {
     const courseSelect = document.getElementById('teacher-course-select');
     const lessonSelect = document.getElementById('teacher-lesson-select');
+    const studentSelect = document.getElementById('teacher-course-student');
     const selectedCourse = teacherState.courseCatalog.find(course => String(course.course_key || course.slug || course.course_id) === String(courseSelect.value));
     const selectedLesson = (selectedCourse?.lessons || []).find(lesson => String(lesson.lesson_url) === String(lessonSelect.value));
-    const res = await fetch('/api/teacher/student-lessons/create', {
+    const res = await fetch('/api/teacher/assign-manifest.php', {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        course_id: selectedCourse?.course_id || 0,
         course_key: selectedCourse?.course_key || selectedCourse?.slug || courseSelect.value,
-        student_id: document.getElementById('teacher-course-student').value,
-        lesson_id: selectedLesson?.lesson_id || 0,
+        course_title: selectedCourse?.title || 'Foundations Course',
+        student_id: studentSelect.value,
+        student_name: studentSelect.options[studentSelect.selectedIndex]?.text || '',
         lesson_url: selectedLesson?.lesson_url || lessonSelect.value
+        ,
+        lesson_title: selectedLesson?.title || '',
+        teacher_name: document.querySelector('.user-name')?.textContent?.trim() || 'Teacher',
+        class_id: teacherState.currentClassId || '',
+        assignment_type: 'lesson'
       })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Could not assign lesson');
-    showToast('Lesson assigned to student.');
+    showToast('Lesson assigned and saved.');
   } catch (e) {
     showToast(e.message || 'Could not assign lesson.');
   }
