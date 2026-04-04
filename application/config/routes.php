@@ -74,12 +74,12 @@ $route['api/progress/save']        = 'api/progress_save';
 
 $route['api/student/stats']        = 'api/student_stats';
 $route['api/student/courses']      = 'api/student_courses';
-$route['api/student/learning']     = 'api/student_learning';
+$route['api/student/learning']     = 'learning/student_learning';
 $route['api/student/assignments']  = 'api/student_assignments';
 $route['api/student/schedule']     = 'api/student_schedule';
 
 $route['api/parent/child']         = 'api/parent_child';
-$route['api/parent/courses']       = 'api/parent_courses';
+$route['api/parent/courses']       = 'learning/parent_courses';
 $route['api/parent/grades']        = 'api/parent_grades';
 $route['api/parent/attendance']    = 'api/parent_attendance';
 $route['api/parent/fees']          = 'api/parent_fees';
@@ -94,7 +94,7 @@ $route['api/teacher/students']     = 'api/teacher_students';
 $route['api/teacher/classes']      = 'api/teacher_classes';
 $route['api/teacher/schedule']     = 'api/teacher_schedule';
 $route['api/teacher/course-catalog'] = 'api/teacher_course_catalog';
-$route['api/teacher/curriculum-catalog'] = 'curriculum/teacher_catalog';
+$route['api/teacher/curriculum-catalog'] = 'learning/teacher_curriculum_catalog';
 $route['api/teacher/assignments']  = 'api/teacher_assignments';
 $route['api/teacher/assignments/create'] = 'api/teacher_assignments_create';
 $route['api/teacher/student-courses/create'] = 'api/teacher_student_courses_create';

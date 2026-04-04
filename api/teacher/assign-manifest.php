@@ -1,29 +1,11 @@
 <?php
 header('Content-Type: application/json; charset=UTF-8');
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'learning-common.php';
 
-$storageDir = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'data';
-$storageFile = $storageDir . DIRECTORY_SEPARATOR . 'teacher_manifest_assignments.json';
-
-if (!is_dir($storageDir)) {
-    mkdir($storageDir, 0775, true);
-}
-
-function read_manifest_assignments($file) {
-    if (!file_exists($file)) {
-        return ['assignments' => []];
-    }
-    $raw = file_get_contents($file);
-    $data = json_decode((string)$raw, true);
-    return is_array($data) ? $data : ['assignments' => []];
-}
-
-function write_manifest_assignments($file, $payload) {
-    $encoded = json_encode($payload, JSON_PRETTY_PRINT);
-    file_put_contents($file, $encoded, LOCK_EX);
-}
+$storageFile = ms_learning_assignments_path();
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    echo json_encode(read_manifest_assignments($storageFile));
+    echo json_encode(ms_learning_read_assignments($storageFile));
     exit;
 }
 
@@ -54,7 +36,7 @@ if ($studentId < 1 || $courseKey === '') {
     exit;
 }
 
-$store = read_manifest_assignments($storageFile);
+$store = ms_learning_read_assignments($storageFile);
 $assignments = $store['assignments'] ?? [];
 $key = implode(':', [$studentId, $courseKey, $lessonUrl ?: 'course']);
 $now = gmdate('c');
@@ -94,7 +76,7 @@ if (!$saved) {
 }
 
 $store['assignments'] = array_values($assignments);
-write_manifest_assignments($storageFile, $store);
+ms_learning_write_assignments($store, $storageFile);
 
 echo json_encode([
     'success' => true,
