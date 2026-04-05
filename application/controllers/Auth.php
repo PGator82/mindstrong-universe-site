@@ -137,6 +137,61 @@ class Auth extends CI_Controller {
         ];
     }
 
+    private function authDbCandidates() {
+        $cfg = $this->authDbConfig();
+        $hosts = [];
+        $push = function ($host, $port) use (&$hosts, $cfg) {
+            $host = $this->dbClean($host);
+            $port = (int)$port;
+            if ($host === '' || $port < 1) {
+                return;
+            }
+            $key = strtolower($host) . ':' . $port;
+            if (isset($hosts[$key])) {
+                return;
+            }
+            $hosts[$key] = [
+                'host' => $host,
+                'port' => $port,
+                'user' => $cfg['user'],
+                'pass' => $cfg['pass'],
+                'name' => $cfg['name'],
+            ];
+        };
+
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+            $push('mysql', 3306);
+            $push('mysql.railway.internal', 3306);
+        }
+
+        $push($cfg['host'], $cfg['port']);
+
+        $dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
+        if ($dbUrl && strpos($dbUrl, '${{') === false && strpos($dbUrl, '@') !== false) {
+            $parts = parse_url($dbUrl);
+            if (!empty($parts['host'])) {
+                $push($parts['host'], (int)($parts['port'] ?? 3306));
+            }
+        }
+
+        $push(getenv('MYSQLHOST') ?: '', getenv('MYSQLPORT') ?: 3306);
+        $push('127.0.0.1', 3306);
+        $push('localhost', 3306);
+
+        return array_values($hosts);
+    }
+
+    private function canReachDbHost($host, $port) {
+        $errno = 0;
+        $errstr = '';
+        $fp = @fsockopen($host, $port, $errno, $errstr, 2.0);
+        if (is_resource($fp)) {
+            fclose($fp);
+            return true;
+        }
+        return false;
+    }
+
     private function authDb() {
         static $conn = null;
 
@@ -144,33 +199,44 @@ class Auth extends CI_Controller {
             return $conn;
         }
 
-        $cfg = $this->authDbConfig();
+        @set_time_limit(8);
         mysqli_report(MYSQLI_REPORT_OFF);
-        $conn = mysqli_init();
-        if (!$conn) {
-            return null;
+
+        foreach ($this->authDbCandidates() as $cfg) {
+            if (!$this->canReachDbHost($cfg['host'], $cfg['port'])) {
+                continue;
+            }
+
+            $candidate = mysqli_init();
+            if (!$candidate) {
+                continue;
+            }
+
+            mysqli_options($candidate, MYSQLI_OPT_CONNECT_TIMEOUT, 3);
+            if (defined('MYSQLI_OPT_READ_TIMEOUT')) {
+                mysqli_options($candidate, MYSQLI_OPT_READ_TIMEOUT, 3);
+            }
+
+            $ok = @mysqli_real_connect(
+                $candidate,
+                $cfg['host'],
+                $cfg['user'],
+                $cfg['pass'],
+                $cfg['name'],
+                $cfg['port']
+            );
+
+            if (!$ok) {
+                @mysqli_close($candidate);
+                continue;
+            }
+
+            mysqli_set_charset($candidate, 'utf8mb4');
+            $conn = $candidate;
+            return $conn;
         }
 
-        mysqli_options($conn, MYSQLI_OPT_CONNECT_TIMEOUT, 5);
-        if (defined('MYSQLI_OPT_READ_TIMEOUT')) {
-            mysqli_options($conn, MYSQLI_OPT_READ_TIMEOUT, 5);
-        }
-
-        $ok = @mysqli_real_connect(
-            $conn,
-            $cfg['host'],
-            $cfg['user'],
-            $cfg['pass'],
-            $cfg['name'],
-            $cfg['port']
-        );
-
-        if (!$ok) {
-            return null;
-        }
-
-        mysqli_set_charset($conn, 'utf8mb4');
-        return $conn;
+        return null;
     }
 
     private function fetchUserByEmail($conn, $table, $email) {
