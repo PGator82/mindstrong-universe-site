@@ -162,23 +162,37 @@ class Auth extends CI_Controller {
 
     private function authDbCandidates() {
         $cfg = $this->authDbConfig();
-        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
-            return [[
-                'host' => 'mysql',
-                'port' => 3306,
+        $hosts = [];
+        $push = function ($host, $port) use (&$hosts, $cfg) {
+            $host = $this->dbClean((string)$host);
+            $port = (int)$port;
+            if ($host === '') {
+                return;
+            }
+
+            $key = strtolower($host) . ':' . $port;
+            if (isset($hosts[$key])) {
+                return;
+            }
+
+            $hosts[$key] = [
+                'host' => $host,
+                'port' => $port,
                 'user' => $cfg['user'],
                 'pass' => $cfg['pass'],
                 'name' => $cfg['name'],
-            ]];
+            ];
+        };
+
+        $push($cfg['host'], $cfg['port']);
+
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+            $push(getenv('MYSQLHOST') ?: '', getenv('MYSQLPORT') ?: 3306);
+            $push('mysql', 3306);
+            $push('mysql.railway.internal', 3306);
         }
 
-        return [[
-            'host' => $cfg['host'],
-            'port' => $cfg['port'],
-            'user' => $cfg['user'],
-            'pass' => $cfg['pass'],
-            'name' => $cfg['name'],
-        ]];
+        return array_values($hosts);
     }
 
     private function authDb() {
