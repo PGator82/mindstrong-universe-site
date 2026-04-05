@@ -72,6 +72,94 @@
         { "key": "geo-circles", "title": "Circles", "url": "./foundations/geometry/circles/" },
         { "key": "geo-coordinate", "title": "Coordinate Plane", "url": "./foundations/geometry/coordinate/" }
       ]
+    },
+    {
+      "id": "m4",
+      "number": 4,
+      "title": "Fractions",
+      "theme": "Precision",
+      "unlock": "moduleComplete:m3",
+      "summary": "Understand fraction meaning, equivalents, operations, and conversions through a dedicated skill hub.",
+      "hubUrl": "./foundations/fractions/",
+      "hubLabel": "Open Module →",
+      "leagueUrl": "./math-league.html",
+      "leagueLabel": "League Match →",
+      "gamesUrl": "./games.html",
+      "gamesLabel": "Fraction Games →",
+      "lessons": [
+        { "key": "frac-meaning", "title": "Meaning of Fractions", "url": "./foundations/fractions/meaning/" },
+        { "key": "frac-equivalent", "title": "Equivalent Fractions", "url": "./foundations/fractions/equivalent/" },
+        { "key": "frac-convert", "title": "Convert Fractions", "url": "./foundations/fractions/convert/" },
+        { "key": "frac-add-sub", "title": "Add & Subtract Fractions", "url": "./foundations/fractions/add-sub/" },
+        { "key": "frac-multiply", "title": "Multiply Fractions", "url": "./foundations/fractions/multiply/" },
+        { "key": "frac-divide", "title": "Divide Fractions", "url": "./foundations/fractions/divide/" }
+      ]
+    },
+    {
+      "id": "m5",
+      "number": 5,
+      "title": "Integers",
+      "theme": "Signed Numbers",
+      "unlock": "moduleComplete:m4",
+      "summary": "Negative numbers, absolute value, order of operations, and rational-number thinking in one sequence.",
+      "hubUrl": "./foundations/integers/",
+      "hubLabel": "Open Module →",
+      "leagueUrl": "./math-league.html",
+      "leagueLabel": "League Match →",
+      "gamesUrl": "./games.html",
+      "gamesLabel": "Integer Games →",
+      "lessons": [
+        { "key": "int-negative", "title": "Negative Numbers", "url": "./foundations/integers/negative/" },
+        { "key": "int-absolute", "title": "Absolute Value", "url": "./foundations/integers/absolute/" },
+        { "key": "int-add-sub", "title": "Add & Subtract Integers", "url": "./foundations/integers/add-sub/" },
+        { "key": "int-mult-div", "title": "Multiply & Divide Integers", "url": "./foundations/integers/mult-div/" },
+        { "key": "int-order-ops", "title": "Order of Operations", "url": "./foundations/integers/order-ops/" },
+        { "key": "int-rational", "title": "Rational Numbers", "url": "./foundations/integers/rational/" }
+      ]
+    },
+    {
+      "id": "m6",
+      "number": 6,
+      "title": "Algebra Foundations",
+      "theme": "Patterns",
+      "unlock": "moduleComplete:m5",
+      "summary": "Variables, inequalities, systems, and word problems for the full algebra launch.",
+      "hubUrl": "./foundations/algebra/",
+      "hubLabel": "Open Module →",
+      "leagueUrl": "./math-league.html",
+      "leagueLabel": "League Match →",
+      "gamesUrl": "./games.html",
+      "gamesLabel": "Algebra Games →",
+      "lessons": [
+        { "key": "alg-variables", "title": "Variables", "url": "./foundations/algebra/variables/" },
+        { "key": "alg-patterns", "title": "Patterns", "url": "./foundations/algebra/patterns/" },
+        { "key": "alg-multistep", "title": "Multi-Step Equations", "url": "./foundations/algebra/multistep/" },
+        { "key": "alg-inequalities", "title": "Inequalities", "url": "./foundations/algebra/inequalities/" },
+        { "key": "alg-systems", "title": "Systems", "url": "./foundations/algebra/systems/" },
+        { "key": "alg-word-probs", "title": "Word Problems", "url": "./foundations/algebra/word-probs/" }
+      ]
+    },
+    {
+      "id": "m7",
+      "number": 7,
+      "title": "Data & Probability",
+      "theme": "Reasoning",
+      "unlock": "moduleComplete:m6",
+      "summary": "Read graphs, analyze center and spread, and reason about chance with a stats-focused strand.",
+      "hubUrl": "./foundations/data/",
+      "hubLabel": "Open Module →",
+      "leagueUrl": "./math-league.html",
+      "leagueLabel": "League Match →",
+      "gamesUrl": "./games.html",
+      "gamesLabel": "Data Games →",
+      "lessons": [
+        { "key": "data-bar-graphs", "title": "Bar Graphs", "url": "./foundations/data/bar-graphs/" },
+        { "key": "data-central", "title": "Center", "url": "./foundations/data/central/" },
+        { "key": "data-spread", "title": "Spread", "url": "./foundations/data/spread/" },
+        { "key": "data-scatter", "title": "Scatter Plots", "url": "./foundations/data/scatter/" },
+        { "key": "data-probability", "title": "Probability", "url": "./foundations/data/probability/" },
+        { "key": "data-experimental", "title": "Experimental Probability", "url": "./foundations/data/experimental/" }
+      ]
     }
   ]
 }
