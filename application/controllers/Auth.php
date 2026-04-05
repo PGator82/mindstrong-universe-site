@@ -139,57 +139,23 @@ class Auth extends CI_Controller {
 
     private function authDbCandidates() {
         $cfg = $this->authDbConfig();
-        $hosts = [];
-        $push = function ($host, $port) use (&$hosts, $cfg) {
-            $host = $this->dbClean($host);
-            $port = (int)$port;
-            if ($host === '' || $port < 1) {
-                return;
-            }
-            $key = strtolower($host) . ':' . $port;
-            if (isset($hosts[$key])) {
-                return;
-            }
-            $hosts[$key] = [
-                'host' => $host,
-                'port' => $port,
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+            return [[
+                'host' => 'mysql',
+                'port' => 3306,
                 'user' => $cfg['user'],
                 'pass' => $cfg['pass'],
                 'name' => $cfg['name'],
-            ];
-        };
-
-        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
-            $push('mysql', 3306);
-            $push('mysql.railway.internal', 3306);
+            ]];
         }
 
-        $push($cfg['host'], $cfg['port']);
-
-        $dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
-        if ($dbUrl && strpos($dbUrl, '${{') === false && strpos($dbUrl, '@') !== false) {
-            $parts = parse_url($dbUrl);
-            if (!empty($parts['host'])) {
-                $push($parts['host'], (int)($parts['port'] ?? 3306));
-            }
-        }
-
-        $push(getenv('MYSQLHOST') ?: '', getenv('MYSQLPORT') ?: 3306);
-        $push('127.0.0.1', 3306);
-        $push('localhost', 3306);
-
-        return array_values($hosts);
-    }
-
-    private function canReachDbHost($host, $port) {
-        $errno = 0;
-        $errstr = '';
-        $fp = @fsockopen($host, $port, $errno, $errstr, 2.0);
-        if (is_resource($fp)) {
-            fclose($fp);
-            return true;
-        }
-        return false;
+        return [[
+            'host' => $cfg['host'],
+            'port' => $cfg['port'],
+            'user' => $cfg['user'],
+            'pass' => $cfg['pass'],
+            'name' => $cfg['name'],
+        ]];
     }
 
     private function authDb() {
@@ -203,18 +169,14 @@ class Auth extends CI_Controller {
         mysqli_report(MYSQLI_REPORT_OFF);
 
         foreach ($this->authDbCandidates() as $cfg) {
-            if (!$this->canReachDbHost($cfg['host'], $cfg['port'])) {
-                continue;
-            }
-
             $candidate = mysqli_init();
             if (!$candidate) {
                 continue;
             }
 
-            mysqli_options($candidate, MYSQLI_OPT_CONNECT_TIMEOUT, 3);
+            mysqli_options($candidate, MYSQLI_OPT_CONNECT_TIMEOUT, 2);
             if (defined('MYSQLI_OPT_READ_TIMEOUT')) {
-                mysqli_options($candidate, MYSQLI_OPT_READ_TIMEOUT, 3);
+                mysqli_options($candidate, MYSQLI_OPT_READ_TIMEOUT, 2);
             }
 
             $ok = @mysqli_real_connect(
@@ -240,28 +202,21 @@ class Auth extends CI_Controller {
     }
 
     private function fetchUserByEmail($conn, $table, $email) {
-        $sql = "SELECT * FROM `{$table}` WHERE `email` = ? LIMIT 1";
-        $stmt = mysqli_prepare($conn, $sql);
-        if (!$stmt) {
+        $email = mysqli_real_escape_string($conn, $email);
+        $sql = "SELECT * FROM `{$table}` WHERE `email` = '{$email}' LIMIT 1";
+        $result = mysqli_query($conn, $sql);
+        if (!$result) {
             return null;
         }
-        mysqli_stmt_bind_param($stmt, 's', $email);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        $row = $result ? mysqli_fetch_assoc($result) : null;
-        mysqli_stmt_close($stmt);
+        $row = mysqli_fetch_assoc($result);
+        mysqli_free_result($result);
         return $row ?: null;
     }
 
     private function updatePasswordHash($conn, $table, $idField, $idValue, $hash) {
-        $sql = "UPDATE `{$table}` SET `password` = ? WHERE `{$idField}` = ? LIMIT 1";
-        $stmt = mysqli_prepare($conn, $sql);
-        if (!$stmt) {
-            return;
-        }
-        mysqli_stmt_bind_param($stmt, 'si', $hash, $idValue);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
+        $hash = mysqli_real_escape_string($conn, $hash);
+        $idValue = (int)$idValue;
+        mysqli_query($conn, "UPDATE `{$table}` SET `password` = '{$hash}' WHERE `{$idField}` = {$idValue} LIMIT 1");
     }
 
     private function tryLogin($email, $password, $role = '') {
