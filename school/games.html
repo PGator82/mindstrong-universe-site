@@ -275,6 +275,44 @@
         </div>
         <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
       </div>
+
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">🔬</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Science Lab Blitz</div>
+            <div class="ms-game-card-desc">Fast science concept questions on cells, forces, planets, energy, and life systems.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">20 XP each</span>
+            <span class="ms-pill ms-pill-subj">Science</span>
+          </div>
+        </div>
+        <div id="science-quiz-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startQuizBlitz('science')">Start Science Blitz</button>
+          <span style="font-size:13px;color:#64748b">Best: <b id="science-best">0</b></span>
+        </div>
+        <div id="science-quiz-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">📖</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Grammar Glow-Up</div>
+            <div class="ms-game-card-desc">English questions on parts of speech, punctuation, theme, structure, and reading skills.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">20 XP each</span>
+            <span class="ms-pill ms-pill-subj">English</span>
+          </div>
+        </div>
+        <div id="english-quiz-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startQuizBlitz('english')">Start Grammar Glow-Up</button>
+          <span style="font-size:13px;color:#64748b">Best: <b id="english-best">0</b></span>
+        </div>
+        <div id="english-quiz-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
     </div>
 
     <!-- ── PUZZLES ── -->
@@ -420,6 +458,8 @@
     /* ── Init best scores on load ── */
     document.getElementById('sm-best').textContent   = msGetHighScore('speed_math');
     document.getElementById('nn-best').textContent   = msGetHighScore('number_ninja');
+    document.getElementById('science-best').textContent = msGetHighScore('quiz_blitz_science');
+    document.getElementById('english-best').textContent = msGetHighScore('quiz_blitz_english');
     document.getElementById('puzzle-count').textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
 
     /* ── Game launchers ── */
@@ -453,6 +493,16 @@
       const g = new MemoryMatchGame('memory-game', { subject, pairs });
       g.start();
       window._mmGame = g;
+    }
+
+    function startQuizBlitz(subject) {
+      const startId = subject + '-quiz-start';
+      const gameId = subject + '-quiz-game';
+      document.getElementById(startId).style.display = 'none';
+      document.getElementById(gameId).style.display = 'block';
+      const g = new QuizBlitzGame(gameId, { subject, totalRounds: 8 });
+      g.start();
+      window._qbGame = g;
     }
 
     function startEquation() {

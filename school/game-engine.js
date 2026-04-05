@@ -464,7 +464,10 @@ class MemoryMatchGame {
     const math  = ['2²','π','√','∞','≠','±','Σ','∫','∆','θ','λ','φ','∂','≤','≥','∈'];
     const emoji = ['🦁','🐯','🦊','🐻','🦋','🌺','⚡','🎯','🏆','🌙','🔥','💎','🎪','🚀','🌊','🎭'];
     const words = ['sum','diff','prod','quot','var','func','loop','bool','null','int','str','arr','obj','key','val','set'];
-    const pool = this.subject === 'emoji' ? emoji : this.subject === 'words' ? words : math;
+    const science = ['atom','cell','mass','force','orbit','plant','heart','brain','gene','wave','rock','storm','light','flora','fauna','energy'];
+    const english = ['noun','verb','clue','plot','theme','rhyme','voice','tense','idiom','comma','genre','draft','story','essay','sound','meter'];
+    const poolMap = { math, emoji, words, science, english };
+    const pool = poolMap[this.subject] ?? math;
     return msShuffleArray(pool).slice(0, this.pairs);
   }
 
@@ -625,6 +628,129 @@ class WordScrambleGame {
     `;
     document.getElementById('ws-input')?.focus();
     window._wsGame = this;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAME 5B — QUIZ BLITZ
+   Subject-specific multiple-choice sprint for science/english.
+   ══════════════════════════════════════════════════════════ */
+class QuizBlitzGame {
+  constructor(containerId, opts = {}) {
+    this.el = document.getElementById(containerId);
+    this.subject = opts.subject ?? 'science';
+    this.score = 0;
+    this.correct = 0;
+    this.round = 0;
+    this.totalRounds = opts.totalRounds ?? 8;
+    this.questions = [];
+    this.current = null;
+  }
+
+  _bank() {
+    return {
+      science: [
+        { q:'What gas do plants take in for photosynthesis?', a:'Carbon dioxide', choices:['Oxygen','Carbon dioxide','Nitrogen','Helium'] },
+        { q:'The basic unit of life is the…', a:'Cell', choices:['Atom','Molecule','Cell','Organ'] },
+        { q:'Water changes from liquid to gas during…', a:'Evaporation', choices:['Condensation','Freezing','Evaporation','Melting'] },
+        { q:'A force that pulls objects toward Earth is…', a:'Gravity', choices:['Friction','Gravity','Magnetism','Pressure'] },
+        { q:'Which planet is known for its rings?', a:'Saturn', choices:['Mars','Saturn','Mercury','Venus'] },
+        { q:'Animals that eat only plants are called…', a:'Herbivores', choices:['Carnivores','Omnivores','Herbivores','Producers'] },
+        { q:'The center of an atom contains protons and…', a:'Neutrons', choices:['Electrons','Neutrons','Photons','Ions'] },
+        { q:'A material that conducts electricity well is usually a…', a:'Metal', choices:['Plastic','Wood','Metal','Glass'] },
+        { q:'The process of rock breaking down is…', a:'Weathering', choices:['Erosion','Weathering','Deposition','Compaction'] },
+        { q:'Energy of motion is called…', a:'Kinetic energy', choices:['Potential energy','Thermal energy','Chemical energy','Kinetic energy'] },
+        { q:'Which organ pumps blood through the body?', a:'Heart', choices:['Lung','Brain','Heart','Liver'] },
+        { q:'The moon appears bright because it…', a:'Reflects sunlight', choices:['Makes its own light','Reflects sunlight','Stores electricity','Burns gas'] }
+      ],
+      english: [
+        { q:'A word that names a person, place, thing, or idea is a…', a:'Noun', choices:['Verb','Adjective','Noun','Adverb'] },
+        { q:'A word that shows action is a…', a:'Verb', choices:['Noun','Verb','Preposition','Article'] },
+        { q:'What punctuation ends a question?', a:'Question mark', choices:['Period','Comma','Question mark','Colon'] },
+        { q:'A comparison using “like” or “as” is a…', a:'Simile', choices:['Metaphor','Simile','Hyperbole','Idiom'] },
+        { q:'A group of related sentences about one idea is a…', a:'Paragraph', choices:['Clause','Paragraph','Chapter','Phrase'] },
+        { q:'A word with the opposite meaning is an…', a:'Antonym', choices:['Synonym','Antonym','Homophone','Acronym'] },
+        { q:'Words that sound alike but differ in meaning are…', a:'Homophones', choices:['Homographs','Homophones','Prefixes','Suffixes'] },
+        { q:'The main message of a story is its…', a:'Theme', choices:['Setting','Theme','Plot twist','Speaker'] },
+        { q:'An describing word is an…', a:'Adjective', choices:['Adverb','Adjective','Pronoun','Conjunction'] },
+        { q:'First, next, and finally are often called…', a:'Transition words', choices:['Root words','Transition words','Contractions','Idioms'] },
+        { q:'A word that replaces a noun is a…', a:'Pronoun', choices:['Pronoun','Interjection','Article','Adverb'] },
+        { q:'The part of a story where the problem is solved is the…', a:'Resolution', choices:['Conflict','Resolution','Exposition','Hook'] }
+      ]
+    }[this.subject] || [];
+  }
+
+  start() {
+    this.score = 0;
+    this.correct = 0;
+    this.round = 0;
+    this.questions = msShuffleArray(this._bank()).slice(0, this.totalRounds);
+    msRecordGamePlayed();
+    this._next();
+  }
+
+  _next() {
+    if (this.round >= this.questions.length) {
+      this._end();
+      return;
+    }
+    this.current = this.questions[this.round];
+    this.round++;
+    this._render();
+  }
+
+  _answer(choice) {
+    const isCorrect = choice === this.current.a;
+    if (isCorrect) {
+      this.correct++;
+      this.score += 1;
+      msAddXP(20, `${this.subject} correct`);
+      this._flash('correct');
+    } else {
+      this._flash('wrong');
+    }
+    setTimeout(() => this._next(), 350);
+  }
+
+  _flash(cls) {
+    if (!this.el) return;
+    this.el.classList.add(`ms-flash-${cls}`);
+    setTimeout(() => this.el.classList.remove(`ms-flash-${cls}`), 250);
+  }
+
+  _end() {
+    const gameId = `quiz_blitz_${this.subject}`;
+    const isHigh = msSaveHighScore(gameId, this.correct);
+    msAddXP(this.correct * 10, `${this.subject} blitz finish`);
+    if (!this.el) return;
+    const label = this.subject === 'science' ? 'Science Lab Blitz' : 'Grammar Glow-Up';
+    this.el.innerHTML = `
+      <div class="ms-result">
+        <div class="ms-result-title">${label} Complete!</div>
+        <div class="ms-result-score">${this.correct}/${this.questions.length}</div>
+        <div class="ms-result-label">correct answers</div>
+        ${isHigh ? '<div class="ms-result-high">NEW HIGH SCORE!</div>' : ''}
+        <div class="ms-result-meta">Best Ever: ${msGetHighScore(gameId)}</div>
+        <button class="ms-btn primary" onclick="window._qbGame.start()">Play Again</button>
+      </div>
+    `;
+    window._qbGame = this;
+  }
+
+  _render() {
+    if (!this.el) return;
+    this.el.innerHTML = `
+      <div class="ms-game-hdr">
+        <span class="ms-game-score">Score: <b>${this.correct}</b> | Round: ${this.round}/${this.questions.length}</span>
+        <span class="ms-game-timer">${this.subject === 'science' ? '🔬' : '📖'}</span>
+      </div>
+      <div class="ms-question-box">${this.current.q}</div>
+      <p class="ms-game-hint">Choose the best answer.</p>
+      <div class="ms-choices">
+        ${this.current.choices.map(choice => `<button class="ms-choice-btn" onclick="window._qbGame._answer(${JSON.stringify(choice).replace(/"/g,'&quot;')})">${choice}</button>`).join('')}
+      </div>
+    `;
+    window._qbGame = this;
   }
 }
 
@@ -850,7 +976,7 @@ class DailyChallengeGame {
     msRecordGamePlayed();
     // Seed today's questions deterministically
     const seed    = new Date().getDate() + new Date().getMonth() * 31;
-    const types   = ['speed','equation','boss'];
+    const types   = ['speed','equation','boss','science','english'];
     const type    = types[seed % types.length];
     this._runChallenge(type);
   }
@@ -883,6 +1009,11 @@ class DailyChallengeGame {
       const g = new BossBattleGame('dc-game');
       const origWin = g._win.bind(g);
       g._win = () => { origWin(); this._complete(1); };
+      g.start();
+    } else if (type === 'science' || type === 'english') {
+      const g = new QuizBlitzGame('dc-game', { subject: type, totalRounds: 6 });
+      const origEnd = g._end.bind(g);
+      g._end = () => { origEnd(); this._complete(g.correct); };
       g.start();
     } else {
       const g = new EquationBuilderGame('dc-game');
