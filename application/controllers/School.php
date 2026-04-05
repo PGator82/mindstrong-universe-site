@@ -5,7 +5,6 @@ class School extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->library('session');
         header('Content-Type: application/json; charset=UTF-8');
 
         $allowed = array_filter([
@@ -29,6 +28,12 @@ class School extends CI_Controller {
         }
     }
 
+    private function ensureSession() {
+        if (!isset($this->session)) {
+            $this->load->library('session');
+        }
+    }
+
     private function ensureDatabase() {
         if (!isset($this->db)) {
             @ini_set('mysql.connect_timeout', '5');
@@ -45,6 +50,7 @@ class School extends CI_Controller {
     }
 
     private function requireSession($role_key) {
+        $this->ensureSession();
         if ($this->session->userdata($role_key) != '1') {
             $this->json(['error' => 'Unauthorized'], 401);
         }
@@ -79,6 +85,54 @@ class School extends CI_Controller {
 
     private function firstRow($table, $where) {
         return $this->db->get_where($table, $where)->row_array();
+    }
+
+    private function rowsByIds($table, $idField, $ids) {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if (!$ids) {
+            return [];
+        }
+
+        $rows = $this->db->where_in($idField, $ids)->get($table)->result_array();
+        $mapped = [];
+        foreach ($rows as $row) {
+            $mapped[(int)$row[$idField]] = $row;
+        }
+        return $mapped;
+    }
+
+    private function averageScoresByStudentIds($studentIds, $subjectId = null) {
+        $studentIds = array_values(array_unique(array_filter(array_map('intval', $studentIds))));
+        if (!$studentIds) {
+            return [];
+        }
+
+        $this->db->select('student_id, mark_obtained, mark_total');
+        $this->db->from('mark');
+        $this->db->where_in('student_id', $studentIds);
+        if ($subjectId !== null) {
+            $this->db->where('subject_id', (int)$subjectId);
+        }
+        $marks = $this->db->get()->result_array();
+
+        $scores = [];
+        foreach ($marks as $mark) {
+            if ((float)$mark['mark_total'] <= 0) {
+                continue;
+            }
+            $studentId = (int)$mark['student_id'];
+            if (!isset($scores[$studentId])) {
+                $scores[$studentId] = [];
+            }
+            $scores[$studentId][] = round($mark['mark_obtained'] / $mark['mark_total'] * 100);
+        }
+
+        $averages = [];
+        foreach ($scores as $studentId => $studentScores) {
+            $averages[$studentId] = $studentScores ? round(array_sum($studentScores) / count($studentScores)) : 0;
+        }
+
+        return $averages;
     }
 
     public function student_stats() {
@@ -131,24 +185,15 @@ class School extends CI_Controller {
         if (!$class_id) { $this->json(['courses' => []]); }
 
         $subjects = $this->db->get_where('subject', ['class_id' => $class_id])->result_array();
+        $teacherRows = $this->rowsByIds('teacher', 'teacher_id', array_column($subjects, 'teacher_id'));
+        $subjectAverages = [];
+        foreach ($subjects as $subject) {
+            $subjectAverages[(int)$subject['subject_id']] = $this->averageScoresByStudentIds([$student_id], (int)$subject['subject_id']);
+        }
         $courses  = [];
         foreach ($subjects as $sub) {
-            $marks = $this->db->get_where('mark', [
-                'student_id' => $student_id,
-                'subject_id' => $sub['subject_id'],
-            ])->result_array();
-
-            $scores = [];
-            foreach ($marks as $m) {
-                if ($m['mark_total'] > 0) {
-                    $scores[] = round($m['mark_obtained'] / $m['mark_total'] * 100);
-                }
-            }
-            $progress = count($scores) ? min(100, round(array_sum($scores) / count($scores))) : 0;
-
-            $teacher = isset($sub['teacher_id']) && $sub['teacher_id']
-                ? $this->db->get_where('teacher', ['teacher_id' => $sub['teacher_id']])->row_array()
-                : null;
+            $progress = (int)($subjectAverages[(int)$sub['subject_id']][$student_id] ?? 0);
+            $teacher = !empty($sub['teacher_id']) ? ($teacherRows[(int)$sub['teacher_id']] ?? null) : null;
 
             $courses[] = [
                 'subject'  => $sub['name'],
@@ -178,13 +223,13 @@ class School extends CI_Controller {
         $this->db->order_by('day', 'ASC');
         $this->db->order_by('start_time', 'ASC');
         $routines = $class_id ? $this->db->get('class_routine')->result_array() : [];
+        $subjects = $this->rowsByIds('subject', 'subject_id', array_column($routines, 'subject_id'));
+        $teacherRows = $this->rowsByIds('teacher', 'teacher_id', array_column($subjects, 'teacher_id'));
 
         $schedule = [];
         foreach ($routines as $r) {
-            $sub = $this->db->get_where('subject', ['subject_id' => $r['subject_id']])->row_array();
-            $teacher = (!empty($sub['teacher_id']))
-                ? $this->db->get_where('teacher', ['teacher_id' => $sub['teacher_id']])->row_array()
-                : null;
+            $sub = $subjects[(int)$r['subject_id']] ?? null;
+            $teacher = (!empty($sub['teacher_id'])) ? ($teacherRows[(int)$sub['teacher_id']] ?? null) : null;
             $schedule[] = [
                 'time'    => isset($r['start_time']) ? $r['start_time'] : '',
                 'subject' => $sub ? $sub['name'] : 'Class',
@@ -206,10 +251,19 @@ class School extends CI_Controller {
         if (!$parent) { $this->json(['error' => 'Parent not found'], 404); }
 
         $children_rows = $this->db->get_where('student', ['parent_id' => $parent_id])->result_array();
+        $studentIds = array_column($children_rows, 'student_id');
+        $enrollRows = $studentIds
+            ? $this->db->where_in('student_id', $studentIds)->get('enroll')->result_array()
+            : [];
+        $enrollByStudent = [];
+        foreach ($enrollRows as $enrollRow) {
+            $enrollByStudent[(int)$enrollRow['student_id']] = $enrollRow;
+        }
+        $classRows = $this->rowsByIds('class', 'class_id', array_column($enrollRows, 'class_id'));
         $children = [];
         foreach ($children_rows as $c) {
-            $enroll = $this->db->get_where('enroll', ['student_id' => $c['student_id']])->row_array();
-            $class  = $enroll ? $this->db->get_where('class', ['class_id' => $enroll['class_id']])->row_array() : null;
+            $enroll = $enrollByStudent[(int)$c['student_id']] ?? null;
+            $class  = $enroll ? ($classRows[(int)$enroll['class_id']] ?? null) : null;
             $children[] = [
                 'id'    => $c['student_id'],
                 'name'  => $c['name'],
@@ -243,17 +297,25 @@ class School extends CI_Controller {
         $subjects = $class_id
             ? $this->db->get_where('subject', ['class_id' => $class_id])->result_array()
             : [];
+        $teacherRows = $this->rowsByIds('teacher', 'teacher_id', array_column($subjects, 'teacher_id'));
+        $subjectIds = array_column($subjects, 'subject_id');
+        $marks = $subjectIds
+            ? $this->db->where('student_id', $student_id)->where_in('subject_id', $subjectIds)->get('mark')->result_array()
+            : [];
+        $marksBySubject = [];
+        foreach ($marks as $mark) {
+            $subjectKey = (int)$mark['subject_id'];
+            if (!isset($marksBySubject[$subjectKey])) {
+                $marksBySubject[$subjectKey] = [];
+            }
+            $marksBySubject[$subjectKey][] = $mark;
+        }
 
         $grades = [];
         foreach ($subjects as $sub) {
-            $marks = $this->db->get_where('mark', [
-                'student_id' => $student_id,
-                'subject_id' => $sub['subject_id'],
-            ])->result_array();
-
             $scores = [];
             $last_score = 0;
-            foreach ($marks as $m) {
+            foreach (($marksBySubject[(int)$sub['subject_id']] ?? []) as $m) {
                 if ($m['mark_total'] > 0) {
                     $pct = round($m['mark_obtained'] / $m['mark_total'] * 100);
                     $scores[] = $pct;
@@ -268,9 +330,7 @@ class School extends CI_Controller {
             elseif ($average >= 70) $letter = 'C';
             elseif ($average >= 60) $letter = 'D';
 
-            $teacher = isset($sub['teacher_id']) && $sub['teacher_id']
-                ? $this->db->get_where('teacher', ['teacher_id' => $sub['teacher_id']])->row_array()
-                : null;
+            $teacher = !empty($sub['teacher_id']) ? ($teacherRows[(int)$sub['teacher_id']] ?? null) : null;
 
             $grades[] = [
                 'subject'    => $sub['name'],
@@ -380,13 +440,13 @@ class School extends CI_Controller {
         $this->db->order_by('day', 'ASC');
         $this->db->order_by('start_time', 'ASC');
         $routines = $this->db->get('class_routine')->result_array();
+        $subjectRows = $this->rowsByIds('subject', 'subject_id', array_column($routines, 'subject_id'));
+        $teacherRows = $this->rowsByIds('teacher', 'teacher_id', array_column($subjectRows, 'teacher_id'));
 
         $schedule = [];
         foreach ($routines as $routine) {
-            $subject = $this->firstRow('subject', ['subject_id' => $routine['subject_id']]);
-            $teacher = (!empty($subject['teacher_id']))
-                ? $this->firstRow('teacher', ['teacher_id' => $subject['teacher_id']])
-                : null;
+            $subject = $subjectRows[(int)$routine['subject_id']] ?? null;
+            $teacher = (!empty($subject['teacher_id'])) ? ($teacherRows[(int)$subject['teacher_id']] ?? null) : null;
             $schedule[] = [
                 'day' => $routine['day'] ?? '',
                 'time' => $routine['start_time'] ?? '',
@@ -460,12 +520,13 @@ class School extends CI_Controller {
         }
 
         $subjects = $this->db->get_where('subject', ['class_id' => $enroll['class_id']])->result_array();
+        $teacherRows = $this->rowsByIds('teacher', 'teacher_id', array_column($subjects, 'teacher_id'));
         $teachers = [];
         foreach ($subjects as $subject) {
             if (empty($subject['teacher_id'])) {
                 continue;
             }
-            $teacher = $this->firstRow('teacher', ['teacher_id' => $subject['teacher_id']]);
+            $teacher = $teacherRows[(int)$subject['teacher_id']] ?? null;
             if (!$teacher) {
                 continue;
             }
@@ -487,22 +548,21 @@ class School extends CI_Controller {
 
         $subjects  = $this->db->get_where('subject', ['teacher_id' => $teacher_id])->result_array();
         $class_ids = array_unique(array_column($subjects, 'class_id'));
-
-        $student_count = 0;
-        $all_scores    = [];
-        foreach ($class_ids as $cid) {
-            $enrolls = $this->db->get_where('enroll', ['class_id' => $cid])->result_array();
-            $student_count += count($enrolls);
-            foreach ($enrolls as $e) {
-                $marks = $this->db->get_where('mark', ['student_id' => $e['student_id']])->result_array();
-                foreach ($marks as $m) {
-                    if ($m['mark_total'] > 0) {
-                        $all_scores[] = round($m['mark_obtained'] / $m['mark_total'] * 100);
-                    }
-                }
+        $enrolls = $class_ids
+            ? $this->db->where_in('class_id', $class_ids)->get('enroll')->result_array()
+            : [];
+        $studentIds = array_values(array_unique(array_map('intval', array_column($enrolls, 'student_id'))));
+        $student_count = count($studentIds);
+        $marks = $studentIds
+            ? $this->db->select('mark_obtained, mark_total')->where_in('student_id', $studentIds)->get('mark')->result_array()
+            : [];
+        $all_scores = [];
+        foreach ($marks as $mark) {
+            if ((float)$mark['mark_total'] > 0) {
+                $all_scores[] = round($mark['mark_obtained'] / $mark['mark_total'] * 100);
             }
         }
-        $avg_score = count($all_scores) ? round(array_sum($all_scores) / count($all_scores), 1) : 0;
+        $avg_score = $all_scores ? round(array_sum($all_scores) / count($all_scores), 1) : 0;
 
         $teacher = $this->db->get_where('teacher', ['teacher_id' => $teacher_id])->row_array();
         $this->json([
@@ -527,18 +587,13 @@ class School extends CI_Controller {
         if (!$class_id) { $this->json(['students' => []]); }
 
         $enrolls  = $this->db->get_where('enroll', ['class_id' => $class_id])->result_array();
+        $studentRows = $this->rowsByIds('student', 'student_id', array_column($enrolls, 'student_id'));
+        $averageByStudent = $this->averageScoresByStudentIds(array_column($enrolls, 'student_id'));
         $students = [];
         foreach ($enrolls as $e) {
-            $s = $this->db->get_where('student', ['student_id' => $e['student_id']])->row_array();
+            $s = $studentRows[(int)$e['student_id']] ?? null;
             if (!$s) continue;
-            $marks  = $this->db->get_where('mark', ['student_id' => $e['student_id']])->result_array();
-            $scores = [];
-            foreach ($marks as $m) {
-                if ($m['mark_total'] > 0) {
-                    $scores[] = round($m['mark_obtained'] / $m['mark_total'] * 100);
-                }
-            }
-            $avg = count($scores) ? round(array_sum($scores) / count($scores)) : 0;
+            $avg = (int)($averageByStudent[(int)$e['student_id']] ?? 0);
             $students[] = [
                 'id'      => $s['student_id'],
                 'name'    => $s['name'],
@@ -556,19 +611,28 @@ class School extends CI_Controller {
                    ?: $this->session->userdata('user_id');
 
         $subjects = $this->db->get_where('subject', ['teacher_id' => $teacher_id])->result_array();
+        $class_ids = array_unique(array_column($subjects, 'class_id'));
+        $enrolls = $class_ids
+            ? $this->db->where_in('class_id', $class_ids)->get('enroll')->result_array()
+            : [];
+        $studentCounts = [];
+        foreach ($enrolls as $enroll) {
+            $classKey = (int)$enroll['class_id'];
+            $studentCounts[$classKey] = ($studentCounts[$classKey] ?? 0) + 1;
+        }
+        $classRows = $this->rowsByIds('class', 'class_id', array_column($subjects, 'class_id'));
         $classes = [];
         foreach ($subjects as $subject) {
             $class_id = (int)$subject['class_id'];
             if (isset($classes[$class_id])) {
                 continue;
             }
-            $class = $this->firstRow('class', ['class_id' => $class_id]);
-            $enrolls = $this->db->get_where('enroll', ['class_id' => $class_id])->result_array();
+            $class = $classRows[$class_id] ?? null;
             $classes[$class_id] = [
                 'class_id' => $class_id,
                 'subject' => $subject['name'],
                 'class_name' => $class['name'] ?? ('Class ' . $class_id),
-                'student_count' => count($enrolls),
+                'student_count' => (int)($studentCounts[$class_id] ?? 0),
                 'section_id' => (int)($subject['section_id'] ?? 0),
             ];
         }
@@ -596,11 +660,13 @@ class School extends CI_Controller {
         $this->db->order_by('day', 'ASC');
         $this->db->order_by('start_time', 'ASC');
         $rows = $this->db->get('class_routine')->result_array();
+        $subjectRows = $this->rowsByIds('subject', 'subject_id', array_column($rows, 'subject_id'));
+        $classRows = $this->rowsByIds('class', 'class_id', array_column($rows, 'class_id'));
 
         $schedule = [];
         foreach ($rows as $row) {
-            $subject = $this->firstRow('subject', ['subject_id' => $row['subject_id']]);
-            $class = $this->firstRow('class', ['class_id' => $row['class_id']]);
+            $subject = $subjectRows[(int)$row['subject_id']] ?? null;
+            $class = $classRows[(int)$row['class_id']] ?? null;
             $schedule[] = [
                 'class_id' => (int)$row['class_id'],
                 'subject' => $subject['name'] ?? 'Class',

@@ -5,7 +5,6 @@ class Auth extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->library('session');
 
         $allowed = array_filter([
             getenv('CORS_ORIGIN') ?: null,
@@ -25,6 +24,12 @@ class Auth extends CI_Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
             http_response_code(200);
             exit;
+        }
+    }
+
+    private function ensureSession() {
+        if (!isset($this->session)) {
+            $this->load->library('session');
         }
     }
 
@@ -280,6 +285,7 @@ class Auth extends CI_Controller {
                 $this->updatePasswordHash($conn, $cfg['table'], $cfg['id_field'], (int)$user[$cfg['id_field']], $new_hash);
             }
 
+            $this->ensureSession();
             $this->session->set_userdata($cfg['session_key'], '1');
             $this->session->set_userdata($cfg['id_field'], $user[$cfg['id_field']]);
             $this->session->set_userdata('login_user_id', $user[$cfg['id_field']]);
@@ -339,6 +345,7 @@ class Auth extends CI_Controller {
         $role = $this->post('role');
 
         if ($email === '' || $password === '') {
+            $this->ensureSession();
             $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
             redirect(site_url('login'), 'refresh');
             return;
@@ -350,11 +357,13 @@ class Auth extends CI_Controller {
             return;
         }
 
+        $this->ensureSession();
         $this->session->set_flashdata('login_error', $result['error'] ?? get_phrase('invalid_login'));
         redirect(site_url('login'), 'refresh');
     }
 
     public function logout() {
+        $this->ensureSession();
         $this->session->sess_destroy();
         $this->json(['success' => true, 'redirect' => 'login.html']);
     }

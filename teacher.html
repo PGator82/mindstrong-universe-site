@@ -559,44 +559,7 @@ function setAtt(btn,val){
 }
 
 // ── Load real data from API ──
-async function loadData() {
-  try {
-    const res = await fetch('/api/teacher/stats', { credentials: 'include' });
-    if (res.status === 401) { window.location.href = 'login.html'; return; }
-    if (!res.ok) return;
-    const d = await res.json();
-
-    // Update stat cards (first 4 .stat-num elements)
-    const nums = document.querySelectorAll('.stat-num');
-    if (nums[0] && d.student_count !== undefined) nums[0].textContent = d.student_count;
-    if (nums[2] && d.avg_score !== undefined) nums[2].textContent = d.avg_score + '%';
-
-    // Update greeting name
-    if (d.name) {
-      const greetEl = document.querySelector('.greeting h1 .pink-text, .greeting h1 .grad-text');
-      if (greetEl) greetEl.textContent = d.name.split(' ')[0];
-    }
-  } catch (e) { /* silently keep demo data */ }
-
-  // Load student list
-  try {
-    const res = await fetch('/api/teacher/students', { credentials: 'include' });
-    if (!res.ok) return;
-    const d = await res.json();
-    if (!d.students || !d.students.length) return;
-    // Update student rows if table exists
-    const tbody = document.querySelector('#students-table tbody, .student-table tbody');
-    if (!tbody) return;
-    tbody.innerHTML = d.students.map((s, i) => `<tr>
-      <td>${i+1}</td>
-      <td>${s.name}</td>
-      <td>${s.email || ''}</td>
-      <td>${s.average}%</td>
-    </tr>`).join('');
-  } catch (e) {}
-}
-
-document.addEventListener('DOMContentLoaded', loadData);
+async function loadData() {}
 
 </script>
 <script>
@@ -998,14 +961,19 @@ async function saveAttendance(){
 async function loadTeacherPortal(){
   loadTeacherCourseCatalog();
   try {
-    const [statsRes, classesRes, scheduleRes, assignmentsRes] = await Promise.all([
+    const [statsResult, classesResult, scheduleResult, assignmentsResult] = await Promise.allSettled([
       fetch('/api/teacher/stats', { credentials: 'include' }),
       fetch('/api/teacher/classes', { credentials: 'include' }),
       fetch('/api/teacher/schedule', { credentials: 'include' }),
       fetch('/api/teacher/assignments', { credentials: 'include' })
     ]);
 
-    if (statsRes.status === 401 || classesRes.status === 401) {
+    const statsRes = statsResult.status === 'fulfilled' ? statsResult.value : null;
+    const classesRes = classesResult.status === 'fulfilled' ? classesResult.value : null;
+    const scheduleRes = scheduleResult.status === 'fulfilled' ? scheduleResult.value : null;
+    const assignmentsRes = assignmentsResult.status === 'fulfilled' ? assignmentsResult.value : null;
+
+    if ((statsRes && statsRes.status === 401) || (classesRes && classesRes.status === 401)) {
       window.location.href = 'login.html';
       return;
     }

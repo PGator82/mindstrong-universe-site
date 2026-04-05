@@ -772,71 +772,7 @@ document.addEventListener('click', e => {
 renderCalendar(children[0].attendance);
 
 // ── loadData: fetch from API, fall back to demo ──
-async function loadData() {
-  try {
-    const res = await fetch('/api/parent/child', { credentials: 'include' });
-    if (res.status === 401) { window.location.href = 'login.html'; return; }
-    if (!res.ok) return;
-    const data = await res.json();
-    if (data.parent_name) document.getElementById('parent-name').textContent = data.parent_name;
-    if (data.greeting_name) document.getElementById('greeting-name').textContent = data.greeting_name;
-    if (data.children && data.children.length) {
-      // Update child selector chips
-      data.children.forEach((child, i) => {
-        const nameEl = document.getElementById('child-' + i + '-name');
-        const gradeEl = document.getElementById('child-' + i + '-grade');
-        if (nameEl) nameEl.textContent = child.name;
-        if (gradeEl) gradeEl.textContent = child.grade;
-      });
-    }
-  } catch (e) { /* silently use demo data */ }
-
-  // Load grades
-  try {
-    const res = await fetch('/api/parent/grades', { credentials: 'include' });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.grades && data.grades.length) {
-        const tbody = document.getElementById('grades-tbody');
-        tbody.innerHTML = data.grades.map(g => {
-          const gc = g.average >= 90 ? 'grade-a' : g.average >= 80 ? 'grade-b' : g.average >= 70 ? 'grade-c' : 'grade-d';
-          return `<tr>
-            <td><div style="font-weight:700">${g.subject}</div><div class="teacher-tag">${g.teacher}</div></td>
-            <td>${g.last_score}%<div class="score-bar-wrap"><div class="score-bar-fill" style="width:${g.last_score}%"></div></div></td>
-            <td>${g.average}%</td>
-            <td><span class="grade-pill ${gc}">${g.grade}</span></td>
-          </tr>`;
-        }).join('');
-      }
-    }
-  } catch (e) {}
-
-  // Load fees
-  try {
-    const res = await fetch('/api/parent/fees', { credentials: 'include' });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.fees) {
-        const total_unpaid = data.fees.filter(f => f.status !== 'paid').reduce((s, f) => s + parseFloat(f.amount), 0);
-        document.getElementById('stat-fees').textContent = '$' + total_unpaid.toFixed(0);
-        const unpaid = data.fees.filter(f => f.status !== 'paid').length;
-        document.getElementById('unpaid-badge').textContent = unpaid;
-      }
-    }
-  } catch (e) {}
-
-  // Load attendance
-  try {
-    const res = await fetch('/api/parent/attendance', { credentials: 'include' });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.records) renderCalendar(data.records);
-      if (data.rate) { document.getElementById('stat-att').textContent = data.rate + '%'; }
-    }
-  } catch (e) {}
-}
-
-document.addEventListener('DOMContentLoaded', loadData);
+async function loadData() {}
 </script>
 <script>
 const parentState = {
@@ -984,7 +920,7 @@ async function refreshParentChildData() {
   if (!parentState.activeChildId) return;
   const studentId = parentState.activeChildId;
   try {
-    const [gradesRes, feesRes, attendanceRes, scheduleRes, teachersRes, coursesRes] = await Promise.all([
+    const [gradesResult, feesResult, attendanceResult, scheduleResult, teachersResult, coursesResult] = await Promise.allSettled([
       fetch(`/api/parent/grades?student_id=${studentId}`, { credentials: 'include' }),
       fetch(`/api/parent/fees?student_id=${studentId}`, { credentials: 'include' }),
       fetch(`/api/parent/attendance?student_id=${studentId}`, { credentials: 'include' }),
@@ -993,30 +929,37 @@ async function refreshParentChildData() {
       fetch(`/api/parent/courses?student_id=${studentId}`, { credentials: 'include' })
     ]);
 
-    if (gradesRes.ok) {
+    const gradesRes = gradesResult.status === 'fulfilled' ? gradesResult.value : null;
+    const feesRes = feesResult.status === 'fulfilled' ? feesResult.value : null;
+    const attendanceRes = attendanceResult.status === 'fulfilled' ? attendanceResult.value : null;
+    const scheduleRes = scheduleResult.status === 'fulfilled' ? scheduleResult.value : null;
+    const teachersRes = teachersResult.status === 'fulfilled' ? teachersResult.value : null;
+    const coursesRes = coursesResult.status === 'fulfilled' ? coursesResult.value : null;
+
+    if (gradesRes && gradesRes.ok) {
       const data = await gradesRes.json();
       renderGrades(data.grades || []);
     }
-    if (feesRes.ok) {
+    if (feesRes && feesRes.ok) {
       const data = await feesRes.json();
       renderFees(data.fees || []);
     }
-    if (attendanceRes.ok) {
+    if (attendanceRes && attendanceRes.ok) {
       const data = await attendanceRes.json();
       renderCalendar(data.records || []);
       document.getElementById('stat-att').textContent = (data.rate || 0) + '%';
       document.getElementById('att-change').textContent = `${data.rate || 0}% present`;
     }
-    if (scheduleRes.ok) {
+    if (scheduleRes && scheduleRes.ok) {
       const data = await scheduleRes.json();
       renderSchedule(data.schedule || []);
     }
-    if (teachersRes.ok) {
+    if (teachersRes && teachersRes.ok) {
       const data = await teachersRes.json();
       renderTeachers(data.teachers || []);
       await loadMessages();
     }
-    if (coursesRes.ok) {
+    if (coursesRes && coursesRes.ok) {
       const data = await coursesRes.json();
       renderParentCourses(data.courses || []);
     }
