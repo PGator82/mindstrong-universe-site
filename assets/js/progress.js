@@ -47,6 +47,23 @@
     return `<li>${done ? '✅' : '➡️'} <a href="${lesson.url}">${lesson.title}</a></li>`;
   }
 
+  function actionLink(url, label, primary) {
+    if (!url) return '';
+    return `<a class="ms-btn${primary ? ' primary' : ''}" href="${url}">${label}</a>`;
+  }
+
+  function moduleActions(module, unlocked) {
+    if (!unlocked) return '';
+    const actions = [
+      actionLink(module.hubUrl, module.hubLabel || 'Open Module →', true),
+      actionLink(module.leagueUrl, module.leagueLabel || 'League →', false),
+      actionLink(module.gamesUrl, module.gamesLabel || 'Games →', false),
+    ].filter(Boolean);
+
+    if (!actions.length) return '';
+    return `<div class="ce-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 4px;">${actions.join('')}</div>`;
+  }
+
   async function renderCourseEngine({ containerId, dataUrl }) {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -62,17 +79,29 @@
         const unlocked = isUnlocked(m, byId, tracker);
         const p = moduleProgress(m, tracker);
         const lessons = (m.lessons || []).map((l) => lessonRow(l, unlocked, lessonDone(l, tracker))).join('');
+        const actions = moduleActions(m, unlocked);
+        const summary = m.summary ? `<p>${m.summary}</p>` : `<p>${p.done}/${p.total} lessons complete</p>`;
 
         return `<article class="ce-card ${unlocked ? '' : 'locked'}">
           <h3>Module ${m.number}: ${m.title} ${unlocked ? '' : '<span class="chip">Locked</span>'}</h3>
-          <p>${p.done}/${p.total} lessons complete</p>
+          ${summary}
+          <div class="ce-head" style="margin:8px 0 10px;"><span>${p.done}/${p.total} lessons complete</span>${m.theme ? `<span class="chip">${m.theme}</span>` : ''}</div>
           <div class="ce-bar"><span style="width:${p.pct}%"></span></div>
+          ${actions}
           <ul>${lessons}</ul>
         </article>`;
       }).join('');
 
       const completedModules = modules.filter((m) => moduleComplete(m, tracker)).length;
-      el.innerHTML = `<div class="ce-head"><strong>Course Engine</strong><span>${completedModules}/${modules.length} modules fully complete</span></div>${cards}`;
+      const courseActions = [
+        actionLink(data.hubUrl, data.hubLabel || 'Open Course →', true),
+        actionLink(data.leagueUrl, data.leagueLabel || 'League →', false),
+        actionLink(data.gamesUrl, data.gamesLabel || 'Games →', false),
+      ].filter(Boolean).join('');
+      el.innerHTML = `<div class="ce-head"><strong>${data.course || 'Course Engine'}</strong><span>${completedModules}/${modules.length} modules fully complete</span></div>
+        ${data.description ? `<p class="ms-sub" style="margin:0 0 12px;">${data.description}</p>` : ''}
+        ${courseActions ? `<div class="ce-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;">${courseActions}</div>` : ''}
+        ${cards}`;
     } catch {
       el.innerHTML = '<p class="ms-sub">Course engine unavailable right now.</p>';
     }
