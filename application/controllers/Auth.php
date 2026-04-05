@@ -76,6 +76,18 @@ class Auth extends CI_Controller {
         exit;
     }
 
+    private function authLog($message, $context = []) {
+        $payload = ['message' => $message];
+        foreach ($context as $key => $value) {
+            if (is_scalar($value) || $value === null) {
+                $payload[$key] = $value;
+            } else {
+                $payload[$key] = json_encode($value);
+            }
+        }
+        error_log('[AUTH] ' . json_encode($payload));
+    }
+
     private function post($key) {
         $val = $this->input->post($key, TRUE);
         return ($val !== FALSE && $val !== null) ? trim($val) : '';
@@ -162,6 +174,7 @@ class Auth extends CI_Controller {
         static $conn = null;
 
         if ($conn instanceof mysqli) {
+            $this->authLog('reusing auth db connection');
             return $conn;
         }
 
@@ -169,8 +182,10 @@ class Auth extends CI_Controller {
         mysqli_report(MYSQLI_REPORT_OFF);
 
         foreach ($this->authDbCandidates() as $cfg) {
+            $this->authLog('trying auth db candidate', ['host' => $cfg['host'], 'port' => $cfg['port'], 'db' => $cfg['name']]);
             $candidate = mysqli_init();
             if (!$candidate) {
+                $this->authLog('mysqli_init failed');
                 continue;
             }
 
@@ -189,15 +204,23 @@ class Auth extends CI_Controller {
             );
 
             if (!$ok) {
+                $this->authLog('auth db connect failed', [
+                    'host' => $cfg['host'],
+                    'port' => $cfg['port'],
+                    'errno' => mysqli_connect_errno(),
+                    'error' => mysqli_connect_error(),
+                ]);
                 @mysqli_close($candidate);
                 continue;
             }
 
             mysqli_set_charset($candidate, 'utf8mb4');
+            $this->authLog('auth db connected', ['host' => $cfg['host'], 'port' => $cfg['port']]);
             $conn = $candidate;
             return $conn;
         }
 
+        $this->authLog('all auth db candidates failed');
         return null;
     }
 
@@ -206,10 +229,12 @@ class Auth extends CI_Controller {
         $sql = "SELECT * FROM `{$table}` WHERE `email` = '{$email}' LIMIT 1";
         $result = mysqli_query($conn, $sql);
         if (!$result) {
+            $this->authLog('user lookup query failed', ['table' => $table, 'error' => mysqli_error($conn)]);
             return null;
         }
         $row = mysqli_fetch_assoc($result);
         mysqli_free_result($result);
+        $this->authLog('user lookup complete', ['table' => $table, 'found' => $row ? 1 : 0]);
         return $row ?: null;
     }
 
@@ -220,8 +245,10 @@ class Auth extends CI_Controller {
     }
 
     private function tryLogin($email, $password, $role = '') {
+        $this->authLog('tryLogin start', ['email' => $email, 'role' => $role]);
         $conn = $this->authDb();
         if (!$conn) {
+            $this->authLog('tryLogin failed: db unavailable');
             return ['error' => 'Login service is temporarily unavailable.'];
         }
 
@@ -245,6 +272,7 @@ class Auth extends CI_Controller {
 
             $new_hash = null;
             if (!$this->verifyPassword($password, $user['password'], $new_hash)) {
+                $this->authLog('password mismatch', ['role' => $role_name, 'email' => $email]);
                 continue;
             }
 
@@ -257,6 +285,7 @@ class Auth extends CI_Controller {
             $this->session->set_userdata('login_user_id', $user[$cfg['id_field']]);
             $this->session->set_userdata('name', isset($user['name']) ? $user['name'] : '');
             $this->session->set_userdata('login_type', $role_name);
+            $this->authLog('login success', ['role' => $role_name, 'redirect' => $cfg['redirect']]);
 
             return [
                 'success' => true,
@@ -276,6 +305,7 @@ class Auth extends CI_Controller {
     }
 
     public function login() {
+        $this->authLog('api login request', ['method' => $_SERVER['REQUEST_METHOD'] ?? '']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->json(['error' => 'Method not allowed'], 405);
         }
@@ -298,6 +328,7 @@ class Auth extends CI_Controller {
     }
 
     public function validate_login() {
+        $this->authLog('validate_login request', ['method' => $_SERVER['REQUEST_METHOD'] ?? '']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             redirect(site_url('login'), 'refresh');
             return;
