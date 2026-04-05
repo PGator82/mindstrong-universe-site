@@ -1,17 +1,18 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// Strip Railway Raw Editor corruption: "host MYSQLUSER=root" → "host"
-function _db_clean($val) {
+// Strip Raw Editor corruption from host/port-like values only.
+function _db_clean($val, $allowEquals = true) {
+    $val = trim((string)$val);
     if (strpos($val, ' ') !== false) $val = explode(' ', $val, 2)[0];
-    if (strpos($val, '=') !== false && strpos($val, '.') === false) $val = explode('=', $val, 2)[1];
+    if (!$allowEquals && strpos($val, '=') !== false && strpos($val, '.') === false) $val = explode('=', $val, 2)[1];
     return trim($val);
 }
 
 function _db_candidates($preferred_host) {
     $candidates = [];
     $push = function ($host) use (&$candidates) {
-        $host = _db_clean((string)$host);
+        $host = _db_clean((string)$host, false);
         if ($host === '' || in_array($host, $candidates, true)) return;
         $candidates[] = $host;
     };
@@ -40,22 +41,15 @@ if ($_db_url && strpos($_db_url, '${{') === false && strpos($_db_url, '@') !== f
     $_pass = isset($_u['pass']) ? urldecode($_u['pass']) : '';
     $_name = ltrim($_u['path'] ?? '/railway', '/');
 } else {
-    $_host = _db_clean(getenv('MYSQLHOST')     ?: '') ?: 'localhost';
-    $_port = (int)(_db_clean(getenv('MYSQLPORT') ?: '') ?: 3306);
-    $_user = _db_clean(getenv('MYSQLUSER')     ?: '') ?: 'root';
-    $_pass = _db_clean(getenv('MYSQLPASSWORD') ?: '') ?: '';
-    $_name = _db_clean(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
+    $_host = _db_clean(getenv('MYSQLHOST')     ?: '', false) ?: 'localhost';
+    $_port = (int)(_db_clean(getenv('MYSQLPORT') ?: '', false) ?: 3306);
+    $_user = trim((string)(getenv('MYSQLUSER')     ?: '')) ?: 'root';
+    $_pass = (string)(getenv('MYSQLPASSWORD') ?: '');
+    $_name = trim((string)(getenv('MYSQLDATABASE') ?: '')) ?: 'railway';
 }
 
 $_hosts = _db_candidates($_host);
 $_host = $_hosts[0] ?? 'localhost';
-if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
-    if (strpos($_host, '.proxy.rlwy.net') !== false || strpos($_host, 'rlwy.net') !== false) {
-        $_host = 'mysql';
-        $_port = 3306;
-        $_hosts = _db_candidates($_host);
-    }
-}
 $_failover = [];
 foreach (array_slice($_hosts, 1) as $_fallback_host) {
     $_failover[] = array(

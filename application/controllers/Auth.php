@@ -116,12 +116,12 @@ class Auth extends CI_Controller {
         return false;
     }
 
-    private function dbClean($val) {
+    private function dbClean($val, $allowEquals = true) {
         $val = trim((string)$val);
         if (strpos($val, ' ') !== false) {
             $val = explode(' ', $val, 2)[0];
         }
-        if (strpos($val, '=') !== false && strpos($val, '.') === false) {
+        if (!$allowEquals && strpos($val, '=') !== false && strpos($val, '.') === false) {
             $val = explode('=', $val, 2)[1];
         }
         return trim($val);
@@ -137,11 +137,11 @@ class Auth extends CI_Controller {
             $pass = isset($parts['pass']) ? urldecode($parts['pass']) : '';
             $name = ltrim($parts['path'] ?? '/railway', '/');
         } else {
-            $host = $this->dbClean(getenv('MYSQLHOST') ?: '') ?: 'localhost';
-            $port = (int)($this->dbClean(getenv('MYSQLPORT') ?: '') ?: 3306);
-            $user = $this->dbClean(getenv('MYSQLUSER') ?: '') ?: 'root';
-            $pass = $this->dbClean(getenv('MYSQLPASSWORD') ?: '') ?: '';
-            $name = $this->dbClean(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
+            $host = $this->dbClean(getenv('MYSQLHOST') ?: '', false) ?: 'localhost';
+            $port = (int)($this->dbClean(getenv('MYSQLPORT') ?: '', false) ?: 3306);
+            $user = trim((string)(getenv('MYSQLUSER') ?: '')) ?: 'root';
+            $pass = (string)(getenv('MYSQLPASSWORD') ?: '');
+            $name = trim((string)(getenv('MYSQLDATABASE') ?: '')) ?: 'railway';
         }
 
         return [
