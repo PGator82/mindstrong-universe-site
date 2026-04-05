@@ -116,20 +116,9 @@ class Auth extends CI_Controller {
         return false;
     }
 
-    private function dbClean($val, $allowEquals = true) {
-        $val = trim((string)$val);
-        if (strpos($val, ' ') !== false) {
-            $val = explode(' ', $val, 2)[0];
-        }
-        if (!$allowEquals && strpos($val, '=') !== false && strpos($val, '.') === false) {
-            $val = explode('=', $val, 2)[1];
-        }
-        return trim($val);
-    }
-
     private function authDbConfig() {
         $dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
-        if ($dbUrl && strpos($dbUrl, '${{') === false && strpos($dbUrl, '@') !== false) {
+        if ($dbUrl && strpos($dbUrl, 'mysql') !== false) {
             $parts = parse_url($dbUrl);
             $host = $parts['host'] ?? 'localhost';
             $port = (int)($parts['port'] ?? 3306);
@@ -137,11 +126,11 @@ class Auth extends CI_Controller {
             $pass = isset($parts['pass']) ? urldecode($parts['pass']) : '';
             $name = ltrim($parts['path'] ?? '/railway', '/');
         } else {
-            $host = $this->dbClean(getenv('MYSQLHOST') ?: '', false) ?: 'localhost';
-            $port = (int)($this->dbClean(getenv('MYSQLPORT') ?: '', false) ?: 3306);
-            $user = trim((string)(getenv('MYSQLUSER') ?: '')) ?: 'root';
-            $pass = (string)(getenv('MYSQLPASSWORD') ?: '');
-            $name = trim((string)(getenv('MYSQLDATABASE') ?: '')) ?: 'railway';
+            $host = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost';
+            $port = (int)(getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: 3306);
+            $user = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
+            $pass = getenv('MYSQLPASSWORD') ?: getenv('DB_PASSWORD') ?: '';
+            $name = getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'railway';
         }
 
         return [
@@ -157,7 +146,7 @@ class Auth extends CI_Controller {
         $cfg = $this->authDbConfig();
         $hosts = [];
         $push = function ($host, $port) use (&$hosts, $cfg) {
-            $host = $this->dbClean((string)$host);
+            $host = trim((string)$host);
             $port = (int)$port;
             if ($host === '') {
                 return;
