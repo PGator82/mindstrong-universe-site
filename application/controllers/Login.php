@@ -13,28 +13,14 @@ class Login extends CI_Controller {
 
     function __construct() {
         parent::__construct();
+        $this->load->model('crud_model');
+        $this->load->database();
+        $this->load->library('session');
         /* cache control */
         $this->output->set_header('Last-Modified: ' . gmdate("D, d M Y H:i:s") . ' GMT');
         $this->output->set_header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
         $this->output->set_header('Pragma: no-cache');
         $this->output->set_header("Expires: Mon, 26 Jul 2010 05:00:00 GMT");
-    }
-
-    private function _ensure_session() {
-        if (!isset($this->session)) {
-            $this->load->library('session');
-        }
-    }
-
-    private function _ensure_db() {
-        if (!isset($this->db) || !$this->db) {
-            $this->load->database();
-        }
-    }
-
-    private function _ensure_auth_services() {
-        $this->_ensure_session();
-        $this->_ensure_db();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -63,7 +49,6 @@ class Login extends CI_Controller {
      * Returns false if the request should be blocked.
      */
     private function _check_rate_limit() {
-        $this->_ensure_session();
         $ip      = $this->input->ip_address();
         $key     = 'lr_' . md5($ip);
         $rate    = $this->session->userdata($key) ?: ['c' => 0, 'ts' => time()];
@@ -87,7 +72,6 @@ class Login extends CI_Controller {
     }
 
     private function _clear_rate_limit() {
-        $this->_ensure_session();
         $ip  = $this->input->ip_address();
         $key = 'lr_' . md5($ip);
         $this->session->unset_userdata($key);
@@ -97,7 +81,6 @@ class Login extends CI_Controller {
 
     // Default: redirect already-logged-in users to their dashboard
     public function index() {
-        $this->_ensure_session();
         if ($this->session->userdata('admin_login') == 1)
             redirect(site_url('admin/dashboard'), 'refresh');
         if ($this->session->userdata('teacher_login') == 1)
@@ -116,12 +99,10 @@ class Login extends CI_Controller {
 
     // Validate login from form POST (with rate-limit + bcrypt migration)
     function validate_login() {
-        $this->_ensure_auth_services();
         if (!$this->_check_rate_limit()) return;
 
         $email    = $this->input->post('email');
         $password = $this->input->post('password');
-        $role     = strtolower(trim((string) $this->input->post('role')));
 
         $roles = [
             'admin'      => ['session_key' => 'admin_login',      'id_col' => 'admin_id',      'redirect' => 'admin/dashboard'],
@@ -132,12 +113,8 @@ class Login extends CI_Controller {
             'accountant' => ['session_key' => 'accountant_login', 'id_col' => 'accountant_id', 'redirect' => 'accountant/dashboard'],
         ];
 
-        if ($role !== '' && isset($roles[$role])) {
-            $roles = [$role => $roles[$role]] + $roles;
-        }
-
         foreach ($roles as $table => $cfg) {
-            $query = $this->db->limit(1)->get_where($table, array('email' => $email));
+            $query = $this->db->get_where($table, array('email' => $email));
             if ($query->num_rows() === 0) continue;
 
             $row     = $query->row();
@@ -172,13 +149,11 @@ class Login extends CI_Controller {
 
     // Show forgot-password form (re-uses the toggle panel on the login view)
     function forgot_password() {
-        $this->_ensure_session();
         $this->load->view('backend/login');
     }
 
     // Handle password-reset POST: find email across all roles, generate new password, email it
     function reset_password() {
-        $this->_ensure_auth_services();
         $email = $this->input->post('email');
 
         $tables = ['admin', 'student', 'teacher', 'parent', 'librarian', 'accountant'];
@@ -194,9 +169,7 @@ class Login extends CI_Controller {
             $this->db->where('email', $email);
             $this->db->update($table, array('password' => $new_hash));
 
-            if (!isset($this->email_model)) {
-                $this->load->model('email_model');
-            }
+            $this->load->model('email_model');
             $this->email_model->password_reset_email($new_password, $table, $email);
 
             $this->session->set_flashdata('reset_success',
@@ -212,7 +185,6 @@ class Login extends CI_Controller {
 
     // Logout
     function logout() {
-        $this->_ensure_session();
         $this->session->sess_destroy();
         $this->session->set_flashdata('logout_notification', 'logged_out');
         redirect(site_url('login'), 'refresh');

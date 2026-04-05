@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+<?php
+$system_name  = $this->db->get_where('settings', array('type' => 'system_name'))->row()->description;
+$header_logo  = $this->frontend_model->get_frontend_general_settings('header_logo');
+?><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -38,6 +41,7 @@
     <span class="brand-name">MindStrong Universe</span>
   </div>
 
+  <!-- Login Form -->
   <div id="login_area">
     <h2><?php echo get_phrase('login'); ?></h2>
     <p class="sub">Welcome back. Enter your credentials to continue.</p>
@@ -55,6 +59,7 @@
     </div>
   </div>
 
+  <!-- Forgot Password Form -->
   <div id="forgot_password_area">
     <h2><?php echo get_phrase('forgot_password'); ?></h2>
     <p class="sub">Enter your email and we'll send a new password.</p>
