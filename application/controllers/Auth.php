@@ -81,6 +81,12 @@ class Auth extends CI_Controller {
         exit;
     }
 
+    private function loginErrorRedirect($message = 'invalid_login') {
+        $target = site_url('login.html') . '?error=' . rawurlencode($message);
+        redirect($target, 'refresh');
+        exit;
+    }
+
     private function authLog($message, $context = []) {
         $payload = ['message' => $message];
         foreach ($context as $key => $value) {
@@ -336,7 +342,7 @@ class Auth extends CI_Controller {
     public function validate_login() {
         $this->authLog('validate_login request', ['method' => $_SERVER['REQUEST_METHOD'] ?? '']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect(site_url('login'), 'refresh');
+            redirect(site_url('login.html'), 'refresh');
             return;
         }
 
@@ -345,9 +351,7 @@ class Auth extends CI_Controller {
         $role = $this->post('role');
 
         if ($email === '' || $password === '') {
-            $this->ensureSession();
-            $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
-            redirect(site_url('login'), 'refresh');
+            $this->loginErrorRedirect('Email and password are required.');
             return;
         }
 
@@ -357,9 +361,7 @@ class Auth extends CI_Controller {
             return;
         }
 
-        $this->ensureSession();
-        $this->session->set_flashdata('login_error', $result['error'] ?? get_phrase('invalid_login'));
-        redirect(site_url('login'), 'refresh');
+        $this->loginErrorRedirect($result['error'] ?? get_phrase('invalid_login'));
     }
 
     public function logout() {

@@ -569,9 +569,10 @@ body {
 // ── Show error from URL param (e.g. redirect back from CI on failed login) ──
 (function() {
   const params = new URLSearchParams(location.search);
-  if (params.get('error') === '1' || params.get('error') === 'invalid_login') {
+  const errorParam = params.get('error');
+  if (errorParam) {
     const el = document.getElementById('login-alert');
-    el.textContent = '⚠ Incorrect email or password. Please try again.';
+    el.textContent = '⚠ ' + decodeURIComponent(errorParam).replace(/\+/g, ' ');
     el.classList.add('show');
     history.replaceState({}, '', location.pathname);
   }
