@@ -144,13 +144,6 @@ class Auth extends CI_Controller {
             $name = $this->dbClean(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
         }
 
-        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
-            if (strpos($host, '.proxy.rlwy.net') !== false || strpos($host, 'rlwy.net') !== false) {
-                $host = 'mysql';
-                $port = 3306;
-            }
-        }
-
         return [
             'host' => $host,
             'port' => $port,
