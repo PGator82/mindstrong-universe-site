@@ -227,13 +227,19 @@ class Auth extends CI_Controller {
 
         $role_map = $this->roleMap();
         $role = strtolower(trim((string)$role));
-        $try_roles = ($role !== '' && isset($role_map[$role]))
-            ? [$role => $role_map[$role]]
-            : $role_map;
+        $hasRoleHint = ($role !== '' && isset($role_map[$role]));
+        $try_roles = $hasRoleHint ? [$role => $role_map[$role]] : $role_map;
+        $foundUserForHintedRole = false;
 
         foreach ($try_roles as $role_name => $cfg) {
             $user = $this->fetchUserByEmail($conn, $cfg['table'], $email);
-            if (!$user || empty($user['password'])) {
+            if (!$user) {
+                continue;
+            }
+            if ($hasRoleHint && $role_name === $role) {
+                $foundUserForHintedRole = true;
+            }
+            if (empty($user['password'])) {
                 continue;
             }
 
@@ -257,6 +263,13 @@ class Auth extends CI_Controller {
                 'role' => $role_name,
                 'redirect' => $cfg['redirect'],
             ];
+        }
+
+        if ($hasRoleHint) {
+            if (!$foundUserForHintedRole) {
+                return ['error' => 'No ' . $role . ' account was found for that email address.'];
+            }
+            return ['error' => 'Incorrect password for that ' . $role . ' account.'];
         }
 
         return ['error' => 'Incorrect email or password. Please try again.'];
