@@ -655,7 +655,7 @@ function submitLegacyLogin(email, pass, roleHint) {
   ciForm.submit();
 }
 
-// ── Login handler — real API ──
+// ── Login handler — direct school auth ──
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -689,48 +689,7 @@ async function handleLogin(e) {
   const roleHint = activeRoleCard ? activeRoleCard.dataset.role : '';
 
   const btn = showLoading('login-btn');
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-  try {
-    const form = new FormData();
-    form.append('email', email);
-    form.append('password', pass);
-    if (roleHint) form.append('role', roleHint);
-
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      body: form,
-      credentials: 'include',
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    const data = await res.json();
-    hideLoading(btn);
-
-    if (res.ok && data.success) {
-      // Redirect based on returned role
-      const redirectMap = {
-        student:    'dashboard.html',
-        teacher:    'teacher.html',
-        parent:     'parent.html',
-        admin:      'admin/dashboard',
-        superadmin: 'superadmin.html',
-      };
-      window.location.href = data.redirect || redirectMap[data.role] || 'dashboard.html';
-    } else {
-      hideLoading(btn);
-      document.getElementById('login-alert').classList.add('show');
-      document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
-    }
-  } catch (err) {
-    clearTimeout(timeoutId);
-    hideLoading(btn);
-    document.getElementById('login-alert').classList.add('show');
-    document.getElementById('login-alert').textContent = '⚠ Login service is slow. Retrying with direct sign-in...';
-    setTimeout(() => submitLegacyLogin(email, pass, roleHint), 150);
-  }
+  setTimeout(() => submitLegacyLogin(email, pass, roleHint), 100);
 }
 
 // ── Register handler (invite request) ──
