@@ -93,14 +93,116 @@ class Auth extends CI_Controller {
         return false;
     }
 
-    private function loadAuthDatabase() {
-        if (!isset($this->db)) {
-            $this->load->database();
+    private function dbClean($val) {
+        $val = trim((string)$val);
+        if (strpos($val, ' ') !== false) {
+            $val = explode(' ', $val, 2)[0];
         }
+        if (strpos($val, '=') !== false && strpos($val, '.') === false) {
+            $val = explode('=', $val, 2)[1];
+        }
+        return trim($val);
+    }
+
+    private function authDbConfig() {
+        $dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
+        if ($dbUrl && strpos($dbUrl, '${{') === false && strpos($dbUrl, '@') !== false) {
+            $parts = parse_url($dbUrl);
+            $host = $parts['host'] ?? 'localhost';
+            $port = (int)($parts['port'] ?? 3306);
+            $user = isset($parts['user']) ? urldecode($parts['user']) : 'root';
+            $pass = isset($parts['pass']) ? urldecode($parts['pass']) : '';
+            $name = ltrim($parts['path'] ?? '/railway', '/');
+        } else {
+            $host = $this->dbClean(getenv('MYSQLHOST') ?: '') ?: 'localhost';
+            $port = (int)($this->dbClean(getenv('MYSQLPORT') ?: '') ?: 3306);
+            $user = $this->dbClean(getenv('MYSQLUSER') ?: '') ?: 'root';
+            $pass = $this->dbClean(getenv('MYSQLPASSWORD') ?: '') ?: '';
+            $name = $this->dbClean(getenv('MYSQLDATABASE') ?: '') ?: 'railway';
+        }
+
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+            if (strpos($host, '.proxy.rlwy.net') !== false || strpos($host, 'rlwy.net') !== false) {
+                $host = 'mysql';
+                $port = 3306;
+            }
+        }
+
+        return [
+            'host' => $host,
+            'port' => $port,
+            'user' => $user,
+            'pass' => $pass,
+            'name' => $name,
+        ];
+    }
+
+    private function authDb() {
+        static $conn = null;
+
+        if ($conn instanceof mysqli) {
+            return $conn;
+        }
+
+        $cfg = $this->authDbConfig();
+        mysqli_report(MYSQLI_REPORT_OFF);
+        $conn = mysqli_init();
+        if (!$conn) {
+            return null;
+        }
+
+        mysqli_options($conn, MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+        if (defined('MYSQLI_OPT_READ_TIMEOUT')) {
+            mysqli_options($conn, MYSQLI_OPT_READ_TIMEOUT, 5);
+        }
+
+        $ok = @mysqli_real_connect(
+            $conn,
+            $cfg['host'],
+            $cfg['user'],
+            $cfg['pass'],
+            $cfg['name'],
+            $cfg['port']
+        );
+
+        if (!$ok) {
+            return null;
+        }
+
+        mysqli_set_charset($conn, 'utf8mb4');
+        return $conn;
+    }
+
+    private function fetchUserByEmail($conn, $table, $email) {
+        $sql = "SELECT * FROM `{$table}` WHERE `email` = ? LIMIT 1";
+        $stmt = mysqli_prepare($conn, $sql);
+        if (!$stmt) {
+            return null;
+        }
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $row = $result ? mysqli_fetch_assoc($result) : null;
+        mysqli_stmt_close($stmt);
+        return $row ?: null;
+    }
+
+    private function updatePasswordHash($conn, $table, $idField, $idValue, $hash) {
+        $sql = "UPDATE `{$table}` SET `password` = ? WHERE `{$idField}` = ? LIMIT 1";
+        $stmt = mysqli_prepare($conn, $sql);
+        if (!$stmt) {
+            return;
+        }
+        mysqli_stmt_bind_param($stmt, 'si', $hash, $idValue);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
 
     private function tryLogin($email, $password, $role = '') {
-        $this->loadAuthDatabase();
+        $conn = $this->authDb();
+        if (!$conn) {
+            return ['error' => 'Login service is temporarily unavailable.'];
+        }
 
         $role_map = $this->roleMap();
         $role = strtolower(trim((string)$role));
@@ -109,7 +211,7 @@ class Auth extends CI_Controller {
             : $role_map;
 
         foreach ($try_roles as $role_name => $cfg) {
-            $user = $this->db->get_where($cfg['table'], ['email' => $email])->row_array();
+            $user = $this->fetchUserByEmail($conn, $cfg['table'], $email);
             if (!$user || empty($user['password'])) {
                 continue;
             }
@@ -120,8 +222,7 @@ class Auth extends CI_Controller {
             }
 
             if ($new_hash !== null) {
-                $this->db->where($cfg['id_field'], $user[$cfg['id_field']]);
-                $this->db->update($cfg['table'], ['password' => $new_hash]);
+                $this->updatePasswordHash($conn, $cfg['table'], $cfg['id_field'], (int)$user[$cfg['id_field']], $new_hash);
             }
 
             $this->session->set_userdata($cfg['session_key'], '1');
@@ -137,7 +238,7 @@ class Auth extends CI_Controller {
             ];
         }
 
-        return null;
+        return ['error' => 'Incorrect email or password. Please try again.'];
     }
 
     public function login() {
@@ -154,11 +255,12 @@ class Auth extends CI_Controller {
         }
 
         $result = $this->tryLogin($email, $password, $role);
-        if ($result) {
+        if (!empty($result['success'])) {
             $this->json($result);
         }
 
-        $this->json(['error' => 'Incorrect email or password. Please try again.'], 401);
+        $status = ($result['error'] ?? '') === 'Login service is temporarily unavailable.' ? 503 : 401;
+        $this->json(['error' => $result['error'] ?? 'Incorrect email or password. Please try again.'], $status);
     }
 
     public function validate_login() {
@@ -178,12 +280,12 @@ class Auth extends CI_Controller {
         }
 
         $result = $this->tryLogin($email, $password, $role);
-        if ($result) {
+        if (!empty($result['success'])) {
             redirect(site_url($result['redirect']), 'refresh');
             return;
         }
 
-        $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
+        $this->session->set_flashdata('login_error', $result['error'] ?? get_phrase('invalid_login'));
         redirect(site_url('login'), 'refresh');
     }
 
