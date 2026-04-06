@@ -639,7 +639,7 @@ function hideLoading(btn) {
   btn.disabled = false;
 }
 
-// ── Login handler — real API ──
+// ── Login handler — direct school auth submit ──
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -668,56 +668,19 @@ async function handleLogin(e) {
 
   if (!valid) return;
 
-  // Get selected role hint from left panel
-  const activeRoleCard = document.querySelector('.role-card.active');
-  const roleHint = activeRoleCard ? activeRoleCard.dataset.role : '';
-
   const btn = showLoading('login-btn');
-
-  try {
-    const form = new FormData();
-    form.append('email', email);
-    form.append('password', pass);
-    if (roleHint) form.append('role', roleHint);
-
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      body: form,
-      credentials: 'include',
-    });
-
-    const data = await res.json();
-    hideLoading(btn);
-
-    if (res.ok && data.success) {
-      // Redirect based on returned role
-      const redirectMap = {
-        student:    'dashboard.html',
-        teacher:    'teacher.html',
-        parent:     'parent.html',
-        admin:      'admin/dashboard',
-        superadmin: 'superadmin.html',
-      };
-      window.location.href = data.redirect || redirectMap[data.role] || 'dashboard.html';
-    } else {
-      hideLoading(btn);
-      document.getElementById('login-alert').classList.add('show');
-      document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
-    }
-  } catch (err) {
-    // /api/login not available — fall back to CodeIgniter validate_login (school users)
-    hideLoading(btn);
-    const ciForm = document.createElement('form');
-    ciForm.method = 'POST';
-    ciForm.action = '/login/validate_login';
-    [['email', email], ['password', pass]].forEach(([name, val]) => {
-      const inp = document.createElement('input');
-      inp.type = 'hidden'; inp.name = name; inp.value = val;
-      ciForm.appendChild(inp);
-    });
-    document.body.appendChild(ciForm);
-    ciForm.submit();
-  }
+  const ciForm = document.createElement('form');
+  ciForm.method = 'POST';
+  ciForm.action = '/login/validate_login';
+  [['email', email], ['password', pass]].forEach(([name, val]) => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = name;
+    inp.value = val;
+    ciForm.appendChild(inp);
+  });
+  document.body.appendChild(ciForm);
+  ciForm.submit();
 }
 
 // ── Register handler (invite request) ──
