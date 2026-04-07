@@ -920,29 +920,17 @@ async function refreshParentChildData() {
   if (!parentState.activeChildId) return;
   const studentId = parentState.activeChildId;
   try {
-    const [gradesResult, feesResult, attendanceResult, scheduleResult, teachersResult, coursesResult] = await Promise.allSettled([
+    const [gradesResult, attendanceResult] = await Promise.allSettled([
       fetch(`/api/parent/grades?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/fees?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/attendance?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/schedule?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/teachers?student_id=${studentId}`, { credentials: 'include' }),
-      fetch(`/api/parent/courses?student_id=${studentId}`, { credentials: 'include' })
+      fetch(`/api/parent/attendance?student_id=${studentId}`, { credentials: 'include' })
     ]);
 
     const gradesRes = gradesResult.status === 'fulfilled' ? gradesResult.value : null;
-    const feesRes = feesResult.status === 'fulfilled' ? feesResult.value : null;
     const attendanceRes = attendanceResult.status === 'fulfilled' ? attendanceResult.value : null;
-    const scheduleRes = scheduleResult.status === 'fulfilled' ? scheduleResult.value : null;
-    const teachersRes = teachersResult.status === 'fulfilled' ? teachersResult.value : null;
-    const coursesRes = coursesResult.status === 'fulfilled' ? coursesResult.value : null;
 
     if (gradesRes && gradesRes.ok) {
       const data = await gradesRes.json();
       renderGrades(data.grades || []);
-    }
-    if (feesRes && feesRes.ok) {
-      const data = await feesRes.json();
-      renderFees(data.fees || []);
     }
     if (attendanceRes && attendanceRes.ok) {
       const data = await attendanceRes.json();
@@ -950,19 +938,40 @@ async function refreshParentChildData() {
       document.getElementById('stat-att').textContent = (data.rate || 0) + '%';
       document.getElementById('att-change').textContent = `${data.rate || 0}% present`;
     }
-    if (scheduleRes && scheduleRes.ok) {
-      const data = await scheduleRes.json();
-      renderSchedule(data.schedule || []);
-    }
-    if (teachersRes && teachersRes.ok) {
-      const data = await teachersRes.json();
-      renderTeachers(data.teachers || []);
-      await loadMessages();
-    }
-    if (coursesRes && coursesRes.ok) {
-      const data = await coursesRes.json();
-      renderParentCourses(data.courses || []);
-    }
+
+    setTimeout(async () => {
+      try {
+        const [feesResult, scheduleResult, teachersResult, coursesResult] = await Promise.allSettled([
+          fetch(`/api/parent/fees?student_id=${studentId}`, { credentials: 'include' }),
+          fetch(`/api/parent/schedule?student_id=${studentId}`, { credentials: 'include' }),
+          fetch(`/api/parent/teachers?student_id=${studentId}`, { credentials: 'include' }),
+          fetch(`/api/parent/courses?student_id=${studentId}`, { credentials: 'include' })
+        ]);
+
+        const feesRes = feesResult.status === 'fulfilled' ? feesResult.value : null;
+        const scheduleRes = scheduleResult.status === 'fulfilled' ? scheduleResult.value : null;
+        const teachersRes = teachersResult.status === 'fulfilled' ? teachersResult.value : null;
+        const coursesRes = coursesResult.status === 'fulfilled' ? coursesResult.value : null;
+
+        if (feesRes && feesRes.ok) {
+          const data = await feesRes.json();
+          renderFees(data.fees || []);
+        }
+        if (scheduleRes && scheduleRes.ok) {
+          const data = await scheduleRes.json();
+          renderSchedule(data.schedule || []);
+        }
+        if (teachersRes && teachersRes.ok) {
+          const data = await teachersRes.json();
+          renderTeachers(data.teachers || []);
+          await loadMessages();
+        }
+        if (coursesRes && coursesRes.ok) {
+          const data = await coursesRes.json();
+          renderParentCourses(data.courses || []);
+        }
+      } catch (e) {}
+    }, 0);
   } catch (e) {}
 }
 

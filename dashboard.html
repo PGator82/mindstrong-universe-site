@@ -1173,21 +1173,23 @@
   ═══════════════════════════════════════════════════════════ */
 
   /* ── Auth guard + API bootstrap ── */
-  (async function boot() {
-    try {
-      const res = await fetch('/api/student/stats', { credentials: 'include' });
-      if (res.status === 401) { location.href = '/login.html'; return; }
-      if (res.ok) { applyAPIStats(await res.json()); }
-    } catch(e) { /* offline, fall through */ }
-    loadLocalProfile();
-    loadCourses();
-    loadStudentLearning();
-    initModuleProgress();
-    initXPChart();
-    initDailyChallenge();
-    initScrollReveal();
-    if (typeof msUpdateStreak === 'function') msUpdateStreak();
-  })();
+    (async function boot() {
+      try {
+        const res = await fetch('/api/student/stats', { credentials: 'include' });
+        if (res.status === 401) { location.href = '/login.html'; return; }
+        if (res.ok) { applyAPIStats(await res.json()); }
+      } catch(e) { /* offline, fall through */ }
+      loadLocalProfile();
+      initModuleProgress();
+      initXPChart();
+      initDailyChallenge();
+      initScrollReveal();
+      if (typeof msUpdateStreak === 'function') msUpdateStreak();
+      setTimeout(() => {
+        loadCourses();
+        loadStudentLearning();
+      }, 0);
+    })();
 
   function applyAPIStats(d) {
     window._apiName = d.student_name || d.name || null;

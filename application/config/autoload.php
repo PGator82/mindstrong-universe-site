@@ -60,7 +60,14 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 
-$autoload['libraries'] = array('pagination', 'xmlrpc' , 'form_validation', 'email','upload');
+$request_path = isset($_SERVER['REQUEST_URI']) ? trim((string) parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') : '';
+$first_segment = strtolower(strtok($request_path, '/'));
+$lightweight_segments = array('login', 'auth', 'school', 'api', 'portal');
+$use_lightweight_autoload = in_array($first_segment, $lightweight_segments, true);
+
+$autoload['libraries'] = $use_lightweight_autoload
+	? array()
+	: array('pagination', 'xmlrpc' , 'form_validation', 'email','upload');
 
 
 /*
@@ -137,4 +144,6 @@ $autoload['language'] = array();
 |	$autoload['model'] = array('first_model' => 'first');
 */
 
-$autoload['model'] = array('email_model' , 'crud_model' , 'sms_model', 'frontend_model');
+$autoload['model'] = $use_lightweight_autoload
+	? array()
+	: array('email_model' , 'crud_model' , 'sms_model', 'frontend_model');

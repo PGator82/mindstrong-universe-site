@@ -959,19 +959,16 @@ async function saveAttendance(){
 }
 
 async function loadTeacherPortal(){
-  loadTeacherCourseCatalog();
   try {
-    const [statsResult, classesResult, scheduleResult, assignmentsResult] = await Promise.allSettled([
+    const [statsResult, classesResult, scheduleResult] = await Promise.allSettled([
       fetch('/api/teacher/stats', { credentials: 'include' }),
       fetch('/api/teacher/classes', { credentials: 'include' }),
-      fetch('/api/teacher/schedule', { credentials: 'include' }),
-      fetch('/api/teacher/assignments', { credentials: 'include' })
+      fetch('/api/teacher/schedule', { credentials: 'include' })
     ]);
 
     const statsRes = statsResult.status === 'fulfilled' ? statsResult.value : null;
     const classesRes = classesResult.status === 'fulfilled' ? classesResult.value : null;
     const scheduleRes = scheduleResult.status === 'fulfilled' ? scheduleResult.value : null;
-    const assignmentsRes = assignmentsResult.status === 'fulfilled' ? assignmentsResult.value : null;
 
     if ((statsRes && statsRes.status === 401) || (classesRes && classesRes.status === 401)) {
       window.location.href = 'login.html';
@@ -999,13 +996,18 @@ async function loadTeacherPortal(){
       renderTeacherSchedule(scheduleData.schedule || []);
     }
 
-    if (assignmentsRes.ok) {
-      const assignmentData = await assignmentsRes.json();
-      teacherState.assignments = assignmentData.assignments || [];
-      const nums = document.querySelectorAll('.stat-num');
-      if (nums[3]) nums[3].textContent = teacherState.assignments.length;
-    }
     await loadTeacherStudents(teacherState.currentClassId);
+    setTimeout(async () => {
+      loadTeacherCourseCatalog();
+      try {
+        const assignmentsRes = await fetch('/api/teacher/assignments', { credentials: 'include' });
+        if (!assignmentsRes.ok) return;
+        const assignmentData = await assignmentsRes.json();
+        teacherState.assignments = assignmentData.assignments || [];
+        const nums = document.querySelectorAll('.stat-num');
+        if (nums[3]) nums[3].textContent = teacherState.assignments.length;
+      } catch (e) {}
+    }, 0);
   } catch (e) {}
 }
 

@@ -1,7 +1,4 @@
-<?php
-$system_name  = $this->db->get_where('settings', array('type' => 'system_name'))->row()->description;
-$header_logo  = $this->frontend_model->get_frontend_general_settings('header_logo');
-?><!DOCTYPE html>
+<?php $system_name = 'MindStrong Universe'; ?><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
