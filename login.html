@@ -669,10 +669,13 @@ async function handleLogin(e) {
   if (!valid) return;
 
   const btn = showLoading('login-btn');
+  const activeRoleCard = document.querySelector('.role-card.active');
+  const roleHint = activeRoleCard ? activeRoleCard.dataset.role : '';
   const ciForm = document.createElement('form');
   ciForm.method = 'POST';
   ciForm.action = '/login/validate_login';
-  [['email', email], ['password', pass]].forEach(([name, val]) => {
+  [['email', email], ['password', pass], ['role', roleHint]].forEach(([name, val]) => {
+    if (!val) return;
     const inp = document.createElement('input');
     inp.type = 'hidden';
     inp.name = name;
