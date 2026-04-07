@@ -37,6 +37,7 @@ $db['default'] = array(
     'password'     => $_pass,
     'database'     => $_name,
     'dbdriver'     => 'mysqli',
+    'conn_timeout' => 5,
     'dbprefix'     => '',
     'pconnect'     => FALSE,
     'db_debug'     => (ENVIRONMENT !== 'production'),
