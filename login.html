@@ -639,7 +639,7 @@ function hideLoading(btn) {
   btn.disabled = false;
 }
 
-// ── Login handler — direct school auth submit ──
+// ── Login handler — API-first, legacy fallback ──
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
@@ -671,19 +671,68 @@ async function handleLogin(e) {
   const btn = showLoading('login-btn');
   const activeRoleCard = document.querySelector('.role-card.active');
   const roleHint = activeRoleCard ? activeRoleCard.dataset.role : '';
-  const ciForm = document.createElement('form');
-  ciForm.method = 'POST';
-  ciForm.action = '/login/validate_login';
-  [['email', email], ['password', pass], ['role', roleHint]].forEach(([name, val]) => {
-    if (!val) return;
-    const inp = document.createElement('input');
-    inp.type = 'hidden';
-    inp.name = name;
-    inp.value = val;
-    ciForm.appendChild(inp);
-  });
-  document.body.appendChild(ciForm);
-  ciForm.submit();
+
+  try {
+    const form = new FormData();
+    form.append('email', email);
+    form.append('password', pass);
+    if (roleHint) form.append('role', roleHint);
+
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: form,
+      credentials: 'include',
+    });
+
+    const data = await res.json();
+    hideLoading(btn);
+
+    if (res.ok && data.role) {
+      if (data.role === 'superadmin') {
+        const f = document.createElement('form');
+        f.method = 'POST';
+        f.action = '/login/validate_login';
+        [['email', email], ['password', pass], ['role', roleHint]].forEach(([name, val]) => {
+          if (!val) return;
+          const i = document.createElement('input');
+          i.type = 'hidden';
+          i.name = name;
+          i.value = val;
+          f.appendChild(i);
+        });
+        document.body.appendChild(f);
+        f.submit();
+        return;
+      }
+
+      const redirectMap = {
+        student: 'dashboard.html',
+        teacher: 'teacher.html',
+        parent: 'parent.html',
+        admin: 'admin.html',
+      };
+
+      window.location.href = data.redirect || redirectMap[data.role] || 'dashboard.html';
+      return;
+    }
+
+    document.getElementById('login-alert').classList.add('show');
+    document.getElementById('login-alert').textContent = '⚠ ' + (data.error || 'Incorrect email or password. Please try again.');
+  } catch (err) {
+    const ciForm = document.createElement('form');
+    ciForm.method = 'POST';
+    ciForm.action = '/login/validate_login';
+    [['email', email], ['password', pass], ['role', roleHint]].forEach(([name, val]) => {
+      if (!val) return;
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = name;
+      inp.value = val;
+      ciForm.appendChild(inp);
+    });
+    document.body.appendChild(ciForm);
+    ciForm.submit();
+  }
 }
 
 // ── Register handler (invite request) ──
