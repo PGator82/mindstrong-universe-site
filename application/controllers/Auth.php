@@ -113,15 +113,6 @@ class Auth extends CI_Controller {
 
     private function authDbConfig() {
         $dbUrl = getenv('DATABASE_URL') ?: '';
-        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production' && $dbUrl === '') {
-            return [
-                'host' => '',
-                'port' => 0,
-                'user' => '',
-                'pass' => '',
-                'name' => '',
-            ];
-        }
 
         if ($dbUrl && strpos($dbUrl, 'mysql') !== false) {
             $parts = parse_url($dbUrl);
