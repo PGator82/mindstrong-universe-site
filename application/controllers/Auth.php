@@ -6,16 +6,11 @@ class Auth extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-        $allowed = array_filter([
-            getenv('CORS_ORIGIN') ?: null,
-            'https://mindstrong-universe-school-production.up.railway.app',
-            'https://pgator82.github.io',
-        ]);
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
-        if (in_array($origin, $allowed, true)) {
+        $allowedOrigin = rtrim((string) (getenv('CORS_ORIGIN') ?: 'https://mindstrong-universe-school-production.up.railway.app'), '/');
+        if ($origin !== '' && rtrim($origin, '/') === $allowedOrigin) {
             header('Access-Control-Allow-Origin: ' . $origin);
-        } elseif ($origin !== '') {
-            header('Access-Control-Allow-Origin: https://mindstrong-universe-school-production.up.railway.app');
+            header('Access-Control-Allow-Credentials: true');
         }
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type');
@@ -117,7 +112,17 @@ class Auth extends CI_Controller {
     }
 
     private function authDbConfig() {
-        $dbUrl = getenv('DATABASE_URL') ?: getenv('MYSQL_URL') ?: '';
+        $dbUrl = getenv('DATABASE_URL') ?: '';
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production' && $dbUrl === '') {
+            return [
+                'host' => '',
+                'port' => 0,
+                'user' => '',
+                'pass' => '',
+                'name' => '',
+            ];
+        }
+
         if ($dbUrl && strpos($dbUrl, 'mysql') !== false) {
             $parts = parse_url($dbUrl);
             $host = $parts['host'] ?? 'localhost';
@@ -168,10 +173,9 @@ class Auth extends CI_Controller {
 
         $push($cfg['host'], $cfg['port']);
 
-        if ((getenv('CI_ENV') ?: ENVIRONMENT) === 'production') {
+        if ((getenv('CI_ENV') ?: ENVIRONMENT) !== 'production') {
             $push(getenv('MYSQLHOST') ?: '', getenv('MYSQLPORT') ?: 3306);
-            $push('mysql', 3306);
-            $push('mysql.railway.internal', 3306);
+            $push(getenv('DB_HOST') ?: '', getenv('DB_PORT') ?: 3306);
         }
 
         return array_values($hosts);
