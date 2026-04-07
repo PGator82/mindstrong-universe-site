@@ -8,6 +8,9 @@ function _db_clean($val) {
     return trim($val);
 }
 
+// Force a short socket timeout so mysqli::real_connect() doesn't hang for 30s
+ini_set('default_socket_timeout', 5);
+
 $active_group = 'default';
 $query_builder = TRUE;
 
