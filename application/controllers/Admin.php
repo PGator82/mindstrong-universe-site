@@ -37,7 +37,9 @@ class Admin extends CI_Controller
     {
         if ($this->session->userdata('admin_login') != 1)
             redirect(site_url('login'), 'refresh');
-        redirect(base_url('admin.html'), 'refresh');
+        $page_data['page_name']  = 'dashboard';
+        $page_data['page_title'] = get_phrase('admin_dashboard');
+        $this->load->view('backend/index', $page_data);
     }
 
     /***MANAGE ADMIN***/
