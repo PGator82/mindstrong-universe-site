@@ -53,6 +53,15 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+// ── ARCHITECTURE RULE ──────────────────────────────────────────────────────
+// NEVER add $route['admin/(:any)'] = 'portal/admin' here.
+// The legacy PHP admin (Admin.php / Ekattor) lives at /admin and must be
+// reachable via CI default routing. Admin login redirects to admin.html
+// directly (hardcoded in Auth.php and Api.php), not via a route.
+// Adding portal routes for admin/* will block the legacy admin and cause
+// the recurring "Database Admin opens admin.html instead" breakage.
+// ──────────────────────────────────────────────────────────────────────────
+
 $route['teacher/dashboard']    = 'portal/teacher';
 $route['teacher/(:any)']       = 'portal/teacher';
 $route['teacher/(:any)/(:any)'] = 'portal/teacher';
@@ -101,6 +110,10 @@ $route['api/teacher/attendance']   = 'api/teacher_attendance_save';
 $route['api/admin/stats']          = 'api/admin_stats';
 $route['api/admin/users']          = 'api/admin_users';
 $route['api/admin/users/create']   = 'api/admin_users_create';
+$route['api/admin/users_all']      = 'api/admin_users_all';
+$route['api/admin/create_user']    = 'api/admin_create_user';
+$route['api/admin/update_user']    = 'api/admin_update_user';
+$route['api/admin/delete_user']    = 'api/admin_delete_user';
 $route['api/admin/courses']        = 'api/admin_courses';
 $route['api/admin/courses/create'] = 'api/admin_courses_create';
 $route['api/admin/lessons']        = 'api/admin_lessons';

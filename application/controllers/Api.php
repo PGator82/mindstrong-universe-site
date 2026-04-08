@@ -2294,6 +2294,131 @@ class Api extends CI_Controller {
     }
 
     /**
+     * GET /api/admin/users_all
+     * Returns all users across all roles for super-admin panel.
+     */
+    public function admin_users_all() {
+        $this->requireSession('admin_login');
+
+        $roles = ['admin' => 'admin_id', 'teacher' => 'teacher_id', 'student' => 'student_id', 'parent' => 'parent_id'];
+        $users = [];
+        foreach ($roles as $role => $id_field) {
+            $rows = $this->db->get($role)->result_array();
+            foreach ($rows as $row) {
+                unset($row['password'], $row['authentication_key']);
+                $row['role'] = $role;
+                $row['id']   = $row[$id_field] ?? null;
+                $users[] = $row;
+            }
+        }
+        $this->json(['users' => $users, 'total' => count($users)]);
+    }
+
+    /**
+     * POST /api/admin/create_user
+     * Simplified user creation for super-admin panel.
+     */
+    public function admin_create_user() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+        $this->requireSession('admin_login');
+
+        $role     = strtolower(trim($this->getPosted('role') ?: 'student'));
+        $name     = trim($this->getPosted('name'));
+        $email    = trim($this->getPosted('email'));
+        $password = $this->getPosted('password');
+        $phone    = trim($this->getPosted('phone'));
+
+        $table_map = [
+            'student' => ['table' => 'student', 'id_field' => 'student_id'],
+            'teacher' => ['table' => 'teacher', 'id_field' => 'teacher_id'],
+            'parent'  => ['table' => 'parent',  'id_field' => 'parent_id'],
+            'admin'   => ['table' => 'admin',   'id_field' => 'admin_id'],
+        ];
+
+        if (!$name || !$email || !$password || !isset($table_map[$role])) {
+            $this->json(['error' => 'Name, email, password, and valid role are required'], 400);
+        }
+
+        $cfg   = $table_map[$role];
+        $table = $cfg['table'];
+
+        if ($this->db->get_where($table, ['email' => $email])->row_array()) {
+            $this->json(['error' => 'Email already exists for that role'], 409);
+        }
+
+        $payload = $this->filterPayloadForTable($table, [
+            'name'     => $name,
+            'email'    => $email,
+            'password' => password_hash($password, PASSWORD_BCRYPT),
+            'phone'    => $phone,
+        ]);
+
+        $this->db->insert($table, $payload);
+        $this->json(['success' => true, 'role' => $role, 'name' => $name, 'user_id' => (int)$this->db->insert_id()]);
+    }
+
+    /**
+     * POST /api/admin/update_user
+     */
+    public function admin_update_user() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+        $this->requireSession('admin_login');
+
+        $role  = strtolower(trim($this->getPosted('role') ?: 'student'));
+        $id    = (int)$this->getPosted('id');
+        $name  = trim($this->getPosted('name'));
+        $email = trim($this->getPosted('email'));
+
+        $table_map = [
+            'student' => ['table' => 'student', 'id_field' => 'student_id'],
+            'teacher' => ['table' => 'teacher', 'id_field' => 'teacher_id'],
+            'parent'  => ['table' => 'parent',  'id_field' => 'parent_id'],
+            'admin'   => ['table' => 'admin',   'id_field' => 'admin_id'],
+        ];
+
+        if (!$id || !isset($table_map[$role])) {
+            $this->json(['error' => 'Valid id and role required'], 400);
+        }
+
+        $cfg     = $table_map[$role];
+        $payload = $this->filterPayloadForTable($cfg['table'], ['name' => $name, 'email' => $email]);
+        $this->db->where($cfg['id_field'], $id)->update($cfg['table'], $payload);
+        $this->json(['success' => true]);
+    }
+
+    /**
+     * POST /api/admin/delete_user
+     */
+    public function admin_delete_user() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->json(['error' => 'Method not allowed'], 405);
+        }
+        $this->requireSession('admin_login');
+
+        $role = strtolower(trim($this->getPosted('role') ?: 'student'));
+        $id   = (int)$this->getPosted('id');
+
+        $table_map = [
+            'student' => ['table' => 'student', 'id_field' => 'student_id'],
+            'teacher' => ['table' => 'teacher', 'id_field' => 'teacher_id'],
+            'parent'  => ['table' => 'parent',  'id_field' => 'parent_id'],
+            'admin'   => ['table' => 'admin',   'id_field' => 'admin_id'],
+        ];
+
+        if (!$id || !isset($table_map[$role])) {
+            $this->json(['error' => 'Valid id and role required'], 400);
+        }
+
+        $cfg = $table_map[$role];
+        $this->db->where($cfg['id_field'], $id)->delete($cfg['table']);
+        $this->json(['success' => true]);
+    }
+
+    /**
      * GET /api/admin/courses
      */
     public function admin_courses() {
