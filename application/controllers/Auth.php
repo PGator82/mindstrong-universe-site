@@ -34,7 +34,7 @@ class Auth extends CI_Controller {
                 'table' => 'admin',
                 'id_field' => 'admin_id',
                 'session_key' => 'admin_login',
-                'redirect' => 'admin/dashboard',
+                'redirect' => 'admin.html',
             ],
             'teacher' => [
                 'table' => 'teacher',
