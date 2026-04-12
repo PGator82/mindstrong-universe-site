@@ -53,72 +53,74 @@ $route['default_controller'] = 'login';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-// ── ARCHITECTURE RULE ──────────────────────────────────────────────────────
+// Architecture rule:
 // NEVER add $route['admin/(:any)'] = 'portal/admin' here.
 // The legacy PHP admin (Admin.php / Ekattor) lives at /admin and must be
 // reachable via CI default routing. Admin login redirects to admin.html
 // directly (hardcoded in Auth.php and Api.php), not via a route.
 // Adding portal routes for admin/* will block the legacy admin and cause
 // the recurring "Database Admin opens admin.html instead" breakage.
-// ──────────────────────────────────────────────────────────────────────────
 
-$route['teacher/dashboard']    = 'portal/teacher';
-$route['teacher/(:any)']       = 'portal/teacher';
+$route['teacher/dashboard']     = 'portal/teacher';
+$route['teacher/(:any)']        = 'portal/teacher';
 $route['teacher/(:any)/(:any)'] = 'portal/teacher';
-$route['student/dashboard']    = 'portal/student';
-$route['student/(:any)']       = 'portal/student';
+$route['student/dashboard']     = 'portal/student';
+$route['student/(:any)']        = 'portal/student';
 $route['student/(:any)/(:any)'] = 'portal/student';
-$route['parents/dashboard']    = 'portal/parent';
-$route['parents/(:any)']       = 'portal/parent';
+$route['parents/dashboard']     = 'portal/parent';
+$route['parents/(:any)']        = 'portal/parent';
 $route['parents/(:any)/(:any)'] = 'portal/parent';
 
-// ── API Routes ──
-$route['api/login']                = 'api/login';
-$route['api/logout']               = 'api/logout';
-$route['api/progress']             = 'api/progress';
-$route['api/progress/save']        = 'api/progress_save';
+// DB Admin browser - session-gated, never expose raw PHP file
+$route['db-admin']              = 'dbadmin/index';
 
-$route['api/student/stats']        = 'api/student_stats';
-$route['api/student/courses']      = 'api/student_courses';
-$route['api/student/learning']     = 'api/student_learning';
-$route['api/student/assignments']  = 'api/student_assignments';
-$route['api/student/schedule']     = 'api/student_schedule';
+// API Routes
+$route['api/login']                             = 'api/login';
+$route['api/logout']                            = 'api/logout';
+$route['api/progress']                          = 'api/progress';
+$route['api/progress/save']                     = 'api/progress_save';
 
-$route['api/parent/child']         = 'api/parent_child';
-$route['api/parent/courses']       = 'api/parent_courses';
-$route['api/parent/grades']        = 'api/parent_grades';
-$route['api/parent/attendance']    = 'api/parent_attendance';
-$route['api/parent/fees']          = 'api/parent_fees';
-$route['api/parent/fees/pay']      = 'api/parent_fees_pay';
-$route['api/parent/schedule']      = 'api/parent_schedule';
-$route['api/parent/teachers']      = 'api/parent_teachers';
-$route['api/parent/messages']      = 'api/parent_messages';
-$route['api/parent/messages/send'] = 'api/parent_messages_send';
+$route['api/student/stats']                     = 'api/student_stats';
+$route['api/student/courses']                   = 'api/student_courses';
+$route['api/student/learning']                  = 'api/student_learning';
+$route['api/student/assignments']               = 'api/student_assignments';
+$route['api/student/schedule']                  = 'api/student_schedule';
 
-$route['api/teacher/stats']        = 'api/teacher_stats';
-$route['api/teacher/students']     = 'api/teacher_students';
-$route['api/teacher/classes']      = 'api/teacher_classes';
-$route['api/teacher/schedule']     = 'api/teacher_schedule';
-$route['api/teacher/course-catalog'] = 'api/teacher_course_catalog';
-$route['api/teacher/curriculum-catalog'] = 'api/teacher_curriculum_catalog';
-$route['api/teacher/assignments']  = 'api/teacher_assignments';
-$route['api/teacher/assignments/create'] = 'api/teacher_assignments_create';
-$route['api/teacher/student-courses/create'] = 'api/teacher_student_courses_create';
-$route['api/teacher/student-lessons/create'] = 'api/teacher_student_lessons_create';
-$route['api/teacher/attendance']   = 'api/teacher_attendance_save';
+$route['api/parent/child']                      = 'api/parent_child';
+$route['api/parent/courses']                    = 'api/parent_courses';
+$route['api/parent/grades']                     = 'api/parent_grades';
+$route['api/parent/attendance']                 = 'api/parent_attendance';
+$route['api/parent/fees']                       = 'api/parent_fees';
+$route['api/parent/fees/pay']                   = 'api/parent_fees_pay';
+$route['api/parent/schedule']                   = 'api/parent_schedule';
+$route['api/parent/teachers']                   = 'api/parent_teachers';
+$route['api/parent/messages']                   = 'api/parent_messages';
+$route['api/parent/messages/send']              = 'api/parent_messages_send';
 
-$route['api/admin/stats']          = 'api/admin_stats';
-$route['api/admin/users']          = 'api/admin_users';
-$route['api/admin/users/create']   = 'api/admin_users_create';
-$route['api/admin/users_all']      = 'api/admin_users_all';
-$route['api/admin/create_user']    = 'api/admin_create_user';
-$route['api/admin/update_user']    = 'api/admin_update_user';
-$route['api/admin/delete_user']    = 'api/admin_delete_user';
-$route['api/admin/courses']        = 'api/admin_courses';
-$route['api/admin/courses/create'] = 'api/admin_courses_create';
-$route['api/admin/lessons']        = 'api/admin_lessons';
-$route['api/admin/lessons/create'] = 'api/admin_lessons_create';
-$route['api/admin/course-lessons/create'] = 'api/admin_course_lessons_create';
-$route['api/admin/teacher-courses/create'] = 'api/admin_teacher_courses_create';
-$route['api/admin/student-courses/create'] = 'api/admin_student_courses_create';
-$route['api/admin/activity']       = 'api/admin_activity';
+$route['api/teacher/stats']                     = 'api/teacher_stats';
+$route['api/teacher/students']                  = 'api/teacher_students';
+$route['api/teacher/classes']                   = 'api/teacher_classes';
+$route['api/teacher/schedule']                  = 'api/teacher_schedule';
+$route['api/teacher/course-catalog']            = 'api/teacher_course_catalog';
+$route['api/teacher/curriculum-catalog']        = 'api/teacher_curriculum_catalog';
+$route['api/teacher/assignments']               = 'api/teacher_assignments';
+$route['api/teacher/assignments/create']        = 'api/teacher_assignments_create';
+$route['api/teacher/student-courses/create']    = 'api/teacher_student_courses_create';
+$route['api/teacher/student-lessons/create']    = 'api/teacher_student_lessons_create';
+$route['api/teacher/attendance']                = 'api/teacher_attendance_save';
+
+$route['api/admin/stats']                       = 'api/admin_stats';
+$route['api/admin/users']                       = 'api/admin_users';
+$route['api/admin/users/create']                = 'api/admin_users_create';
+$route['api/admin/users_all']                   = 'api/admin_users_all';
+$route['api/admin/create_user']                 = 'api/admin_create_user';
+$route['api/admin/update_user']                 = 'api/admin_update_user';
+$route['api/admin/delete_user']                 = 'api/admin_delete_user';
+$route['api/admin/courses']                     = 'api/admin_courses';
+$route['api/admin/courses/create']              = 'api/admin_courses_create';
+$route['api/admin/lessons']                     = 'api/admin_lessons';
+$route['api/admin/lessons/create']              = 'api/admin_lessons_create';
+$route['api/admin/course-lessons/create']       = 'api/admin_course_lessons_create';
+$route['api/admin/teacher-courses/create']      = 'api/admin_teacher_courses_create';
+$route['api/admin/student-courses/create']      = 'api/admin_student_courses_create';
+$route['api/admin/activity']                    = 'api/admin_activity';
