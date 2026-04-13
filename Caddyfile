@@ -39,6 +39,12 @@ http://:{$PORT:80} {
     }
     redir @foundationsLegacy /school{uri} 301
 
+    # Make the old school landing URL resolve to the Foundations entry page.
+    @schoolLanding {
+        path /school /school/ /school/index.html
+    }
+    redir @schoolLanding /school/foundations/index.html 301
+
     # API requests should always hit CodeIgniter, never static-file fallback.
     @teacherCurriculum {
         path /api/teacher/curriculum-catalog
