@@ -33,6 +33,12 @@ http://:{$PORT:80} {
     }
     redir @loginBare /login.html 301
 
+    # Keep old foundations URLs working after content moved under /school.
+    @foundationsLegacy {
+        path /foundations /foundations/*
+    }
+    redir @foundationsLegacy /school{uri} 301
+
     # API requests should always hit CodeIgniter, never static-file fallback.
     @teacherCurriculum {
         path /api/teacher/curriculum-catalog
