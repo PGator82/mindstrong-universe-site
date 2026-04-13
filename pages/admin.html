@@ -258,6 +258,8 @@
   <div class="nav-section">Finance & Admin</div>
   <a class="nav-item" id="nav-finance" href="#" onclick="showView('finance');return false">Finance</a>
   <a class="nav-item" id="nav-reports" href="#" onclick="showView('reports');return false">Reports</a>
+  <a class="nav-item" href="/dbview.php" target="_blank" rel="noopener noreferrer">Database Admin</a>
+  <a class="nav-item" href="/dbview.php?action=sql" target="_blank" rel="noopener noreferrer">API Controls</a>
   <a class="nav-item" id="nav-announcements" href="#" onclick="showView('announcements');return false">Announcements <span id="annBadge" style="display:none;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:4px">0</span></a>
   <a class="nav-item" id="nav-settings" href="#" onclick="showView('settings');return false">Settings</a>
   <a class="nav-item" id="nav-security" href="#" onclick="showView('security');return false">Security</a>
@@ -334,6 +336,13 @@
               <button class="qa-btn" onclick="openAnnounceModal()"><div class="qi">📢</div>Announce</button>
               <button class="qa-btn" onclick="showView('reports')"><div class="qi">📊</div>Reports</button>
               <button class="qa-btn" onclick="showView('settings')"><div class="qi">⚙️</div>Settings</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Legacy Tools</div></div>
+            <div class="qa-grid">
+              <a class="qa-btn" href="/dbview.php" target="_blank" rel="noopener noreferrer"><div class="qi">DB</div>Database Admin</a>
+              <a class="qa-btn" href="/dbview.php?action=sql" target="_blank" rel="noopener noreferrer"><div class="qi">API</div>API Controls</a>
             </div>
           </div>
           <div class="card">
