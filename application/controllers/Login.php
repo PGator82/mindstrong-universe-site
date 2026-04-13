@@ -94,23 +94,28 @@ class Login extends CI_Controller {
     public function index() {
         $this->_ensure_session();
         if ($this->session->userdata('admin_login') == 1)
-            redirect(site_url('admin/dashboard'), 'refresh');
+            redirect(base_url('super-admin.html'), 'refresh');
         if ($this->session->userdata('teacher_login') == 1)
-            redirect(site_url('teacher/dashboard'), 'refresh');
+            redirect(base_url('teacher.html'), 'refresh');
         if ($this->session->userdata('student_login') == 1)
-            redirect(site_url('student/dashboard'), 'refresh');
+            redirect(base_url('dashboard.html'), 'refresh');
         if ($this->session->userdata('parent_login') == 1)
-            redirect(site_url('parents/dashboard'), 'refresh');
+            redirect(base_url('parent.html'), 'refresh');
         if ($this->session->userdata('librarian_login') == 1)
             redirect(site_url('librarian/dashboard'), 'refresh');
         if ($this->session->userdata('accountant_login') == 1)
             redirect(site_url('accountant/dashboard'), 'refresh');
 
-        $this->load->view('backend/login');
+        redirect(base_url('login.html'), 'refresh');
     }
 
     // Validate login from form POST (with rate-limit + bcrypt migration)
     function validate_login() {
+        if (strtoupper($this->input->method()) !== 'POST') {
+            redirect(base_url('login.html'), 'refresh');
+            return;
+        }
+
         if (!$this->_check_rate_limit()) return;
 
         $this->_ensure_db();
@@ -120,10 +125,10 @@ class Login extends CI_Controller {
         $role_hint = strtolower(trim((string) $this->input->post('role')));
 
         $roles = [
-            'admin'      => ['session_key' => 'admin_login',      'id_col' => 'admin_id',      'redirect' => 'admin/dashboard'],
-            'teacher'    => ['session_key' => 'teacher_login',    'id_col' => 'teacher_id',    'redirect' => 'teacher/dashboard'],
-            'student'    => ['session_key' => 'student_login',    'id_col' => 'student_id',    'redirect' => 'student/dashboard'],
-            'parent'     => ['session_key' => 'parent_login',     'id_col' => 'parent_id',     'redirect' => 'parents/dashboard'],
+            'admin'      => ['session_key' => 'admin_login',      'id_col' => 'admin_id',      'redirect' => 'super-admin.html'],
+            'teacher'    => ['session_key' => 'teacher_login',    'id_col' => 'teacher_id',    'redirect' => 'teacher.html'],
+            'student'    => ['session_key' => 'student_login',    'id_col' => 'student_id',    'redirect' => 'dashboard.html'],
+            'parent'     => ['session_key' => 'parent_login',     'id_col' => 'parent_id',     'redirect' => 'parent.html'],
             'librarian'  => ['session_key' => 'librarian_login',  'id_col' => 'librarian_id',  'redirect' => 'librarian/dashboard'],
             'accountant' => ['session_key' => 'accountant_login', 'id_col' => 'accountant_id', 'redirect' => 'accountant/dashboard'],
         ];
@@ -152,13 +157,12 @@ class Login extends CI_Controller {
             $this->session->set_userdata('login_user_id', $row->{$cfg['id_col']});
             $this->session->set_userdata('name', $row->name);
             $this->session->set_userdata('login_type', $table);
-            redirect(site_url($cfg['redirect']), 'refresh');
+            redirect(base_url($cfg['redirect']), 'refresh');
             return;
         }
 
         // No matching credential found
-        $this->session->set_flashdata('login_error', get_phrase('invalid_login'));
-        redirect(site_url('login'), 'refresh');
+        redirect(base_url('login.html?error=invalid_login'), 'refresh');
     }
 
     // 404 page
