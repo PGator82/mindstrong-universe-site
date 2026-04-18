@@ -894,19 +894,19 @@
             points: ['Fast recall for math hacks.', 'Cause-effect recognition for science hacks.', 'Sentence and reading patterns for English hacks.']
           },
           {
-            label: 'Example',
+            label: 'Practice',
             title: 'Finish with proof through play',
-            body: 'The final challenge should feel like a worked example the learner can now survive on their own.',
+            body: 'The final challenge should act like focused practice that proves the learner can use the move alone.',
             points: ['One subject at a time.', 'No mixed-lane clutter.', 'XP comes from lesson alignment, not randomness.']
           }
         ]
       },
       math: {
-        kicker: 'Math Games - Hook to Hack to Example',
+        kicker: 'Math Games - Hook to Hack to Practice',
         title: 'Math Game Lane',
         sub: 'Only math games are shown here so the learner stays inside one clear skill path from number sense to algebra and puzzle play.',
         flowTag: 'Math Lane',
-        flowTitle: 'Math Hook → Hack → Example flow',
+        flowTitle: 'Math Hook → Hack → Practice flow',
         flowIntro: 'Math games should mirror the lesson structure: show the pattern, reveal the shortcut, then demand the move under pressure.',
         steps: [
           {
@@ -922,20 +922,20 @@
             points: ['Break apart numbers.', 'Choose the missing step in an equation.', 'Recall symbols and operations under pressure.']
           },
           {
-            label: 'Example',
+            label: 'Practice',
             title: 'Prove it in the challenge round',
-            body: 'The final math round should feel like the worked example after the explanation, but now the learner drives it alone.',
+            body: 'The final math round should feel like deliberate practice after the explanation, but now the learner drives it alone.',
             points: ['Boss battle for harder transfer.', 'Grid puzzle for structured thinking.', 'Daily sprint for quick mastery checks.']
           }
         ]
       },
       science: {
-        kicker: 'Science Games - Hook to Hack to Example',
+        kicker: 'Science Games - Hook to Hack to Practice',
         title: 'Science Game Lane',
         sub: 'This route stays science-only so the player sees science concepts, science vocabulary, and science challenge loops without math or English crowding the page.',
         flowTag: 'Science Lane',
-        flowTitle: 'Science Hook → Hack → Example flow',
-        flowIntro: 'Science play should begin with a phenomenon, move into the concept shortcut, then end with an example-driven test of understanding.',
+        flowTitle: 'Science Hook → Hack → Practice flow',
+        flowIntro: 'Science play should begin with a phenomenon, move into the concept shortcut, then end with guided practice that checks understanding.',
         steps: [
           {
             label: 'Hook',
@@ -950,20 +950,20 @@
             points: ['Vocabulary scramble for recall.', 'Lab blitz for concept grouping.', 'Memory match for visual-cue retention.']
           },
           {
-            label: 'Example',
+            label: 'Practice',
             title: 'Test the idea in motion',
-            body: 'The closing challenge should look like a lesson example turned interactive, where the learner has to apply the science idea on the spot.',
+            body: 'The closing challenge should feel like guided science practice where the learner applies the idea on the spot.',
             points: ['Timed concept questions.', 'Daily science sprint.', 'League rounds tied to current modules.']
           }
         ]
       },
       english: {
-        kicker: 'English Games - Hook to Hack to Example',
+        kicker: 'English Games - Hook to Hack to Practice',
         title: 'English Game Lane',
         sub: 'This route stays English-only so the learner can focus on grammar, reading, vocabulary, and writing patterns without crossing into other subjects.',
         flowTag: 'English Lane',
-        flowTitle: 'English Hook → Hack → Example flow',
-        flowIntro: 'English games should start with language the learner can feel, move into a sentence or reading trick, then finish with an applied example challenge.',
+        flowTitle: 'English Hook → Hack → Practice flow',
+        flowIntro: 'English games should start with language the learner can feel, move into a sentence or reading trick, then finish with applied practice.',
         steps: [
           {
             label: 'Hook',
@@ -978,9 +978,9 @@
             points: ['Vocabulary scramble for term recall.', 'Grammar glow-up for quick rule application.', 'Memory match for structure recognition.']
           },
           {
-            label: 'Example',
+            label: 'Practice',
             title: 'Apply it in a timed round',
-            body: 'The last round should feel like a worked reading or grammar example brought to life, where the learner must apply the move independently.',
+            body: 'The last round should feel like focused reading or grammar practice where the learner must apply the move independently.',
             points: ['Timed grammar checks.', 'Daily English sprint.', 'League rounds aligned to reading and writing modules.']
           }
         ]
@@ -1050,7 +1050,7 @@
           desc: 'Learn the parts and purpose of cells before the vocabulary drifts away.',
           hook: 'Start by recognizing the basic unit of life and the idea of structure having a job.',
           hack: 'Use Science Vocabulary Scramble to make core cell language feel automatic.',
-          example: 'Close with Science Lab Blitz so the lesson idea shows up in a fast concept round.',
+          practice: 'Close with Science Lab Blitz so the lesson idea shows up in a fast concept round.',
           playLabel: 'Play Cell Lab Mission',
           playAction: () => { setSubjectFilter('science'); showTab('arcade'); startQuizBlitz('science'); }
         },
@@ -1061,7 +1061,7 @@
           desc: 'Classify what counts as living by spotting the traits that matter.',
           hook: 'Notice the signals of life before memorizing the official labels.',
           hack: 'Use Science Memory Match to reinforce patterns in living and non-living classification.',
-          example: 'Finish by matching and recalling the traits that make the lesson example click.',
+          practice: 'Finish by matching and recalling the traits that make the lesson click under pressure.',
           playLabel: 'Play Living Things Match',
           playAction: () => { setSubjectFilter('science'); showTab('puzzle'); startMemory('science', 6, 'memory-science-start', 'memory-science-game'); }
         },
@@ -1072,9 +1072,42 @@
           desc: 'Connect organisms to the places and systems that support them.',
           hook: 'Start with the ecosystem idea and how living things fit their environment.',
           hack: 'Use Science Boss Hunt as a timed classification-and-recall battle for ecosystem concepts.',
-          example: 'The battle acts like the lesson example under pressure, where each correct concept keeps the system alive.',
+          practice: 'The battle acts like ecosystem practice under pressure, where each correct concept keeps the system alive.',
           playLabel: 'Play Ecosystem Boss Hunt',
           playAction: () => { setSubjectFilter('science'); showTab('battle'); startSubjectBattle('science'); }
+        },
+        {
+          chip: 'Lesson 4',
+          title: 'Food Chains & Food Webs',
+          lessonUrl: './foundations-science/lesson-4.html',
+          desc: 'Track how energy moves through living systems without losing the relationships.',
+          hook: 'Spot who eats whom and where energy is flowing first.',
+          hack: 'Use Science Memory Match to lock predator, prey, producer, and consumer roles into place.',
+          practice: 'Then run Science Lab Blitz as fast recall practice for food-chain logic.',
+          playLabel: 'Play Food Web Recall',
+          playAction: () => { setSubjectFilter('science'); showTab('arcade'); startQuizBlitz('science'); }
+        },
+        {
+          chip: 'Lesson 5',
+          title: 'Adaptations & Survival',
+          lessonUrl: './foundations-science/lesson-5.html',
+          desc: 'See how traits help organisms survive where they live.',
+          hook: 'Notice the survival problem before naming the adaptation.',
+          hack: 'Use Science Vocabulary Scramble to rehearse adaptation language and trait clues.',
+          practice: 'Practice with a science battle round where each answer depends on matching trait to survival purpose.',
+          playLabel: 'Play Adaptation Battle',
+          playAction: () => { setSubjectFilter('science'); showTab('battle'); startSubjectBattle('science'); }
+        },
+        {
+          chip: 'Lesson 6',
+          title: 'Classification of Living Things',
+          lessonUrl: './foundations-science/lesson-6.html',
+          desc: 'Organize living things into groups based on shared traits and structures.',
+          hook: 'Start by seeing that classification is about patterns, not random labels.',
+          hack: 'Use Science Memory Match to connect categories and defining traits.',
+          practice: 'Then use Science Lab Blitz as classification practice with quick category decisions.',
+          playLabel: 'Play Classification Sprint',
+          playAction: () => { setSubjectFilter('science'); showTab('puzzle'); startMemory('science', 6, 'memory-science-start', 'memory-science-game'); }
         }
       ],
       english: [
@@ -1085,7 +1118,7 @@
           desc: 'Get comfortable naming who or what a sentence is really about.',
           hook: 'See sentence roles before getting buried in grammar terms.',
           hack: 'Use English Vocabulary Scramble to make the lesson’s language stick fast.',
-          example: 'Then run Grammar Glow-Up so the idea appears in a timed language check.',
+          practice: 'Then run Grammar Glow-Up so the idea appears in a timed language check.',
           playLabel: 'Play Noun Sprint',
           playAction: () => { setSubjectFilter('english'); showTab('arcade'); startQuizBlitz('english'); }
         },
@@ -1096,7 +1129,7 @@
           desc: 'Track action and time in a sentence without losing the meaning.',
           hook: 'Notice what the sentence is doing and when it is happening.',
           hack: 'Use English Memory Match to reinforce tense and action cues through repeat pattern recognition.',
-          example: 'Wrap up with a quick structure game that feels like a worked sentence example.',
+          practice: 'Wrap up with a quick structure game that feels like sentence practice instead of passive review.',
           playLabel: 'Play Tense Match',
           playAction: () => { setSubjectFilter('english'); showTab('puzzle'); startMemory('english', 6, 'memory-english-start', 'memory-english-game'); }
         },
@@ -1107,9 +1140,42 @@
           desc: 'Strengthen description by seeing how words modify nouns, verbs, and whole sentences.',
           hook: 'Spot the descriptive job a word is doing before naming its part of speech.',
           hack: 'Use English Boss Duel as a quick-fire language battle around modifiers and sentence signals.',
-          example: 'The duel becomes the final example round where the learner must apply the pattern independently.',
+          practice: 'The duel becomes the final practice round where the learner must apply the pattern independently.',
           playLabel: 'Play Modifier Duel',
           playAction: () => { setSubjectFilter('english'); showTab('battle'); startSubjectBattle('english'); }
+        },
+        {
+          chip: 'Lesson 4',
+          title: 'Sentence Structure',
+          lessonUrl: './foundations-english/lesson-4.html',
+          desc: 'Build stronger sentences by seeing how the parts fit together into a clear structure.',
+          hook: 'Recognize sentence shape before worrying about grammar labels.',
+          hack: 'Use English Memory Match to reinforce structure cues and sentence parts.',
+          practice: 'Practice structure decisions inside Grammar Glow-Up so the sentence frame becomes automatic.',
+          playLabel: 'Play Sentence Builder',
+          playAction: () => { setSubjectFilter('english'); showTab('arcade'); startQuizBlitz('english'); }
+        },
+        {
+          chip: 'Lesson 5',
+          title: 'Punctuation',
+          lessonUrl: './foundations-english/lesson-5.html',
+          desc: 'Use punctuation to control meaning, pauses, and clarity instead of treating marks like decoration.',
+          hook: 'See how punctuation changes the way a sentence sounds and means.',
+          hack: 'Use English Vocabulary Scramble to reinforce punctuation language and rule cues.',
+          practice: 'Then use the English Boss Duel as timed punctuation practice with sentence-level decisions.',
+          playLabel: 'Play Punctuation Duel',
+          playAction: () => { setSubjectFilter('english'); showTab('battle'); startSubjectBattle('english'); }
+        },
+        {
+          chip: 'Lesson 6',
+          title: 'Parts of Speech — The Full Picture',
+          lessonUrl: './foundations-english/lesson-6.html',
+          desc: 'Pull all the grammar pieces together so the learner can read and build full sentences with control.',
+          hook: 'See the whole sentence system instead of isolated grammar facts.',
+          hack: 'Use English Memory Match to connect parts of speech across a full sentence pattern.',
+          practice: 'Finish with Grammar Glow-Up as mixed practice that makes the full grammar system visible.',
+          playLabel: 'Play Full Grammar Mix',
+          playAction: () => { setSubjectFilter('english'); showTab('puzzle'); startMemory('english', 6, 'memory-english-start', 'memory-english-game'); }
         }
       ]
     };
@@ -1187,7 +1253,7 @@
         english: 'English lesson missions'
       };
       const subMap = {
-        all: 'Every mission below ties to a real subject lesson and turns that lesson’s hook, hack, and worked example into an actual game move.',
+        all: 'Every mission below ties to a real subject lesson and turns that lesson’s hook, hack, and practice into an actual game move.',
         math: 'These math missions connect directly to Number Sense lessons and launch into the matching game mechanic.',
         science: 'These science missions connect directly to Life Science lessons and turn those concepts into playable drills and battles.',
         english: 'These English missions connect directly to Grammar lessons and convert the language pattern into the game loop.'
@@ -1214,8 +1280,8 @@
                 <span>${mission.hack}</span>
               </div>
               <div class="lesson-mini-step">
-                <b>Example</b>
-                <span>${mission.example}</span>
+                <b>Practice</b>
+                <span>${mission.practice}</span>
               </div>
             </div>
             <div class="lesson-mission-actions">
