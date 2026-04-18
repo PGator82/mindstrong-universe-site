@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>English League - MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#0c0916; --bg2:#161126; --border:rgba(255,255,255,.08);
+      --text:#f3ebff; --muted:#8f82ad;
+      --xp-a:#c084fc; --xp-b:#8b5cf6; --xp-c:#ec4899;
+      --xp-glow:rgba(192,132,252,.18);
+    }
+    body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; background:rgba(12,9,22,.88); backdrop-filter:blur(12px); }
+    .nav-brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:17px; color:var(--xp-a); text-decoration:none; }
+    .nav-links { display:flex; gap:24px; align-items:center; }
+    .nav-link { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; transition:color .2s; }
+    .nav-link:hover { color:var(--text); }
+    .btn-sm { font-family:'Syne',sans-serif; font-weight:700; font-size:13px; padding:8px 18px; border-radius:8px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#120b21; text-decoration:none; }
+    .hero { text-align:center; padding:64px 24px 40px; background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(192,132,252,.08),transparent); }
+    .hero-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--xp-a); background:rgba(192,132,252,.1); border:1px solid rgba(192,132,252,.25); border-radius:20px; padding:6px 16px; margin-bottom:20px; }
+    .hero h1 { font-family:'Orbitron',sans-serif; font-size:clamp(32px,6vw,64px); font-weight:900; line-height:1.1; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero p { color:var(--muted); font-size:17px; margin-top:14px; max-width:560px; margin-inline:auto; }
+    .profile-strip { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; padding:20px 24px; border-bottom:1px solid var(--border); }
+    .stat-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; }
+    .stat-chip .label { color:var(--muted); font-size:11px; display:block; }
+    .stat-chip .val { color:var(--xp-a); font-size:16px; }
+    .game-wrap { max-width:860px; margin:0 auto; padding:40px 24px 80px; }
+    .category-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:32px; }
+    .cat-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:28px 20px; cursor:pointer; transition:transform .2s,border-color .2s,box-shadow .2s; text-align:center; }
+    .cat-card:hover { transform:translateY(-4px); border-color:var(--xp-a); box-shadow:0 8px 32px var(--xp-glow); }
+    .cat-name { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:var(--xp-a); }
+    .cat-desc { font-size:12px; color:var(--muted); margin-top:6px; }
+    .cat-diff { display:inline-block; margin-top:10px; font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:1px; padding:3px 10px; border-radius:20px; }
+    .diff-easy { background:rgba(196,181,253,.15); color:#c4b5fd; }
+    .diff-med  { background:rgba(192,132,252,.15); color:#c084fc; }
+    .diff-hard { background:rgba(236,72,153,.15); color:#f472b6; }
+    #arena { display:none; }
+    .arena-header { display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 24px; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+    .arena-cat { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); }
+    .arena-meta { display:flex; gap:20px; align-items:center; }
+    .q-counter { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+    .score-live { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); }
+    .score-live span { color:var(--xp-a); }
+    .timer-ring { width:56px; height:56px; position:relative; }
+    .timer-ring svg { transform:rotate(-90deg); }
+    .timer-ring circle { fill:none; stroke-width:4; stroke-linecap:round; }
+    .timer-ring .bg { stroke:var(--border); }
+    .timer-ring .bar { stroke:var(--xp-a); transition:stroke-dashoffset .9s linear,stroke .3s; }
+    .timer-num { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--text); }
+    .q-card { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:36px 32px; margin-bottom:24px; text-align:center; }
+    .q-text { font-family:'JetBrains Mono',monospace; font-size:clamp(19px,3.2vw,30px); font-weight:700; color:var(--text); line-height:1.4; }
+    .q-hint { font-size:13px; color:var(--muted); margin-top:10px; }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .choice-btn { background:var(--bg2); border:2px solid var(--border); border-radius:12px; padding:18px 12px; font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--text); cursor:pointer; transition:border-color .15s,background .15s,transform .1s; }
+    .choice-btn:hover:not(:disabled) { border-color:var(--xp-a); background:rgba(192,132,252,.07); transform:translateY(-2px); }
+    .choice-btn.correct { border-color:#34d399; background:rgba(52,211,153,.15); color:#34d399; }
+    .choice-btn.wrong { border-color:#ef4444; background:rgba(239,68,68,.12); color:#ef4444; }
+    .feedback { text-align:center; font-size:15px; font-weight:700; min-height:28px; margin-top:16px; }
+    .feedback.ok { color:#34d399; }
+    .feedback.bad { color:#ef4444; }
+    .xp-toast { position:fixed; top:80px; right:24px; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#120b21; font-family:'Orbitron',sans-serif; font-weight:900; font-size:15px; padding:12px 20px; border-radius:12px; opacity:0; transform:translateY(-10px); transition:opacity .3s,transform .3s; pointer-events:none; z-index:999; }
+    .xp-toast.show { opacity:1; transform:translateY(0); }
+    #results { display:none; text-align:center; }
+    .results-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:48px 32px; margin-top:24px; }
+    .results-title { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:16px 0 8px; }
+    .results-sub { color:var(--muted); font-size:15px; margin-bottom:28px; }
+    .results-stats { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:32px; }
+    .r-stat .big { font-family:'Orbitron',sans-serif; font-size:36px; font-weight:900; color:var(--xp-a); }
+    .r-stat .lbl { font-size:12px; color:var(--muted); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; text-transform:uppercase; }
+    .badge-earned { display:inline-flex; align-items:center; gap:8px; background:rgba(192,132,252,.12); border:1px solid rgba(192,132,252,.3); border-radius:24px; padding:10px 20px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--xp-a); margin-bottom:24px; }
+    .action-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .btn-primary, .btn-secondary { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; padding:14px 28px; border-radius:12px; text-decoration:none; display:inline-block; cursor:pointer; }
+    .btn-primary { border:none; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#120b21; }
+    .btn-secondary { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .leaderboard { margin-top:48px; text-align:left; }
+    .lb-title { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; }
+    .lb-row { display:flex; align-items:center; gap:16px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px 18px; margin-bottom:8px; }
+    .lb-rank { font-family:'Orbitron',sans-serif; font-size:12px; font-weight:900; color:var(--muted); width:24px; }
+    .lb-rank.gold { color:#facc15; } .lb-rank.silver { color:#cbd5e1; } .lb-rank.bronze { color:#c2825a; }
+    .lb-cat { font-size:13px; color:var(--muted); flex:1; }
+    .lb-score { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--xp-a); }
+    @media (max-width:540px) { .choices { grid-template-columns:1fr; } nav { padding:14px 20px; } .nav-links { gap:14px; } .q-card { padding:24px 16px; } }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="./index.html">MindStrong</a>
+  <div class="nav-links">
+    <a class="nav-link" href="../home.html">Home</a>
+    <a class="nav-link" href="./index.html">School</a>
+    <a class="nav-link" href="./games.html?subject=english">Games</a>
+    <a class="btn-sm" href="./foundations-english/index.html">Warmups</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-badge">English League</div>
+  <h1>English League</h1>
+  <p>Timed rounds for grammar, reading, vocabulary, and writing. Earn XP, build fluency, and collect league badges.</p>
+</div>
+<div class="profile-strip">
+  <div class="stat-chip"><div><span class="label">LEVEL</span><span class="val" id="pLevel">1</span></div></div>
+  <div class="stat-chip"><div><span class="label">XP</span><span class="val" id="pXP">0</span></div></div>
+  <div class="stat-chip"><div><span class="label">STREAK</span><span class="val" id="pStreak">1</span></div></div>
+  <div class="stat-chip"><div><span class="label">BADGES</span><span class="val" id="pBadges">0</span></div></div>
+</div>
+<div class="game-wrap">
+  <div id="lobby">
+    <div style="text-align:center;margin-bottom:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">Select an English division to start your match</span></div>
+    <div class="category-grid">
+      <div class="cat-card" onclick="startGame('grammar')"><div class="cat-name">Grammar</div><div class="cat-desc">Parts of speech, punctuation, and sentence structure</div><span class="cat-diff diff-easy">CORE</span></div>
+      <div class="cat-card" onclick="startGame('reading')"><div class="cat-name">Reading</div><div class="cat-desc">Main idea, inference, theme, and text evidence</div><span class="cat-diff diff-med">TEXT</span></div>
+      <div class="cat-card" onclick="startGame('vocabulary')"><div class="cat-name">Vocabulary</div><div class="cat-desc">Word meaning, context clues, roots, and synonyms</div><span class="cat-diff diff-med">WORDS</span></div>
+      <div class="cat-card" onclick="startGame('writing')"><div class="cat-name">Writing</div><div class="cat-desc">Paragraphs, revisions, transitions, and tone</div><span class="cat-diff diff-hard">CRAFT</span></div>
+    </div>
+    <div class="leaderboard" id="leaderboard"></div>
+  </div>
+  <div id="arena">
+    <div class="arena-header">
+      <div class="arena-cat" id="arenaCategory"></div>
+      <div class="arena-meta">
+        <div class="q-counter" id="qCounter">Q 1 / 10</div>
+        <div class="score-live">Score <span id="scoreLive">0</span></div>
+        <div class="timer-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle class="bg" cx="28" cy="28" r="24"></circle>
+            <circle class="bar" id="timerBar" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="timer-num" id="timerNum">15</div>
+        </div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-text" id="qText">Loading...</div>
+      <div class="q-hint" id="qHint"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div id="results">
+    <div class="results-card">
+      <div class="results-title" id="resultsTitle">Match Complete</div>
+      <div class="results-sub" id="resultsSub"></div>
+      <div id="badgeRow"></div>
+      <div class="results-stats">
+        <div class="r-stat"><div class="big" id="rScore">0</div><div class="lbl">Score</div></div>
+        <div class="r-stat"><div class="big" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+        <div class="r-stat"><div class="big" id="rXP">0</div><div class="lbl">XP Earned</div></div>
+        <div class="r-stat"><div class="big" id="rLevel">1</div><div class="lbl">Level</div></div>
+      </div>
+      <div class="action-row">
+        <button class="btn-primary" onclick="rematch()">Play Again</button>
+        <button class="btn-secondary" onclick="backToLobby()">Change Division</button>
+      </div>
+    </div>
+    <div class="leaderboard" id="leaderboard2"></div>
+  </div>
+</div>
+<div class="xp-toast" id="xpToast">+25 XP</div>
+<script src="game-engine.js"></script>
+<script>
+const SCORE_KEY = 'english_league_scores';
+const LEAGUE_NAME = 'English League';
+const BANKS = {
+  grammar: [
+    {q:'Which word is a noun in "The puppy barked loudly"?', a:'puppy', choices:['The','puppy','barked','loudly']},
+    {q:'A sentence must begin with a...', a:'Capital letter', choices:['Comma','Capital letter','Question mark','Space']},
+    {q:'Which punctuation ends a question?', a:'Question mark', choices:['Comma','Period','Question mark','Colon']},
+    {q:'In "She runs fast," the verb is...', a:'runs', choices:['She','runs','fast','the']},
+    {q:'A proper noun names a specific...', a:'Person place or thing', choices:['Color','Sound','Person place or thing','Number']},
+    {q:'Which word is an adjective in "a bright star"?', a:'bright', choices:['a','bright','star','is']},
+    {q:'The pronoun that can replace "Maria" is...', a:'she', choices:['it','she','they','we']},
+    {q:'A group of words with a subject and verb is a...', a:'Sentence', choices:['Prefix','Sentence','Caption','Syllable']},
+    {q:'Which sentence is punctuated correctly?', a:'We won the game.', choices:['We won the game','We won the game.','We won the game,','we won the game.']},
+    {q:'A conjunction connects...', a:'Words or ideas', choices:['Only numbers','Words or ideas','Pictures','Paragraphs only']},
+    {q:'Which word is a preposition in "under the desk"?', a:'under', choices:['the','desk','under','is']},
+    {q:'An exclamation mark shows...', a:'Strong feeling', choices:['Possession','Strong feeling','A question','Silence']},
+  ],
+  reading: [
+    {q:'The main idea tells what the text is mostly...', a:'About', choices:['About','Spelled','Rhyming','Printed on']},
+    {q:'An inference is a smart...', a:'Guess based on evidence', choices:['Opinion only','Guess based on evidence','Random fact','Retelling']},
+    {q:'Details from the story that prove an answer are called...', a:'Text evidence', choices:['Captions','Text evidence','Titles','Margins']},
+    {q:'Theme is the...', a:'Message of a text', choices:['Author name','Page number','Message of a text','Cover art']},
+    {q:'A character changes most in the...', a:'Plot', choices:['Plot','Font','Glossary','Index']},
+    {q:'Cause tells why something happens and effect tells...', a:'What happens', choices:['Who draws it','What happens','Where it prints','When it rhymes']},
+    {q:'The setting tells where and...', a:'When', choices:['How many','When','Why only','Which color']},
+    {q:'First person point of view often uses...', a:'I', choices:['He','They','I','You']},
+    {q:'A summary should include only the most...', a:'Important points', choices:['Funny words','Important points','Long quotes','Pictures']},
+    {q:'Compare means find how things are...', a:'Alike', choices:['Broken','Alike','Hidden','Loud']},
+    {q:'Contrast means find how things are...', a:'Different', choices:['Different','Equal','Painted','Named']},
+    {q:'The authors reason for writing is the authors...', a:'Purpose', choices:['Purpose','Signature','Title','Margin']},
+  ],
+  vocabulary: [
+    {q:'A synonym for "happy" is...', a:'glad', choices:['glad','sad','angry','sharp']},
+    {q:'An antonym for "ancient" is...', a:'modern', choices:['old','modern','dusty','broken']},
+    {q:'Context clues are hints found in the...', a:'Sentence around the word', choices:['Title only','Sentence around the word','Picture frame','Alphabet']},
+    {q:'The root "bio" usually means...', a:'Life', choices:['Life','Book','Heat','Sound']},
+    {q:'The prefix "un-" often means...', a:'Not', choices:['Again','Not','Before','Tiny']},
+    {q:'The suffix "-ful" often means...', a:'Full of', choices:['Without','Before','Full of','Tiny']},
+    {q:'A multiple-meaning word has...', a:'More than one meaning', choices:['One letter','More than one meaning','No vowels','No sound']},
+    {q:'A dictionary entry gives word meaning and...', a:'Pronunciation', choices:['Planet facts','Pronunciation','Song lyrics','Page glue']},
+    {q:'The word "gigantic" most nearly means...', a:'Huge', choices:['Tiny','Huge','Silent','Quick']},
+    {q:'Figurative language does not always mean...', a:'Exactly what the words say', choices:['Exactly what the words say','Anything at all','A rhyme','A title']},
+    {q:'The root "port" usually relates to...', a:'Carry', choices:['Carry','Cook','Color','Sleep']},
+    {q:'A glossary is usually found in the...', a:'Back of a book', choices:['Back of a book','Kitchen','Cloud','Title line only']},
+  ],
+  writing: [
+    {q:'A topic sentence tells the main idea of a...', a:'Paragraph', choices:['Paragraph','Cover','Dialogue tag','Caption only']},
+    {q:'Revision means...', a:'Improving the writing', choices:['Printing it','Improving the writing','Erasing everything','Submitting it']},
+    {q:'Editing checks spelling punctuation and...', a:'Grammar', choices:['Weather','Grammar','Volume','Seating']},
+    {q:'A transition word that shows order is...', a:'First', choices:['First','Blue','Quiet','Tall']},
+    {q:'A conclusion helps wrap up the...', a:'Piece of writing', choices:['Pencil','Piece of writing','Backpack','Keyboard']},
+    {q:'Strong writing uses details that are...', a:'Specific', choices:['Blurry','Specific','Silent','Crooked']},
+    {q:'Dialogue shows what characters...', a:'Say', choices:['Wear','Say','Build','Paint']},
+    {q:'A persuasive piece tries to...', a:'Convince', choices:['Convince','Measure','Whisper','Sort only']},
+    {q:'The tone of writing is the writers...', a:'Attitude', choices:['Height','Attitude','Lunch','Desk']},
+    {q:'Indenting usually signals the start of a new...', a:'Paragraph', choices:['Sentence only','Paragraph','Title','Verb']},
+    {q:'A narrative usually tells...', a:'A story', choices:['A recipe only','A story','A graph only','A label']},
+    {q:'Precise verbs make writing more...', a:'Clear', choices:['Dusty','Clear','Shorter always','Purple']},
+  ]
+};
+const CAT_NAMES = { grammar:'Grammar', reading:'Reading', vocabulary:'Vocabulary', writing:'Writing' };
+const TOTAL_Q = 10, TIME_PER_Q = 15, CIRCUMFERENCE = 150.8;
+let currentCat = '', questions = [], qIndex = 0, score = 0, correct = 0, timerInterval = null, timeLeft = TIME_PER_Q, answered = false;
+
+function refreshProfile() {
+  const p = getProfile();
+  document.getElementById('pLevel').textContent = p.level || 1;
+  document.getElementById('pXP').textContent = p.xp || 0;
+  document.getElementById('pStreak').textContent = p.streak || 1;
+  document.getElementById('pBadges').textContent = (p.badges || []).length;
+}
+function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
+function startGame(cat) {
+  currentCat = cat;
+  questions = shuffle(BANKS[cat]).slice(0, TOTAL_Q);
+  qIndex = 0; score = 0; correct = 0;
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('arena').style.display = 'block';
+  document.getElementById('arenaCategory').textContent = LEAGUE_NAME + ' - ' + CAT_NAMES[cat];
+  loadQuestion();
+}
+function loadQuestion() {
+  if (qIndex >= TOTAL_Q) return endGame();
+  answered = false;
+  const q = questions[qIndex];
+  document.getElementById('qCounter').textContent = 'Q ' + (qIndex + 1) + ' / ' + TOTAL_Q;
+  document.getElementById('scoreLive').textContent = score;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('qHint').textContent = q.hint ? 'Hint: ' + q.hint : '';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  const choices = shuffle(q.choices.map(c => ({ val:c, isAnswer:String(c) === String(q.a) })));
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = choice.val;
+    btn.onclick = () => handleAnswer(btn, choice.isAnswer);
+    box.appendChild(btn);
+  });
+  startTimer();
+}
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_Q;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) timeUp();
+    }
+  }, 1000);
+}
+function updateTimerUI() {
+  const offset = CIRCUMFERENCE * (1 - timeLeft / TIME_PER_Q);
+  const bar = document.getElementById('timerBar');
+  bar.style.strokeDashoffset = offset;
+  bar.style.stroke = timeLeft <= 5 ? '#ec4899' : timeLeft <= 8 ? '#8b5cf6' : '#c084fc';
+  document.getElementById('timerNum').textContent = timeLeft;
+}
+function handleAnswer(btn, isCorrect) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  const feedback = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    const pts = Math.max(10, timeLeft * 10);
+    score += pts;
+    correct++;
+    feedback.textContent = 'Correct! +' + pts + ' pts';
+    feedback.className = 'feedback ok';
+    addXP(25);
+    showXPToast('+25 XP');
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = 'Answer: ' + questions[qIndex].a;
+    feedback.className = 'feedback bad';
+  }
+  qIndex++;
+  setTimeout(loadQuestion, 1300);
+}
+function timeUp() {
+  answered = true;
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  document.getElementById('feedback').textContent = 'Time up! Answer: ' + questions[qIndex].a;
+  document.getElementById('feedback').className = 'feedback bad';
+  qIndex++;
+  setTimeout(loadQuestion, 1500);
+}
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('arena').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  const pct = correct / TOTAL_Q;
+  let title = 'Keep Reading!';
+  if (pct === 1) title = 'Perfect English Score!';
+  else if (pct >= 0.8) title = 'English League Champion!';
+  else if (pct >= 0.6) title = 'Strong Language Work!';
+  else if (pct >= 0.4) title = 'English Skills Rising!';
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsSub').textContent = CAT_NAMES[currentCat] + ' - ' + correct + ' of ' + TOTAL_Q + ' correct';
+  document.getElementById('rScore').textContent = score;
+  document.getElementById('rCorrect').textContent = correct + '/' + TOTAL_Q;
+  document.getElementById('rXP').textContent = correct * 25;
+  document.getElementById('rLevel').textContent = getProfile().level;
+  let badgeName = null;
+  if (pct === 1) badgeName = 'English Perfect - ' + CAT_NAMES[currentCat];
+  else if (pct >= 0.8) badgeName = 'English Master - ' + CAT_NAMES[currentCat];
+  document.getElementById('badgeRow').innerHTML = badgeName ? '<div class="badge-earned">Badge Unlocked: ' + badgeName + '</div>' : '';
+  if (badgeName) unlockBadge(badgeName);
+  saveHighScore(currentCat, score);
+  renderLeaderboard('leaderboard2');
+  refreshProfile();
+}
+function saveHighScore(cat, value) {
+  const scores = JSON.parse(localStorage.getItem(SCORE_KEY) || '[]');
+  scores.push({ cat, score:value, date:new Date().toLocaleDateString() });
+  scores.sort((a, b) => b.score - a.score);
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores.slice(0, 10)));
+}
+function renderLeaderboard(id) {
+  const scores = JSON.parse(localStorage.getItem(SCORE_KEY) || '[]');
+  const el = document.getElementById(id);
+  if (!scores.length) { el.innerHTML = ''; return; }
+  const ranks = ['gold', 'silver', 'bronze'];
+  const rows = scores.slice(0, 5).map((entry, idx) =>
+    '<div class="lb-row"><div class="lb-rank ' + (ranks[idx] || '') + '">#' + (idx + 1) + '</div>' +
+    '<div class="lb-cat">' + CAT_NAMES[entry.cat] + ' - ' + entry.date + '</div>' +
+    '<div class="lb-score">' + entry.score + ' pts</div></div>'
+  ).join('');
+  el.innerHTML = '<div class="lb-title">English League Scores</div>' + rows;
+}
+function rematch() { document.getElementById('results').style.display = 'none'; startGame(currentCat); }
+function backToLobby() { document.getElementById('results').style.display = 'none'; document.getElementById('lobby').style.display = 'block'; renderLeaderboard('leaderboard'); }
+function showXPToast(msg) {
+  const toast = document.getElementById('xpToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+refreshProfile();
+renderLeaderboard('leaderboard');
+</script>
+</body>
+</html>

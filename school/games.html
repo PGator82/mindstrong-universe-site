@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Games Hub — MindStrong Universe</title>
+  <title>Games Hub - MindStrong Universe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,7 +28,7 @@
       min-height: 100vh;
     }
 
-    /* ── Background glow ── */
+    /* â”€â”€ Background glow â”€â”€ */
     .ms-pageFX {
       position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background:
@@ -36,7 +36,7 @@
         radial-gradient(700px 500px at 85% 85%, rgba(37,99,235,.08), transparent 60%);
     }
 
-    /* ── Nav ── */
+    /* â”€â”€ Nav â”€â”€ */
     .ms-top { position: sticky; top: 0; z-index: 100;
       background: rgba(7,11,20,.85); backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border); }
@@ -52,11 +52,11 @@
       padding: 6px 14px; border-radius: 8px; transition: all .2s ease; }
     .ms-link:hover, .ms-link.is-active { background: var(--surface); color: #f1f5f9; }
 
-    /* ── Wrap ── */
+    /* â”€â”€ Wrap â”€â”€ */
     .ms-wrap { position: relative; z-index: 1; max-width: 1200px;
       margin: 0 auto; padding: 40px 24px 80px; }
 
-    /* ── Hero ── */
+    /* â”€â”€ Hero â”€â”€ */
     .games-hero { text-align: center; padding: 32px 0 40px; }
     .games-kicker { display: inline-block; font-family: 'JetBrains Mono', monospace;
       font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
@@ -68,11 +68,74 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       line-height: 1.1; margin-bottom: 14px; }
     .games-sub { color: #94a3b8; font-size: 16px; max-width: 520px; margin: 0 auto 28px; }
+    .subject-launch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .subject-launch-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .subject-launch-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .subject-launch-card p {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+    .subject-launch-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .subject-launch-actions .ms-btn { padding: 9px 16px; font-size: 13px; }
+    .subject-filterbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      padding: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: fit-content;
+    }
+    .subject-chip {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s ease;
+      font-family: 'Syne', sans-serif;
+    }
+    .subject-chip:hover {
+      color: #e2e8f0;
+      border-color: rgba(255,255,255,.2);
+      background: rgba(255,255,255,.05);
+    }
+    .subject-chip.is-active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 4px 16px rgba(124,58,237,.35);
+    }
 
-    /* ── HUD strip ── */
+    /* â”€â”€ HUD strip â”€â”€ */
     #games-hud { margin-bottom: 32px; }
 
-    /* ── Tab nav ── */
+    /* â”€â”€ Tab nav â”€â”€ */
     .ms-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px;
       padding: 6px; background: var(--surface); border: 1px solid var(--border);
       border-radius: 16px; width: fit-content; }
@@ -87,11 +150,11 @@
       color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,.4);
     }
 
-    /* ── Game panels ── */
+    /* â”€â”€ Game panels â”€â”€ */
     .ms-panel { display: none; }
     .ms-panel.is-active { display: block; }
 
-    /* ── Game card ── */
+    /* â”€â”€ Game card â”€â”€ */
     .ms-game-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 20px; padding: 24px; margin-bottom: 20px;
@@ -111,7 +174,7 @@
     .ms-pill-diff  { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.2); }
     .ms-game-zone { min-height: 200px; }
 
-    /* ── Buttons ── */
+    /* â”€â”€ Buttons â”€â”€ */
     .ms-btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 10px 22px; border-radius: 12px; border: 1px solid var(--border);
@@ -127,7 +190,7 @@
     }
     .ms-btn.primary:hover { opacity: .9; transform: translateY(-2px); box-shadow: 0 6px 28px rgba(124,58,237,.5); }
 
-    /* ── Badges tab ── */
+    /* â”€â”€ Badges tab â”€â”€ */
     .ms-badges-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px;
     }
@@ -143,7 +206,7 @@
     .ms-badge-card-desc   { font-size: 11px; color: #64748b; }
     .ms-badge-card.locked { opacity: .4; filter: grayscale(1); }
 
-    /* ── Leaderboard tab ── */
+    /* â”€â”€ Leaderboard tab â”€â”€ */
     .ms-lb-row {
       display: flex; align-items: center; gap: 14px;
       padding: 12px 16px; background: var(--surface); border: 1px solid var(--border);
@@ -155,14 +218,14 @@
     .ms-lb-name  { flex: 1; font-weight: 600; }
     .ms-lb-xp    { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--gold); }
 
-    /* ── Game section headers ── */
+    /* â”€â”€ Game section headers â”€â”€ */
     .ms-section-label {
       font-family: 'JetBrains Mono', monospace; font-size: 11px;
       letter-spacing: .15em; text-transform: uppercase; color: #a78bfa;
       margin-bottom: 14px; padding-left: 2px;
     }
 
-    /* ── Responsive ── */
+    /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 600px) {
       .ms-nav { padding: 12px 16px; }
       .ms-wrap { padding: 24px 16px 60px; }
@@ -192,32 +255,69 @@
 
     <!-- Hero -->
     <section class="games-hero">
-      <div class="games-kicker">🎮 Games Hub • Earn XP • Unlock Badges</div>
+      <div class="games-kicker">Games Hub - Earn XP - Unlock Badges</div>
       <h1 class="games-title">Learn Through Play</h1>
-      <p class="games-sub">8 game modes. Math, science, words. Every correct answer earns real XP toward your level.</p>
+      <p class="games-sub">Separate Math, Science, and English game lanes. Every correct answer earns real XP toward your level.</p>
+    </section>
+
+    <section class="subject-launch-grid">
+      <div class="subject-launch-card">
+        <h3 style="color:#facc15;">Math Lane</h3>
+        <p>Math warmups, Math League, and math-only games stay together instead of sharing space with every subject.</p>
+        <div class="subject-launch-actions">
+          <a class="ms-btn" href="./foundations/index.html">Warmups</a>
+          <a class="ms-btn" href="./math-league.html">League</a>
+          <button class="ms-btn primary" type="button" onclick="setSubjectFilter('math')">Games</button>
+        </div>
+      </div>
+      <div class="subject-launch-card">
+        <h3 style="color:#22d3ee;">Science Lane</h3>
+        <p>Science warmups, a separate Science League, and science-only game entries now have their own route.</p>
+        <div class="subject-launch-actions">
+          <a class="ms-btn" href="./foundations-science/index.html">Warmups</a>
+          <a class="ms-btn" href="./science-league.html">League</a>
+          <button class="ms-btn primary" type="button" onclick="setSubjectFilter('science')">Games</button>
+        </div>
+      </div>
+      <div class="subject-launch-card">
+        <h3 style="color:#a78bfa;">English Lane</h3>
+        <p>English warmups, English League, and English-only games no longer ride under the Math lane.</p>
+        <div class="subject-launch-actions">
+          <a class="ms-btn" href="./foundations-english/index.html">Warmups</a>
+          <a class="ms-btn" href="./english-league.html">League</a>
+          <button class="ms-btn primary" type="button" onclick="setSubjectFilter('english')">Games</button>
+        </div>
+      </div>
     </section>
 
     <!-- HUD -->
     <div id="games-hud"></div>
 
-    <!-- Tabs -->
-    <div class="ms-tabs">
-      <button class="ms-tab is-active" onclick="showTab('arcade')">⚡ Arcade</button>
-      <button class="ms-tab" onclick="showTab('puzzle')">🧩 Puzzles</button>
-      <button class="ms-tab" onclick="showTab('battle')">⚔️ Battle</button>
-      <button class="ms-tab" onclick="showTab('daily')">📅 Daily</button>
-      <button class="ms-tab" onclick="showTab('badges')">🏅 Badges</button>
-      <button class="ms-tab" onclick="showTab('leaderboard')">🏆 Leaderboard</button>
+    <div class="subject-filterbar">
+      <button class="subject-chip is-active" type="button" data-subject-filter="all" onclick="setSubjectFilter('all', this)">All Subjects</button>
+      <button class="subject-chip" type="button" data-subject-filter="math" onclick="setSubjectFilter('math', this)">Math</button>
+      <button class="subject-chip" type="button" data-subject-filter="science" onclick="setSubjectFilter('science', this)">Science</button>
+      <button class="subject-chip" type="button" data-subject-filter="english" onclick="setSubjectFilter('english', this)">English</button>
     </div>
 
-    <!-- ── ARCADE ── -->
+    <!-- Tabs -->
+    <div class="ms-tabs">
+      <button class="ms-tab is-active" onclick="showTab('arcade', event)">Arcade</button>
+      <button class="ms-tab" onclick="showTab('puzzle', event)">Puzzles</button>
+      <button class="ms-tab" onclick="showTab('battle', event)">Battle</button>
+      <button class="ms-tab" onclick="showTab('daily', event)">Daily</button>
+      <button class="ms-tab" onclick="showTab('badges', event)">Badges</button>
+      <button class="ms-tab" onclick="showTab('leaderboard', event)">Leaderboard</button>
+    </div>
+
+    <!-- â”€â”€ ARCADE â”€â”€ -->
     <div id="panel-arcade" class="ms-panel is-active">
       <p class="ms-section-label">Fast-Paced Arcade Games</p>
 
       <!-- Speed Math -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">⚡</div>
+          <div class="ms-game-card-icon">M</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Speed Math</div>
             <div class="ms-game-card-desc">Answer as many arithmetic problems as possible in 30 seconds. Build combos for bonus XP.</div>
@@ -228,20 +328,20 @@
           </div>
         </div>
         <div id="speed-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startSpeedMath('+','-')">➕ Easy (+ −)</button>
-          <button class="ms-btn primary" onclick="startSpeedMath('+','-','×','÷')">🔥 Hard (all ops)</button>
+          <button class="ms-btn primary" onclick="startSpeedMath('+','-')">Easy (+ -)</button>
+          <button class="ms-btn primary" onclick="startSpeedMath('+','-','\u00d7','\u00f7')">Hard (all ops)</button>
           <span style="font-size:13px;color:#64748b">Best: <b id="sm-best">0</b></span>
         </div>
         <div id="speed-math-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
       <!-- Number Ninja -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">🥷</div>
+          <div class="ms-game-card-icon">N</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Number Ninja</div>
-            <div class="ms-game-card-desc">Tap numbers 1–9 in ascending order as fast as you can. New grid every round for 60 seconds.</div>
+            <div class="ms-game-card-desc">Tap numbers 1-9 in ascending order as fast as you can. New grid every round for 60 seconds.</div>
           </div>
           <div class="ms-game-card-meta">
             <span class="ms-pill ms-pill-xp">5 XP each</span>
@@ -256,9 +356,9 @@
       </div>
 
       <!-- Word Scramble -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math science english">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">📝</div>
+          <div class="ms-game-card-icon">WS</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Word Scramble</div>
             <div class="ms-game-card-desc">Unscramble vocabulary words from math, science, or English. Type your answer and hit Check.</div>
@@ -269,16 +369,16 @@
           </div>
         </div>
         <div id="scramble-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startScramble('math')">📐 Math Words</button>
-          <button class="ms-btn primary" onclick="startScramble('science')">🔬 Science</button>
-          <button class="ms-btn primary" onclick="startScramble('english')">📖 English</button>
+          <button class="ms-btn primary" onclick="startScramble('math')">Math Words</button>
+          <button class="ms-btn primary" onclick="startScramble('science')">Science</button>
+          <button class="ms-btn primary" onclick="startScramble('english')">English</button>
         </div>
         <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="science">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">🔬</div>
+          <div class="ms-game-card-icon">SCI</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Science Lab Blitz</div>
             <div class="ms-game-card-desc">Fast science concept questions on cells, forces, planets, energy, and life systems.</div>
@@ -295,9 +395,9 @@
         <div id="science-quiz-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="english">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">📖</div>
+          <div class="ms-game-card-icon">ENG</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Grammar Glow-Up</div>
             <div class="ms-game-card-desc">English questions on parts of speech, punctuation, theme, structure, and reading skills.</div>
@@ -315,14 +415,14 @@
       </div>
     </div>
 
-    <!-- ── PUZZLES ── -->
+    <!-- â”€â”€ PUZZLES â”€â”€ -->
     <div id="panel-puzzle" class="ms-panel">
       <p class="ms-section-label">Logic & Puzzle Games</p>
 
       <!-- Memory Match -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math science english">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">🧠</div>
+          <div class="ms-game-card-icon">MM</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Memory Match</div>
             <div class="ms-game-card-desc">Flip cards to find matching pairs. Fewer moves = better score. Perfect match unlocks a badge.</div>
@@ -333,17 +433,19 @@
           </div>
         </div>
         <div id="memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startMemory('math',6)">📐 Math Symbols</button>
-          <button class="ms-btn primary" onclick="startMemory('emoji',8)">😎 Emoji (Hard)</button>
-          <button class="ms-btn primary" onclick="startMemory('words',6)">💻 Code Words</button>
+          <button class="ms-btn primary" onclick="startMemory('math',6)">Math Symbols</button>
+          <button class="ms-btn primary" onclick="startMemory('science',6)">Science Terms</button>
+          <button class="ms-btn primary" onclick="startMemory('english',6)">English Terms</button>
+          <button class="ms-btn primary" onclick="startMemory('emoji',8)">Emoji (Hard)</button>
+          <button class="ms-btn primary" onclick="startMemory('words',6)">Code Words</button>
         </div>
         <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
       <!-- Equation Builder -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">🧮</div>
+          <div class="ms-game-card-icon">EQ</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Equation Builder</div>
             <div class="ms-game-card-desc">One number is missing from the equation. Pick the correct value from four choices.</div>
@@ -360,12 +462,12 @@
       </div>
 
       <!-- Math Puzzle -->
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">🧩</div>
+          <div class="ms-game-card-icon">GRID</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Math Grid Puzzle</div>
-            <div class="ms-game-card-desc">Fill the 3×3 grid so every row and column hits its target sum. Numbers 1–9, no repeats.</div>
+            <div class="ms-game-card-desc">Fill the 3x3 grid so every row and column hits its target sum. Numbers 1-9, no repeats.</div>
           </div>
           <div class="ms-game-card-meta">
             <span class="ms-pill ms-pill-xp">50 XP each</span>
@@ -380,13 +482,13 @@
       </div>
     </div>
 
-    <!-- ── BATTLE ── -->
+    <!-- â”€â”€ BATTLE â”€â”€ -->
     <div id="panel-battle" class="ms-panel">
       <p class="ms-section-label">Boss Battle Mode</p>
 
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">⚔️</div>
+          <div class="ms-game-card-icon">BOSS</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Boss Battle</div>
             <div class="ms-game-card-desc">Face off against increasingly tough math bosses. Each correct answer deals damage. Wrong answers hurt you. Defeat all 3 bosses!</div>
@@ -397,21 +499,21 @@
           </div>
         </div>
         <div id="boss-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startBoss(0)">👹 Algebra Ogre (Easy)</button>
-          <button class="ms-btn primary" onclick="startBoss(1)">🧙 Fraction Witch (Med)</button>
-          <button class="ms-btn primary" onclick="startBoss(2)">🐉 Geometry Dragon (Hard)</button>
+          <button class="ms-btn primary" onclick="startBoss(0)">Algebra Ogre (Easy)</button>
+          <button class="ms-btn primary" onclick="startBoss(1)">Fraction Witch (Med)</button>
+          <button class="ms-btn primary" onclick="startBoss(2)">Geometry Dragon (Hard)</button>
         </div>
         <div id="boss-game" class="ms-game-zone" style="display:none;"></div>
       </div>
     </div>
 
-    <!-- ── DAILY ── -->
+    <!-- â”€â”€ DAILY â”€â”€ -->
     <div id="panel-daily" class="ms-panel">
       <p class="ms-section-label">Today's Challenge</p>
 
-      <div class="ms-game-card">
+      <div class="ms-game-card" data-subjects="math science english">
         <div class="ms-game-card-hdr">
-          <div class="ms-game-card-icon">📅</div>
+          <div class="ms-game-card-icon">DAY</div>
           <div class="ms-game-card-info">
             <div class="ms-game-card-title">Daily Challenge</div>
             <div class="ms-game-card-desc">One special challenge per day. Complete it for a +150 XP bonus and daily streak rewards. Resets at midnight.</div>
@@ -425,13 +527,13 @@
       </div>
     </div>
 
-    <!-- ── BADGES ── -->
+    <!-- â”€â”€ BADGES â”€â”€ -->
     <div id="panel-badges" class="ms-panel">
       <p class="ms-section-label">Your Badges</p>
       <div id="badges-grid" class="ms-badges-grid"></div>
     </div>
 
-    <!-- ── LEADERBOARD ── -->
+    <!-- â”€â”€ LEADERBOARD â”€â”€ -->
     <div id="panel-leaderboard" class="ms-panel">
       <p class="ms-section-label">Top Players</p>
       <div id="leaderboard-list"></div>
@@ -441,28 +543,60 @@
 
   <script src="./game-engine.js"></script>
   <script>
-    /* ── Tab switching ── */
-    function showTab(name) {
+    /* â”€â”€ Tab switching â”€â”€ */
+    let currentSubject = 'all';
+
+    function showTab(name, evt) {
       document.querySelectorAll('.ms-panel').forEach(p => p.classList.remove('is-active'));
       document.querySelectorAll('.ms-tab').forEach(t => t.classList.remove('is-active'));
       document.getElementById('panel-' + name)?.classList.add('is-active');
-      event.target.classList.add('is-active');
+      if (evt && evt.target) evt.target.classList.add('is-active');
       if (name === 'badges')      renderBadges();
       if (name === 'leaderboard') renderLeaderboard();
       if (name === 'daily')       initDaily();
+      applySubjectFilter();
     }
 
-    /* ── Render HUD ── */
+    function setSubjectFilter(subject, btn) {
+      currentSubject = subject || 'all';
+      document.querySelectorAll('[data-subject-filter]').forEach(chip => {
+        chip.classList.toggle('is-active', chip.dataset.subjectFilter === currentSubject);
+      });
+
+      const url = new URL(window.location.href);
+      if (currentSubject === 'all') {
+        url.searchParams.delete('subject');
+      } else {
+        url.searchParams.set('subject', currentSubject);
+      }
+      history.replaceState({}, '', url.pathname + url.search);
+
+      applySubjectFilter();
+      if (btn && typeof btn.blur === 'function') btn.blur();
+    }
+
+    function applySubjectFilter() {
+      const activePanel = document.querySelector('.ms-panel.is-active');
+      if (!activePanel) return;
+      activePanel.querySelectorAll('.ms-game-card[data-subjects]').forEach(card => {
+        const subjects = (card.dataset.subjects || '').split(/\s+/).filter(Boolean);
+        const show = currentSubject === 'all' || subjects.includes(currentSubject);
+        card.style.display = show ? '' : 'none';
+      });
+    }
+
+    /* â”€â”€ Render HUD â”€â”€ */
     msRenderHUD('games-hud');
 
-    /* ── Init best scores on load ── */
+    /* â”€â”€ Init best scores on load â”€â”€ */
     document.getElementById('sm-best').textContent   = msGetHighScore('speed_math');
     document.getElementById('nn-best').textContent   = msGetHighScore('number_ninja');
     document.getElementById('science-best').textContent = msGetHighScore('quiz_blitz_science');
     document.getElementById('english-best').textContent = msGetHighScore('quiz_blitz_english');
     document.getElementById('puzzle-count').textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
+    setSubjectFilter(new URLSearchParams(window.location.search).get('subject') || 'all');
 
-    /* ── Game launchers ── */
+    /* â”€â”€ Game launchers â”€â”€ */
     function startSpeedMath(...ops) {
       document.getElementById('speed-math-start').style.display = 'none';
       document.getElementById('speed-math-game').style.display  = 'block';
@@ -534,7 +668,7 @@
       g.start();
     }
 
-    /* ── Badges tab ── */
+    /* â”€â”€ Badges tab â”€â”€ */
     function renderBadges() {
       const earned = msInitProfile().badges ?? [];
       const el = document.getElementById('badges-grid');
@@ -551,7 +685,7 @@
       }).join('');
     }
 
-    /* ── Leaderboard tab ── */
+    /* â”€â”€ Leaderboard tab â”€â”€ */
     async function renderLeaderboard() {
       const el = document.getElementById('leaderboard-list');
       if (!el) return;
@@ -569,8 +703,8 @@
           const rank  = i + 1;
           return `
             <div class="ms-lb-row ${player.isMe ? 'ms-lb-me' : ''}" style="${player.isMe ? 'border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.06)' : ''}">
-              <span class="ms-lb-rank ${rank <= 3 ? 'top' : ''}">${rank <= 3 ? ['🥇','🥈','🥉'][rank-1] : rank}</span>
-              <span class="ms-lb-name">${player.isMe ? '⭐ ' : ''}${player.name ?? player.student_name ?? 'Player'}</span>
+              <span class="ms-lb-rank ${rank <= 3 ? 'top' : ''}">${rank <= 3 ? ['ðŸ¥‡','ðŸ¥ˆ','ðŸ¥‰'][rank-1] : rank}</span>
+              <span class="ms-lb-name">${player.isMe ? 'â­ ' : ''}${player.name ?? player.student_name ?? 'Player'}</span>
               <span class="ms-lb-xp">${score.toLocaleString()} XP</span>
             </div>
           `;
@@ -580,7 +714,7 @@
       }
     }
 
-    /* ── Refresh HUD after any XP gain ── */
+    /* â”€â”€ Refresh HUD after any XP gain â”€â”€ */
     const _origAddXP = msAddXP;
     window.msAddXP = function(amount, label) {
       const result = _origAddXP(amount, label);
@@ -590,3 +724,4 @@
   </script>
 </body>
 </html>
+

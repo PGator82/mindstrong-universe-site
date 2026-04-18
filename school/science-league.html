@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Science League - MindStrong Universe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="../assets/css/theme.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#061018; --bg2:#0a1723; --border:rgba(255,255,255,.08);
+      --text:#e4f3fb; --muted:#6f8da3;
+      --xp-a:#22d3ee; --xp-b:#0ea5e9; --xp-c:#10b981;
+      --xp-glow:rgba(34,211,238,.18);
+    }
+    body { background:var(--bg); color:var(--text); font-family:'Syne',sans-serif; min-height:100vh; }
+    nav { display:flex; align-items:center; justify-content:space-between; padding:18px 40px; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; background:rgba(6,16,24,.88); backdrop-filter:blur(12px); }
+    .nav-brand { font-family:'Orbitron',sans-serif; font-weight:900; font-size:17px; color:var(--xp-a); text-decoration:none; }
+    .nav-links { display:flex; gap:24px; align-items:center; }
+    .nav-link { color:var(--muted); text-decoration:none; font-size:14px; font-weight:600; transition:color .2s; }
+    .nav-link:hover { color:var(--text); }
+    .btn-sm { font-family:'Syne',sans-serif; font-weight:700; font-size:13px; padding:8px 18px; border-radius:8px; border:none; cursor:pointer; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#051018; text-decoration:none; }
+    .hero { text-align:center; padding:64px 24px 40px; background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(34,211,238,.08),transparent); }
+    .hero-badge { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--xp-a); background:rgba(34,211,238,.1); border:1px solid rgba(34,211,238,.25); border-radius:20px; padding:6px 16px; margin-bottom:20px; }
+    .hero h1 { font-family:'Orbitron',sans-serif; font-size:clamp(32px,6vw,64px); font-weight:900; line-height:1.1; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero p { color:var(--muted); font-size:17px; margin-top:14px; max-width:560px; margin-inline:auto; }
+    .profile-strip { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; padding:20px 24px; border-bottom:1px solid var(--border); }
+    .stat-chip { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; }
+    .stat-chip .label { color:var(--muted); font-size:11px; display:block; }
+    .stat-chip .val { color:var(--xp-a); font-size:16px; }
+    .game-wrap { max-width:860px; margin:0 auto; padding:40px 24px 80px; }
+    .category-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:32px; }
+    .cat-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:28px 20px; cursor:pointer; transition:transform .2s,border-color .2s,box-shadow .2s; text-align:center; }
+    .cat-card:hover { transform:translateY(-4px); border-color:var(--xp-a); box-shadow:0 8px 32px var(--xp-glow); }
+    .cat-name { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:var(--xp-a); }
+    .cat-desc { font-size:12px; color:var(--muted); margin-top:6px; }
+    .cat-diff { display:inline-block; margin-top:10px; font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:1px; padding:3px 10px; border-radius:20px; }
+    .diff-easy { background:rgba(16,185,129,.15); color:#34d399; }
+    .diff-med  { background:rgba(34,211,238,.15); color:#22d3ee; }
+    .diff-hard { background:rgba(14,165,233,.15); color:#38bdf8; }
+    #arena { display:none; }
+    .arena-header { display:flex; justify-content:space-between; align-items:center; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:16px 24px; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+    .arena-cat { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); }
+    .arena-meta { display:flex; gap:20px; align-items:center; }
+    .q-counter { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); }
+    .score-live { font-family:'JetBrains Mono',monospace; font-size:14px; color:var(--text); }
+    .score-live span { color:var(--xp-a); }
+    .timer-ring { width:56px; height:56px; position:relative; }
+    .timer-ring svg { transform:rotate(-90deg); }
+    .timer-ring circle { fill:none; stroke-width:4; stroke-linecap:round; }
+    .timer-ring .bg { stroke:var(--border); }
+    .timer-ring .bar { stroke:var(--xp-a); transition:stroke-dashoffset .9s linear,stroke .3s; }
+    .timer-num { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--text); }
+    .q-card { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:36px 32px; margin-bottom:24px; text-align:center; }
+    .q-text { font-family:'JetBrains Mono',monospace; font-size:clamp(19px,3.3vw,30px); font-weight:700; color:var(--text); line-height:1.4; }
+    .q-hint { font-size:13px; color:var(--muted); margin-top:10px; }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .choice-btn { background:var(--bg2); border:2px solid var(--border); border-radius:12px; padding:18px 12px; font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--text); cursor:pointer; transition:border-color .15s,background .15s,transform .1s; }
+    .choice-btn:hover:not(:disabled) { border-color:var(--xp-a); background:rgba(34,211,238,.07); transform:translateY(-2px); }
+    .choice-btn.correct { border-color:#34d399; background:rgba(52,211,153,.15); color:#34d399; }
+    .choice-btn.wrong { border-color:#ef4444; background:rgba(239,68,68,.12); color:#ef4444; }
+    .feedback { text-align:center; font-size:15px; font-weight:700; min-height:28px; margin-top:16px; }
+    .feedback.ok { color:#34d399; }
+    .feedback.bad { color:#ef4444; }
+    .xp-toast { position:fixed; top:80px; right:24px; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#051018; font-family:'Orbitron',sans-serif; font-weight:900; font-size:15px; padding:12px 20px; border-radius:12px; opacity:0; transform:translateY(-10px); transition:opacity .3s,transform .3s; pointer-events:none; z-index:999; }
+    .xp-toast.show { opacity:1; transform:translateY(0); }
+    #results { display:none; text-align:center; }
+    .results-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:48px 32px; margin-top:24px; }
+    .results-title { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:900; background:linear-gradient(135deg,var(--xp-a),var(--xp-b)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:16px 0 8px; }
+    .results-sub { color:var(--muted); font-size:15px; margin-bottom:28px; }
+    .results-stats { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; margin-bottom:32px; }
+    .r-stat .big { font-family:'Orbitron',sans-serif; font-size:36px; font-weight:900; color:var(--xp-a); }
+    .r-stat .lbl { font-size:12px; color:var(--muted); margin-top:4px; font-family:'JetBrains Mono',monospace; letter-spacing:1px; text-transform:uppercase; }
+    .badge-earned { display:inline-flex; align-items:center; gap:8px; background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.3); border-radius:24px; padding:10px 20px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--xp-a); margin-bottom:24px; }
+    .action-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .btn-primary, .btn-secondary { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; padding:14px 28px; border-radius:12px; text-decoration:none; display:inline-block; cursor:pointer; }
+    .btn-primary { border:none; background:linear-gradient(135deg,var(--xp-b),var(--xp-a)); color:#051018; }
+    .btn-secondary { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .leaderboard { margin-top:48px; text-align:left; }
+    .lb-title { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:var(--xp-a); letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; }
+    .lb-row { display:flex; align-items:center; gap:16px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px 18px; margin-bottom:8px; }
+    .lb-rank { font-family:'Orbitron',sans-serif; font-size:12px; font-weight:900; color:var(--muted); width:24px; }
+    .lb-rank.gold { color:#facc15; } .lb-rank.silver { color:#cbd5e1; } .lb-rank.bronze { color:#c2825a; }
+    .lb-cat { font-size:13px; color:var(--muted); flex:1; }
+    .lb-score { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--xp-a); }
+    @media (max-width:540px) { .choices { grid-template-columns:1fr; } nav { padding:14px 20px; } .nav-links { gap:14px; } .q-card { padding:24px 16px; } }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="./index.html">MindStrong</a>
+  <div class="nav-links">
+    <a class="nav-link" href="../home.html">Home</a>
+    <a class="nav-link" href="./index.html">School</a>
+    <a class="nav-link" href="./games.html?subject=science">Games</a>
+    <a class="btn-sm" href="./foundations-science/index.html">Warmups</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-badge">Science League</div>
+  <h1>Science League</h1>
+  <p>Timed science rounds across life science, earth systems, physical science, and lab tools. Earn XP and badges as you climb.</p>
+</div>
+<div class="profile-strip">
+  <div class="stat-chip"><div><span class="label">LEVEL</span><span class="val" id="pLevel">1</span></div></div>
+  <div class="stat-chip"><div><span class="label">XP</span><span class="val" id="pXP">0</span></div></div>
+  <div class="stat-chip"><div><span class="label">STREAK</span><span class="val" id="pStreak">1</span></div></div>
+  <div class="stat-chip"><div><span class="label">BADGES</span><span class="val" id="pBadges">0</span></div></div>
+</div>
+<div class="game-wrap">
+  <div id="lobby">
+    <div style="text-align:center;margin-bottom:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);">Select a science division to start your match</span></div>
+    <div class="category-grid">
+      <div class="cat-card" onclick="startGame('life')"><div class="cat-name">Life Science</div><div class="cat-desc">Cells, body systems, ecosystems, and adaptations</div><span class="cat-diff diff-easy">CORE</span></div>
+      <div class="cat-card" onclick="startGame('earth')"><div class="cat-name">Earth Science</div><div class="cat-desc">Weather, rocks, layers, water cycle, and space</div><span class="cat-diff diff-med">FIELD</span></div>
+      <div class="cat-card" onclick="startGame('physical')"><div class="cat-name">Physical Science</div><div class="cat-desc">Matter, energy, force, motion, sound, and light</div><span class="cat-diff diff-med">LAB</span></div>
+      <div class="cat-card" onclick="startGame('lab')"><div class="cat-name">Lab Skills</div><div class="cat-desc">Tools, measurement, variables, and scientific method</div><span class="cat-diff diff-hard">MATCH</span></div>
+    </div>
+    <div class="leaderboard" id="leaderboard"></div>
+  </div>
+  <div id="arena">
+    <div class="arena-header">
+      <div class="arena-cat" id="arenaCategory"></div>
+      <div class="arena-meta">
+        <div class="q-counter" id="qCounter">Q 1 / 10</div>
+        <div class="score-live">Score <span id="scoreLive">0</span></div>
+        <div class="timer-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle class="bg" cx="28" cy="28" r="24"></circle>
+            <circle class="bar" id="timerBar" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="timer-num" id="timerNum">15</div>
+        </div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-text" id="qText">Loading...</div>
+      <div class="q-hint" id="qHint"></div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div id="results">
+    <div class="results-card">
+      <div class="results-title" id="resultsTitle">Match Complete</div>
+      <div class="results-sub" id="resultsSub"></div>
+      <div id="badgeRow"></div>
+      <div class="results-stats">
+        <div class="r-stat"><div class="big" id="rScore">0</div><div class="lbl">Score</div></div>
+        <div class="r-stat"><div class="big" id="rCorrect">0</div><div class="lbl">Correct</div></div>
+        <div class="r-stat"><div class="big" id="rXP">0</div><div class="lbl">XP Earned</div></div>
+        <div class="r-stat"><div class="big" id="rLevel">1</div><div class="lbl">Level</div></div>
+      </div>
+      <div class="action-row">
+        <button class="btn-primary" onclick="rematch()">Play Again</button>
+        <button class="btn-secondary" onclick="backToLobby()">Change Division</button>
+      </div>
+    </div>
+    <div class="leaderboard" id="leaderboard2"></div>
+  </div>
+</div>
+<div class="xp-toast" id="xpToast">+25 XP</div>
+<script src="game-engine.js"></script>
+<script>
+const SCORE_KEY = 'science_league_scores';
+const LEAGUE_NAME = 'Science League';
+const BANKS = {
+  life: [
+    {q:'What is the basic unit of life?', a:'Cell', choices:['Tissue','Cell','Organ','Atom']},
+    {q:'Plants make food mainly in the...', a:'Leaves', choices:['Roots','Stem','Leaves','Flowers']},
+    {q:'Animals that eat both plants and animals are...', a:'Omnivores', choices:['Herbivores','Carnivores','Omnivores','Producers']},
+    {q:'An ecosystem includes living things and their...', a:'Environment', choices:['Homework','Environment','Fuel','Temperature only']},
+    {q:'The heart belongs to which body system?', a:'Circulatory', choices:['Digestive','Respiratory','Circulatory','Nervous']},
+    {q:'An inherited trait passed from parents is called...', a:'Genetic', choices:['Seasonal','Genetic','Temporary','Artificial']},
+    {q:'A food chain shows how...', a:'Energy moves', choices:['Rain forms','Energy moves','Mountains rise','Planets spin']},
+    {q:'Organisms best suited to survive show...', a:'Adaptation', choices:['Evaporation','Adaptation','Rotation','Dissolving']},
+    {q:'The lungs help with...', a:'Breathing', choices:['Digestion','Breathing','Hearing','Balance']},
+    {q:'Mushrooms are usually classified as...', a:'Fungi', choices:['Plants','Fungi','Animals','Minerals']},
+    {q:'Predators and prey are part of a...', a:'Food web', choices:['Rock cycle','Food web','Water table','Lab report']},
+    {q:'The process plants use to make food is...', a:'Photosynthesis', choices:['Respiration','Photosynthesis','Condensation','Digestion']},
+  ],
+  earth: [
+    {q:'Water vapor cooling into droplets is...', a:'Condensation', choices:['Evaporation','Condensation','Precipitation','Runoff']},
+    {q:'The layer of Earth we live on is the...', a:'Crust', choices:['Core','Mantle','Crust','Inner sphere']},
+    {q:'Rocks formed from cooled lava are...', a:'Igneous', choices:['Sedimentary','Metamorphic','Igneous','Organic']},
+    {q:'Wind, rain, and ice breaking rock apart is...', a:'Weathering', choices:['Weathering','Rotation','Erosion only','Pollution']},
+    {q:'The planet known for rings is...', a:'Saturn', choices:['Mars','Venus','Saturn','Mercury']},
+    {q:'The Sun is a...', a:'Star', choices:['Planet','Moon','Star','Comet']},
+    {q:'Day and night happen because Earth...', a:'Rotates', choices:['Melts','Rotates','Explodes','Shrinks']},
+    {q:'Clouds forming and rain falling are parts of the...', a:'Water cycle', choices:['Food chain','Water cycle','Life cycle','Rock table']},
+    {q:'Molten rock below Earths surface is...', a:'Magma', choices:['Lava','Magma','Steam','Quartz']},
+    {q:'A tool used to predict weather changes is a...', a:'Barometer', choices:['Thermometer','Ruler','Barometer','Magnet']},
+    {q:'Sedimentary rocks often form in...', a:'Layers', choices:['Layers','Thunderstorms','Volcano cones','Stars']},
+    {q:'The Moon affects Earths ocean...', a:'Tides', choices:['Tides','Forests','Seasons only','Quakes']},
+  ],
+  physical: [
+    {q:'Anything that has mass and takes up space is...', a:'Matter', choices:['Energy','Matter','Force','Motion']},
+    {q:'A push or pull is a...', a:'Force', choices:['Force','Wave','Density','Cell']},
+    {q:'Objects moving faster have more...', a:'Speed', choices:['Mass','Speed','Color','Gravity loss']},
+    {q:'Solids keep both shape and...', a:'Volume', choices:['Volume','Light','Sound','Motion']},
+    {q:'Light travels fastest through...', a:'Space', choices:['Mud','Water','Glass','Space']},
+    {q:'The force pulling objects toward Earth is...', a:'Gravity', choices:['Friction','Magnetism','Gravity','Inertia']},
+    {q:'Energy of motion is called...', a:'Kinetic', choices:['Thermal','Potential','Kinetic','Chemical only']},
+    {q:'A change from liquid to gas is...', a:'Evaporation', choices:['Freezing','Condensation','Evaporation','Melting']},
+    {q:'Friction usually makes moving objects...', a:'Slow down', choices:['Glow','Slow down','Float','Multiply']},
+    {q:'Sound travels by...', a:'Vibrations', choices:['Shadows','Vibrations','Roots','Gravity only']},
+    {q:'A magnet strongly attracts...', a:'Iron', choices:['Wood','Iron','Plastic','Glass']},
+    {q:'Energy stored in food is...', a:'Chemical', choices:['Light','Chemical','Sound','Mechanical only']},
+  ],
+  lab: [
+    {q:'A fair test changes only one...', a:'Variable', choices:['Graph','Variable','Beaker','Conclusion']},
+    {q:'The step before making a conclusion is collecting...', a:'Data', choices:['Music','Data','Dust','Food']},
+    {q:'A ruler is best for measuring...', a:'Length', choices:['Mass','Length','Temperature','Volume']},
+    {q:'A thermometer measures...', a:'Temperature', choices:['Speed','Temperature','Weight','Sound']},
+    {q:'Safety goggles protect your...', a:'Eyes', choices:['Shoes','Eyes','Notebook','Hands']},
+    {q:'The part you purposely change is the...', a:'Independent variable', choices:['Dependent variable','Independent variable','Conclusion','Control group']},
+    {q:'The part you measure is the...', a:'Dependent variable', choices:['Dependent variable','Prediction','Constant','Model']},
+    {q:'Repeating a test helps improve...', a:'Reliability', choices:['Paint color','Reliability','Homework','Lighting only']},
+    {q:'A beaker is often used to hold...', a:'Liquids', choices:['Planets','Liquids','Sound waves','Electricity']},
+    {q:'An organized display of results can be a...', a:'Table', choices:['Planet','Table','Comet','Magnet']},
+    {q:'A prediction made before testing is a...', a:'Hypothesis', choices:['Theory only','Hypothesis','Variable','Procedure']},
+    {q:'The final explanation after looking at results is the...', a:'Conclusion', choices:['Question','Conclusion','Tool','Sample']},
+  ]
+};
+const CAT_NAMES = { life:'Life Science', earth:'Earth Science', physical:'Physical Science', lab:'Lab Skills' };
+const TOTAL_Q = 10, TIME_PER_Q = 15, CIRCUMFERENCE = 150.8;
+let currentCat = '', questions = [], qIndex = 0, score = 0, correct = 0, timerInterval = null, timeLeft = TIME_PER_Q, answered = false;
+
+function refreshProfile() {
+  const p = getProfile();
+  document.getElementById('pLevel').textContent = p.level || 1;
+  document.getElementById('pXP').textContent = p.xp || 0;
+  document.getElementById('pStreak').textContent = p.streak || 1;
+  document.getElementById('pBadges').textContent = (p.badges || []).length;
+}
+function shuffle(arr) { return arr.slice().sort(() => Math.random() - 0.5); }
+function startGame(cat) {
+  currentCat = cat;
+  questions = shuffle(BANKS[cat]).slice(0, TOTAL_Q);
+  qIndex = 0; score = 0; correct = 0;
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('arena').style.display = 'block';
+  document.getElementById('arenaCategory').textContent = LEAGUE_NAME + ' - ' + CAT_NAMES[cat];
+  loadQuestion();
+}
+function loadQuestion() {
+  if (qIndex >= TOTAL_Q) return endGame();
+  answered = false;
+  const q = questions[qIndex];
+  document.getElementById('qCounter').textContent = 'Q ' + (qIndex + 1) + ' / ' + TOTAL_Q;
+  document.getElementById('scoreLive').textContent = score;
+  document.getElementById('qText').textContent = q.q;
+  document.getElementById('qHint').textContent = q.hint ? 'Hint: ' + q.hint : '';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  const choices = shuffle(q.choices.map(c => ({ val:c, isAnswer:String(c) === String(q.a) })));
+  const box = document.getElementById('choices');
+  box.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = choice.val;
+    btn.onclick = () => handleAnswer(btn, choice.isAnswer);
+    box.appendChild(btn);
+  });
+  startTimer();
+}
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_Q;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) timeUp();
+    }
+  }, 1000);
+}
+function updateTimerUI() {
+  const offset = CIRCUMFERENCE * (1 - timeLeft / TIME_PER_Q);
+  const bar = document.getElementById('timerBar');
+  bar.style.strokeDashoffset = offset;
+  bar.style.stroke = timeLeft <= 5 ? '#10b981' : timeLeft <= 8 ? '#0ea5e9' : '#22d3ee';
+  document.getElementById('timerNum').textContent = timeLeft;
+}
+function handleAnswer(btn, isCorrect) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  const feedback = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    const pts = Math.max(10, timeLeft * 10);
+    score += pts;
+    correct++;
+    feedback.textContent = 'Correct! +' + pts + ' pts';
+    feedback.className = 'feedback ok';
+    addXP(25);
+    showXPToast('+25 XP');
+  } else {
+    btn.classList.add('wrong');
+    feedback.textContent = 'Answer: ' + questions[qIndex].a;
+    feedback.className = 'feedback bad';
+  }
+  qIndex++;
+  setTimeout(loadQuestion, 1300);
+}
+function timeUp() {
+  answered = true;
+  document.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (String(b.textContent) === String(questions[qIndex].a)) b.classList.add('correct');
+  });
+  document.getElementById('feedback').textContent = 'Time up! Answer: ' + questions[qIndex].a;
+  document.getElementById('feedback').className = 'feedback bad';
+  qIndex++;
+  setTimeout(loadQuestion, 1500);
+}
+function endGame() {
+  clearInterval(timerInterval);
+  document.getElementById('arena').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  const pct = correct / TOTAL_Q;
+  let title = 'Keep Exploring!';
+  if (pct === 1) title = 'Perfect Science Score!';
+  else if (pct >= 0.8) title = 'Science League Champion!';
+  else if (pct >= 0.6) title = 'Strong Investigation!';
+  else if (pct >= 0.4) title = 'Science Skills Rising!';
+  document.getElementById('resultsTitle').textContent = title;
+  document.getElementById('resultsSub').textContent = CAT_NAMES[currentCat] + ' - ' + correct + ' of ' + TOTAL_Q + ' correct';
+  document.getElementById('rScore').textContent = score;
+  document.getElementById('rCorrect').textContent = correct + '/' + TOTAL_Q;
+  document.getElementById('rXP').textContent = correct * 25;
+  document.getElementById('rLevel').textContent = getProfile().level;
+  let badgeName = null;
+  if (pct === 1) badgeName = 'Science Perfect - ' + CAT_NAMES[currentCat];
+  else if (pct >= 0.8) badgeName = 'Science Master - ' + CAT_NAMES[currentCat];
+  document.getElementById('badgeRow').innerHTML = badgeName ? '<div class="badge-earned">Badge Unlocked: ' + badgeName + '</div>' : '';
+  if (badgeName) unlockBadge(badgeName);
+  saveHighScore(currentCat, score);
+  renderLeaderboard('leaderboard2');
+  refreshProfile();
+}
+function saveHighScore(cat, value) {
+  const scores = JSON.parse(localStorage.getItem(SCORE_KEY) || '[]');
+  scores.push({ cat, score:value, date:new Date().toLocaleDateString() });
+  scores.sort((a, b) => b.score - a.score);
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores.slice(0, 10)));
+}
+function renderLeaderboard(id) {
+  const scores = JSON.parse(localStorage.getItem(SCORE_KEY) || '[]');
+  const el = document.getElementById(id);
+  if (!scores.length) { el.innerHTML = ''; return; }
+  const ranks = ['gold', 'silver', 'bronze'];
+  const rows = scores.slice(0, 5).map((entry, idx) =>
+    '<div class="lb-row"><div class="lb-rank ' + (ranks[idx] || '') + '">#' + (idx + 1) + '</div>' +
+    '<div class="lb-cat">' + CAT_NAMES[entry.cat] + ' - ' + entry.date + '</div>' +
+    '<div class="lb-score">' + entry.score + ' pts</div></div>'
+  ).join('');
+  el.innerHTML = '<div class="lb-title">Science League Scores</div>' + rows;
+}
+function rematch() { document.getElementById('results').style.display = 'none'; startGame(currentCat); }
+function backToLobby() { document.getElementById('results').style.display = 'none'; document.getElementById('lobby').style.display = 'block'; renderLeaderboard('leaderboard'); }
+function showXPToast(msg) {
+  const toast = document.getElementById('xpToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+refreshProfile();
+renderLeaderboard('leaderboard');
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
 
   <style>
-    /* -- Base overrides that live on top of theme.css -- */
+    /* ── Base overrides that live on top of theme.css ── */
     body { font-family: 'Syne', sans-serif; }
 
     /* Animated reveals */
@@ -22,7 +22,7 @@
       .ms-reveal { opacity:1; transform:none; transition:none; }
     }
 
-    /* -- Mode-aware accent system -- */
+    /* ── Mode-aware accent system ── */
     :root {
       --xp-a: #facc15;
       --xp-b: #f97316;
@@ -33,7 +33,7 @@
     body[data-mode="academic"] { --xp-a:#22d3ee; --xp-b:#3b82f6; --xp-c:#10b981; --xp-glow:rgba(34,211,238,.16); }
     body[data-mode="lms"]      { --xp-a:#34d399; --xp-b:#059669; --xp-c:#0ea5e9; --xp-glow:rgba(52,211,153,.16); }
 
-    /* -- Page background glow -- */
+    /* ── Page background glow ── */
     .ms-pageFX {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 0;
@@ -45,7 +45,7 @@
 
     .ms-wrap { position: relative; z-index: 1; }
 
-    /* -- Mode Switcher Bar -- */
+    /* ── Mode Switcher Bar ── */
     .ms-modebar {
       display: flex;
       gap: 8px;
@@ -86,7 +86,7 @@
       box-shadow: 0 0 12px var(--xp-glow);
     }
 
-    /* -- Hero -- */
+    /* ── Hero ── */
     .ms-hero { margin-bottom: 28px; }
     .ms-h1 { font-family: 'Orbitron', sans-serif; }
 
@@ -103,7 +103,7 @@
       transition: all .4s ease;
     }
 
-    /* -- Profile Card -- */
+    /* ── Profile Card ── */
     .ms-profileGrid {
       display: grid;
       grid-template-columns: auto 1fr auto;
@@ -177,7 +177,7 @@
       text-transform: uppercase;
     }
 
-    /* -- Course Items -- */
+    /* ── Course Items ── */
     .ms-courseItem {
       display: flex;
       align-items: center;
@@ -232,7 +232,7 @@
       transition: width .6s ease, background .5s ease;
     }
 
-    /* -- Buttons -- */
+    /* ── Buttons ── */
     .ms-btn {
       font-family: 'Syne', sans-serif;
       font-size: 13px; font-weight: 700;
@@ -261,7 +261,7 @@
     .ms-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--xp-glow); }
     .ms-btn:disabled { opacity: .35; cursor: not-allowed; }
 
-    /* -- Mode-specific flavor labels -- */
+    /* ── Mode-specific flavor labels ── */
     .ms-flavorLabel {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -278,7 +278,7 @@
       transition: all .4s ease;
     }
 
-    /* -- Experience Selector (inline) -- */
+    /* ── Experience Selector (inline) ── */
     .ms-xpSelector {
       margin-top: 28px;
     }
@@ -350,7 +350,7 @@
     #globalLeaderboard ol { margin:8px 0 0; padding-left:18px; display:grid; gap:6px; }
     #globalLeaderboard li { display:flex; justify-content:space-between; font-size:13px; }
 
-    /* -- Subject filter bar -- */
+    /* ── Subject filter bar ── */
     .ms-subjectbar {
       display:flex; gap:8px; flex-wrap:wrap; align-items:center;
       margin-bottom:20px; padding:12px 16px;
@@ -389,22 +389,15 @@
   <!-- SUBJECT FILTER -->
   <div class="ms-subjectbar ms-reveal">
     <span class="ms-modebar-label">Subject:</span>
-    <button class="ms-subjBtn is-active" data-subj="all"     onclick="filterSubjectPage('all',this)">?? All</button>
-    <button class="ms-subjBtn"           data-subj="math"    onclick="filterSubjectPage('math',this)">?? Math</button>
-    <button class="ms-subjBtn"           data-subj="science" onclick="filterSubjectPage('science',this)">?? Science</button>
-    <button class="ms-subjBtn"           data-subj="english" onclick="filterSubjectPage('english',this)">?? English</button>
+    <button class="ms-subjBtn is-active" data-subj="all"     onclick="filterSubjectPage('all',this)">📚 All</button>
+    <button class="ms-subjBtn"           data-subj="math"    onclick="filterSubjectPage('math',this)">📐 Math</button>
+    <button class="ms-subjBtn"           data-subj="science" onclick="filterSubjectPage('science',this)">🔬 Science</button>
+    <button class="ms-subjBtn"           data-subj="english" onclick="filterSubjectPage('english',this)">📖 English</button>
   </div>
 
-  <section class="ms-card ms-reveal" style="margin-bottom:20px;">
-    <h2>Quick Launch</h2>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;">
-      <a class="ms-btn primary" href="./math-league.html">Math League</a>
-      <a class="ms-btn" href="./games.html">School Games</a>
-      <a class="ms-btn" href="./foundations/index.html">Math Foundations</a>
-    </div>
-  </section>
+  <!-- HERO -->
   <section class="ms-hero ms-reveal">
-    <div class="ms-modeKicker" id="modeKicker">??? Arcade Competitive Mode</div>
+    <div class="ms-modeKicker" id="modeKicker">🕹️ Arcade Competitive Mode</div>
     <h1 class="ms-h1" id="heroTitle">Your Learning Dashboard</h1>
     <p class="ms-sub" id="heroSub">Score points. Climb the ranks. Beat your best.</p>
   </section>
@@ -412,23 +405,23 @@
   <!-- MODE SWITCHER -->
   <div class="ms-modebar ms-reveal">
     <span class="ms-modebar-label">Mode:</span>
-    <button class="ms-modeBtn is-active" data-mode="arcade">??? Arcade</button>
-    <button class="ms-modeBtn" data-mode="rpg">?? RPG</button>
-    <button class="ms-modeBtn" data-mode="academic">?? Academic</button>
-    <button class="ms-modeBtn" data-mode="lms">?? LMS</button>
+    <button class="ms-modeBtn is-active" data-mode="arcade">🕹️ Arcade</button>
+    <button class="ms-modeBtn" data-mode="rpg">🎮 RPG</button>
+    <button class="ms-modeBtn" data-mode="academic">🧠 Academic</button>
+    <button class="ms-modeBtn" data-mode="lms">🏫 LMS</button>
   </div>
 
   <!-- STUDENT PROFILE -->
   <section class="ms-card ms-reveal">
     <h2 id="profileTitle">Player Profile</h2>
     <div class="ms-profileGrid">
-      <div class="ms-avatar" id="profileAvatar">??</div>
+      <div class="ms-avatar" id="profileAvatar">🧠</div>
       <div>
         <div class="ms-profileName" id="profileName">MathWarrior</div>
-        <div class="ms-profileMeta" id="profileMeta">RANK: Novice � Module 1: 0/6</div>
+        <div class="ms-profileMeta" id="profileMeta">RANK: Novice · Module 1: 0/6</div>
         <div class="ms-xpBar-wrap">
           <div class="ms-xpBarTrack"><div class="ms-xpBarFill" id="xpFill" style="width:0%"></div></div>
-          <div class="ms-xpBarLabel" id="xpLabel">0 / 6 lessons � 0 XP</div>
+          <div class="ms-xpBarLabel" id="xpLabel">0 / 6 lessons · 0 XP</div>
         </div>
       </div>
       <div class="ms-statPill" id="statPill">
@@ -446,14 +439,14 @@
       <div class="ms-courseMeta">
         <div class="ms-courseBadge" id="m1Badge">1</div>
         <div>
-          <div class="ms-courseTitle">Module 1 � Number Sense</div>
-          <div class="ms-courseSubtitle" id="m1Sub">6 Lessons � <span id="m1Count">0</span> completed</div>
+          <div class="ms-courseTitle">Module 1 — Number Sense</div>
+          <div class="ms-courseSubtitle" id="m1Sub">6 Lessons · <span id="m1Count">0</span> completed</div>
           <div class="ms-miniProgress">
             <div class="ms-miniProgressFill" id="m1Bar" style="width:0%"></div>
           </div>
         </div>
       </div>
-      <a class="ms-btn primary" href="./foundations/index.html" id="m1Btn">Open ?</a>
+      <a class="ms-btn primary" href="./foundations/index.html" id="m1Btn">Warmups →</a>
     </div>
   </section>
 
@@ -462,10 +455,10 @@
     <h2>Pre-Algebra <span class="ms-flavorLabel" id="preLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked" id="preBadge">??</div>
+        <div class="ms-courseBadge is-locked" id="preBadge">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 2 � Pre-Algebra</div>
-          <div class="ms-courseSubtitle" id="preSubtitle">5 Lessons � <span id="preCount">0</span> completed</div>
+          <div class="ms-courseTitle">Module 2 — Pre-Algebra</div>
+          <div class="ms-courseSubtitle" id="preSubtitle">5 Lessons · <span id="preCount">0</span> completed</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="preBar" style="width:0%"></div></div>
         </div>
       </div>
@@ -478,10 +471,10 @@
     <h2>Geometry <span class="ms-flavorLabel" id="geoLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked" id="geoBadge">??</div>
+        <div class="ms-courseBadge is-locked" id="geoBadge">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 3 � Geometry Foundations</div>
-          <div class="ms-courseSubtitle" id="geoSubtitle">6 Lessons � <span id="geoCount">0</span> completed</div>
+          <div class="ms-courseTitle">Module 3 — Geometry Foundations</div>
+          <div class="ms-courseSubtitle" id="geoSubtitle">6 Lessons · <span id="geoCount">0</span> completed</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="geoBar" style="width:0%"></div></div>
         </div>
       </div>
@@ -491,33 +484,40 @@
 
   <!-- MATH LEAGUE -->
   <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:28px 24px;">
-    <div style="font-size:36px;margin-bottom:10px;">?</div>
+    <div style="font-size:36px;margin-bottom:10px;">⚡</div>
     <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#facc15;margin-bottom:6px;">Math League</div>
     <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">10-round timed matches across Arithmetic, Pre-Algebra, Geometry &amp; Ratios. Earn XP. Win badges.</div>
     <a class="ms-btn primary" href="./math-league.html">Enter Math League &#x2192;</a>
   </section>
 
-  <!-- PROGRESS DASHBOARD LINK -->
-  <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:20px 24px;">
-    <div style="font-size:24px;margin-bottom:8px;">??</div>
-    <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">Full Progress Report</div>
-    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:14px;">See scores, XP, boss wins & streaks for every lesson.</div>
-    <a class="ms-btn primary" href="./foundations/progress-dashboard.html">View My Progress ?</a>
+  <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">🎮</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#facc15;margin-bottom:6px;">Math Games</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Speed Math, Number Ninja, boss battles, grid puzzles, and daily math challenges in one lane.</div>
+    <a class="ms-btn primary" href="./games.html?subject=math">Open Math Games &#x2192;</a>
   </section>
 
-  <!-- ------ SCIENCE ------ -->
+  <!-- PROGRESS DASHBOARD LINK -->
+  <section class="ms-card ms-reveal" data-subject="math" style="text-align:center;padding:20px 24px;">
+    <div style="font-size:24px;margin-bottom:8px;">📊</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;margin-bottom:4px;">Full Progress Report</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:14px;">See scores, XP, boss wins & streaks for every lesson.</div>
+    <a class="ms-btn primary" href="./foundations/progress-dashboard.html">View My Progress →</a>
+  </section>
+
+  <!-- ══════ SCIENCE ══════ -->
   <section class="ms-card ms-reveal" data-subject="science">
     <h2>Life Science <span class="ms-flavorLabel" style="border-color:#22d3ee;color:#22d3ee;">Active</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
         <div class="ms-courseBadge" style="border-color:#22d3ee;color:#22d3ee;">1</div>
         <div>
-          <div class="ms-courseTitle">Module 1 � Life Science</div>
-          <div class="ms-courseSubtitle">6 Lessons � Cells, Ecosystems &amp; Adaptations</div>
+          <div class="ms-courseTitle">Module 1 — Life Science</div>
+          <div class="ms-courseSubtitle">6 Lessons · Cells, Ecosystems &amp; Adaptations</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="sciBar" style="width:0%"></div></div>
         </div>
       </div>
-      <a class="ms-btn primary" href="./foundations-science/index.html">Open ?</a>
+      <a class="ms-btn primary" href="./foundations-science/index.html">Warmups →</a>
     </div>
   </section>
 
@@ -525,10 +525,10 @@
     <h2>Earth Science <span class="ms-flavorLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked">??</div>
+        <div class="ms-courseBadge is-locked">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 2 � Earth Science</div>
-          <div class="ms-courseSubtitle">5 Lessons � Rocks, Weather &amp; Space</div>
+          <div class="ms-courseTitle">Module 2 — Earth Science</div>
+          <div class="ms-courseSubtitle">5 Lessons · Rocks, Weather &amp; Space</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
         </div>
       </div>
@@ -540,10 +540,10 @@
     <h2>Physical Science <span class="ms-flavorLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked">??</div>
+        <div class="ms-courseBadge is-locked">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 3 � Physical Science</div>
-          <div class="ms-courseSubtitle">6 Lessons � Matter, Energy &amp; Forces</div>
+          <div class="ms-courseTitle">Module 3 — Physical Science</div>
+          <div class="ms-courseSubtitle">6 Lessons · Matter, Energy &amp; Forces</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
         </div>
       </div>
@@ -552,25 +552,32 @@
   </section>
 
   <section class="ms-card ms-reveal" data-subject="science" style="text-align:center;padding:28px 24px;">
-    <div style="font-size:36px;margin-bottom:10px;">??</div>
-    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#22d3ee;margin-bottom:6px;">Science Lab</div>
-    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Experiments, observations &amp; discovery challenges across Life, Earth &amp; Physical Science.</div>
-    <a class="ms-btn primary" href="./foundations-science/index.html">Enter Science Lab ?</a>
+    <div style="font-size:36px;margin-bottom:10px;">🔬</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#22d3ee;margin-bottom:6px;">Science League</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Life systems, earth patterns, lab tools, and physical science rounds with timed XP matches.</div>
+    <a class="ms-btn primary" href="./science-league.html">Enter Science League →</a>
   </section>
 
-  <!-- ------ ENGLISH ------ -->
+  <section class="ms-card ms-reveal" data-subject="science" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">🧪</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#22d3ee;margin-bottom:6px;">Science Games</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Science Blitz, science word scrambles, memory match, and daily science practice in a separate game lane.</div>
+    <a class="ms-btn primary" href="./games.html?subject=science">Open Science Games →</a>
+  </section>
+
+  <!-- ══════ ENGLISH ══════ -->
   <section class="ms-card ms-reveal" data-subject="english">
     <h2>Grammar Foundations <span class="ms-flavorLabel" style="border-color:#a78bfa;color:#a78bfa;">Active</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
         <div class="ms-courseBadge" style="border-color:#a78bfa;color:#a78bfa;">1</div>
         <div>
-          <div class="ms-courseTitle">Module 1 � Grammar Foundations</div>
-          <div class="ms-courseSubtitle">6 Lessons � Nouns, Verbs, Sentences &amp; More</div>
+          <div class="ms-courseTitle">Module 1 — Grammar Foundations</div>
+          <div class="ms-courseSubtitle">6 Lessons · Nouns, Verbs, Sentences &amp; More</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" id="engBar" style="width:0%"></div></div>
         </div>
       </div>
-      <a class="ms-btn primary" href="./foundations-english/index.html">Open ?</a>
+      <a class="ms-btn primary" href="./foundations-english/index.html">Warmups →</a>
     </div>
   </section>
 
@@ -578,10 +585,10 @@
     <h2>Reading Comprehension <span class="ms-flavorLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked">??</div>
+        <div class="ms-courseBadge is-locked">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 2 � Reading Comprehension</div>
-          <div class="ms-courseSubtitle">5 Lessons � Main Idea, Inference &amp; Analysis</div>
+          <div class="ms-courseTitle">Module 2 — Reading Comprehension</div>
+          <div class="ms-courseSubtitle">5 Lessons · Main Idea, Inference &amp; Analysis</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
         </div>
       </div>
@@ -593,10 +600,10 @@
     <h2>Writing &amp; Composition <span class="ms-flavorLabel">Locked</span></h2>
     <div class="ms-courseItem">
       <div class="ms-courseMeta">
-        <div class="ms-courseBadge is-locked">??</div>
+        <div class="ms-courseBadge is-locked">🔒</div>
         <div>
-          <div class="ms-courseTitle">Module 3 � Writing &amp; Composition</div>
-          <div class="ms-courseSubtitle">6 Lessons � Paragraphs, Essays &amp; Creative Writing</div>
+          <div class="ms-courseTitle">Module 3 — Writing &amp; Composition</div>
+          <div class="ms-courseSubtitle">6 Lessons · Paragraphs, Essays &amp; Creative Writing</div>
           <div class="ms-miniProgress"><div class="ms-miniProgressFill" style="width:0%"></div></div>
         </div>
       </div>
@@ -605,10 +612,17 @@
   </section>
 
   <section class="ms-card ms-reveal" data-subject="english" style="text-align:center;padding:28px 24px;">
-    <div style="font-size:36px;margin-bottom:10px;">??</div>
+    <div style="font-size:36px;margin-bottom:10px;">📖</div>
     <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#a78bfa;margin-bottom:6px;">English League</div>
-    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Speed reading, word scrambles, grammar quizzes. Build vocabulary, earn badges, beat the clock.</div>
-    <a class="ms-btn primary" href="./foundations-english/index.html">Enter English League ?</a>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Grammar, vocabulary, reading, and writing rounds with timed matches and badge rewards.</div>
+    <a class="ms-btn primary" href="./english-league.html">Enter English League →</a>
+  </section>
+
+  <section class="ms-card ms-reveal" data-subject="english" style="text-align:center;padding:28px 24px;">
+    <div style="font-size:36px;margin-bottom:10px;">✍️</div>
+    <div style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:#a78bfa;margin-bottom:6px;">English Games</div>
+    <div style="font-size:13px;color:var(--muted,#6b7a99);margin-bottom:16px;">Grammar Glow-Up, English word scrambles, reading memory match, and daily English challenges.</div>
+    <a class="ms-btn primary" href="./games.html?subject=english">Open English Games →</a>
   </section>
 
   <!-- EXPERIENCE SELECTOR -->
@@ -619,29 +633,29 @@
     <div class="ms-xpGrid">
 
       <button class="ms-xpCard is-active" data-xp="arcade">
-        <span class="ms-xpCheck">?</span>
-        <span class="ms-xpEmoji">???</span>
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🕹️</span>
         <div class="ms-xpTitle">Arcade Competitive</div>
         <p class="ms-xpDesc">Score points, beat the clock, climb leaderboards. Math as a high-speed sport.</p>
       </button>
 
       <button class="ms-xpCard" data-xp="rpg">
-        <span class="ms-xpCheck">?</span>
-        <span class="ms-xpEmoji">??</span>
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🎮</span>
         <div class="ms-xpTitle">RPG Progression</div>
         <p class="ms-xpDesc">Level up, unlock spells, earn XP. Every lesson is a quest with real rewards.</p>
       </button>
 
       <button class="ms-xpCard" data-xp="academic">
-        <span class="ms-xpCheck">?</span>
-        <span class="ms-xpEmoji">??</span>
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🧠</span>
         <div class="ms-xpTitle">Academic Mastery</div>
         <p class="ms-xpDesc">Mastery gates, spaced repetition, deep proof you own each concept.</p>
       </button>
 
       <button class="ms-xpCard" data-xp="lms">
-        <span class="ms-xpCheck">?</span>
-        <span class="ms-xpEmoji">??</span>
+        <span class="ms-xpCheck">✓</span>
+        <span class="ms-xpEmoji">🏫</span>
         <div class="ms-xpTitle">Full LMS</div>
         <p class="ms-xpDesc">Gradebooks, teacher dashboards, parent reports. Your complete school OS.</p>
       </button>
@@ -659,7 +673,7 @@
   <section class="ms-card ms-reveal">
     <div id="globalLeaderboard"></div>
   </section>
-  <footer class="ms-footer">� MindStrong Universe</footer>
+  <footer class="ms-footer">© MindStrong Universe</footer>
 </main>
 
 <script src="./ms-tracker.js"></script>
@@ -674,7 +688,7 @@ const m1Done  = JSON.parse(localStorage.getItem("ms_m1_done") || "[]");
 const m1Count = new Set(m1Done).size;
 const m1Complete = m1Count >= 6;
 
-// Pre-Algebra (module 2) � 5 lessons
+// Pre-Algebra (module 2) — 5 lessons
 (function(){
   const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_pre_alg_done")||"[]"); }catch{ return []; } })();
   const s = new Set();
@@ -687,7 +701,7 @@ const m1Complete = m1Count >= 6;
   window._preComplete = s.size >= 5;
 })();
 
-// Geometry (module 3) � 6 lessons
+// Geometry (module 3) — 6 lessons
 (function(){
   const arr = (() => { try{ return JSON.parse(localStorage.getItem("ms_geo_done")||"[]"); }catch{ return []; } })();
   const s = new Set();
@@ -709,37 +723,37 @@ const m1Complete = m1Count >= 6;
 
 const totalDone = m1Count + window._preCount + window._geoCount;
 
-/* -- Module 1 -- */
+/* ── Module 1 ── */
 document.getElementById("m1Count").textContent = m1Count;
 document.getElementById("m1Bar").style.width   = `${Math.round((m1Count/6)*100)}%`;
 if (m1Complete) {
   const badge = document.getElementById("m1Badge");
-  badge.textContent = "?"; badge.classList.add("is-done");
+  badge.textContent = "✓"; badge.classList.add("is-done");
 }
 
-/* -- Pre-Algebra -- */
+/* ── Pre-Algebra ── */
 const unlocked = JSON.parse(localStorage.getItem("ms_unlocked_modules")||"[1]");
 const preUnlocked = m1Complete || unlocked.includes(2);
 document.getElementById("preCount").textContent = window._preCount;
 document.getElementById("preBar").style.width   = `${Math.round((window._preCount/5)*100)}%`;
 if(preUnlocked){
-  document.getElementById("preBadge").textContent = window._preComplete ? "?" : "2";
+  document.getElementById("preBadge").textContent = window._preComplete ? "✓" : "2";
   document.getElementById("preBadge").classList.remove("is-locked");
   if(window._preComplete) document.getElementById("preBadge").classList.add("is-done");
   document.getElementById("preLabel").textContent = window._preComplete ? "Complete" : window._preCount > 0 ? "In Progress" : "Unlocked";
-  document.getElementById("preAction").innerHTML = `<a class="ms-btn${window._preComplete?"":" primary"}" href="./foundations/pre-algebra/">${window._preComplete?"Review ?":"Open ?"}</a>`;
+  document.getElementById("preAction").innerHTML = `<a class="ms-btn${window._preComplete?"":" primary"}" href="./foundations/pre-algebra/">${window._preComplete?"Review →":"Open →"}</a>`;
 }
 
-/* -- Geometry -- */
+/* ── Geometry ── */
 const geoUnlocked = window._preComplete || unlocked.includes(3);
 document.getElementById("geoCount").textContent = window._geoCount;
 document.getElementById("geoBar").style.width   = `${Math.round((window._geoCount/6)*100)}%`;
 if(geoUnlocked){
-  document.getElementById("geoBadge").textContent = window._geoComplete ? "?" : "3";
+  document.getElementById("geoBadge").textContent = window._geoComplete ? "✓" : "3";
   document.getElementById("geoBadge").classList.remove("is-locked");
   if(window._geoComplete) document.getElementById("geoBadge").classList.add("is-done");
   document.getElementById("geoLabel").textContent = window._geoComplete ? "Complete" : window._geoCount > 0 ? "In Progress" : "Unlocked";
-  document.getElementById("geoAction").innerHTML = `<a class="ms-btn${window._geoComplete?"":" primary"}" href="./foundations/geometry/">${window._geoComplete?"Review ?":"Open ?"}</a>`;
+  document.getElementById("geoAction").innerHTML = `<a class="ms-btn${window._geoComplete?"":" primary"}" href="./foundations/geometry/">${window._geoComplete?"Review →":"Open →"}</a>`;
 }
 
 /* ================================================================
@@ -747,68 +761,68 @@ if(geoUnlocked){
 ================================================================ */
 const MODES = {
   arcade: {
-    emoji: "???",
-    kicker: "??? Arcade Competitive Mode",
+    emoji: "🕹️",
+    kicker: "🕹️ Arcade Competitive Mode",
     title: "Your Learning Dashboard",
     sub: "Score points. Climb the ranks. Beat your best.",
-    avatar: "???",
+    avatar: "🕹️",
     profileTitle: "Player Profile",
     profileName: "MathWarrior",
-    metaFn: (n) => `RANK: ${n >= 40 ? "Legend" : n >= 20 ? "Veteran" : n >= 10 ? "Fighter" : "Novice"} � ${n}/57 lessons${window._totalXP ? ' � '+window._totalXP+' XP' : ''}`,
-    xpLabelFn: (n) => `${n} / 57 lessons � ${window._totalXP || n * 120} XP`,
+    metaFn: (n) => `RANK: ${n >= 40 ? "Legend" : n >= 20 ? "Veteran" : n >= 10 ? "Fighter" : "Novice"} · ${n}/57 lessons${window._totalXP ? ' · '+window._totalXP+' XP' : ''}`,
+    xpLabelFn: (n) => `${n} / 57 lessons · ${window._totalXP || n * 120} XP`,
     statVal: (n) => window._totalXP || n * 120,
     statLbl: "Score",
     foundationsLabel: "Active",
     preLabel: "Locked",
-    btnText: "Open ?",
+    btnText: "Open →",
   },
   rpg: {
-    emoji: "??",
-    kicker: "?? RPG Progression Mode",
+    emoji: "🎮",
+    kicker: "🎮 RPG Progression Mode",
     title: "Your Quest Board",
     sub: "Level up. Earn XP. Unlock Math Spells.",
-    avatar: "??",
+    avatar: "🧙",
     profileTitle: "Character Sheet",
     profileName: "MathWizard",
-    metaFn: (n) => `CLASS: Math Wizard � LVL ${Math.max(1, Math.floor(n / 3) + 1)} � ${window._bossWins} bosses slain`,
+    metaFn: (n) => `CLASS: Math Wizard · LVL ${Math.max(1, Math.floor(n / 3) + 1)} · ${window._bossWins} bosses slain`,
     xpLabelFn: (n) => `${window._totalXP || n * 480} / 5,700 XP`,
     statVal: (n) => Math.max(1, Math.floor(n / 3) + 1),
     statLbl: "Level",
     foundationsLabel: "Main Quest",
     preLabel: "Locked",
-    btnText: "Begin Quest ?",
+    btnText: "Begin Quest →",
   },
   academic: {
-    emoji: "??",
-    kicker: "?? Academic Mastery Mode",
+    emoji: "🧠",
+    kicker: "🧠 Academic Mastery Mode",
     title: "Mastery Dashboard",
     sub: "Own every concept before you move on.",
-    avatar: "??",
+    avatar: "📚",
     profileTitle: "Learner Profile",
     profileName: "Scholar",
-    metaFn: (n) => `Mastery: ${Math.round((n/57)*100)}% � ${window._bossWins} concepts locked in`,
-    xpLabelFn: (n) => `${n} of 57 concepts � ${window._totalXP} XP earned`,
+    metaFn: (n) => `Mastery: ${Math.round((n/57)*100)}% · ${window._bossWins} concepts locked in`,
+    xpLabelFn: (n) => `${n} of 57 concepts · ${window._totalXP} XP earned`,
     statVal: (n) => `${Math.round((n/57)*100)}%`,
     statLbl: "Mastery",
     foundationsLabel: "In Progress",
     preLabel: "Gate Locked",
-    btnText: "Study ?",
+    btnText: "Study →",
   },
   lms: {
-    emoji: "??",
-    kicker: "?? Full LMS Mode",
+    emoji: "🏫",
+    kicker: "🏫 Full LMS Mode",
     title: "Student Dashboard",
     sub: "Assignments. Progress. Reports.",
-    avatar: "??",
+    avatar: "🎓",
     profileTitle: "Student Record",
     profileName: "Student",
-    metaFn: (n) => `Grade: ${n >= 50 ? "A" : n >= 35 ? "B" : n >= 20 ? "C" : "�"} � Completion: ${Math.round((n/57)*100)}%`,
-    xpLabelFn: (n) => `${Math.round((n/57)*100)}% complete � ${n}/57 lessons`,
+    metaFn: (n) => `Grade: ${n >= 50 ? "A" : n >= 35 ? "B" : n >= 20 ? "C" : "—"} · Completion: ${Math.round((n/57)*100)}%`,
+    xpLabelFn: (n) => `${Math.round((n/57)*100)}% complete · ${n}/57 lessons`,
     statVal: (n) => `${Math.round((n/57)*100)}%`,
     statLbl: "Grade",
     foundationsLabel: "Assigned",
     preLabel: "Not Assigned",
-    btnText: "Open Course ?",
+    btnText: "Open Course →",
   },
 };
 
@@ -860,12 +874,12 @@ function applyMode(mode) {
   try { localStorage.setItem("ms_xp_mode", mode); } catch {}
 }
 
-/* -- Mode button clicks -- */
+/* ── Mode button clicks ── */
 document.querySelectorAll(".ms-modeBtn").forEach(btn => {
   btn.addEventListener("click", () => applyMode(btn.dataset.mode));
 });
 
-/* -- XP card clicks -- */
+/* ── XP card clicks ── */
 document.querySelectorAll(".ms-xpCard").forEach(card => {
   card.addEventListener("click", () => applyMode(card.dataset.xp));
   card.addEventListener("keydown", e => {
@@ -873,13 +887,13 @@ document.querySelectorAll(".ms-xpCard").forEach(card => {
   });
 });
 
-/* -- Restore saved mode -- */
+/* ── Restore saved mode ── */
 try {
   const saved = localStorage.getItem("ms_xp_mode");
   if (saved && MODES[saved]) applyMode(saved);
 } catch {}
 
-/* -- Scroll reveals -- */
+/* ── Scroll reveals ── */
 (function() {
   const els = document.querySelectorAll(".ms-reveal");
   const io = new IntersectionObserver(entries => {
@@ -888,7 +902,7 @@ try {
   els.forEach(el => io.observe(el));
 })();
 
-/* -- Subject filter -- */
+/* ── Subject filter ── */
 function filterSubjectPage(subj, btn) {
   document.querySelectorAll('.ms-subjBtn').forEach(b => b.classList.remove('is-active'));
   btn.classList.add('is-active');
@@ -910,5 +924,3 @@ if (window.MSLeaderboard) {
 </script>
 </body>
 </html>
-
-
