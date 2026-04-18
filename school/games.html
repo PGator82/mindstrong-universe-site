@@ -97,6 +97,9 @@
       flex-wrap: wrap;
     }
     .subject-launch-actions .ms-btn { padding: 9px 16px; font-size: 13px; }
+    .subject-launch-card.is-hidden {
+      display: none;
+    }
     .subject-filterbar {
       display: flex;
       gap: 8px;
@@ -224,6 +227,83 @@
       letter-spacing: .15em; text-transform: uppercase; color: #a78bfa;
       margin-bottom: 14px; padding-left: 2px;
     }
+    .lesson-flow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 28px;
+    }
+    .lesson-flow-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .lesson-flow-head h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .lesson-flow-head p {
+      color: #94a3b8;
+      font-size: 14px;
+      max-width: 700px;
+      line-height: 1.6;
+    }
+    .lesson-flow-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      border: 1px solid rgba(124,58,237,.25);
+      background: rgba(124,58,237,.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+    .lesson-flow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .flow-step-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      padding: 18px;
+    }
+    .flow-step-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: #f8fafc;
+      opacity: .85;
+      margin-bottom: 10px;
+    }
+    .flow-step-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #f1f5f9;
+    }
+    .flow-step-card p {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+    .flow-step-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #cbd5e1;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+    }
 
     /* â”€â”€ Responsive â”€â”€ */
     @media (max-width: 600px) {
@@ -255,13 +335,13 @@
 
     <!-- Hero -->
     <section class="games-hero">
-      <div class="games-kicker">Games Hub - Earn XP - Unlock Badges</div>
-      <h1 class="games-title">Learn Through Play</h1>
-      <p class="games-sub">Separate Math, Science, and English game lanes. Every correct answer earns real XP toward your level.</p>
+      <div class="games-kicker" id="games-kicker">Games Hub - Earn XP - Unlock Badges</div>
+      <h1 class="games-title" id="games-title">Learn Through Play</h1>
+      <p class="games-sub" id="games-sub">Separate Math, Science, and English game lanes. Every correct answer earns real XP toward your level.</p>
     </section>
 
     <section class="subject-launch-grid">
-      <div class="subject-launch-card">
+      <div class="subject-launch-card" data-subject-launch="math">
         <h3 style="color:#facc15;">Math Lane</h3>
         <p>Math warmups, Math League, and math-only games stay together instead of sharing space with every subject.</p>
         <div class="subject-launch-actions">
@@ -270,7 +350,7 @@
           <button class="ms-btn primary" type="button" onclick="setSubjectFilter('math')">Games</button>
         </div>
       </div>
-      <div class="subject-launch-card">
+      <div class="subject-launch-card" data-subject-launch="science">
         <h3 style="color:#22d3ee;">Science Lane</h3>
         <p>Science warmups, a separate Science League, and science-only game entries now have their own route.</p>
         <div class="subject-launch-actions">
@@ -279,7 +359,7 @@
           <button class="ms-btn primary" type="button" onclick="setSubjectFilter('science')">Games</button>
         </div>
       </div>
-      <div class="subject-launch-card">
+      <div class="subject-launch-card" data-subject-launch="english">
         <h3 style="color:#a78bfa;">English Lane</h3>
         <p>English warmups, English League, and English-only games no longer ride under the Math lane.</p>
         <div class="subject-launch-actions">
@@ -299,6 +379,17 @@
       <button class="subject-chip" type="button" data-subject-filter="science" onclick="setSubjectFilter('science', this)">Science</button>
       <button class="subject-chip" type="button" data-subject-filter="english" onclick="setSubjectFilter('english', this)">English</button>
     </div>
+
+    <section class="lesson-flow-card" id="lesson-flow-card">
+      <div class="lesson-flow-head">
+        <div>
+          <div class="lesson-flow-tag" id="lesson-flow-tag">All Lanes</div>
+          <h2 id="lesson-flow-title">Lesson-inspired game flow</h2>
+          <p id="lesson-flow-intro">Each subject lane should move learners from the hook, into the hack, and then into example-driven play without mixing unrelated content.</p>
+        </div>
+      </div>
+      <div class="lesson-flow-grid" id="lesson-flow-grid"></div>
+    </section>
 
     <!-- Tabs -->
     <div class="ms-tabs">
@@ -355,25 +446,58 @@
         <div id="ninja-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
-      <!-- Word Scramble -->
-      <div class="ms-game-card" data-subjects="math science english">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
           <div class="ms-game-card-icon">WS</div>
           <div class="ms-game-card-info">
-            <div class="ms-game-card-title">Word Scramble</div>
-            <div class="ms-game-card-desc">Unscramble vocabulary words from math, science, or English. Type your answer and hit Check.</div>
+            <div class="ms-game-card-title">Math Vocabulary Scramble</div>
+            <div class="ms-game-card-desc">Hook the lesson with key terms like equation, numerator, and coefficient before players race through the main drill.</div>
           </div>
           <div class="ms-game-card-meta">
             <span class="ms-pill ms-pill-xp">25 XP each</span>
-            <span class="ms-pill ms-pill-subj">All Subjects</span>
+            <span class="ms-pill ms-pill-subj">Math</span>
           </div>
         </div>
-        <div id="scramble-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startScramble('math')">Math Words</button>
-          <button class="ms-btn primary" onclick="startScramble('science')">Science</button>
-          <button class="ms-btn primary" onclick="startScramble('english')">English</button>
+        <div id="scramble-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startScramble('math', 'scramble-math-start', 'scramble-math-game')">Start Math Scramble</button>
         </div>
-        <div id="scramble-game" class="ms-game-zone" style="display:none;"></div>
+        <div id="scramble-math-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="science">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">WS</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Science Vocabulary Scramble</div>
+            <div class="ms-game-card-desc">Start with life, earth, and physical science keywords so the learner hears the lesson language before the questions hit.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">25 XP each</span>
+            <span class="ms-pill ms-pill-subj">Science</span>
+          </div>
+        </div>
+        <div id="scramble-science-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startScramble('science', 'scramble-science-start', 'scramble-science-game')">Start Science Scramble</button>
+        </div>
+        <div id="scramble-science-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="english">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">WS</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">English Vocabulary Scramble</div>
+            <div class="ms-game-card-desc">Use grammar and reading terms as the hook so players enter the round already primed for the lesson’s core language.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">25 XP each</span>
+            <span class="ms-pill ms-pill-subj">English</span>
+          </div>
+        </div>
+        <div id="scramble-english-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startScramble('english', 'scramble-english-start', 'scramble-english-game')">Start English Scramble</button>
+        </div>
+        <div id="scramble-english-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
       <div class="ms-game-card" data-subjects="science">
@@ -419,27 +543,58 @@
     <div id="panel-puzzle" class="ms-panel">
       <p class="ms-section-label">Logic & Puzzle Games</p>
 
-      <!-- Memory Match -->
-      <div class="ms-game-card" data-subjects="math science english">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
           <div class="ms-game-card-icon">MM</div>
           <div class="ms-game-card-info">
-            <div class="ms-game-card-title">Memory Match</div>
-            <div class="ms-game-card-desc">Flip cards to find matching pairs. Fewer moves = better score. Perfect match unlocks a badge.</div>
+            <div class="ms-game-card-title">Math Memory Match</div>
+            <div class="ms-game-card-desc">Match symbols, operations, and number patterns so the hack from the lesson sticks before the harder challenge round.</div>
           </div>
           <div class="ms-game-card-meta">
             <span class="ms-pill ms-pill-xp">20 XP per pair</span>
-            <span class="ms-pill ms-pill-subj">Memory</span>
+            <span class="ms-pill ms-pill-subj">Math</span>
           </div>
         </div>
-        <div id="memory-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <button class="ms-btn primary" onclick="startMemory('math',6)">Math Symbols</button>
-          <button class="ms-btn primary" onclick="startMemory('science',6)">Science Terms</button>
-          <button class="ms-btn primary" onclick="startMemory('english',6)">English Terms</button>
-          <button class="ms-btn primary" onclick="startMemory('emoji',8)">Emoji (Hard)</button>
-          <button class="ms-btn primary" onclick="startMemory('words',6)">Code Words</button>
+        <div id="memory-math-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startMemory('math', 6, 'memory-math-start', 'memory-math-game')">Start Math Match</button>
         </div>
-        <div id="memory-game" class="ms-game-zone" style="display:none;"></div>
+        <div id="memory-math-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="science">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">MM</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Science Memory Match</div>
+            <div class="ms-game-card-desc">Match terms from cells, energy, ecosystems, and matter so the science lesson patterns show up again in a fast visual way.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">20 XP per pair</span>
+            <span class="ms-pill ms-pill-subj">Science</span>
+          </div>
+        </div>
+        <div id="memory-science-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startMemory('science', 6, 'memory-science-start', 'memory-science-game')">Start Science Match</button>
+        </div>
+        <div id="memory-science-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="english">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">MM</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">English Memory Match</div>
+            <div class="ms-game-card-desc">Match grammar and reading cues so the learner sees the sentence structure pattern before moving into a higher-pressure drill.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">20 XP per pair</span>
+            <span class="ms-pill ms-pill-subj">English</span>
+          </div>
+        </div>
+        <div id="memory-english-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startMemory('english', 6, 'memory-english-start', 'memory-english-game')">Start English Match</button>
+        </div>
+        <div id="memory-english-game" class="ms-game-zone" style="display:none;"></div>
       </div>
 
       <!-- Equation Builder -->
@@ -511,19 +666,49 @@
     <div id="panel-daily" class="ms-panel">
       <p class="ms-section-label">Today's Challenge</p>
 
-      <div class="ms-game-card" data-subjects="math science english">
+      <div class="ms-game-card" data-subjects="math">
         <div class="ms-game-card-hdr">
           <div class="ms-game-card-icon">DAY</div>
           <div class="ms-game-card-info">
-            <div class="ms-game-card-title">Daily Challenge</div>
-            <div class="ms-game-card-desc">One special challenge per day. Complete it for a +150 XP bonus and daily streak rewards. Resets at midnight.</div>
+            <div class="ms-game-card-title">Daily Math Sprint</div>
+            <div class="ms-game-card-desc">Today’s math hook, hack, and example challenge in one fast lane. Complete it for a +150 XP bonus and streak rewards.</div>
           </div>
           <div class="ms-game-card-meta">
             <span class="ms-pill ms-pill-xp">+150 XP</span>
-            <span class="ms-pill ms-pill-subj">All Types</span>
+            <span class="ms-pill ms-pill-subj">Math</span>
           </div>
         </div>
-        <div id="daily-game" class="ms-game-zone"></div>
+        <div id="daily-math-game" class="ms-game-zone"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="science">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">DAY</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Daily Science Sprint</div>
+            <div class="ms-game-card-desc">A science-only daily lane with concept recall, pattern recognition, and one last example-driven push for XP.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">+150 XP</span>
+            <span class="ms-pill ms-pill-subj">Science</span>
+          </div>
+        </div>
+        <div id="daily-science-game" class="ms-game-zone"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="english">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">DAY</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Daily English Sprint</div>
+            <div class="ms-game-card-desc">A daily English-only loop that moves from the text hook, into the grammar hack, and then into a timed example round.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">+150 XP</span>
+            <span class="ms-pill ms-pill-subj">English</span>
+          </div>
+        </div>
+        <div id="daily-english-game" class="ms-game-zone"></div>
       </div>
     </div>
 
@@ -545,6 +730,120 @@
   <script>
     /* â”€â”€ Tab switching â”€â”€ */
     let currentSubject = 'all';
+    const SUBJECT_CONFIG = {
+      all: {
+        kicker: 'Games Hub - Earn XP - Unlock Badges',
+        title: 'Learn Through Play',
+        sub: 'Separate Math, Science, and English game lanes. Every correct answer earns real XP toward your level.',
+        flowTag: 'All Lanes',
+        flowTitle: 'Lesson-inspired game flow',
+        flowIntro: 'Each subject lane should move learners from the hook, into the hack, and then into example-driven play without mixing unrelated content.',
+        steps: [
+          {
+            label: 'Hook',
+            title: 'Open with the lesson spark',
+            body: 'Start with the idea that grabs attention first so the learner knows what problem this lane is trying to solve.',
+            points: ['Math opens with patterns and quick wins.', 'Science opens with a phenomenon or claim.', 'English opens with language, text, or sentence cues.']
+          },
+          {
+            label: 'Hack',
+            title: 'Turn the trick into a mechanic',
+            body: 'The lesson shortcut becomes the game mechanic, not just a worksheet disguised as a button mash.',
+            points: ['Fast recall for math hacks.', 'Cause-effect recognition for science hacks.', 'Sentence and reading patterns for English hacks.']
+          },
+          {
+            label: 'Example',
+            title: 'Finish with proof through play',
+            body: 'The final challenge should feel like a worked example the learner can now survive on their own.',
+            points: ['One subject at a time.', 'No mixed-lane clutter.', 'XP comes from lesson alignment, not randomness.']
+          }
+        ]
+      },
+      math: {
+        kicker: 'Math Games - Hook to Hack to Example',
+        title: 'Math Game Lane',
+        sub: 'Only math games are shown here so the learner stays inside one clear skill path from number sense to algebra and puzzle play.',
+        flowTag: 'Math Lane',
+        flowTitle: 'Math Hook → Hack → Example flow',
+        flowIntro: 'Math games should mirror the lesson structure: show the pattern, reveal the shortcut, then demand the move under pressure.',
+        steps: [
+          {
+            label: 'Hook',
+            title: 'Spot the pattern fast',
+            body: 'The opening challenge should make the learner notice the structure before they calculate everything the long way.',
+            points: ['Number patterns and arithmetic speed.', 'Vocabulary hooks like equation and fraction.', 'Visual matches for operations and symbols.']
+          },
+          {
+            label: 'Hack',
+            title: 'Use the trick that saves time',
+            body: 'The game should reward the shortcut the lesson taught, not random guessing or endless repetition.',
+            points: ['Break apart numbers.', 'Choose the missing step in an equation.', 'Recall symbols and operations under pressure.']
+          },
+          {
+            label: 'Example',
+            title: 'Prove it in the challenge round',
+            body: 'The final math round should feel like the worked example after the explanation, but now the learner drives it alone.',
+            points: ['Boss battle for harder transfer.', 'Grid puzzle for structured thinking.', 'Daily sprint for quick mastery checks.']
+          }
+        ]
+      },
+      science: {
+        kicker: 'Science Games - Hook to Hack to Example',
+        title: 'Science Game Lane',
+        sub: 'This route stays science-only so the player sees science concepts, science vocabulary, and science challenge loops without math or English crowding the page.',
+        flowTag: 'Science Lane',
+        flowTitle: 'Science Hook → Hack → Example flow',
+        flowIntro: 'Science play should begin with a phenomenon, move into the concept shortcut, then end with an example-driven test of understanding.',
+        steps: [
+          {
+            label: 'Hook',
+            title: 'Lead with the phenomenon',
+            body: 'Open with something the learner can notice, predict, or explain before the formal terms lock in.',
+            points: ['Cells and life systems.', 'Weather, earth, and space patterns.', 'Forces, energy, and matter cues.']
+          },
+          {
+            label: 'Hack',
+            title: 'Turn the concept into a quick sort',
+            body: 'The hack phase should help the learner classify, compare, or connect causes and effects faster than before.',
+            points: ['Vocabulary scramble for recall.', 'Lab blitz for concept grouping.', 'Memory match for visual-cue retention.']
+          },
+          {
+            label: 'Example',
+            title: 'Test the idea in motion',
+            body: 'The closing challenge should look like a lesson example turned interactive, where the learner has to apply the science idea on the spot.',
+            points: ['Timed concept questions.', 'Daily science sprint.', 'League rounds tied to current modules.']
+          }
+        ]
+      },
+      english: {
+        kicker: 'English Games - Hook to Hack to Example',
+        title: 'English Game Lane',
+        sub: 'This route stays English-only so the learner can focus on grammar, reading, vocabulary, and writing patterns without crossing into other subjects.',
+        flowTag: 'English Lane',
+        flowTitle: 'English Hook → Hack → Example flow',
+        flowIntro: 'English games should start with language the learner can feel, move into a sentence or reading trick, then finish with an applied example challenge.',
+        steps: [
+          {
+            label: 'Hook',
+            title: 'Start with the text cue',
+            body: 'Lead with words, phrases, or sentence signals so the learner enters the game already tuned to the language pattern.',
+            points: ['Grammar and sentence pieces.', 'Reading and context clues.', 'Vocabulary hooks from the lesson.']
+          },
+          {
+            label: 'Hack',
+            title: 'Make the pattern visible',
+            body: 'The hack phase should help the learner see what to notice in a sentence, paragraph, or prompt much faster.',
+            points: ['Vocabulary scramble for term recall.', 'Grammar glow-up for quick rule application.', 'Memory match for structure recognition.']
+          },
+          {
+            label: 'Example',
+            title: 'Apply it in a timed round',
+            body: 'The last round should feel like a worked reading or grammar example brought to life, where the learner must apply the move independently.',
+            points: ['Timed grammar checks.', 'Daily English sprint.', 'League rounds aligned to reading and writing modules.']
+          }
+        ]
+      }
+    };
 
     function showTab(name, evt) {
       document.querySelectorAll('.ms-panel').forEach(p => p.classList.remove('is-active'));
@@ -575,14 +874,43 @@
       if (btn && typeof btn.blur === 'function') btn.blur();
     }
 
+    function renderLessonFlow() {
+      const config = SUBJECT_CONFIG[currentSubject] || SUBJECT_CONFIG.all;
+      document.getElementById('games-kicker').textContent = config.kicker;
+      document.getElementById('games-title').textContent = config.title;
+      document.getElementById('games-sub').textContent = config.sub;
+      document.getElementById('lesson-flow-tag').textContent = config.flowTag;
+      document.getElementById('lesson-flow-title').textContent = config.flowTitle;
+      document.getElementById('lesson-flow-intro').textContent = config.flowIntro;
+      document.getElementById('lesson-flow-grid').innerHTML = config.steps.map(step => `
+        <article class="flow-step-card">
+          <div class="flow-step-label">${step.label}</div>
+          <h3>${step.title}</h3>
+          <p>${step.body}</p>
+          <ul>
+            ${step.points.map(point => `<li>${point}</li>`).join('')}
+          </ul>
+        </article>
+      `).join('');
+    }
+
     function applySubjectFilter() {
+      renderLessonFlow();
+      document.querySelectorAll('[data-subject-launch]').forEach(card => {
+        const lane = card.dataset.subjectLaunch;
+        const showLaunch = currentSubject === 'all' || lane === currentSubject;
+        card.classList.toggle('is-hidden', !showLaunch);
+      });
       const activePanel = document.querySelector('.ms-panel.is-active');
       if (!activePanel) return;
       activePanel.querySelectorAll('.ms-game-card[data-subjects]').forEach(card => {
         const subjects = (card.dataset.subjects || '').split(/\s+/).filter(Boolean);
-        const show = currentSubject === 'all' || subjects.includes(currentSubject);
+        const show = currentSubject === 'all' ? subjects.length > 0 : subjects.length === 1 && subjects[0] === currentSubject;
         card.style.display = show ? '' : 'none';
       });
+      if (activePanel.id === 'panel-daily') {
+        initDaily();
+      }
     }
 
     /* â”€â”€ Render HUD â”€â”€ */
@@ -613,18 +941,18 @@
       window._nnGame = g;
     }
 
-    function startScramble(subject) {
-      document.getElementById('scramble-start').style.display = 'none';
-      document.getElementById('scramble-game').style.display  = 'block';
-      const g = new WordScrambleGame('scramble-game', { subject });
+    function startScramble(subject, startId, gameId) {
+      document.getElementById(startId).style.display = 'none';
+      document.getElementById(gameId).style.display  = 'block';
+      const g = new WordScrambleGame(gameId, { subject });
       g.start();
       window._wsGame = g;
     }
 
-    function startMemory(subject, pairs) {
-      document.getElementById('memory-start').style.display = 'none';
-      document.getElementById('memory-game').style.display  = 'block';
-      const g = new MemoryMatchGame('memory-game', { subject, pairs });
+    function startMemory(subject, pairs, startId, gameId) {
+      document.getElementById(startId).style.display = 'none';
+      document.getElementById(gameId).style.display  = 'block';
+      const g = new MemoryMatchGame(gameId, { subject, pairs });
       g.start();
       window._mmGame = g;
     }
@@ -664,8 +992,21 @@
     }
 
     function initDaily() {
-      const g = new DailyChallengeGame('daily-game');
-      g.start();
+      ['daily-math-game', 'daily-science-game', 'daily-english-game'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+      });
+
+      const targets = currentSubject === 'all'
+        ? ['daily-math-game', 'daily-science-game', 'daily-english-game']
+        : [`daily-${currentSubject}-game`];
+
+      targets.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const g = new DailyChallengeGame(id);
+        g.start();
+      });
     }
 
     /* â”€â”€ Badges tab â”€â”€ */
