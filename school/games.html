@@ -270,6 +270,99 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
     }
+    .lesson-missions {
+      margin-bottom: 30px;
+    }
+    .lesson-missions-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .lesson-missions-head h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .lesson-missions-head p {
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 760px;
+    }
+    .lesson-mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .lesson-mission-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .lesson-mission-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .lesson-mission-top h3 {
+      font-size: 16px;
+      color: #f8fafc;
+      line-height: 1.35;
+    }
+    .lesson-mission-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      border: 1px solid rgba(124,58,237,.24);
+      background: rgba(124,58,237,.10);
+      border-radius: 999px;
+      padding: 5px 8px;
+      white-space: nowrap;
+    }
+    .lesson-mission-desc {
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .lesson-mission-stack {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .lesson-mini-step {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+      padding: 10px 12px;
+    }
+    .lesson-mini-step b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #f8fafc;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .lesson-mini-step span {
+      color: #cbd5e1;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .lesson-mission-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
     .flow-step-card {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -389,6 +482,17 @@
         </div>
       </div>
       <div class="lesson-flow-grid" id="lesson-flow-grid"></div>
+    </section>
+
+    <section class="lesson-missions">
+      <div class="lesson-missions-head">
+        <div>
+          <div class="lesson-flow-tag" id="lesson-missions-tag">Lesson Missions</div>
+          <h2 id="lesson-missions-title">Play the lesson, not random filler</h2>
+          <p id="lesson-missions-sub">Every mission below ties to a real subject lesson and turns that lesson’s hook, hack, and worked example into an actual game move.</p>
+        </div>
+      </div>
+      <div class="lesson-mission-grid" id="lesson-mission-grid"></div>
     </section>
 
     <!-- Tabs -->
@@ -902,6 +1006,113 @@
         { icon: '🕯️', name: 'English Daily Writer', desc: 'Finish an English daily sprint.', earned: () => getDailyWins('english') > 0 }
       ]
     };
+    const LESSON_MISSIONS = {
+      math: [
+        {
+          chip: 'Lesson 1',
+          title: 'Numbers Are Stories',
+          lessonUrl: './foundations/module-1/lesson-1.html',
+          desc: 'Build number sense by seeing value and quantity as a pattern before calculation starts.',
+          hook: 'Spot fast quantity patterns and get comfortable reading number stories.',
+          hack: 'Use Speed Math as the shortcut drill that rewards seeing structure before brute force.',
+          example: 'Finish in a number-sense arcade round that feels like the lesson boss after guided examples.',
+          playLabel: 'Play Number Story Sprint',
+          playAction: () => { setSubjectFilter('math'); showTab('arcade'); startSpeedMath('+','-'); }
+        },
+        {
+          chip: 'Lesson 2',
+          title: 'Place Value Is a Volume Knob',
+          lessonUrl: './foundations/module-1/lesson-2.html',
+          desc: 'Treat place value like turning numbers up or down instead of memorizing isolated digits.',
+          hook: 'See how shifting one place changes a whole number’s power.',
+          hack: 'Use Equation Builder to spot the missing place-value move faster than writing everything out.',
+          example: 'Lock it in with a worked-example style equation round.',
+          playLabel: 'Play Place Value Builder',
+          playAction: () => { setSubjectFilter('math'); showTab('puzzle'); startEquation(); }
+        },
+        {
+          chip: 'Lesson 3',
+          title: 'Compare, Order, and Win',
+          lessonUrl: './foundations/module-1/lesson-3.html',
+          desc: 'Turn comparison and ordering into a logic challenge instead of a slow worksheet routine.',
+          hook: 'Read the relative size of numbers and patterns at a glance.',
+          hack: 'Use the grid puzzle to practice structure and ordering under pressure.',
+          example: 'Finish with a puzzle round that makes the lesson’s comparison logic concrete.',
+          playLabel: 'Play Comparison Puzzle',
+          playAction: () => { setSubjectFilter('math'); showTab('puzzle'); startPuzzle(); }
+        }
+      ],
+      science: [
+        {
+          chip: 'Lesson 1',
+          title: 'Cells: Building Blocks of Life',
+          lessonUrl: './foundations-science/lesson-1.html',
+          desc: 'Learn the parts and purpose of cells before the vocabulary drifts away.',
+          hook: 'Start by recognizing the basic unit of life and the idea of structure having a job.',
+          hack: 'Use Science Vocabulary Scramble to make core cell language feel automatic.',
+          example: 'Close with Science Lab Blitz so the lesson idea shows up in a fast concept round.',
+          playLabel: 'Play Cell Lab Mission',
+          playAction: () => { setSubjectFilter('science'); showTab('arcade'); startQuizBlitz('science'); }
+        },
+        {
+          chip: 'Lesson 2',
+          title: 'Living vs. Non-Living Things',
+          lessonUrl: './foundations-science/lesson-2.html',
+          desc: 'Classify what counts as living by spotting the traits that matter.',
+          hook: 'Notice the signals of life before memorizing the official labels.',
+          hack: 'Use Science Memory Match to reinforce patterns in living and non-living classification.',
+          example: 'Finish by matching and recalling the traits that make the lesson example click.',
+          playLabel: 'Play Living Things Match',
+          playAction: () => { setSubjectFilter('science'); showTab('puzzle'); startMemory('science', 6, 'memory-science-start', 'memory-science-game'); }
+        },
+        {
+          chip: 'Lesson 3',
+          title: 'Ecosystems & Habitats',
+          lessonUrl: './foundations-science/lesson-3.html',
+          desc: 'Connect organisms to the places and systems that support them.',
+          hook: 'Start with the ecosystem idea and how living things fit their environment.',
+          hack: 'Use Science Boss Hunt as a timed classification-and-recall battle for ecosystem concepts.',
+          example: 'The battle acts like the lesson example under pressure, where each correct concept keeps the system alive.',
+          playLabel: 'Play Ecosystem Boss Hunt',
+          playAction: () => { setSubjectFilter('science'); showTab('battle'); startSubjectBattle('science'); }
+        }
+      ],
+      english: [
+        {
+          chip: 'Lesson 1',
+          title: 'Nouns & Pronouns',
+          lessonUrl: './foundations-english/lesson-1.html',
+          desc: 'Get comfortable naming who or what a sentence is really about.',
+          hook: 'See sentence roles before getting buried in grammar terms.',
+          hack: 'Use English Vocabulary Scramble to make the lesson’s language stick fast.',
+          example: 'Then run Grammar Glow-Up so the idea appears in a timed language check.',
+          playLabel: 'Play Noun Sprint',
+          playAction: () => { setSubjectFilter('english'); showTab('arcade'); startQuizBlitz('english'); }
+        },
+        {
+          chip: 'Lesson 2',
+          title: 'Verbs & Tenses',
+          lessonUrl: './foundations-english/lesson-2.html',
+          desc: 'Track action and time in a sentence without losing the meaning.',
+          hook: 'Notice what the sentence is doing and when it is happening.',
+          hack: 'Use English Memory Match to reinforce tense and action cues through repeat pattern recognition.',
+          example: 'Wrap up with a quick structure game that feels like a worked sentence example.',
+          playLabel: 'Play Tense Match',
+          playAction: () => { setSubjectFilter('english'); showTab('puzzle'); startMemory('english', 6, 'memory-english-start', 'memory-english-game'); }
+        },
+        {
+          chip: 'Lesson 3',
+          title: 'Adjectives & Adverbs',
+          lessonUrl: './foundations-english/lesson-3.html',
+          desc: 'Strengthen description by seeing how words modify nouns, verbs, and whole sentences.',
+          hook: 'Spot the descriptive job a word is doing before naming its part of speech.',
+          hack: 'Use English Boss Duel as a quick-fire language battle around modifiers and sentence signals.',
+          example: 'The duel becomes the final example round where the learner must apply the pattern independently.',
+          playLabel: 'Play Modifier Duel',
+          playAction: () => { setSubjectFilter('english'); showTab('battle'); startSubjectBattle('english'); }
+        }
+      ]
+    };
 
     function getBattleWins(subject) {
       return parseInt(localStorage.getItem(`ms_${subject}_battle_wins`) ?? '0', 10);
@@ -968,8 +1179,69 @@
       `).join('');
     }
 
+    function renderLessonMissions() {
+      const titleMap = {
+        all: 'Play the lesson, not random filler',
+        math: 'Math lesson missions',
+        science: 'Science lesson missions',
+        english: 'English lesson missions'
+      };
+      const subMap = {
+        all: 'Every mission below ties to a real subject lesson and turns that lesson’s hook, hack, and worked example into an actual game move.',
+        math: 'These math missions connect directly to Number Sense lessons and launch into the matching game mechanic.',
+        science: 'These science missions connect directly to Life Science lessons and turn those concepts into playable drills and battles.',
+        english: 'These English missions connect directly to Grammar lessons and convert the language pattern into the game loop.'
+      };
+      const subjects = currentSubject === 'all' ? ['math', 'science', 'english'] : [currentSubject];
+      document.getElementById('lesson-missions-title').textContent = titleMap[currentSubject] || titleMap.all;
+      document.getElementById('lesson-missions-sub').textContent = subMap[currentSubject] || subMap.all;
+      const grid = document.getElementById('lesson-mission-grid');
+      grid.innerHTML = subjects.map(subject => {
+        const cards = (LESSON_MISSIONS[subject] || []).map((mission, index) => `
+          <article class="lesson-mission-card">
+            <div class="lesson-mission-top">
+              <h3>${mission.title}</h3>
+              <span class="lesson-mission-chip">${mission.chip}</span>
+            </div>
+            <p class="lesson-mission-desc">${mission.desc}</p>
+            <div class="lesson-mission-stack">
+              <div class="lesson-mini-step">
+                <b>Hook</b>
+                <span>${mission.hook}</span>
+              </div>
+              <div class="lesson-mini-step">
+                <b>Hack</b>
+                <span>${mission.hack}</span>
+              </div>
+              <div class="lesson-mini-step">
+                <b>Example</b>
+                <span>${mission.example}</span>
+              </div>
+            </div>
+            <div class="lesson-mission-actions">
+              <a class="ms-btn" href="${mission.lessonUrl}">Open Lesson</a>
+              <button class="ms-btn primary" type="button" onclick="launchLessonMission('${subject}', ${index})">${mission.playLabel}</button>
+            </div>
+          </article>
+        `).join('');
+        return currentSubject === 'all' ? `
+          <div style="grid-column:1/-1;">
+            <div class="ms-section-label" style="margin-bottom:10px;">${subject.charAt(0).toUpperCase() + subject.slice(1)} Lesson Games</div>
+            <div class="lesson-mission-grid">${cards}</div>
+          </div>
+        ` : cards;
+      }).join('');
+    }
+
+    function launchLessonMission(subject, index) {
+      const mission = (LESSON_MISSIONS[subject] || [])[index];
+      if (!mission || typeof mission.playAction !== 'function') return;
+      mission.playAction();
+    }
+
     function applySubjectFilter() {
       renderLessonFlow();
+      renderLessonMissions();
       document.querySelectorAll('[data-subject-launch]').forEach(card => {
         const lane = card.dataset.subjectLaunch;
         const showLaunch = currentSubject === 'all' || lane === currentSubject;
