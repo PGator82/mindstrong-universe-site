@@ -660,6 +660,44 @@
         </div>
         <div id="boss-game" class="ms-game-zone" style="display:none;"></div>
       </div>
+
+      <div class="ms-game-card" data-subjects="science">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">LAB</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">Science Boss Hunt</div>
+            <div class="ms-game-card-desc">Battle through science concept rounds like a lab emergency drill. Win the round by surviving the full science blitz.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">120 XP on win</span>
+            <span class="ms-pill ms-pill-diff">Science Battle</span>
+          </div>
+        </div>
+        <div id="science-battle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startSubjectBattle('science')">Start Science Boss Hunt</button>
+          <span style="font-size:13px;color:#64748b">Wins: <b id="science-battle-wins">0</b></span>
+        </div>
+        <div id="science-battle-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
+
+      <div class="ms-game-card" data-subjects="english">
+        <div class="ms-game-card-hdr">
+          <div class="ms-game-card-icon">INK</div>
+          <div class="ms-game-card-info">
+            <div class="ms-game-card-title">English Boss Duel</div>
+            <div class="ms-game-card-desc">Fight through grammar, vocabulary, and reading rounds in a duel format built around quick language decisions.</div>
+          </div>
+          <div class="ms-game-card-meta">
+            <span class="ms-pill ms-pill-xp">120 XP on win</span>
+            <span class="ms-pill ms-pill-diff">English Battle</span>
+          </div>
+        </div>
+        <div id="english-battle-start" class="ms-game-zone" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="ms-btn primary" onclick="startSubjectBattle('english')">Start English Boss Duel</button>
+          <span style="font-size:13px;color:#64748b">Wins: <b id="english-battle-wins">0</b></span>
+        </div>
+        <div id="english-battle-game" class="ms-game-zone" style="display:none;"></div>
+      </div>
     </div>
 
     <!-- â”€â”€ DAILY â”€â”€ -->
@@ -844,6 +882,42 @@
         ]
       }
     };
+    const SUBJECT_BADGES = {
+      math: [
+        { icon: '⚡', name: 'Math Arcade Ace', desc: 'Post a real score in Speed Math or Number Ninja.', earned: () => Math.max(msGetHighScore('speed_math'), msGetHighScore('number_ninja')) > 0 },
+        { icon: '🧩', name: 'Math Puzzle Solver', desc: 'Solve math puzzle rounds and keep the logic lane moving.', earned: () => parseInt(localStorage.getItem('ms_puzzles_solved') ?? '0', 10) > 0 },
+        { icon: '👑', name: 'Math Boss Breaker', desc: 'Defeat a math boss in battle mode.', earned: () => msInitProfile().badges.includes('boss_first') || getBattleWins('math') > 0 },
+        { icon: '📅', name: 'Math Daily Driver', desc: 'Complete a daily challenge inside the math lane.', earned: () => getDailyWins('math') > 0 }
+      ],
+      science: [
+        { icon: '🔬', name: 'Science Arcade Spark', desc: 'Clear a score in Science Lab Blitz or the science scramble lane.', earned: () => msGetHighScore('quiz_blitz_science') > 0 },
+        { icon: '🧪', name: 'Science Puzzle Mapper', desc: 'Work through science puzzle and memory rounds.', earned: () => msGetHighScore('memory_match') > 0 },
+        { icon: '🛡️', name: 'Science Boss Hunter', desc: 'Win a Science Boss Hunt round.', earned: () => getBattleWins('science') > 0 },
+        { icon: '☄️', name: 'Science Daily Pulse', desc: 'Finish a science daily sprint.', earned: () => getDailyWins('science') > 0 }
+      ],
+      english: [
+        { icon: '✍️', name: 'English Arcade Voice', desc: 'Score in Grammar Glow-Up or the English scramble lane.', earned: () => msGetHighScore('quiz_blitz_english') > 0 },
+        { icon: '📖', name: 'English Pattern Finder', desc: 'Work through English memory and structure rounds.', earned: () => msGetHighScore('memory_match') > 0 },
+        { icon: '🗡️', name: 'English Boss Duelist', desc: 'Win an English Boss Duel round.', earned: () => getBattleWins('english') > 0 },
+        { icon: '🕯️', name: 'English Daily Writer', desc: 'Finish an English daily sprint.', earned: () => getDailyWins('english') > 0 }
+      ]
+    };
+
+    function getBattleWins(subject) {
+      return parseInt(localStorage.getItem(`ms_${subject}_battle_wins`) ?? '0', 10);
+    }
+
+    function setBattleWins(subject, wins) {
+      localStorage.setItem(`ms_${subject}_battle_wins`, String(wins));
+    }
+
+    function getDailyWins(subject) {
+      return parseInt(localStorage.getItem(`ms_daily_${subject}_wins`) ?? '0', 10);
+    }
+
+    function setDailyWins(subject, wins) {
+      localStorage.setItem(`ms_daily_${subject}_wins`, String(wins));
+    }
 
     function showTab(name, evt) {
       document.querySelectorAll('.ms-panel').forEach(p => p.classList.remove('is-active'));
@@ -911,6 +985,9 @@
       if (activePanel.id === 'panel-daily') {
         initDaily();
       }
+      if (activePanel.id === 'panel-badges') {
+        renderBadges();
+      }
     }
 
     /* â”€â”€ Render HUD â”€â”€ */
@@ -922,6 +999,8 @@
     document.getElementById('science-best').textContent = msGetHighScore('quiz_blitz_science');
     document.getElementById('english-best').textContent = msGetHighScore('quiz_blitz_english');
     document.getElementById('puzzle-count').textContent = localStorage.getItem('ms_puzzles_solved') ?? '0';
+    document.getElementById('science-battle-wins').textContent = getBattleWins('science');
+    document.getElementById('english-battle-wins').textContent = getBattleWins('english');
     setSubjectFilter(new URLSearchParams(window.location.search).get('subject') || 'all');
 
     /* â”€â”€ Game launchers â”€â”€ */
@@ -991,6 +1070,37 @@
       window._bossGame = g;
     }
 
+    function startSubjectBattle(subject) {
+      const startId = `${subject}-battle-start`;
+      const gameId = `${subject}-battle-game`;
+      document.getElementById(startId).style.display = 'none';
+      document.getElementById(gameId).style.display = 'block';
+      const g = new QuizBlitzGame(gameId, { subject, totalRounds: 10 });
+      const origEnd = g._end.bind(g);
+      g._end = () => {
+        origEnd();
+        const won = g.correct >= 7;
+        if (won) {
+          msAddXP(120, `${subject} battle win`);
+          const wins = getBattleWins(subject) + 1;
+          setBattleWins(subject, wins);
+          const winsEl = document.getElementById(`${subject}-battle-wins`);
+          if (winsEl) winsEl.textContent = wins;
+          renderBadges();
+        }
+        const el = document.getElementById(gameId);
+        if (!el) return;
+        el.innerHTML += `
+          <div class="ms-result-inline" style="margin-top:14px;">
+            ${won ? '🏆 Battle won.' : '🧠 Battle complete.'} ${won ? 'You earned the subject battle win.' : 'Score 7 correct answers to count it as a battle win.'}
+            <button class="ms-btn primary" onclick="startSubjectBattle('${subject}')">Battle Again</button>
+          </div>
+        `;
+      };
+      g.start();
+      window._subjectBattleGame = g;
+    }
+
     function initDaily() {
       ['daily-math-game', 'daily-science-game', 'daily-english-game'].forEach(id => {
         const el = document.getElementById(id);
@@ -1005,22 +1115,39 @@
         const el = document.getElementById(id);
         if (!el) return;
         const g = new DailyChallengeGame(id);
+        const subject = id.includes('science') ? 'science' : id.includes('english') ? 'english' : 'math';
+        const origComplete = g._complete.bind(g);
+        g._complete = (score) => {
+          origComplete(score);
+          const wins = getDailyWins(subject) + 1;
+          setDailyWins(subject, wins);
+          renderBadges();
+        };
         g.start();
       });
     }
 
     /* â”€â”€ Badges tab â”€â”€ */
     function renderBadges() {
-      const earned = msInitProfile().badges ?? [];
       const el = document.getElementById('badges-grid');
       if (!el) return;
-      el.innerHTML = Object.entries(ALL_BADGES).map(([key, b]) => {
-        const have = earned.includes(key);
+      const subjects = currentSubject === 'all' ? ['math', 'science', 'english'] : [currentSubject];
+      el.innerHTML = subjects.map(subject => {
+        const title = subject.charAt(0).toUpperCase() + subject.slice(1);
+        const cards = SUBJECT_BADGES[subject].map(badge => {
+          const have = badge.earned();
+          return `
+            <div class="ms-badge-card ${have ? 'earned' : 'locked'}">
+              <div class="ms-badge-card-icon">${badge.icon}</div>
+              <div class="ms-badge-card-name">${badge.name}</div>
+              <div class="ms-badge-card-desc">${badge.desc}</div>
+            </div>
+          `;
+        }).join('');
         return `
-          <div class="ms-badge-card ${have ? 'earned' : 'locked'}">
-            <div class="ms-badge-card-icon">${b.icon}</div>
-            <div class="ms-badge-card-name">${b.name}</div>
-            <div class="ms-badge-card-desc">${b.desc}</div>
+          <div style="grid-column:1/-1;margin-bottom:8px;">
+            <div class="ms-section-label" style="margin-bottom:10px;">${title} Badges</div>
+            <div class="ms-badges-grid">${cards}</div>
           </div>
         `;
       }).join('');
