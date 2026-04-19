@@ -363,6 +363,171 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    .lesson-player {
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, rgba(124,58,237,.14), rgba(37,99,235,.12));
+      border: 1px solid rgba(124,58,237,.25);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(3,7,18,.28);
+    }
+    .lesson-player[hidden] {
+      display: none;
+    }
+    .lesson-player-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .lesson-player-head h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+    .lesson-player-head p {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 720px;
+    }
+    .lesson-player-progress {
+      min-width: 210px;
+    }
+    .lesson-player-progress span {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+    .lesson-player-bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .lesson-player-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(135deg, #facc15, #22c55e);
+      transition: width .25s ease;
+    }
+    .lesson-player-stage {
+      display: grid;
+      gap: 14px;
+    }
+    .lesson-player-stage-card {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background: rgba(7,11,20,.45);
+      padding: 18px;
+    }
+    .lesson-stage-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 10px;
+    }
+    .lesson-stage-title {
+      font-size: 22px;
+      color: #f8fafc;
+      margin-bottom: 10px;
+    }
+    .lesson-stage-copy {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .lesson-stage-choices {
+      display: grid;
+      gap: 10px;
+    }
+    .lesson-choice {
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      color: #f8fafc;
+      padding: 14px 16px;
+      font: inherit;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+    .lesson-choice:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.2);
+      background: rgba(255,255,255,.07);
+    }
+    .lesson-choice.is-correct {
+      border-color: rgba(34,197,94,.45);
+      background: rgba(34,197,94,.12);
+    }
+    .lesson-choice.is-wrong {
+      border-color: rgba(239,68,68,.4);
+      background: rgba(239,68,68,.10);
+    }
+    .lesson-choice:disabled {
+      cursor: default;
+      opacity: .96;
+    }
+    .lesson-feedback {
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: #e2e8f0;
+    }
+    .lesson-feedback strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .lesson-feedback.is-correct {
+      border-color: rgba(34,197,94,.35);
+      background: rgba(34,197,94,.12);
+    }
+    .lesson-feedback.is-wrong {
+      border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.12);
+    }
+    .lesson-player-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .lesson-results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .lesson-results-card {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      padding: 16px;
+    }
+    .lesson-results-card b {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 6px;
+      color: #f8fafc;
+    }
+    .lesson-results-card span {
+      color: #cbd5e1;
+      font-size: 13px;
+    }
     .flow-step-card {
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -493,6 +658,23 @@
         </div>
       </div>
       <div class="lesson-mission-grid" id="lesson-mission-grid"></div>
+    </section>
+
+    <section class="lesson-player" id="lesson-player" hidden>
+      <div class="lesson-player-head">
+        <div>
+          <div class="lesson-flow-tag" id="lesson-player-tag">Mission Live</div>
+          <h2 id="lesson-player-title">Lesson mission player</h2>
+          <p id="lesson-player-sub">Hook, hack, and practice will show up here as a real playable mission instead of quietly bouncing to another tab.</p>
+        </div>
+        <div class="lesson-player-progress">
+          <span id="lesson-player-progress-label">Step 1 of 3</span>
+          <div class="lesson-player-bar">
+            <div class="lesson-player-fill" id="lesson-player-fill"></div>
+          </div>
+        </div>
+      </div>
+      <div class="lesson-player-stage" id="lesson-player-stage"></div>
     </section>
 
     <!-- Tabs -->
@@ -1015,7 +1197,7 @@
           desc: 'Build number sense by seeing value and quantity as a pattern before calculation starts.',
           hook: 'Spot fast quantity patterns and get comfortable reading number stories.',
           hack: 'Use Speed Math as the shortcut drill that rewards seeing structure before brute force.',
-          example: 'Finish in a number-sense arcade round that feels like the lesson boss after guided examples.',
+          practice: 'Finish in a number-sense arcade round that feels like the lesson boss after guided examples.',
           playLabel: 'Play Number Story Sprint',
           playAction: () => { setSubjectFilter('math'); showTab('arcade'); startSpeedMath('+','-'); }
         },
@@ -1026,7 +1208,7 @@
           desc: 'Treat place value like turning numbers up or down instead of memorizing isolated digits.',
           hook: 'See how shifting one place changes a whole number’s power.',
           hack: 'Use Equation Builder to spot the missing place-value move faster than writing everything out.',
-          example: 'Lock it in with a worked-example style equation round.',
+          practice: 'Lock it in with a worked-example style equation round.',
           playLabel: 'Play Place Value Builder',
           playAction: () => { setSubjectFilter('math'); showTab('puzzle'); startEquation(); }
         },
@@ -1037,7 +1219,7 @@
           desc: 'Turn comparison and ordering into a logic challenge instead of a slow worksheet routine.',
           hook: 'Read the relative size of numbers and patterns at a glance.',
           hack: 'Use the grid puzzle to practice structure and ordering under pressure.',
-          example: 'Finish with a puzzle round that makes the lesson’s comparison logic concrete.',
+          practice: 'Finish with a puzzle round that makes the lesson’s comparison logic concrete.',
           playLabel: 'Play Comparison Puzzle',
           playAction: () => { setSubjectFilter('math'); showTab('puzzle'); startPuzzle(); }
         }
@@ -1179,6 +1361,420 @@
         }
       ]
     };
+    const LESSON_MISSION_GAMES = {
+      math: [
+        {
+          title: 'Number Story Sprint',
+          xpLabel: 'Math mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which number matches the story “4 tens and 2 ones”?',
+              options: ['42', '24', '402', '14'],
+              answer: 0,
+              explain: 'Place value tells the story: 4 tens is 40 and 2 ones makes 42.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which number is closest to 60 without going over?',
+              options: ['58', '61', '49', '73'],
+              answer: 0,
+              explain: '58 is below 60 and only 2 away, so it is the best quick estimate.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Which expression shows the value of 36?',
+              options: ['3 + 6', '30 + 6', '3 + 60', '300 + 6'],
+              answer: 1,
+              explain: '36 means 3 tens and 6 ones, which is 30 + 6.'
+            }
+          ]
+        },
+        {
+          title: 'Place Value Builder',
+          xpLabel: 'Math mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'If the digit 5 moves from the ones place to the tens place, what happens?',
+              options: ['Its value stays 5', 'Its value becomes 50', 'Its value becomes 15', 'Its value disappears'],
+              answer: 1,
+              explain: 'Moving one place left makes the digit worth ten times more.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which number has 7 hundreds, 3 tens, and 8 ones?',
+              options: ['738', '783', '378', '708'],
+              answer: 0,
+              explain: '7 hundreds + 3 tens + 8 ones builds 738.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'What is 420 when written as expanded form?',
+              options: ['4 + 2 + 0', '40 + 20', '400 + 20', '400 + 2'],
+              answer: 2,
+              explain: '420 is 4 hundreds and 2 tens, so 400 + 20.'
+            }
+          ]
+        },
+        {
+          title: 'Comparison Puzzle',
+          xpLabel: 'Math mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which number is greatest?',
+              options: ['308', '380', '83', '318'],
+              answer: 1,
+              explain: 'All have 3 hundreds except 83, and 380 has the largest tens digit.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Put the numbers in order from least to greatest: 19, 91, 29',
+              options: ['19, 29, 91', '29, 19, 91', '91, 29, 19', '19, 91, 29'],
+              answer: 0,
+              explain: 'Compare tens first: 1 ten, then 2 tens, then 9 tens.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Which symbol makes the sentence true: 54 __ 45',
+              options: ['<', '>', '=', '≈'],
+              answer: 1,
+              explain: '54 is greater than 45 because it has more tens.'
+            }
+          ]
+        }
+      ],
+      science: [
+        {
+          title: 'Cell Lab Mission',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'What is the basic unit of life?',
+              options: ['Cell', 'Atom', 'Leaf', 'Organ'],
+              answer: 0,
+              explain: 'Cells are the smallest living building blocks that make up organisms.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which cell part acts like the control center?',
+              options: ['Cell membrane', 'Cytoplasm', 'Nucleus', 'Cell wall'],
+              answer: 2,
+              explain: 'The nucleus directs the cell’s activities, like a control room.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Which statement best explains why cells matter?',
+              options: ['They only exist in plants', 'They build all living things', 'They are made only of water', 'They are always visible without tools'],
+              answer: 1,
+              explain: 'Every living thing is made of one or more cells.'
+            }
+          ]
+        },
+        {
+          title: 'Living Things Match',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which one is living?',
+              options: ['Rock', 'Cloud', 'Tree', 'Pencil'],
+              answer: 2,
+              explain: 'A tree grows, uses energy, and reproduces, so it is living.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which trait best shows something is alive?',
+              options: ['It is heavy', 'It needs energy', 'It is colorful', 'It is large'],
+              answer: 1,
+              explain: 'Living things need energy to survive and carry out life processes.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'A seedling grows toward sunlight. What life trait is it showing?',
+              options: ['Movement only', 'Need for shelter', 'Growth and response', 'Weathering'],
+              answer: 2,
+              explain: 'The seedling is growing and responding to light, both signs of life.'
+            }
+          ]
+        },
+        {
+          title: 'Ecosystem Boss Hunt',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'What is an ecosystem?',
+              options: ['Only the animals in a place', 'A place with only water', 'Living things and their environment together', 'A list of habitats'],
+              answer: 2,
+              explain: 'An ecosystem includes organisms plus the nonliving parts around them.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which habitat would best support a camel?',
+              options: ['Rainforest', 'Desert', 'Arctic tundra', 'Pond'],
+              answer: 1,
+              explain: 'Camels are adapted to desert ecosystems.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'If the water in a pond becomes polluted, what is most likely true?',
+              options: ['Only rocks are affected', 'The whole ecosystem can change', 'Nothing changes', 'Only the air changes'],
+              answer: 1,
+              explain: 'Changes to one part of an ecosystem can affect many living things.'
+            }
+          ]
+        },
+        {
+          title: 'Food Web Recall',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Where does most food-chain energy start?',
+              options: ['Sunlight', 'Carnivores', 'Water', 'Soil'],
+              answer: 0,
+              explain: 'Producers capture energy from the sun to start the chain.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which organism is a producer?',
+              options: ['Fox', 'Mushroom', 'Grass', 'Hawk'],
+              answer: 2,
+              explain: 'Plants such as grass make their own food, so they are producers.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'In the chain grass → rabbit → fox, what is the rabbit?',
+              options: ['Producer', 'Primary consumer', 'Decomposer', 'Predator of grass'],
+              answer: 1,
+              explain: 'The rabbit eats the producer, so it is a primary consumer.'
+            }
+          ]
+        },
+        {
+          title: 'Adaptation Battle',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'What is an adaptation?',
+              options: ['A random color change', 'A trait that helps survival', 'Any body part', 'A short-term feeling'],
+              answer: 1,
+              explain: 'Adaptations are traits or behaviors that improve survival.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Why do polar bears have thick fur?',
+              options: ['To scare predators', 'To stay warm', 'To swim faster only', 'To blend into forests'],
+              answer: 1,
+              explain: 'Thick fur helps conserve heat in cold environments.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'A bird’s beak shape mostly helps it with what?',
+              options: ['Sleeping', 'Finding food', 'Making nests only', 'Changing color'],
+              answer: 1,
+              explain: 'Beak shapes often match the kind of food a bird eats.'
+            }
+          ]
+        },
+        {
+          title: 'Classification Sprint',
+          xpLabel: 'Science mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Why do scientists classify living things?',
+              options: ['To make names longer', 'To sort by shared traits', 'To hide new species', 'To replace habitats'],
+              answer: 1,
+              explain: 'Classification groups organisms by similarities so we can study them clearly.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which pair belongs in the same group?',
+              options: ['Whale and cactus', 'Frog and salamander', 'Shark and oak tree', 'Eagle and mushroom'],
+              answer: 1,
+              explain: 'Frogs and salamanders are both amphibians.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'A new animal has feathers and lays eggs. Which group fits best?',
+              options: ['Bird', 'Mammal', 'Reptile', 'Fish'],
+              answer: 0,
+              explain: 'Feathers are a strong clue that the animal belongs to the bird group.'
+            }
+          ]
+        }
+      ],
+      english: [
+        {
+          title: 'Noun Sprint',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which word is a noun?',
+              options: ['quickly', 'teacher', 'jumped', 'blue'],
+              answer: 1,
+              explain: 'A noun names a person, place, thing, or idea. Teacher is a person.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which pronoun can replace “Maria” in a sentence?',
+              options: ['she', 'they', 'it', 'them'],
+              answer: 0,
+              explain: 'She can stand in for a singular female noun like Maria.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Pick the sentence with a noun and a pronoun working together.',
+              options: ['He runs.', 'Jordan forgot his book.', 'Quickly ran away.', 'Very bright.'],
+              answer: 1,
+              explain: 'Jordan is the noun and his is the pronoun.'
+            }
+          ]
+        },
+        {
+          title: 'Tense Match',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which word is a verb?',
+              options: ['garden', 'laugh', 'sunny', 'near'],
+              answer: 1,
+              explain: 'A verb shows action or a state of being. Laugh is an action.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which sentence is in past tense?',
+              options: ['She walks home.', 'She walked home.', 'She will walk home.', 'She is walking home.'],
+              answer: 1,
+              explain: 'Walked shows the action already happened.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Choose the future-tense sentence.',
+              options: ['They played outside.', 'They play outside.', 'They are playing outside.', 'They will play outside.'],
+              answer: 3,
+              explain: 'Will play tells us the action happens in the future.'
+            }
+          ]
+        },
+        {
+          title: 'Modifier Duel',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which word is an adjective?',
+              options: ['swiftly', 'beautiful', 'sing', 'under'],
+              answer: 1,
+              explain: 'Beautiful describes a noun, so it is an adjective.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which word is an adverb in this sentence: “The dog barked loudly.”',
+              options: ['dog', 'barked', 'loudly', 'the'],
+              answer: 2,
+              explain: 'Loudly describes how the dog barked.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Choose the sentence where the modifier is used correctly.',
+              options: ['The quickly fox ran.', 'The fox ran quickly.', 'Quickly fox the ran.', 'Ran the fox quickly the.'],
+              answer: 1,
+              explain: 'Quickly correctly modifies the verb ran in a complete sentence.'
+            }
+          ]
+        },
+        {
+          title: 'Sentence Builder',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'What does a complete sentence need most?',
+              options: ['Only a noun', 'A subject and a predicate', 'Only punctuation', 'A long description'],
+              answer: 1,
+              explain: 'A full sentence needs someone or something plus what happens.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which is a complete sentence?',
+              options: ['Running down the street', 'Because it rained', 'The students cheered.', 'The tall tree in'],
+              answer: 2,
+              explain: 'The students cheered has a subject and a complete action.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Which revision fixes the fragment “After the game”?',
+              options: ['After the game.', 'After the game we went home.', 'The game after.', 'Went after the game.'],
+              answer: 1,
+              explain: 'Adding we went home turns the fragment into a complete thought.'
+            }
+          ]
+        },
+        {
+          title: 'Punctuation Duel',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'Which punctuation mark ends a statement?',
+              options: ['?', '.', '!', ','],
+              answer: 1,
+              explain: 'A period ends a regular statement.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which sentence uses a comma correctly?',
+              options: ['I packed snacks, water, and maps.', 'I packed, snacks water and maps.', 'I packed snacks water, and maps.', 'I, packed snacks water and maps.'],
+              answer: 0,
+              explain: 'The comma separates items in a list clearly.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Choose the sentence with correct punctuation.',
+              options: ['Where are you going.', 'I cant find my keys!', 'Please bring your notebook, pencil, and folder.', 'wow that was fun.'],
+              answer: 2,
+              explain: 'That sentence uses commas correctly and ends with proper punctuation.'
+            }
+          ]
+        },
+        {
+          title: 'Full Grammar Mix',
+          xpLabel: 'English mission XP',
+          stages: [
+            {
+              label: 'Hook',
+              prompt: 'In the sentence “Bright stars shimmer above us,” which word is the verb?',
+              options: ['Bright', 'stars', 'shimmer', 'above'],
+              answer: 2,
+              explain: 'Shimmer shows the action in the sentence.'
+            },
+            {
+              label: 'Hack',
+              prompt: 'Which word is a pronoun?',
+              options: ['river', 'they', 'careful', 'jump'],
+              answer: 1,
+              explain: 'They stands in for a noun, making it a pronoun.'
+            },
+            {
+              label: 'Practice',
+              prompt: 'Which sentence shows strong grammar control?',
+              options: ['Them runs fast.', 'The runner moved gracefully.', 'Quickly the noisy.', 'Book she under went.'],
+              answer: 1,
+              explain: 'The runner moved gracefully uses a clear subject, verb, and modifier.'
+            }
+          ]
+        }
+      ]
+    };
+    let activeLessonMission = null;
 
     function getBattleWins(subject) {
       return parseInt(localStorage.getItem(`ms_${subject}_battle_wins`) ?? '0', 10);
@@ -1301,8 +1897,151 @@
 
     function launchLessonMission(subject, index) {
       const mission = (LESSON_MISSIONS[subject] || [])[index];
-      if (!mission || typeof mission.playAction !== 'function') return;
-      mission.playAction();
+      const missionGame = (LESSON_MISSION_GAMES[subject] || [])[index];
+      if (!mission || !missionGame) return;
+      setSubjectFilter(subject);
+      startLessonMission(subject, index);
+    }
+
+    function startLessonMission(subject, index) {
+      const mission = (LESSON_MISSIONS[subject] || [])[index];
+      const missionGame = (LESSON_MISSION_GAMES[subject] || [])[index];
+      const player = document.getElementById('lesson-player');
+      if (!mission || !missionGame || !player) return;
+      activeLessonMission = {
+        subject,
+        index,
+        mission,
+        missionGame,
+        stageIndex: 0,
+        answers: [],
+        awarded: false
+      };
+      player.hidden = false;
+      document.getElementById('lesson-player-tag').textContent = `${subject.charAt(0).toUpperCase() + subject.slice(1)} Mission Live`;
+      document.getElementById('lesson-player-title').textContent = missionGame.title;
+      document.getElementById('lesson-player-sub').textContent = mission.desc;
+      renderLessonMissionStage();
+      player.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderLessonMissionStage() {
+      if (!activeLessonMission) return;
+      const { mission, missionGame, stageIndex, answers } = activeLessonMission;
+      const stage = missionGame.stages[stageIndex];
+      const totalStages = missionGame.stages.length;
+      const answered = answers[stageIndex];
+      const progress = Math.round((stageIndex / totalStages) * 100);
+      document.getElementById('lesson-player-progress-label').textContent = `Step ${stageIndex + 1} of ${totalStages}`;
+      document.getElementById('lesson-player-fill').style.width = `${progress}%`;
+      document.getElementById('lesson-player-stage').innerHTML = `
+        <div class="lesson-player-stage-card">
+          <div class="lesson-stage-kicker">${stage.label}</div>
+          <div class="lesson-stage-title">${mission.title}</div>
+          <p class="lesson-stage-copy">${stage.prompt}</p>
+          <div class="lesson-stage-choices">
+            ${stage.options.map((option, optionIndex) => {
+              const classes = answered
+                ? optionIndex === stage.answer
+                  ? 'lesson-choice is-correct'
+                  : optionIndex === answered.selected
+                    ? 'lesson-choice is-wrong'
+                    : 'lesson-choice'
+                : 'lesson-choice';
+              return `<button class="${classes}" type="button" ${answered ? 'disabled' : ''} onclick="answerLessonMission(${optionIndex})">${option}</button>`;
+            }).join('')}
+          </div>
+          ${answered ? `
+            <div class="lesson-feedback ${answered.correct ? 'is-correct' : 'is-wrong'}">
+              <strong>${answered.correct ? 'Correct move.' : 'Good catch to fix here.'}</strong>
+              ${stage.explain}
+            </div>
+            <div class="lesson-player-actions">
+              <a class="ms-btn" href="${mission.lessonUrl}">Open Lesson</a>
+              <button class="ms-btn primary" type="button" onclick="${stageIndex === totalStages - 1 ? 'finishLessonMission()' : 'nextLessonMissionStage()'}">${stageIndex === totalStages - 1 ? 'Finish Mission' : 'Next Step'}</button>
+            </div>
+          ` : `
+            <div class="lesson-player-actions">
+              <a class="ms-btn" href="${mission.lessonUrl}">Review Lesson</a>
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    function answerLessonMission(optionIndex) {
+      if (!activeLessonMission) return;
+      const stage = activeLessonMission.missionGame.stages[activeLessonMission.stageIndex];
+      if (!stage || activeLessonMission.answers[activeLessonMission.stageIndex]) return;
+      activeLessonMission.answers[activeLessonMission.stageIndex] = {
+        selected: optionIndex,
+        correct: optionIndex === stage.answer
+      };
+      renderLessonMissionStage();
+    }
+
+    function nextLessonMissionStage() {
+      if (!activeLessonMission) return;
+      if (!activeLessonMission.answers[activeLessonMission.stageIndex]) return;
+      activeLessonMission.stageIndex += 1;
+      renderLessonMissionStage();
+    }
+
+    function finishLessonMission() {
+      if (!activeLessonMission) return;
+      const { subject, mission, missionGame, answers } = activeLessonMission;
+      const total = missionGame.stages.length;
+      const correct = answers.filter(answer => answer && answer.correct).length;
+      const percent = Math.round((correct / total) * 100);
+      let xpEarned = correct * 25;
+      if (correct === total) xpEarned += 40;
+      if (!activeLessonMission.awarded) {
+        msAddXP(xpEarned, `${subject} lesson mission`);
+        msRenderHUD('games-hud');
+        activeLessonMission.awarded = true;
+      }
+      document.getElementById('lesson-player-progress-label').textContent = `Mission Complete`;
+      document.getElementById('lesson-player-fill').style.width = '100%';
+      document.getElementById('lesson-player-stage').innerHTML = `
+        <div class="lesson-player-stage-card">
+          <div class="lesson-stage-kicker">Mission Complete</div>
+          <div class="lesson-stage-title">${missionGame.title}</div>
+          <p class="lesson-stage-copy">${mission.practice}</p>
+          <div class="lesson-results-grid">
+            <div class="lesson-results-card">
+              <b>${correct}/${total}</b>
+              <span>Lesson moves cleared</span>
+            </div>
+            <div class="lesson-results-card">
+              <b>${percent}%</b>
+              <span>Accuracy</span>
+            </div>
+            <div class="lesson-results-card">
+              <b>+${xpEarned} XP</b>
+              <span>${missionGame.xpLabel}</span>
+            </div>
+          </div>
+          <div class="lesson-feedback ${correct === total ? 'is-correct' : 'is-wrong'}">
+            <strong>${correct === total ? 'Full clear.' : 'Mission complete.'}</strong>
+            ${correct === total
+              ? 'You cleared the hook, hack, and practice flow cleanly. That lesson now has a real subject-specific play loop.'
+              : 'You still completed the mission flow. Replay it to lock in the lesson pattern and push for a perfect clear.'}
+          </div>
+          <div class="lesson-player-actions">
+            <a class="ms-btn" href="${mission.lessonUrl}">Open Lesson</a>
+            <button class="ms-btn" type="button" onclick="startLessonMission('${subject}', ${activeLessonMission.index})">Replay Mission</button>
+            <button class="ms-btn primary" type="button" onclick="closeLessonMission()">Close Mission</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function closeLessonMission() {
+      activeLessonMission = null;
+      const player = document.getElementById('lesson-player');
+      if (!player) return;
+      player.hidden = true;
+      document.getElementById('lesson-player-stage').innerHTML = '';
     }
 
     function applySubjectFilter() {
